@@ -1,0 +1,19 @@
+Since Sevec is short of time, I temporarily overtook the maintenance of the
+IMDBPHP project today. I use his code in my own project, phpVideoPro, and
+thus I am somehow familiar with it. But for phpVideoPro I made some special
+adaptions to it, so in order to get all changes back to the (stand-alone)
+IMDBPHP project, a little "backporting" is needed.
+
+Due to this fact (and the other, that "temporarily" now already stays for more
+than 2 years and probably will stay longer), the file structure was slightly
+changed - so all changes made to the IMDB class in the phpVideoPro project can
+be backported more easily, and (hopefully) also released more frequently (when
+needed).
+
+However: I mainly test functionality together with the phpVideoPro application,
+and thus may not be aware of any "stand-alone" problems. If you run into some,
+just drop a note. I monitor the discussions at sourceforge.net, so that is the
+best place for feedback.
+
+Izzy
+(Munich, January 2007)
