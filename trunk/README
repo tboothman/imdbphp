@@ -1,0 +1,43 @@
+Here I will explain how to install this script, what the functions provided 
+do and how to use them in your program.
+                                                                                         
+To use these files you need to have a php installation. They have been 
+tested in Linux running apache2 and php 4.3.2 but should probably work
+on any php installation.
+                                                                                         
+To install it:
+- this versions requires PEARs HTTP_Request class (see pear.php.net)
+  or the browser emulator class (included with this distribution).
+
+- Untar the archive.
+- move the imdb directory under your document root.
+- edit imdb/config.php
+  - $cachedir should point to the directory where pages retrieved from imdb
+    will be stored and used if the information for the same movie is
+    requested again. Owner of this directory with write access should be the 
+    owner of the web server process. It is safer this directory to be outside
+    document root. If you don't want to use cache you can leave it empty and 
+    also set $usecache and $storecache to FALSE.
+  - $photoroot should be set to a directory where cover images are stored
+    with photo_localurl() if you don't intent to use this function you can
+    leave it empty. It should also be owned by the same user that runs the
+    apache process and with write access.
+- test it:
+  - point your browser to imdb dir ex. "http://localhost/imdb/"
+  - enter a search term
+    a test script (imdbsearch.php) using imdbsearch.class.php will be
+    opened. This script can be an example to learn how to use
+    imdbsearch.class.php.
+  - select a movie for the results.
+    a test script (imdb.php) using imdb.php will be opened. This script uses
+    almost all functions from imdb.class.php and is a good start to learn
+    how to use the class.
+  - after you have tested the script with a couple of movies if you use
+    cache you can check cache.php this script shows a list of the movies
+    that are in cache. In this script you can also see how to use the same
+    object to get information on multiple movies.
+- if you use it in your application you probably want to remove imdb.php,
+  imdbsearch.php and cache.php
+
+If you find an imdb movie for which it doesn't work right in any way send me 
+the imdb id of it.
