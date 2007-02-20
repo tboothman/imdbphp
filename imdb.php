@@ -1,272 +1,213 @@
 <?php
+ #############################################################################
+ # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
+ # written by Giorgos Giagas                                                 #
+ # extended & maintained by Itzchak Rehberg <izzysoft@qumran.org>            #
+ # http://www.qumran.org/homes/izzy/                                         #
+ # ------------------------------------------------------------------------- #
+ # This program is free software; you can redistribute and/or modify it      #
+ # under the terms of the GNU General Public License (see doc/LICENSE)       #
+ #############################################################################
+
+ /* $Id$ */
 
 require ("imdb.class.php");
 
 $movie = new imdb ($HTTP_GET_VARS["mid"]);
 
 if (isset ($HTTP_GET_VARS["mid"])) {
-     $movieid = $HTTP_GET_VARS["mid"];
+  $movieid = $HTTP_GET_VARS["mid"];
+  $movie->setid ($movieid);
 
+  echo '<HTML><HEAD><TITLE>'.$movie->title().' ('.$movie->year().')';
+  echo "</TITLE></HEAD>\n<BODY>";
 
-     $movie->setid ($movieid);
-     echo '<HTML><HEAD><TITLE>';
-     echo $movie->title ();
-     echo ' (';
-     echo $movie->year ();
-     echo ')';
-     echo "</TITLE></HEAD>\n";
+  # Title & year
+  echo '<TABLE><TR><TD colspan=3><FONT size=6><B>';
+  echo $movie->title().'</B> ('.$movie->year().')</FONT><BR><br>';
+  echo "</TD></tr>\n";
+  flush();
 
-     echo '<BODY>';
+  # Photo
+  echo '<TR><TD rowspan=110 valign=top>';
+  if (($photo_url = $movie->photo_localurl() ) != FALSE) {
+    echo '<img src="'.$photo_url.'">';
+  } else {
+    echo "No photo available";
+  }
 
-     echo '<TABLE><TR><TD colspan=3><FONT size=6><B>';
-     echo $movie->title ();
-     echo '</B> (';
-     echo $movie->year ();
-     echo ")</FONT><BR><br>";
-     flush ();
+  # AKAs
+  echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
+  foreach ( $movie->alsoknow() as $ak){
+    echo $ak["title"].": ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
+  }
+  echo '</td></tr>';
+  flush();
 
+  # Year & runtime
+  echo '<TR><TD><B>Year:</B></TD><TD>'.$movie->year().'</TD></TR>';
+  echo '<TR><TD valign=top><B>Runtime:</b></TD><TD>';
+  echo $movie->runtime ().' minutes</TD></TR>';
+  flush();
+/*
+  # Runtime Line and Runtimes
+  echo '<TR><TD valign=top><B>Runtime line:</b></TD><TD>';
+  echo $movie->runtime_all().'</TD></TR>';
+  echo '<TR><TD valign=top><B>All Runtimes:</b></TD><TD>';
+  $runtimes = $movie->runtimes ();
+  foreach ($runtimes as $runtime){
+    echo $runtime["time"]." min in ".$runtime["country"]." (".$runtime["comment"].")<BR>";
+//    if ( ($i+1) != count($runtime)) echo ", ";
+  }
+  echo '</TD></TR>';
+*/
 
-     echo "</TD></tr>\n";
+  # MPAA
+  echo '<TR><TD><B>MPAA:</b></TD><TD>';
+  foreach ($movie->mpaa() as $key=>$mpaa) {
+    echo "$key: $mpaa<br>";
+  }
+  echo '</TD></TR>';
 
-     echo '<TR><TD rowspan=110 valign=top>';
-     if (($photo_url = $movie->photo_localurl() ) != FALSE){
-	  echo '<img src="'.$photo_url.'">';
-     }else{
-          echo "No photo available";
-     }
+  # Ratings and votes
+  echo '<TR><TD><B>Rating:</b></TD><TD>';
+  echo $movie->rating().'</TD></TR>';
+  echo '<TR><TD><B>Votes:</B></TD><TD>';
+  echo $movie->votes().'</TD></TR>';
+  flush();
 
-     echo '</TD><TD valign=top width=120>';
-     echo "<b>Also known as:</b> ";
-     echo '</td><td>';
-     foreach ( $movie->alsoknow() as $ak){
-	  echo $ak["title"].": ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
-     }
+  # Languages
+  echo '<TR><TD><B>Languages:</B></TD><TD>';
+  $languages = $movie->languages();
+  for ($i = 0; $i + 1 < count($languages); $i++) {
+    echo $languages[$i].', ';
+  }
+  echo $languages[$i].'</TD></TR>';
+  flush();
 
-     echo '</td></tr>';
+  # Country
+  echo '<TR><TD><B>Country:</B></TD><TD>';
+  $country = $movie->country();
+  for ($i = 0; $i + 1 < count($country); $i++) {
+    echo $country[$i].', ';
+  }
+  echo $country[$i].'</TD></TR>';
 
-     echo '<TR><TD>';
-     echo '<B>Year:</B></TD><TD>';
-     echo $movie->year ();
-     echo '</TD></TR>';
+  # Genres
+  echo '<TR><TD><B>Genre:</B></TD><TD>';
+  echo $movie->genre().'</TD></TR>';
 
-     echo '<TR><TD valign=top>';
-     echo '<B>Runtime:</b>';
-     echo '</TD><TD>';
-     echo $movie->runtime ().' minutes';
-     echo '</TD></TR>';
+  echo '<TR><TD><B>All Genres:</B></TD><TD>';
+  $gen = $movie->genres();
+  for ($i = 0; $i + 1 < count($gen); $i++) {
+    echo $gen[$i].', ';
+  }
+  echo $gen[$i].'</TD></TR>';
 
-/*     echo '<TR><TD valign=top>';
-     echo '<B>Runtime line:</b>';
-     echo '</TD><TD>';
-     echo $movie->runtime_all ();
-     echo '</TD></TR>';*/
+  # Colors
+  echo '<TR><TD><B>Colors:</B></TD><TD>';
+  $col = $movie->colors();
+  for ($i = 0; $i + 1 < count($col); $i++) {
+    echo $col[$i].', ';
+  }
+  echo $col[$i].'</TD></TR>';
+  flush();
 
-     echo '<TR><TD valign=top>';
-     echo '<B>All Runtimes:</b>';
-     echo '</TD><TD>';
-     $runtimes = $movie->runtimes ();
+  # Sound
+  echo '<TR><TD><B>Sound:</B></TD><TD>';
+  $sound = $movie->sound ();
+  for ($i = 0; $i + 1 < count($sound); $i++) {
+    echo $sound[$i].', ';
+  }
+  echo $sound[$i].'</TD></TR>';
 
-     foreach ($movie->runtimes() as $runtimes){
-	  echo $runtimes["time"]." min in ".$runtimes["country"]." (".$runtimes["comment"].")<BR>";
-//	  if ( ($i+1) != count($runtimes)) echo ", ";
-     }
+  echo '<TR><TD valign=top><B>Tagline:</B></TD><TD>';
+  echo $movie->tagline().'</TD></TR>';
 
-     echo '</TD></TR>';
+  #==[ Staff ]==
+  # director(s)
+  $director = $movie->director();
+  echo '<TR><TD valign=top><B>Director:</B></TD><TD><TABLE>';
+  for ($i = 0; $i < count($director); $i++) {
+    echo '<tr><td width=200>';
+    echo '<a href="http://us.imdb.com/Name?'.$director[$i]["imdb"].'">';
+    echo $director[$i]["name"].'</a></td><td>';
+    echo $director[$i]["role"]."</td></tr>\n";
+  }
+  echo '</table></td></tr>';
 
+  # Story
+  $write = $movie->writing();
+  echo '<TR><TD valign=top><B>Writing By:</B></TD><TD><TABLE>';
+  for ($i = 0; $i < count($write); $i++) {
+    echo '<tr><td width=200>';
+    echo '<a href="http://us.imdb.com/Name?'.$write[$i]["imdb"].'">';
+    echo $write[$i]["name"].'</a></td><td>';
+    echo $write[$i]["role"]."</td></tr>\n";
+  }
+  echo '</table></td></tr>';
+  flush();
 
-     echo '<TR><TD>';
-     echo '<B>Rating:</b>';
-     echo '</TD><TD>';
-     echo $movie->rating ();
-     echo '</TD></TR>';
+  # Producer
+  $produce = $movie->producer();
+  echo '<TR><TD valign=top><B>Produced By:</B></TD><TD><TABLE>';
+  for ($i = 0; $i < count($produce); $i++) {
+    echo '<tr><td width=200>';
+    echo '<a href="http://us.imdb.com/Name?'.$produce[$i]["imdb"].'">';
+    echo $produce[$i]["name"].'</a></td><td>';
+    echo $produce[$i]["role"]."</td></tr>\n";
+  }
+  echo '</table></td></tr>';
 
-     echo '<TR><TD>';
-     echo '<B>Votes:</B>';
-     echo '</TD><TD>';
-     echo $movie->votes ();
-     echo '</TD></TR>';
+  # Music
+  $compose = $movie->composer();
+  echo '<TR><TD valign=top><B>Music:</B></TD><TD><TABLE>';
+  for ($i = 0; $i < count($compose); $i++) {
+    echo '<tr><td width=200>';
+    echo '<a href="http://us.imdb.com/Name?'.$compose[$i]["imdb"].'">';
+    echo $compose[$i]["name"]."</a></td></tr>\n";
+  }
+  echo '</table></td></tr>';
+  flush();
 
-     echo '<TR><TD>';
-     echo '<b>Languages:</B>';
-     echo '</TD><TD>';
-     $languages = $movie->languages ();
-	      for ($i = 0; $i + 1 < count ($languages); $i++) {
-	 	  echo $languages[$i];
-	 	  echo ", ";
-	      }
-     echo $languages[$i];
- //    echo $movie->language ();
-     echo '</TD></TR>';
+  # Cast
+  $cast = $movie->cast();
+  echo '<TR><TD valign=top><B>Cast:</B></TD><TD><TABLE>';
+  for ($i = 0; $i < count($cast); $i++) {
+    echo '<tr><td width=200>';
+    echo '<a href="http://us.imdb.com/Name?'.$cast[$i]["imdb"].'">';
+    echo $cast[$i]["name"].'</a></td><td>';
+    echo $cast[$i]["role"]."</td></tr>\n";
+  }
+  echo '</table></td></tr>';
+  flush();
 
-     echo '<TR><TD>';
-     echo '<b>Country:</B>';
-     echo '</TD><TD>';
-     $country = $movie->country ();
-     for ($i = 0; $i + 1 < count ($country); $i++) {
-	  echo $country[$i];
-	  echo ", ";
-     }
-     echo $country[$i];
-     echo '</TD></TR>';
+  # Plot outline & plot
+  echo '<tr><td valign=top><b>Plot Outline:</b></td><td>';
+  echo $movie->plotoutline().'</td></tr>';
 
+  $plot = $movie->plot();
+  echo '<tr><td valign=top><b>Plot:</b></td><td><ul>';
+  for ($i = 0; $i < count($plot); $i++) {
+    echo "<li>".$plot[$i]."</li>\n";
+  }
+  echo '</ul></td></tr>';
+  flush();
 
-     echo '<TR><TD>';
-     echo '<b>Genre:</b>';
-     echo '</TD><TD>';
-     echo $movie->genre ();
-     echo '</TD></TR>';
+  # Taglines
+  $taglines = $movie->taglines();
+  echo '<tr><td valign=top><b>Taglines:</b></td><td><ul>';
+  for ($i = 0; $i < count($taglines); $i++) {
+    echo "<li>".$taglines[$i]."</li>\n";
+  }
+  echo '</ul></td></tr>';
 
-     echo '<TR><TD>';
-     echo '<b>Colors:</b>';
-     echo '</TD><TD>';
-     $col = $movie->colors ();
-     for ($i = 0; $i + 1 < count ($col); $i++) {
-	  echo $col[$i];
-	  echo ", ";
-     }
-     echo $col[$i];
-     echo '</TD></TR>';
+  # Selected User Comment
+  echo '<tr><td valign=top><b>User Comments:</b></td><td>';
+  echo $movie->comment().'</td></tr>';
 
-     echo '<TR><TD>';
-     echo '<b>Sound:</B>';
-     echo '</TD><TD>';
-     $sound = $movie->sound ();
-     for ($i = 0; $i + 1 < count ($sound); $i++) {
-	  echo $sound[$i];
-	  echo ", ";
-     }
-     echo $sound[$i];
-     echo '</TD></TR>';
-
-
-     echo '<TR><TD>';
-     echo '<b>All Genres:</B>';
-     echo '</TD><TD>';
-     $gen = $movie->genres ();
-     for ($i = 0; $i + 1 < count ($gen); $i++) {
-	  echo $gen[$i];
-	  echo ", ";
-     }
-     echo $gen[$i];
-     echo '</TD></TR>';
-
-     echo '<TR><TD valign=top>';
-     echo '<b>Tagline:</b>';
-     echo '</TD><TD>';
-     echo $movie->tagline ();
-     echo '</TD></TR>';
-
-
-
-     $director = $movie->director();
-     echo '<TR><TD valign=top>';
-     echo "<B>Director:</B>";
-     echo '</td><td><table>';
-     for ($i = 0; $i < count ($director); $i++) {
-       echo '<tr><td width=200>';
-       echo '<a href="http://us.imdb.com/Name?';
-       echo $director[$i]["imdb"];
-       echo '">';
-	  echo $director[$i]["name"];
-	  echo "</a></td><td>";
-	  echo $director[$i]["role"];
-	  echo "</td></tr>\n";
-     }
-     echo '</table></td></tr>';
-
-     $write = $movie->writing();
-     echo '<TR><TD valign=top>';
-     echo "<B>Writing By:</B>";
-     echo '</td><td><table>';
-     for ($i = 0; $i < count ($write); $i++) {
-       echo '<tr><td width=200>';
-       echo '<a href="http://us.imdb.com/Name?';
-       echo $write[$i]["imdb"];
-       echo '">';
-	  echo $write[$i]["name"];
-	  echo "</a></td><td>";
-	  echo $write[$i]["role"];
-	  echo "</td></tr>\n";
-     }
-     echo '</table></td></tr>';
-
-     $produce = $movie->producer();
-     echo '<TR><TD valign=top>';
-     echo "<B>Produced By:</B>";
-     echo '</td><td><table>';
-     for ($i = 0; $i < count ($produce); $i++) {
-       echo '<tr><td width=200>';
-       echo '<a href="http://us.imdb.com/Name?';
-       echo $produce[$i]["imdb"];
-       echo '">';
-	  echo $produce[$i]["name"];
-	  echo "</a></td><td>";
-	  echo $produce[$i]["role"];
-	  echo "</td></tr>\n";
-     }
-     echo '</table></td></tr>';
-
-
-     $cast = $movie->cast();
-     echo '<TR><TD valign=top>';
-     echo "<B>Cast:</B>";
-     echo '</td><td><table>';
-     for ($i = 0; $i < count ($cast); $i++) {
-       echo '<tr><td width=200>';
-       echo '<a href="http://us.imdb.com/Name?';
-       echo $cast[$i]["imdb"];
-       echo '">';
-	  echo $cast[$i]["name"];
-	  echo "</a></td><td>";
-       echo $cast[$i]["role"];
-	  echo "</td></tr>\n";
-     }
-     echo '</table></td></tr>';
-
-
-	      echo '<tr><td valign=top>';
-	      echo '<b>Plot Outline:</b>';
-	      echo '</td><td>';
-	      echo $movie->plotoutline ();
-	 	  echo '</td></tr>';
-
-
-     $plot = $movie->plot ();
-     echo '<tr><td valign=top>';
-     echo '<b>Plot:</b>';
-     echo '</td><td>';
-     for ($i = 0; $i < count ($plot); $i++) {
-	  echo "<li>";
-	  echo $plot[$i];
-	  echo "\n";
-     }
-     echo '</td></tr>';
-
-     $taglines = $movie->taglines ();
-     echo '<tr><td valign=top>';
-     echo '<b>Taglines:</b>';
-     echo '</td><td>';
-     for ($i = 0; $i < count ($taglines); $i++) {
-	  echo "<li>";
-	  echo $taglines[$i];
-	  echo "\n";
-     }
-     echo '</td></tr>';
-
-
-	      echo '<tr><td valign=top>';
-	      echo '<b>User Comments:</b>';
-	      echo '</td><td>';
-	      echo $movie->comment ();
-	 	  echo '</td></tr>';
-
-
-     echo '</TABLE><BR>';
-
-
-
+  echo '</TABLE><BR>';
 }
-
 ?>
 
 
