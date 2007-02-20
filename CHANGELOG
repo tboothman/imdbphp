@@ -1,0 +1,64 @@
+0.8.6
+- plot outline and selected user comment added (wtf)
+- next changes on IMDB site: Fixed rating and cast
+
+0.8.5 (by Izzy)
+- some adjustments due to changes on the IMDB sites
+- a little re-structuring of the class files due to easier maintenance
+  together with the code of phpVideoPro
+
+0.8.4 (by Izzy)
+- added automatical global cache purging
+- IMDB site changes caused image retrieval to fail
+- IMDB site changes caused actors retrieval to fail
+
+0.8.3 (by Izzy)
+- due to internal changes on the IMDB site the searches returned empty.
+  Now it works again
+- extended the results for some details, e.g. the also-known-as
+- lots of detail changes I do not remember anymore (see history of
+  phpVideoPro at http://www.qumran.org/homes/izzy/software/)
+
+0.8.2 (by Izzy)
+- syntax on *.imdb.com changed - which made the entire class(es) unusable.
+  Fixed that, so now it works again.
+
+0.8.1
+- added support for old browseremulator again. choose in imdb_config.php if
+  you use PEAR.
+
+0.8
+- many things that i forgot writing and don't remember now...
+- imdbsearch class method setsearch($name) was renamed to
+  setsearchname($name).
+- a imdbsearchurl($url) was added that can be used to find the imdb links on
+  a url. (ie. to get the top 250 movies.)
+- many functions that returned an empty string now return NULL. this will
+  propably not affect many programs but it is cleaner for databases.
+  haven't fixed all of them yet.
+- PEARs HTTP_Request class is now used (see pear.php.net you need it now for
+  the program to run.)
+- the default is not to use or store cache now.
+
+0.7
+- some minor bug fixes.
+- fixed the links in the test scripts.
+- search can be multiple words
+- search results now return an array of imdb objects.
+- when there is only one result (imdb redirects to it) the right thing is
+  happening.
+- fixed it for the changes in imdb site.
+- added a patch by Brian Ruth for ratings.
+
+0.6
+- taglines() function that returns all taglines.
+- fixed a bug that made photo() to return the wrong url sometimes.
+- added producers.
+- changed runtime handling. now runtimes() returns a table with runtimes
+  and runtime() returns just the first runtime and only the number.
+- added photo_localurl() which returns a local url for the movie image (after
+  saving it there first if it doesn't exist.
+- alsoknow() splits the info more...
+
+0.5
+Initial Release.
