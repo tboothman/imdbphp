@@ -256,6 +256,7 @@
     if ($this->runtime_all() == ""){
 	return array();
     }
+#echo $this->runtime_all();
     $run_arr= explode( "/" , $this->runtime_all());
     $max = count($run_arr);
     for ( $i=0; $i < $max ; $i++){
@@ -821,17 +822,17 @@
   function alsoknow () {
    if ($this->main_alsoknow == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $ak_s = strpos ($this->page["Title"], "Also Known As");
+    $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>")+19;
     if ($ak_s == 0) $ak_s = strpos ($this->page["Title"], "Alternativ:");
     if ($ak_s == 0) return array();
-    $alsoknow_end = strpos ($this->page["Title"], "class", $ak_s);
+    $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
     $alsoknow_arr = explode ( "<br>", $alsoknow_all);
     $j=0;
-    for ( $i=1; ($i +1)< count($alsoknow_arr); $i++){
-# echo "<b>AKALine:</b> $alsoknow_arr[$i]<br>\n";
+    for ( $i=0; $i< count($alsoknow_arr); $i++){
+      $alsoknow_arr[$i] = trim($alsoknow_arr[$i]);
+      if (strlen($alsoknow_arr[$i])>0) {
 	$tmparr = explode('(', $alsoknow_arr[$i]);
-# echo "<pre>";print_r($tmparr);echo "</pre>\n";
         unset($ak_temp);
 	$ak_temp["title"]= $tmparr[0];
         $elems = count($tmparr);
@@ -869,9 +870,9 @@
         if (!isset($ak_temp["year"])) $ak_temp["year"] = "";
         if (!isset($ak_temp["country"])) $ak_temp["country"] = "";
         if (!isset($ak_temp["comment"])) $ak_temp["comment"] = "";
-# echo "ak_temp:<pre>";print_r($ak_temp); echo "</pre>\n";
-	$this->main_alsoknow[$j] = $ak_temp;
+        $this->main_alsoknow[$j] = $ak_temp;
 	$j++;
+      }
     }
    }
    return $this->main_alsoknow;
