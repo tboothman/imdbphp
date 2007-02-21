@@ -54,6 +54,16 @@
   var $main_alsoknow = "";
   var $main_sound = "";
 
+  function debug_scalar($scalar) {
+    echo "<b><font color='#ff0000'>$scalar</font></b><br>";
+  }
+  function debug_object($object) {
+    echo "<font color='#ff0000'><pre>";print_r($object);echo "</pre></font>";
+  }
+  function debug_html($html) {
+    echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
+  }
+
   /** Open an IMDB page
    * @method openpage
    * @param string wt
@@ -822,7 +832,8 @@
   function alsoknow () {
    if ($this->main_alsoknow == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>")+19;
+    $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>");
+    if ($ak_s>0) $ak_s += 19;
     if ($ak_s == 0) $ak_s = strpos ($this->page["Title"], "Alternativ:");
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
