@@ -3,6 +3,7 @@
 - next changes on IMDB site: Fixed rating and cast (Izzy)
 - alsoknow() sometimes throw an error (and ate some AKAs). Fixed (Izzy)
 - sample page now gives some more details (Izzy)
+- fixed the link to ratings generated in the votes() function (eremini)
 
 0.8.5 (by Izzy)
 - some adjustments due to changes on the IMDB sites
