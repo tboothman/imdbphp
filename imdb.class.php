@@ -346,6 +346,8 @@
     $vote_s = strpos ($this->page["Title"], "(", $vote_s);
     $vote_e = strpos ($this->page["Title"], "votes", $vote_s);
     $this->main_votes = substr ($this->page["Title"], $vote_s + 1, $vote_e - $vote_s - 2);
+    $this->main_votes = str_replace("ratings","http://".$this->imdbsite."/title/tt".$this->imdbID."/ratings", $this->main_votes);
+    $this->main_votes .= "</a>";
    }
    return $this->main_votes;
   }
