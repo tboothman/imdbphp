@@ -1,3 +1,7 @@
+0.8.7
+- made the maxresults (max movies to return on query) configurable
+- made the search variants configurable
+
 0.8.6
 - plot outline and selected user comment added (wtf)
 - next changes on IMDB site: Fixed rating and cast (Izzy)
