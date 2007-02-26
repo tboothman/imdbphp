@@ -20,6 +20,10 @@ define ('PROXY_PORT', "");
 // set to false to use the old browseremulator.
 $PEAR = false;
 
+/** Configuration part of the IMDB classes
+ * @package Api
+ * @class imdb_config
+ */
 class imdb_config {
   var $imdbsite;
   var $cachedir;
@@ -29,6 +33,11 @@ class imdb_config {
   var $photodir;
   var $photoroot;
 
+  /** Constructor and only method of this base class.
+   *  There's no need to call this yourself - you should just place your
+   *  configuration data here.
+   * @constructor imdb_config
+   */
   function imdb_config(){
     // the imdb server to use.
     // choices are us.imdb.com uk.imdb.com german.imdb.com and italian.imdb.com
@@ -80,15 +89,31 @@ if ( $PEAR ){
 // Use the browseremu class
   require_once ("browseremulator.class.php");
 
+  /** The request class
+   *  Here we emulate a browser accessing the IMDB site. You don't need to
+   *  call any of its method directly - they are rather used by the IMDB classes.
+   * @package Api
+   * @class IMDB_Request
+   */
   class IMDB_Request extends BrowserEmulator{
     var $maxsize = 100000;
+    /** Constructor: Initialize the BrowserEmulator
+     *  No need to call this.
+     * @constructor IMDB_Request
+     */
     function IMDB_Request($url){
       $this->BrowserEmulator();
       $this->urltoopen = $url;
     }
+    /** Send a request to the IMDB site
+     * @method sendRequest
+     */
     function sendRequest(){
       $this->fpopened = $this->fopen($this->urltoopen);
     }
+    /** Get the Response body
+     * @method getResponseBody
+     */
     function getResponseBody(){
       $page = "";
       while (!feof ($this->fpopened)) {
@@ -96,9 +121,16 @@ if ( $PEAR ){
       }
       return $page;
     }
+    /** Set the URL we need to parse
+     * @method setURL
+     */
     function setURL($url){
       $this->urltoopen = $url;
     }
+    /** Obtain the response body
+     * @method getresponseheader
+     * @param optional string header
+     */
     function getresponseheader($header = false){
       $headers = $this->getLastResponseHeaders();
       foreach ($headers as $head){
