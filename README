@@ -41,3 +41,7 @@ To install it:
 
 If you find an imdb movie for which it doesn't work right in any way send me 
 the imdb id of it.
+
+To get started, next to the sample code to be found in the imdb.php file of
+this distributions archive, an API reference is available at
+http://www.qumran.org/homes/izzy/software/imdbphp/apidoc/ for your convinience.
