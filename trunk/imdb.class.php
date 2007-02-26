@@ -18,6 +18,9 @@
  /** Accessing IMDB information
   * @package Api
   * @class imdb
+  * @extends imdb_config
+  * @author Izzy (izzysoft@qumran.org)
+  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2007 by Itzchak Rehberg and IzzySoft
   */
  class imdb extends imdb_config {
   var $imdbID = "";
@@ -164,6 +167,8 @@
   }
 
   /** Check cache and purge outdated files
+   *  This method looks for files older than the cache_expire set in the
+   *  imdb_config and removes them
    * @method purge
    */
   function purge() {
@@ -180,7 +185,7 @@
     }
   }
 
-  /** Get the URL to the movie title page
+  /** Set up the URL to the movie title page
    * @method main_url
    * @return string url
    */
@@ -333,7 +338,6 @@
      return $this->main_comment;
   }
 
-
   /** Return votes for this movie
    * @method votes
    * @return string votes
@@ -466,19 +470,19 @@
   }
 
   /** Get the main Plot outline for the movie
-     * @method plotoutline
-     * @return string plotoutline
-     */
-    function plotoutline () {
-     if ($this->main_plotoutline == "") {
+   * @method plotoutline
+   * @return string plotoutline
+   */
+  function plotoutline () {
+    if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       $plotoutline_s = strpos ($this->page["Title"], "Plot Outline:");
       if ( $plotoutline_s == 0) return FALSE;
       $plotoutline_s = strpos ($this->page["Title"], ">", $plotoutline_s);
       $plotoutline_e = strpos ($this->page["Title"], "<", $plotoutline_s);
       $this->main_plotoutline = substr ($this->page["Title"], $plotoutline_s + 1, $plotoutline_e - $plotoutline_s - 1);
-     }
-     return $this->main_plotoutline;
+    }
+    return $this->main_plotoutline;
   }
 
   /** Get the movies plot(s)
@@ -500,7 +504,6 @@
    }
    return $this->plot_plot;
   }
-
 
   /** Get all available taglines for the movie
    * @method taglines
@@ -537,14 +540,14 @@
    $endtable = strpos($html, "</table>", $row_s);
    $i=0;
    while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-	$row_s = strpos ( $html, "<tr>", $row_s);
-	$row_e = strpos ($html, "</tr>", $row_s);
-	$temp = trim(substr ($html, $row_s + 4 , $row_e - $row_s - 4));
-	if ( strncmp( $temp, "<td valign=",10) == 0 ){
-		$rows[$i] = $temp;
-		$i++;
-	}
-	$row_s = $row_e;
+     $row_s = strpos ( $html, "<tr>", $row_s);
+     $row_e = strpos ($html, "</tr>", $row_s);
+     $temp = trim(substr ($html, $row_s + 4 , $row_e - $row_s - 4));
+     if ( strncmp( $temp, "<td valign=",10) == 0 ){
+       $rows[$i] = $temp;
+       $i++;
+     }
+     $row_s = $row_e;
    }
    return $rows;
   }
@@ -562,18 +565,17 @@
    $endtable = strpos($html, "</table>", $row_s);
    $i=0;
    while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-	$row_s = strpos ( $html, "<tr", $row_s);
-	$row_e = strpos ($html, "</tr>", $row_s);
-	$temp = trim(substr ($html, $row_s , $row_e - $row_s));
-#        $row_x = strpos( $temp, '<td valign="middle"' );
-        $row_x = strpos( $temp, '<td class="nm">' );
-        $temp = trim(substr($temp,$row_x));
-#	if ( strncmp( $temp, "<td valign=",10) == 0 ){
-	if ( strncmp( $temp, "<td class=",10) == 0 ){
-		$rows[$i] = $temp;
-		$i++;
-	}
-	$row_s = $row_e;
+     $row_s = strpos ( $html, "<tr", $row_s);
+     $row_e = strpos ($html, "</tr>", $row_s);
+     $temp = trim(substr ($html, $row_s , $row_e - $row_s));
+#     $row_x = strpos( $temp, '<td valign="middle"' );
+     $row_x = strpos( $temp, '<td class="nm">' );
+     $temp = trim(substr($temp,$row_x));
+     if ( strncmp( $temp, "<td class=",10) == 0 ){
+       $rows[$i] = $temp;
+       $i++;
+     }
+     $row_s = $row_e;
    }
    return $rows;
   }
@@ -676,18 +678,18 @@
    $this->credits_writing = array();
    $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing credits");
    for ( $i = 0; $i < count ($writing_rows); $i++){
-	$cels = $this->get_row_cels ($writing_rows[$i]);
-	if ( count ( $cels) > 2){
-		$wrt["imdb"] = $this->get_imdbname($cels[0]);
-		$wrt["name"] = strip_tags($cels[0]);
-		$role = strip_tags($cels[2]);
-		if ( $role == ""){
-			$wrt["role"] = NULL;
-		}else{
-			$wrt["role"] = $role;
-		}
-		$this->credits_writing[$i] = $wrt;
-	}
+     $cels = $this->get_row_cels ($writing_rows[$i]);
+     if ( count ( $cels) > 2){
+       $wrt["imdb"] = $this->get_imdbname($cels[0]);
+       $wrt["name"] = strip_tags($cels[0]);
+       $role = strip_tags($cels[2]);
+       if ( $role == ""){
+         $wrt["role"] = NULL;
+       }else{
+         $wrt["role"] = $role;
+       }
+       $this->credits_writing[$i] = $wrt;
+     }
    }
    return $this->credits_writing;
   }
