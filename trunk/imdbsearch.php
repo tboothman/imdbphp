@@ -3,7 +3,7 @@
 require ("imdb.class.php");
 
 $search = new imdbsearch ();
-$search->setsearchname ($HTTP_GET_VARS["name"]);
+$search->setsearchname ($_GET["name"]);
 echo "<HTML><HEAD><TITLE>search</TITLE></HEAD><BODY>";
 $results = $search->results ();
 foreach ($results as $res) {

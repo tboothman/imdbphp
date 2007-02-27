@@ -2,6 +2,7 @@ v0.8.7
 + made the maxresults (max movies to return on query) configurable
 + made the search variants configurable
 + added some more info for the APIDOC
+* made the sample scripts proof for register_globals=off
 
 v0.8.6
 + plot outline and selected user comment added (wtf)
