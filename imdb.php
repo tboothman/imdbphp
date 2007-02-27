@@ -13,10 +13,10 @@
 
 require ("imdb.class.php");
 
-$movie = new imdb ($HTTP_GET_VARS["mid"]);
+$movie = new imdb ($_GET["mid"]);
 
-if (isset ($HTTP_GET_VARS["mid"])) {
-  $movieid = $HTTP_GET_VARS["mid"];
+if (isset ($_GET["mid"])) {
+  $movieid = $_GET["mid"];
   $movie->setid ($movieid);
 
   echo '<HTML><HEAD><TITLE>'.$movie->title().' ('.$movie->year().')';
