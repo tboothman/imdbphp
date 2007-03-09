@@ -21,6 +21,7 @@
   * @extends imdb_config
   * @author Izzy (izzysoft@qumran.org)
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2007 by Itzchak Rehberg and IzzySoft
+  * @version $Revision$ $Date$
   */
  class imdb extends imdb_config {
   var $imdbID = "";
@@ -845,6 +846,7 @@
     $alsoknow_arr = explode ( "<br>", $alsoknow_all);
     $j=0;
     for ( $i=0; $i< count($alsoknow_arr); $i++){
+      if (strpos($alsoknow_arr[$i],"href=")!==FALSE) continue; // link to more AKAs
       $alsoknow_arr[$i] = trim($alsoknow_arr[$i]);
       if (strlen($alsoknow_arr[$i])>0) {
 	$tmparr = explode('(', $alsoknow_arr[$i]);
