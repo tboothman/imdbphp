@@ -3,3 +3,4 @@
 - add cache expiration for individual functions.
 - posters, images?
 - detailed rating?
+- alsoknow() could also parse the "more" url if given
