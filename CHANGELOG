@@ -1,3 +1,6 @@
+v0.8.8
+* applied patch sent by eremini to also support BMP images
+
 v0.8.7
 + made the maxresults (max movies to return on query) configurable
 + made the search variants configurable
