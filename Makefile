@@ -8,6 +8,8 @@ datadir=$(datarootdir)/imdbphp
 docdir=$(datarootdir)/doc/imdbphp
 INSTALL=install
 INSTALL_DATA=$(INSTALL) -m 644
+WEBROOT=$(DESTDIR)/var/www
+LINKTO=$(WEBROOT)/imdbphp
 
 install: installdirs
 	$(INSTALL_DATA) CHANGELOG $(docdir)
@@ -19,11 +21,13 @@ install: installdirs
 	$(INSTALL_DATA) *.php $(datadir)
 	$(INSTALL_DATA) *.html $(datadir)
 	rm -f $(datadir)/Makefile
+	if [ ! -e $(LINKTO) ]; then ln -s $(datadir) $(LINKTO); fi
 
 installdirs:
 	mkdir -p $(datadir)/cache
 	mkdir -p $(datadir)/images
 	mkdir -p $(docdir)
+	if [ ! -d $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
 
 uninstall:
 	rmdir --ignore-fail-on-non-empty $(datadir)/cache
