@@ -1031,33 +1031,23 @@
 
    $searchstring = array( '<A HREF="/title/tt', '<A href="/title/tt', '<a href="/Title?', '<a href="/title/tt');
    $i = 0;
-#echo "Walking searchstring for this page:";
-#echo "<div style='border:1px solid black'>".htmlentities($this->page)."</div>";
-#echo "<div style='border:1px solid black'>".$this->page."</div>";
    foreach( $searchstring as $srch){
-#echo "<ul><li>Testing ".htmlentities($srch)."</li>";
     $res_e = 0;
     $res_s = 0;
     $len = strlen($srch);
     while ((($res_s = strpos ($this->page, $srch, $res_e)) > 10)) {
       $res_e = strpos ($this->page, "(", $res_s);
-      $tmpres = new imdb ( substr($this->page, $res_s+$len, 7));
-      $ts = strpos($this->page, ">",$res_e) +1;
+      $tmpres = new imdb ( substr($this->page, $res_s+$len, 7)); // make a new imdb object by id
+      $ts = strpos($this->page, ">",$res_s) +1; // >movie title</a>
       $te = strpos($this->page,"<",$ts);
       $tmpres->main_title = substr($this->page,$ts,$te-$ts);
-#      $tmpres->main_title=substr ($this->page, $res_s + 28, $res_e - $res_s - 28);
-#      if ($pos = strpos($tmpres->main_title,">"))
-#        $tmpres->main_title = substr($tmpres->main_title,$pos+1);
       $ts = strpos($this->page,"(",$te) +1;
       $te = strpos($this->page,")",$ts);
       $tmpres->main_year=substr($this->page,$ts,$te-$ts);
-#      $tmpres->main_year=substr($this->page, $res_e+1, 4);
       $i++;
       $this->resu[$i] = $tmpres;
     }
-#echo "</ul>\n";
    }
-#echo "Search completed, '".count($this->resu)."' results.<br>\n";
    return $this->resu;
   }
 } // end class imdbsearch

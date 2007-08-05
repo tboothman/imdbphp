@@ -12,7 +12,7 @@ foreach ($results as $res) {
      echo $res->imdbid();
      echo ">";
      echo $res->title();
-     echo "(".$res->year().")";
+     echo " (".$res->year().")";
      echo "</a> ";
      echo " <a href=\"http://us.imdb.com/title/tt";
      echo $res->imdbid();
