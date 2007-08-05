@@ -1,0 +1,86 @@
+Installation with make
+======================
+
+When you downloaded the tarball of this software, after unpacking you will find
+a file called "Makefile" in the packages root directory. This means, there's
+something you can do with an utility called "make" - which normally is used in
+the build process for compiling source code to binaries. It can be (and also is)
+used for (un)installation of the (compiled) software - and that's what this
+document is about.
+
+Please keep in mind that the Makefile was written for use with Linux. So this
+process will probably work with other Unix alike systems (*BSD, Solaris, AIX,
+etc.) as well - but for sure not with e.g. Windows (except maybe with Cygwin).
+
+Configuration
+-------------
+
+As shipped, the configuration usually is such that the files would be installed
+as follows:
+
+Executables go to /usr/local/bin
+Configuration files go to /etc
+Documentation goes to /usr/local/share/doc/<packagename>
+
+For web apps, the installation goes to /usr/local/share/<packagename>, and this
+directory will be linked to /var/www/<packagename> - if this directory/file/link
+does not yet exist.
+
+If you want to install to a different location, you may change some variables at
+the top of the Makefile. Usually, these are:
+
+prefix=/usr/local		Path for the executables is derived from this
+datarootdir=$(prefix)/share	Path for webapps and documentation uses this
+sysconfdir=/etc			Path for configuration files
+WEBROOT=/var/www		Just for webapps: Where to create a link
+
+You may as well check the other settings, but these three are the most
+important for you. You could also override these on the command line, e.g.
+with "make prefix=/opt install" - but I don't recommend that if you want to
+run a "make uninstall" later, since you may forget what options you used on the
+install.
+
+
+Installation
+------------
+
+Once the configuration is done, installation is as easy as invoking
+
+	make install
+
+from within the directory where the Makefile resides. As mentioned above, you
+also can override some configuration options here:
+
+	make prefix=/opt install
+
+for example. But keep in mind that you need to remember these settings for the
+case you want to uninstall later.
+
+
+Uninstall
+---------
+
+is pretty much alike the install process. From the directory where the Makefile
+resides, simply invoke:
+
+	make uninstall
+
+or, if you were overriding some options when calling "make install", you need
+to specify the same here:
+
+	make prefix=/opt uninstall
+
+The uninstall process will remove everything it has installed - but nothing that
+you created yourself later (usually; if you e.g. added a file to the
+documentation directory in /usr/local/share/doc/<packagename>, this will be
+removed as well since we remove the entire directory. You are not expected to
+do modifications here) using this application, as e.g. template files, or
+"personal" configuration files you created in your home directory.
+
+
+Alternatives
+------------
+
+Alternatively you can manually (un)install the package. Hints for this you
+usually find in another file from the packages documentation - most likely one
+named readme.txt or <packagename>.txt and residing in the doc/ sub directory.

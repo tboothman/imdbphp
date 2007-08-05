@@ -12,12 +12,7 @@ WEBROOT=$(DESTDIR)/var/www
 LINKTO=$(WEBROOT)/imdbphp
 
 install: installdirs
-	$(INSTALL_DATA) CHANGELOG $(docdir)
-	$(INSTALL_DATA) COPYING $(docdir)
-	$(INSTALL_DATA) INSTALL $(docdir)
-	$(INSTALL_DATA) README $(docdir)
-	$(INSTALL_DATA) README.1st $(docdir)
-	$(INSTALL_DATA) TODO $(docdir)
+	$(INSTALL_DATA) doc/* $(docdir)
 	$(INSTALL_DATA) *.php $(datadir)
 	$(INSTALL_DATA) *.html $(datadir)
 	rm -f $(datadir)/Makefile
