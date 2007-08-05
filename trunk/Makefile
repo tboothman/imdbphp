@@ -12,7 +12,7 @@ WEBROOT=$(DESTDIR)/var/www
 LINKTO=$(WEBROOT)/imdbphp
 
 install: installdirs
-	$(INSTALL_DATA) doc/* $(docdir)
+	cp -pr doc/* $(docdir)
 	$(INSTALL_DATA) *.php $(datadir)
 	$(INSTALL_DATA) *.html $(datadir)
 	rm -f $(datadir)/Makefile
@@ -21,7 +21,7 @@ install: installdirs
 installdirs:
 	mkdir -p $(datadir)/cache
 	mkdir -p $(datadir)/images
-	mkdir -p $(docdir)
+	mkdir -p $(docdir)/apidoc/Api
 	if [ ! -d $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
 
 uninstall:
