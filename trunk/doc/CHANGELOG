@@ -1,46 +1,57 @@
-v0.8.8
+v0.8.8 (05.08.2007)
+-------------------
 * applied patch sent by eremini to also support BMP images
 * IMDB site changes again
+* moved documentation files to doc/ dir and added APIDOC there
 
-v0.8.7
+v0.8.7 (10.03.2007)
+-------------------
 + made the maxresults (max movies to return on query) configurable
 + made the search variants configurable
 + added some more info for the APIDOC
 * made the sample scripts proof for register_globals=off
 
-v0.8.6
+v0.8.6 (23.02.2007)
+-------------------
 + plot outline and selected user comment added (wtf)
 * next changes on IMDB site: Fixed rating and cast (Izzy)
 ! alsoknow() sometimes throw an error (and ate some AKAs). Fixed (Izzy)
 + sample page now gives some more details (Izzy)
 ! fixed the link to ratings generated in the votes() function (eremini)
 
-v0.8.5 (by Izzy)
+v0.8.5 (22.01.2007)
+-------------------
 * some adjustments due to changes on the IMDB sites
 * a little re-structuring of the class files due to easier maintenance
   together with the code of phpVideoPro
 
-v0.8.4 (by Izzy)
+v0.8.4 (13.08.2006)
+-------------------
 + added automatical global cache purging
 * IMDB site changes caused image retrieval to fail
 * IMDB site changes caused actors retrieval to fail
 
-v0.8.3 (by Izzy)
+v0.8.3 (08.04.2005)
+-------------------
 * due to internal changes on the IMDB site the searches returned empty.
   Now it works again
 * extended the results for some details, e.g. the also-known-as
 * lots of detail changes I do not remember anymore (see history of
   phpVideoPro at http://www.qumran.org/homes/izzy/software/)
 
-v0.8.2 (by Izzy)
+v0.8.2 (01.12.2004)
+-------------------
+* Izzy took over project maintenance from sevec
 * syntax on *.imdb.com changed - which made the entire class(es) unusable.
   Fixed that, so now it works again.
 
-v0.8.1
+v0.8.1 (24.10.2003)
+-------------------
 + added support for old browseremulator again. choose in imdb_config.php if
   you use PEAR.
 
-v0.8
+v0.8 (22.10.2003)
+-----------------
 * many things that i forgot writing and don't remember now...
 * imdbsearch class method setsearch($name) was renamed to
   setsearchname($name).
@@ -53,7 +64,8 @@ v0.8
   the program to run.)
 * the default is not to use or store cache now.
 
-v0.7
+v0.7 (29.09.2003)
+-----------------
 ! some minor bug fixes.
 ! fixed the links in the test scripts.
 * search can be multiple words
@@ -63,7 +75,8 @@ v0.7
 * fixed it for the changes in imdb site.
 * added a patch by Brian Ruth for ratings.
 
-v0.6
+v0.6 (01.08.2003)
+-----------------
 + taglines() function that returns all taglines.
 ! fixed a bug that made photo() to return the wrong url sometimes.
 + added producers.
@@ -73,5 +86,6 @@ v0.6
   saving it there first if it doesn't exist.
 * alsoknow() splits the info more...
 
-v0.5
+v0.5 (29.07.2003)
+-----------------
 * Initial Release.
