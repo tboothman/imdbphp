@@ -25,6 +25,8 @@ installdirs:
 	if [ ! -d $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
 
 uninstall:
+	linkstat=`readlink $(LINKTO)`
+	if [ "$linkstat" = "$(datadir)" ]; then rm -f $(LINKTO); fi
 	rmdir --ignore-fail-on-non-empty $(datadir)/cache
 	rmdir --ignore-fail-on-non-empty $(datadir)/images
 	rm -f $(datadir)/*.html
