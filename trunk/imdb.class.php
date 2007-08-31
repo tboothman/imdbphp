@@ -419,14 +419,18 @@
    if ($this->main_genres == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_genres = array();
+    $genre_s = strpos($this->page["Title"],"/Sections/Genres/") -5;
+    $genre_e = strpos($this->page["Title"],"/rg/title-tease/",$genre_s);
+    $block = substr($this->page["Title"],$genre_s,$genre_e-$genre_s);
+    $diff = $genre_e-$genre_s;
     $genre_s = 0;
     $genre_e = 0;
     $i = 0;
-    while (strpos($this->page["Title"], "/Sections/Genres/", $genre_e) > $genre_s) {
-	$genre_s = strpos ($this->page["Title"], "/Sections/Genres/", $genre_s);
-	$genre_s = strpos ($this->page["Title"], ">", $genre_s);
-	$genre_e = strpos ($this->page["Title"], "<", $genre_s);
-	$this->main_genres[$i] = substr ($this->page["Title"], $genre_s + 1, $genre_e - $genre_s - 1);
+    while (strpos($block, "/Sections/Genres/", $genre_e) > $genre_s) {
+	$genre_s = strpos ($block, "/Sections/Genres/", $genre_s);
+	$genre_s = strpos ($block, ">", $genre_s);
+	$genre_e = strpos ($block, "<", $genre_s);
+	$this->main_genres[$i] = substr ($block, $genre_s + 1, $genre_e - $genre_s - 1);
 	$i++;
     }
    }
@@ -817,14 +821,17 @@
    if ($this->main_country == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_country = array();
+    $country_s = strpos($this->page["Title"],"/Sections/Countries/") -5;
+    $country_e = strpos($this->page["Title"],"</div>",$country_s);
+    $block = substr($this->page["Title"],$country_s,$country_e-$country_s);
     $country_s = 0;
     $country_e = 0;
     $i = 0;
-    while (strpos ($this->page["Title"], "/Sections/Countries/", $country_e) > $country_s) {
-	$country_s = strpos ($this->page["Title"], "/Sections/Countries/", $country_s);
-	$country_s = strpos ($this->page["Title"], ">", $country_s);
-	$country_e = strpos ($this->page["Title"], "<", $country_s);
-	$this->main_country[$i] = substr ($this->page["Title"], $country_s + 1, $country_e - $country_s - 1);
+    while (strpos ($block, "/Sections/Countries/", $country_e) > $country_s) {
+	$country_s = strpos ($block, "/Sections/Countries/", $country_s);
+	$country_s = strpos ($block, ">", $country_s);
+	$country_e = strpos ($block, "<", $country_s);
+	$this->main_country[$i] = substr ($block, $country_s + 1, $country_e - $country_s - 1);
 	$i++;
     }
    }
