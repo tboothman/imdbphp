@@ -334,7 +334,7 @@
       if ( $comment_s == 0) return false;
       $comment_e = strpos ($this->page["Title"], "Was the above comment useful to you?", $comment_s);
       $this->main_comment = substr ($this->page["Title"], $comment_s + 43, $comment_e - $comment_s - 43);
-
+      $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$this->main_comment);
      }
      return $this->main_comment;
   }
@@ -525,6 +525,7 @@
     while (($tags_s = strpos ($this->page["Taglines"], "<p>", $tags_e)) < $tagend) {
 	$tags_e = strpos ($this->page["Taglines"], "</p>", $tags_s);
 	$tmptag = substr ($this->page["Taglines"], $tags_s + 3, $tags_e - $tags_s - 3);
+	if (preg_match("/action\=\"\//i",$tmptag)) continue;
 	$this->taglines[$i] = $tmptag;
 	$i++;
     }

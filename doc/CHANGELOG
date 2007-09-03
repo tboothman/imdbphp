@@ -2,6 +2,9 @@ v0.8.9
 -------------------
 * genre and country often contained a stupid additional field pointing to some
   "Imdb sections". Changed the code so they are no longer there.
+! Link in "user comments" now points to the correct *site* (site info was missing
+  so this always pointed to the local host)
+* taglines() no longer returns the "update form" as latest tagline
 
 v0.8.8 (05.08.2007)
 -------------------
