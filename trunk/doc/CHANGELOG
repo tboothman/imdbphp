@@ -5,6 +5,8 @@ v0.8.9
 ! Link in "user comments" now points to the correct *site* (site info was missing
   so this always pointed to the local host)
 * taglines() no longer returns the "update form" as latest tagline
+! if the IMDB page contained no genre or country info, the concerning function
+  caused an php error (strpos(): Offset not contained in string)
 
 v0.8.8 (05.08.2007)
 -------------------
