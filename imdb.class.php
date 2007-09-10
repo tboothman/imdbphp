@@ -403,7 +403,7 @@
    if ($this->main_genre == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $genre_s = strpos ($this->page["Title"], "/Sections/Genres/");
-    if ( $genre_s == 0)	return FALSE;
+    if ( $genre_s === FALSE )	return FALSE;
     $genre_s = strpos ($this->page["Title"], ">", $genre_s);
     $genre_e = strpos ($this->page["Title"], "<", $genre_s);
     $this->main_genre = substr ($this->page["Title"], $genre_s + 1, $genre_e - $genre_s - 1);
@@ -420,6 +420,7 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_genres = array();
     $genre_s = strpos($this->page["Title"],"/Sections/Genres/") -5;
+    if ($genre_s === FALSE) return array(); // no genre found
     $genre_e = strpos($this->page["Title"],"/rg/title-tease/",$genre_s);
     $block = substr($this->page["Title"],$genre_s,$genre_e-$genre_s);
     $diff = $genre_e-$genre_s;
@@ -823,6 +824,7 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_country = array();
     $country_s = strpos($this->page["Title"],"/Sections/Countries/") -5;
+    if ($country_s === FALSE) return array(); // no country found
     $country_e = strpos($this->page["Title"],"</div>",$country_s);
     $block = substr($this->page["Title"],$country_s,$country_e-$country_s);
     $country_s = 0;
