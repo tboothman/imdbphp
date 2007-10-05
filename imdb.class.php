@@ -179,6 +179,7 @@
       while( $file=$thisdir->read() ) {
         if ($file!="." && $file!="..") {
           $fname = $this->cachedir . $file;
+	  if (is_dir($fname)) continue;
           $mod = filemtime($fname);
           if ($mod && ($now - $mod > $this->cache_expire)) unlink($fname);
         }
