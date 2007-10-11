@@ -1,4 +1,8 @@
-v0.8.9
+v0.9.0
+-------------------
+! link to SearchPlotWriters was pointing to wrong server
+
+v0.8.9 (07.10.2007)
 -------------------
 * genre and country often contained a stupid additional field pointing to some
   "Imdb sections". Changed the code so they are no longer there.
@@ -8,7 +12,6 @@ v0.8.9
 ! if the IMDB page contained no genre or country info, the concerning function
   caused an php error (strpos(): Offset not contained in string)
 ! cache purge caused errors when cache directory contained subdirs - fixed.
-
 
 v0.8.8 (05.08.2007)
 -------------------
