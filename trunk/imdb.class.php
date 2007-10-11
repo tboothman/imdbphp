@@ -505,6 +505,7 @@
     while (($plot_s = strpos ($this->page["Plot"], "<p class=\"plotpar\">", $plot_e)) !== FALSE) {
 	$plot_e = strpos ($this->page["Plot"], "</p>", $plot_s);
 	$tmplot = substr ($this->page["Plot"], $plot_s + 19, $plot_e - $plot_s - 19);
+	$tmplot = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$tmplot);
 	$this->plot_plot[$i] = $tmplot;
 	$i++;
     }
