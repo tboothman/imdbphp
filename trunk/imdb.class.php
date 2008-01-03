@@ -42,6 +42,8 @@
   var $main_comment = "";
   var $main_alttitle = "";
   var $main_colors = "";
+  var $main_seasons = "";
+  var $main_episodes = "";
 
   var $plot_plot = "";
   var $taglines = "";
@@ -83,16 +85,35 @@
     case "Credits" : $urlname="/fullcredits"; break;
     case "Plot"    : $urlname="/plotsummary"; break;
     case "Taglines": $urlname="/taglines"; break;
+    case "Episodes": $urlname="/episodes"; break;
    }
    if ($this->usecache) {
-    @$fp = fopen ("$this->cachedir/$this->imdbID.$wt", "r");
-    if ($fp) {
-     $temp="";
-     while (!feof ($fp)) {
-	$temp .= fread ($fp, 1024);
-	$this->page[$wt] = $temp;
+    $fname = "$this->cachedir/$this->imdbID.$wt";
+    if ( $this->usezip ) {
+     if ( ($this->page[$wt] = @join("",@gzfile($fname))) ) {
+      if ( $this->converttozip ) {
+       @$fp = fopen ($fname,"r");
+       $zipchk = fread($fp,2);
+       fclose($fp);
+       if ( !($zipchk[0] == chr(31) && $zipchk[1] == chr(139)) ) { //checking for zip header
+         /* converting on access */
+         $fp = @gzopen ($fname, "w");
+         @gzputs ($fp, $this->page[$wt]);
+         @gzclose ($fp);
+       }
+      }
+      return;
      }
-     return;
+    } else { // no zip
+     @$fp = fopen ($fname, "r");
+     if ($fp) {
+      $temp="";
+      while (!feof ($fp)) {
+	 $temp .= fread ($fp, 1024);
+	 $this->page[$wt] = $temp;
+      }
+      return;
+     }
     }
    } // end cache
 
@@ -103,9 +124,16 @@
 
    if( $this->page[$wt] ){ //storecache
     if ($this->storecache) {
-     $fp = fopen ("$this->cachedir/$this->imdbID.$wt", "w");
-     fputs ($fp, $this->page[$wt]);
-     fclose ($fp);
+     $fname = "$this->cachedir/$this->imdbID.$wt";
+     if ( $this->usezip ) {
+      $fp = gzopen ($fname, "w");
+      gzputs ($fp, $this->page[$wt]);
+      gzclose ($fp);
+     } else { // no zip
+      $fp = fopen ($fname, "w");
+      fputs ($fp, $this->page[$wt]);
+      fclose ($fp);
+     }
     }
     return;
    }
@@ -139,6 +167,7 @@
    $this->page["Plotoutline"] = "";
    $this->page["Trivia"] = "";
    $this->page["Directed"] = "";
+   $this->page["Episodes"] = "";
 
    $this->main_title = "";
    $this->main_year = "";
@@ -155,6 +184,8 @@
    $this->main_colors = "";
    $this->credits_cast = "";
    $this->main_director = "";
+   $this->main_seasons = "";
+   $this->main_episodes = "";
   }
 
   /** Initialize class
@@ -474,6 +505,39 @@
     $this->main_tagline = substr ($this->page["Title"], $tag_s + 1, $tag_e - $tag_s - 1);
    }
    return $this->main_tagline;
+  }
+
+  /** Get the series episode(s)
+   * @method episodes
+   * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
+   */
+  function episodes() {
+    if ( $this->seasons() == 0 ) return null;
+    if ( $this->main_episodes == "" ) {
+      if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
+      if ( preg_match_all('|<h4>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h4><b>Original Air Date: (.*)</b><br>(.*)<br/><br/>|Ui',$this->page["Episodes"],$matches) ) {
+	for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
+          $this->main_episodes[$matches[1][$i]][$matches[2][$i]] = array("imdbid" => $matches[3][$i],"title" => $matches[4][$i], "airdate" => $matches[5][$i], "plot" => $matches[6][$i]);
+        }
+      }
+    }
+    return $this->main_episodes;
+  }
+
+  /** Get the number of seasons or 0 if not a series
+   * @method seasons
+   * @return int seasons
+   */
+  function seasons() {
+    if ( $this->main_seasons == "" ) {
+      if ( $this->page["Title"] == "" ) $this->openpage("Title");
+      if ( preg_match_all('|<a href="episodes#season-\d+">(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
+        $this->main_seasons = count($matches[0]);
+      } else {
+        $this->main_seasons = 0;
+      }
+    }
+    return $this->main_seasons;
   }
 
   /** Get the main Plot outline for the movie
