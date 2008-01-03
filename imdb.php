@@ -214,7 +214,7 @@ if (isset ($_GET["mid"])) {
     for ( $season = 1; $season <= $movie->seasons(); $season++ ) {
       for ( $episode = 1; $episode <= count($episodes[$season]); $episode++ ) {
         $episodedata = &$episodes[$season][$episode];
-        echo '<b>Season '.$season.', Episode '.$episode.': <a href="imdb.php?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
+        echo '<b>Season '.$season.', Episode '.$episode.': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
       }
     }
     echo '</td></tr>';
