@@ -29,6 +29,8 @@ class imdb_config {
   var $cachedir;
   var $usecache;
   var $storecache;
+  var $usezip;
+  var $converttozip;
   var $cache_expire;
   var $photodir;
   var $photoroot;
@@ -51,6 +53,10 @@ class imdb_config {
     $this->usecache = false;
     //whether to store the pages retrieved for later use.
     $this->storecache = false;
+    //wether to use zip compression for caching the retrieved html-files.
+    $this->usezip = true;
+    //wether to convert non-zip cache-files to zip (check file permissions!).
+    $this->converttozip = true;
     // automatically delete cached files older than X secs
     $this->cache_expire = 600;
     // images are stored here after calling photo_localurl()

@@ -44,6 +44,12 @@ if (isset ($_GET["mid"])) {
   echo '</td></tr>';
   flush();
 
+  # Seasons
+  if ( $movie->seasons() != 0 ) {
+   echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons().'</TD></TR>';
+    flush();
+  }
+
   # Year & runtime
   echo '<TR><TD><B>Year:</B></TD><TD>'.$movie->year().'</TD></TR>';
   echo '<TR><TD valign=top><B>Runtime:</b></TD><TD>';
@@ -201,6 +207,18 @@ if (isset ($_GET["mid"])) {
     echo "<li>".$taglines[$i]."</li>\n";
   }
   echo '</ul></td></tr>';
+
+  if ( $movie->seasons() != 0 ) {
+    $episodes = $movie->episodes();
+    echo '<tr><td valign=top><b>Episodes:</b></td><td>';
+    for ( $season = 1; $season <= $movie->seasons(); $season++ ) {
+      for ( $episode = 1; $episode <= count($episodes[$season]); $episode++ ) {
+        $episodedata = &$episodes[$season][$episode];
+        echo '<b>Season '.$season.', Episode '.$episode.': <a href="imdb.php?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
+      }
+    }
+    echo '</td></tr>';
+  }
 
   # Selected User Comment
   echo '<tr><td valign=top><b>User Comments:</b></td><td>';
