@@ -4,6 +4,7 @@ v0.9.0
 + added gzip support to cache (Jörg Eitemüller)
 + added support for tv series (Jörg Eitemüller) - new methods:
   episodes() and seasons()
+! fixed bug concerning genre parsing reported with ticket #2
 
 v0.8.9 (07.10.2007)
 -------------------
