@@ -20,7 +20,7 @@
   * @class imdb
   * @extends imdb_config
   * @author Izzy (izzysoft@qumran.org)
-  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2007 by Itzchak Rehberg and IzzySoft
+  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
  class imdb extends imdb_config {
@@ -435,7 +435,7 @@
    if ($this->main_genre == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $genre_s = strpos ($this->page["Title"], "/Sections/Genres/");
-    if ( $genre_s === FALSE )	return FALSE;
+    if ( $genre_s === FALSE || $genre_s < 0 )	return FALSE;
     $genre_s = strpos ($this->page["Title"], ">", $genre_s);
     $genre_e = strpos ($this->page["Title"], "<", $genre_s);
     $this->main_genre = substr ($this->page["Title"], $genre_s + 1, $genre_e - $genre_s - 1);
