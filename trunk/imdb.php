@@ -31,7 +31,7 @@ if (isset ($_GET["mid"])) {
   # Photo
   echo '<TR><TD rowspan=110 valign=top>';
   if (($photo_url = $movie->photo_localurl() ) != FALSE) {
-    echo '<img src="'.$photo_url.'">';
+    echo '<img src="'.$photo_url.'" alt="Cover">';
   } else {
     echo "No photo available";
   }
@@ -223,6 +223,11 @@ if (isset ($_GET["mid"])) {
   # Selected User Comment
   echo '<tr><td valign=top><b>User Comments:</b></td><td>';
   echo $movie->comment().'</td></tr>';
+
+  # Quotes
+  echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
+  $quotes = $movie->quotes();
+  echo $quotes[0].'</td></tr>';
 
   echo '</TABLE><BR>';
 }

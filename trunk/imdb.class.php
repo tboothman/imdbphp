@@ -44,6 +44,7 @@
   var $main_colors = "";
   var $main_seasons = "";
   var $main_episodes = "";
+  var $main_quotes = array();
 
   var $plot_plot = "";
   var $taglines = "";
@@ -86,6 +87,7 @@
     case "Plot"    : $urlname="/plotsummary"; break;
     case "Taglines": $urlname="/taglines"; break;
     case "Episodes": $urlname="/episodes"; break;
+    case "Quotes"  : $urlname="/quotes"; break;
    }
    if ($this->usecache) {
     $fname = "$this->cachedir/$this->imdbID.$wt";
@@ -168,6 +170,7 @@
    $this->page["Trivia"] = "";
    $this->page["Directed"] = "";
    $this->page["Episodes"] = "";
+   $this->page["Quotes"] = "";
 
    $this->main_title = "";
    $this->main_year = "";
@@ -186,6 +189,7 @@
    $this->main_director = "";
    $this->main_seasons = "";
    $this->main_episodes = "";
+   $this->main_quotes = array();
   }
 
   /** Initialize class
@@ -538,6 +542,27 @@
       }
     }
     return $this->main_seasons;
+  }
+
+  /** Get the quotes for a given movie
+   * @method quotes
+   * @return array quotes (array[0..n] of string)
+   */
+  function quotes() {
+    if ( empty($this->main_quotes) ) {
+      if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
+      $tag_s = strpos($this->page["Quotes"], '<a name="qt');
+      if (empty($tag_s)) return FALSE;
+      $tag_e = $tag_s;
+      while ($tag_s = strpos($this->page["Quotes"], '<a name="qt', $tag_e)) {
+        $tag_s = strpos($this->page["Quotes"],">", $tag_s) +1;
+	$tag_e = strpos($this->page["Quotes"],"<hr",$tag_s);
+	$quote = substr($this->page["Quotes"], $tag_s, $tag_e - $tag_s);
+	$this->main_quotes[] = preg_replace('/<a href=\"\/name\/nm/i','<a href="http://'.$this->imdbsite.'/name/nm',$quote);
+	$tag_s = $tag_e;
+      }
+    }
+    return $this->main_quotes;
   }
 
   /** Get the main Plot outline for the movie
