@@ -354,8 +354,8 @@
     $rate_e = strpos ($this->page["Title"], "/", $rate_s);
     $this->main_rating = substr ($this->page["Title"], $rate_s + 3, $rate_e - $rate_s - 3);
     if ($rate_e - $rate_s > 7) $this->main_rating = "";
-    return $this->main_rating;
    }
+   return $this->main_rating;
   }
 
   /** Get movie comment
