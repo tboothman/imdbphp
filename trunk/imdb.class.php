@@ -261,9 +261,8 @@
     $this->main_year = strstr ($this->page["Title"], "<title>");
     $endpos = strpos ($this->main_title, "</title>");
     $this->main_year = substr ($this->main_year, 7, $endpos - 7);
-    $year_s = strpos ($this->main_year, "(", 0);
-    $year_e = strpos ($this->main_year, ")", 0);
-    $this->main_year = substr ($this->main_year, $year_s + 1, $year_e - $year_s - 1);
+    $y = preg_match("/\((\d{4})\)/",$this->main_year,$match);
+    $this->main_year = $match[1];
    }
    return $this->main_year;
   }
