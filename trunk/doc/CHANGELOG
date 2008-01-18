@@ -2,6 +2,7 @@ v0.9.1
 -------------------
 ! year was screwed up when movie title contained "()"
 ! method rating() did not return any value on subsequent calls (only on the first)
++ added support for retrieving trailer urls (method trailers())
 
 v0.9.0 (06.01.2008)
 -------------------
