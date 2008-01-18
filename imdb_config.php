@@ -48,11 +48,11 @@ class imdb_config {
     $this->imdbsite = "us.imdb.com";
     // cachedir should be writable by the webserver. This doesn't need to be
     // under documentroot.
-    $this->cachedir = './imdb/cache/';
+    $this->cachedir = './cache/';
     //whether to use a cached page to retrieve the information if available.
-    $this->usecache = false;
+    $this->usecache = true;
     //whether to store the pages retrieved for later use.
-    $this->storecache = false;
+    $this->storecache = true;
     //wether to use zip compression for caching the retrieved html-files.
     $this->usezip = true;
     //wether to convert non-zip cache-files to zip (check file permissions!).

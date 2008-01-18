@@ -229,6 +229,12 @@ if (isset ($_GET["mid"])) {
   $quotes = $movie->quotes();
   echo $quotes[0].'</td></tr>';
 
+  # Trailer
+  echo '<tr><td valign=top><b>Trailers:</b></td><td>';
+  $trailers = $movie->trailers();
+  for ($i=0;$i<count($trailers);++$i) {
+    echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
+  }
   echo '</TABLE><BR>';
 }
 ?>

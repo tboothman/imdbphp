@@ -45,6 +45,7 @@
   var $main_seasons = "";
   var $main_episodes = "";
   var $main_quotes = array();
+  var $main_trailers = array();
 
   var $plot_plot = "";
   var $taglines = "";
@@ -88,6 +89,7 @@
     case "Taglines": $urlname="/taglines"; break;
     case "Episodes": $urlname="/episodes"; break;
     case "Quotes"  : $urlname="/quotes"; break;
+    case "Trailers": $urlname="/trailers"; break;
    }
    if ($this->usecache) {
     $fname = "$this->cachedir/$this->imdbID.$wt";
@@ -171,6 +173,7 @@
    $this->page["Directed"] = "";
    $this->page["Episodes"] = "";
    $this->page["Quotes"] = "";
+   $this->page["Trailers"] = "";
 
    $this->main_title = "";
    $this->main_year = "";
@@ -190,6 +193,7 @@
    $this->main_seasons = "";
    $this->main_episodes = "";
    $this->main_quotes = array();
+   $this->main_trailers = array();
   }
 
   /** Initialize class
@@ -562,6 +566,41 @@
       }
     }
     return $this->main_quotes;
+  }
+
+  /** Get the trailer URLs for a given movie
+   * @method trailers
+   * @return array trailers (array[0..n] of string)
+   */
+  function trailers() {
+    if ( empty($this->main_trailers) ) {
+      if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
+      $tag_s = strpos($this->page["Trailers"], '<div class="video-gallery">');
+      if (!empty($tag_s)) { // trailers on the IMDB site itself
+        $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
+        $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
+        $tag_e = 0;
+        while ($tag_s = strpos($trail, '<a href="/rg/VIDEO_TITLE', $tag_e)) {
+          $tag_s = strpos($trail,"=", $tag_s) +2;
+	  $tag_e = strpos($trail,'">',$tag_s);
+          $url   = substr($trail, $tag_s, $tag_e - $tag_s);
+	  $this->main_trailers[] = "http://imdb.com/$url";
+          $tag_s = $tag_e;
+        }
+      }
+      $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
+      if (empty($tag_s)) return FALSE;
+      $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
+      $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
+      $tag_e = 0;
+      while ($tag_s = strpos($trail, '<a href=', $tag_e)) {
+        $tag_s = strpos($trail,"=", $tag_s) +2;
+        $tag_e = strpos($trail,'">',$tag_s);
+        $this->main_trailers[] = substr($trail, $tag_s, $tag_e - $tag_s);
+        $tag_s = $tag_e;
+      }
+    }
+    return $this->main_trailers;
   }
 
   /** Get the main Plot outline for the movie
