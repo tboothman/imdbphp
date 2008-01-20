@@ -29,7 +29,11 @@
     if ($this->debug) echo "<b><font color='#ff0000'>$scalar</font></b><br>";
   }
   function debug_object($object) {
-    if ($this->debug) echo "<font color='#ff0000'><pre>";print_r($object);echo "</pre></font>";
+    if ($this->debug) {
+      echo "<font color='#ff0000'><pre>";
+      print_r($object);
+      echo "</pre></font>";
+    }
   }
   function debug_html($html) {
     if ($this->debug) echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
@@ -55,6 +59,7 @@
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
     case "Goofs"       : $urlname="/goofs"; break;
+    case "Trivia"      : $urlname="/trivia"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -135,6 +140,7 @@
    $this->page["CrazyCredits"] = "";
    $this->page["Amazon"] = "";
    $this->page["Goofs"] = "";
+   $this->page["Trivia"] = "";
    $this->page["Plot"] = "";
    $this->page["Comments"] = "";
    $this->page["Quotes"] = "";
@@ -167,6 +173,7 @@
    $this->main_trailers = array();
    $this->crazy_credits = array();
    $this->goofs = array();
+   $this->trivia = array();
   }
 
   /** Initialize class
@@ -213,9 +220,7 @@
    */
   function title () {
    if ($this->main_title == "") {
-    if ($this->page["Title"] == "") {
-     $this->openpage ("Title");
-    }
+    if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_title = strstr ($this->page["Title"], "<title>");
     $endpos = strpos ($this->main_title, "</title>");
     $this->main_title = substr ($this->main_title, 7, $endpos - 7);
@@ -232,9 +237,7 @@
    */
   function year () {
    if ($this->main_year == "") {
-    if ($this->page["Title"] == "") {
-     $this->openpage ("Title");
-    }
+    if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_year = strstr ($this->page["Title"], "<title>");
     $endpos = strpos ($this->main_title, "</title>");
     $this->main_year = substr ($this->main_year, 7, $endpos - 7);
@@ -250,9 +253,7 @@
    */
   function runtime_all () {
    if ($this->main_runtime == "") {
-    if ($this->page["Title"] == "") {
-	$this->openpage ("Title");
-    }
+    if ($this->page["Title"] == "") $this->openpage ("Title");
     $runtime_s = strpos ($this->page["Title"], "Runtime:");
     $runtime_e = strpos ($this->page["Title"], "<br>", $runtime_s);
     $this->main_runtime = substr ($this->page["Title"], $runtime_s + 13, $runtime_e - $runtime_s - 14);
@@ -281,9 +282,7 @@
    */
   function runtimes(){
    if ($this->main_runtimes == "") {
-    if ($this->runtime_all() == ""){
-	return array();
-    }
+    if ($this->runtime_all() == "") return array();
     $run_arr= explode( "/" , $this->runtime_all());
     $max = count($run_arr);
     for ( $i=0; $i < $max ; $i++){
@@ -320,9 +319,7 @@
    */
   function rating () {
    if ($this->main_rating == "") {
-    if ($this->page["Title"] == "") {
-	$this->openpage ("Title");
-    }
+    if ($this->page["Title"] == "") $this->openpage ("Title");
     $rate_s = strpos ($this->page["Title"], "User Rating:");
     if ( $rate_s == 0 )	return FALSE;
     $rate_s = strpos ($this->page["Title"], "<b>", $rate_s);
@@ -485,23 +482,6 @@
    return $this->main_tagline;
   }
 
-  /** Get the series episode(s)
-   * @method episodes
-   * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
-   */
-  function episodes() {
-    if ( $this->seasons() == 0 ) return null;
-    if ( $this->main_episodes == "" ) {
-      if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
-      if ( preg_match_all('|<h4>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h4><b>Original Air Date: (.*)</b><br>(.*)<br/><br/>|Ui',$this->page["Episodes"],$matches) ) {
-	for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
-          $this->main_episodes[$matches[1][$i]][$matches[2][$i]] = array("imdbid" => $matches[3][$i],"title" => $matches[4][$i], "airdate" => $matches[5][$i], "plot" => $matches[6][$i]);
-        }
-      }
-    }
-    return $this->main_episodes;
-  }
-
   /** Get the number of seasons or 0 if not a series
    * @method seasons
    * @return int seasons
@@ -518,62 +498,6 @@
     return $this->main_seasons;
   }
 
-  /** Get the quotes for a given movie
-   * @method quotes
-   * @return array quotes (array[0..n] of string)
-   */
-  function quotes() {
-    if ( empty($this->main_quotes) ) {
-      if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
-      $tag_s = strpos($this->page["Quotes"], '<a name="qt');
-      if (empty($tag_s)) return FALSE;
-      $tag_e = $tag_s;
-      while ($tag_s = strpos($this->page["Quotes"], '<a name="qt', $tag_e)) {
-        $tag_s = strpos($this->page["Quotes"],">", $tag_s) +1;
-	$tag_e = strpos($this->page["Quotes"],"<hr",$tag_s);
-	$quote = substr($this->page["Quotes"], $tag_s, $tag_e - $tag_s);
-	$this->main_quotes[] = preg_replace('/<a href=\"\/name\/nm/i','<a href="http://'.$this->imdbsite.'/name/nm',$quote);
-	$tag_s = $tag_e;
-      }
-    }
-    return $this->main_quotes;
-  }
-
-  /** Get the trailer URLs for a given movie
-   * @method trailers
-   * @return array trailers (array[0..n] of string)
-   */
-  function trailers() {
-    if ( empty($this->main_trailers) ) {
-      if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
-      $tag_s = strpos($this->page["Trailers"], '<div class="video-gallery">');
-      if (!empty($tag_s)) { // trailers on the IMDB site itself
-        $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
-        $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        $tag_e = 0;
-        while ($tag_s = strpos($trail, '<a href="/rg/VIDEO_TITLE', $tag_e)) {
-          $tag_s = strpos($trail,"=", $tag_s) +2;
-	  $tag_e = strpos($trail,'">',$tag_s);
-          $url   = substr($trail, $tag_s, $tag_e - $tag_s);
-	  $this->main_trailers[] = "http://imdb.com/$url";
-          $tag_s = $tag_e;
-        }
-      }
-      $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
-      if (empty($tag_s)) return FALSE;
-      $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
-      $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
-      $tag_e = 0;
-      while ($tag_s = strpos($trail, '<a href=', $tag_e)) {
-        $tag_s = strpos($trail,"=", $tag_s) +2;
-        $tag_e = strpos($trail,'">',$tag_s);
-        $this->main_trailers[] = substr($trail, $tag_s, $tag_e - $tag_s);
-        $tag_s = $tag_e;
-      }
-    }
-    return $this->main_trailers;
-  }
-
   /** Get the main Plot outline for the movie
    * @method plotoutline
    * @return string plotoutline
@@ -588,270 +512,6 @@
       $this->main_plotoutline = substr ($this->page["Title"], $plotoutline_s + 1, $plotoutline_e - $plotoutline_s - 1);
     }
     return $this->main_plotoutline;
-  }
-
-  /** Get the movies plot(s)
-   * @method plot
-   * @return array plot (array[0..n] of strings)
-   */
-  function plot () {
-   if ($this->plot_plot == "") {
-    if ($this->page["Plot"] == "") $this->openpage ("Plot");
-    $plot_e = 0;
-    $i = 0;
-    $this->plot_plot = array();
-    while (($plot_s = strpos ($this->page["Plot"], "<p class=\"plotpar\">", $plot_e)) !== FALSE) {
-	$plot_e = strpos ($this->page["Plot"], "</p>", $plot_s);
-	$tmplot = substr ($this->page["Plot"], $plot_s + 19, $plot_e - $plot_s - 19);
-	$tmplot = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$tmplot);
-	$this->plot_plot[$i] = $tmplot;
-	$i++;
-    }
-   }
-   return $this->plot_plot;
-  }
-
-  /** Get all available taglines for the movie
-   * @method taglines
-   * @return array taglines (array[0..n] of strings)
-   */
-  function taglines () {
-   if ($this->taglines == "") {
-    if ($this->page["Taglines"] == "") $this->openpage ("Taglines");
-    $tags_e = 0;
-    $i = 0;
-    $tags_s = strpos ($this->page["Taglines"], "<td width=\"90%\" valign=\"top\" >", $tags_e);
-    $tagend = strpos ($this->page["Taglines"], "<form method=\"post\" action=\"/updates\">", $tags_s);
-    $this->taglines = array();
-    while (($tags_s = strpos ($this->page["Taglines"], "<p>", $tags_e)) < $tagend) {
-	$tags_e = strpos ($this->page["Taglines"], "</p>", $tags_s);
-	$tmptag = substr ($this->page["Taglines"], $tags_s + 3, $tags_e - $tags_s - 3);
-	if (preg_match("/action\=\"\//i",$tmptag)) continue;
-	$this->taglines[$i] = $tmptag;
-	$i++;
-    }
-   }
-   return $this->taglines;
-  }
-
-  /** Get rows for a given table on the page
-   * @method get_table_rows
-   * @param string html
-   * @param string table_start
-   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
-   */
-  function get_table_rows ( $html, $table_start ){
-   $row_s = strpos ( $html, ">".$table_start."<");
-   $row_e = $row_s;
-   if ( $row_s == 0 )  return FALSE;
-   $endtable = strpos($html, "</table>", $row_s);
-   $i=0;
-   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-     $row_s = strpos ( $html, "<tr>", $row_s);
-     $row_e = strpos ($html, "</tr>", $row_s);
-     $temp = trim(substr ($html, $row_s + 4 , $row_e - $row_s - 4));
-     if ( strncmp( $temp, "<td valign=",10) == 0 ){
-       $rows[$i] = $temp;
-       $i++;
-     }
-     $row_s = $row_e;
-   }
-   return $rows;
-  }
-
-  /** Get rows for the cast table on the page
-   * @method get_table_rows_cast
-   * @param string html
-   * @param string table_start
-   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
-   */
-  function get_table_rows_cast ( $html, $table_start ){
-   $row_s = strpos ( $html, '<table class="cast">');
-   $row_e = $row_s;
-   if ( $row_s == 0 )  return FALSE;
-   $endtable = strpos($html, "</table>", $row_s);
-   $i=0;
-   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-     $row_s = strpos ( $html, "<tr", $row_s);
-     $row_e = strpos ($html, "</tr>", $row_s);
-     $temp = trim(substr ($html, $row_s , $row_e - $row_s));
-     $row_x = strpos( $temp, '<td class="nm">' );
-     $temp = trim(substr($temp,$row_x));
-     if ( strncmp( $temp, "<td class=",10) == 0 ){
-       $rows[$i] = $temp;
-       $i++;
-     }
-     $row_s = $row_e;
-   }
-   return $rows;
-  }
-
-  /** Get content of table row cells
-   * @method get_row_cels
-   * @param string row (as returned by imdb::get_table_rows)
-   * @return array cells (array[0..n] of strings)
-   */
-  function get_row_cels ( $row ){
-   $cel_s = 0;
-   $cel_e = 0;
-   $endrow = strlen($row);
-   $i = 0;
-   $cels = array();
-   while ( $cel_e + 5 < $endrow ){
-	$cel_s = strpos( $row, "<td",$cel_s);
-	$cel_s = strpos( $row, ">" , $cel_s);
-	$cel_e = strpos( $row, "</td>", $cel_s);
-	$cels[$i] = substr( $row, $cel_s + 1 , $cel_e - $cel_s - 1);
-	$i++;
-   }
-   return $cels;
-  }
-
-  /** Get the IMDB name (?)
-   * @method get_imdbname
-   * @param string href
-   * @return string
-   */
-  function get_imdbname( $href){
-   if ( strlen( $href) == 0) return $href;
-   $name_s = 15;
-   $name_e = strpos ( $href, '"', $name_s);
-   if ( $name_e != 0){
-	return substr( $href, $name_s, $name_e -1 - $name_s);
-   }else{
-	return $href;
-   }
-  }
-
-  /** Get the director(s) of the movie
-   * @method director
-   * @return array director (array[0..n] of strings)
-   */
-  function director () {
-   if ($this->credits_director == ""){
-    if ($this->page["Credits"] == "") $this->openpage ("Credits");
-   }
-   $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
-   for ( $i = 0; $i < count ($director_rows); $i++){
-	$cels = $this->get_row_cels ($director_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[0]);
-	$dir["name"] = strip_tags($cels[0]);
-	$role = trim(strip_tags($cels[2]));
-	if ( $role == ""){
-		$dir["role"] = NULL;
-	}else{
-		$dir["role"] = $role;
-	}
-	$this->credits_director[$i] = $dir;
-   }
-   return $this->credits_director;
-  }
-
-  /** Get the actors
-   * @method cast
-   * @return array cast (array[0..n] of strings)
-   */
-  function cast () {
-   if ($this->credits_cast == "") {
-    if ($this->page["Credits"] == "") $this->openpage ("Credits");
-   }
-   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast");
-   for ( $i = 0; $i < count ($cast_rows); $i++){
-	$cels = $this->get_row_cels ($cast_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[0]);
-	$dir["name"] = strip_tags($cels[0]);
-	$role = strip_tags($cels[2]);
-	if ( $role == ""){
-		$dir["role"] = NULL;
-	}else{
-		$dir["role"] = $role;
-	}
-	$this->credits_cast[$i] = $dir;
-   }
-   return $this->credits_cast;
-  }
-
-  /** Get the writer(s)
-   * @method writing
-   * @return array writers (array[0..n] of strings)
-   */
-  function writing () {
-   if ($this->credits_writing == "") {
-    if ($this->page["Credits"] == "") $this->openpage ("Credits");
-   }
-   $this->credits_writing = array();
-   $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing credits");
-   for ( $i = 0; $i < count ($writing_rows); $i++){
-     $cels = $this->get_row_cels ($writing_rows[$i]);
-     if ( count ( $cels) > 2){
-       $wrt["imdb"] = $this->get_imdbname($cels[0]);
-       $wrt["name"] = strip_tags($cels[0]);
-       $role = strip_tags($cels[2]);
-       if ( $role == ""){
-         $wrt["role"] = NULL;
-       }else{
-         $wrt["role"] = $role;
-       }
-       $this->credits_writing[$i] = $wrt;
-     }
-   }
-   return $this->credits_writing;
-  }
-
-  /** Obtain the producer(s)
-   * @method producer
-   * @return array producer (array[0..n] of strings)
-   */
-  function producer () {
-   if ($this->credits_producer == "") {
-    if ($this->page["Credits"] == "") $this->openpage ("Credits");
-   }
-   $this->credits_producer = array();
-   $producer_rows = $this->get_table_rows($this->page["Credits"], "Produced by");
-   for ( $i = 0; $i < count ($producer_rows); $i++){
-	$cels = $this->get_row_cels ($producer_rows[$i]);
-	if ( count ( $cels) > 2){
-		$wrt["imdb"] = $this->get_imdbname($cels[0]);
-		$wrt["name"] = strip_tags($cels[0]);
-		$role = strip_tags($cels[2]);
-		if ( $role == ""){
-			$wrt["role"] = NULL;
-		}else{
-			$wrt["role"] = $role;
-		}
-		$this->credits_producer[$i] = $wrt;
-	}
-   }
-   return $this->credits_producer;
-  }
-
-  /** Obtain the composer(s) ("Original Music by...")
-   * @method composer
-   * @return array composer (array[0..n] of strings)
-   */
-  function composer () {
-   if ($this->credits_composer == "") {
-    if ($this->page["Credits"] == "") $this->openpage ("Credits");
-   }
-   $this->credits_composer = array();
-   $composer_rows = $this->get_table_rows($this->page["Credits"], "Original Music by");
-   for ( $i = 0; $i < count ($composer_rows); $i++){
-	$cels = $this->get_row_cels ($composer_rows[$i]);
-	if ( count ( $cels) > 2){
-		$wrt["imdb"] = $this->get_imdbname($cels[0]);
-		$wrt["name"] = strip_tags($cels[0]);
-		$role = strip_tags($cels[2]);
-		if ( $role == ""){
-			$wrt["role"] = NULL;
-		}else{
-			$wrt["role"] = $role;
-		}
-		$this->credits_composer[$i] = $wrt;
-	}
-   }
-   return $this->credits_composer;
   }
 
   /** Get cover photo
@@ -1047,6 +707,285 @@
    return $this->main_mpaa;
   }
 
+#-------------------------------------------------------------[ /plot page ]---
+  /** Get the movies plot(s)
+   * @method plot
+   * @return array plot (array[0..n] of strings)
+   */
+  function plot () {
+   if ($this->plot_plot == "") {
+    if ( $this->page["Plot"] == "" ) $this->openpage ("Plot");
+    if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
+    $plot_e = 0;
+    $i = 0;
+    $this->plot_plot = array();
+    while (($plot_s = strpos ($this->page["Plot"], "<p class=\"plotpar\">", $plot_e)) !== FALSE) {
+	$plot_e = strpos ($this->page["Plot"], "</p>", $plot_s);
+	$tmplot = substr ($this->page["Plot"], $plot_s + 19, $plot_e - $plot_s - 19);
+	$tmplot = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$tmplot);
+	$this->plot_plot[$i] = $tmplot;
+	$i++;
+    }
+   }
+   return $this->plot_plot;
+  }
+
+#---------------------------------------------------------[ /taglines page ]---
+  /** Get all available taglines for the movie
+   * @method taglines
+   * @return array taglines (array[0..n] of strings)
+   */
+  function taglines () {
+   if ($this->taglines == "") {
+    if ( $this->page["Taglines"] == "" ) $this->openpage ("Taglines");
+    if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
+    $tags_e = 0;
+    $i = 0;
+    $tags_s = strpos ($this->page["Taglines"], "<td width=\"90%\" valign=\"top\" >", $tags_e);
+    $tagend = strpos ($this->page["Taglines"], "<form method=\"post\" action=\"/updates\">", $tags_s);
+    $this->taglines = array();
+    while (($tags_s = strpos ($this->page["Taglines"], "<p>", $tags_e)) < $tagend) {
+	$tags_e = strpos ($this->page["Taglines"], "</p>", $tags_s);
+	$tmptag = substr ($this->page["Taglines"], $tags_s + 3, $tags_e - $tags_s - 3);
+	if (preg_match("/action\=\"\//i",$tmptag)) continue;
+	$this->taglines[$i] = $tmptag;
+	$i++;
+    }
+   }
+   return $this->taglines;
+  }
+
+#----------------------------------------------------------[ /credits page ]---
+  /** Get rows for a given table on the page
+   * @method private get_table_rows
+   * @param string html
+   * @param string table_start
+   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
+   * @see used by the methods director, cast, writing, producer, composer
+   */
+  function get_table_rows ( $html, $table_start ){
+   $row_s = strpos ( $html, ">".$table_start."<");
+   $row_e = $row_s;
+   if ( $row_s == 0 )  return FALSE;
+   $endtable = strpos($html, "</table>", $row_s);
+   $i=0;
+   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
+     $row_s = strpos ( $html, "<tr>", $row_s);
+     $row_e = strpos ($html, "</tr>", $row_s);
+     $temp = trim(substr ($html, $row_s + 4 , $row_e - $row_s - 4));
+     if ( strncmp( $temp, "<td valign=",10) == 0 ){
+       $rows[$i] = $temp;
+       $i++;
+     }
+     $row_s = $row_e;
+   }
+   return $rows;
+  }
+
+  /** Get rows for the cast table on the page
+   * @method private get_table_rows_cast
+   * @param string html
+   * @param string table_start
+   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
+   * @see used by the method cast
+   */
+  function get_table_rows_cast ( $html, $table_start ){
+   $row_s = strpos ( $html, '<table class="cast">');
+   $row_e = $row_s;
+   if ( $row_s == 0 )  return FALSE;
+   $endtable = strpos($html, "</table>", $row_s);
+   $i=0;
+   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
+     $row_s = strpos ( $html, "<tr", $row_s);
+     $row_e = strpos ($html, "</tr>", $row_s);
+     $temp = trim(substr ($html, $row_s , $row_e - $row_s));
+     $row_x = strpos( $temp, '<td class="nm">' );
+     $temp = trim(substr($temp,$row_x));
+     if ( strncmp( $temp, "<td class=",10) == 0 ){
+       $rows[$i] = $temp;
+       $i++;
+     }
+     $row_s = $row_e;
+   }
+   return $rows;
+  }
+
+  /** Get content of table row cells
+   * @method private get_row_cels
+   * @param string row (as returned by imdb::get_table_rows)
+   * @return array cells (array[0..n] of strings)
+   * @see used by the methods director, cast, writing, producer, composer
+   */
+  function get_row_cels ( $row ){
+   $cel_s = 0;
+   $cel_e = 0;
+   $endrow = strlen($row);
+   $i = 0;
+   $cels = array();
+   while ( $cel_e + 5 < $endrow ){
+	$cel_s = strpos( $row, "<td",$cel_s);
+	$cel_s = strpos( $row, ">" , $cel_s);
+	$cel_e = strpos( $row, "</td>", $cel_s);
+	$cels[$i] = substr( $row, $cel_s + 1 , $cel_e - $cel_s - 1);
+	$i++;
+   }
+   return $cels;
+  }
+
+  /** Get the IMDB name (?)
+   * @method private get_imdbname
+   * @param string href
+   * @return string
+   * @see used by the methods director, cast, writing, producer, composer
+   */
+  function get_imdbname( $href){
+   if ( strlen( $href) == 0) return $href;
+   $name_s = 15;
+   $name_e = strpos ( $href, '"', $name_s);
+   if ( $name_e != 0){
+	return substr( $href, $name_s, $name_e -1 - $name_s);
+   }else{
+	return $href;
+   }
+  }
+
+  /** Get the director(s) of the movie
+   * @method director
+   * @return array director (array[0..n] of strings)
+   */
+  function director () {
+   if ($this->credits_director == "") {
+    if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
+    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
+   }
+   $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
+   for ( $i = 0; $i < count ($director_rows); $i++){
+	$cels = $this->get_row_cels ($director_rows[$i]);
+	if (!isset ($cels[0])) return array();
+	$dir["imdb"] = $this->get_imdbname($cels[0]);
+	$dir["name"] = strip_tags($cels[0]);
+	$role = trim(strip_tags($cels[2]));
+	if ( $role == ""){
+		$dir["role"] = NULL;
+	}else{
+		$dir["role"] = $role;
+	}
+	$this->credits_director[$i] = $dir;
+   }
+   return $this->credits_director;
+  }
+
+  /** Get the actors
+   * @method cast
+   * @return array cast (array[0..n] of strings)
+   */
+  function cast () {
+   if ($this->credits_cast == "") {
+    if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
+    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
+   }
+   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast");
+   for ( $i = 0; $i < count ($cast_rows); $i++){
+	$cels = $this->get_row_cels ($cast_rows[$i]);
+	if (!isset ($cels[0])) return array();
+	$dir["imdb"] = $this->get_imdbname($cels[0]);
+	$dir["name"] = strip_tags($cels[0]);
+	$role = strip_tags($cels[2]);
+	if ( $role == ""){
+		$dir["role"] = NULL;
+	}else{
+		$dir["role"] = $role;
+	}
+	$this->credits_cast[$i] = $dir;
+   }
+   return $this->credits_cast;
+  }
+
+  /** Get the writer(s)
+   * @method writing
+   * @return array writers (array[0..n] of strings)
+   */
+  function writing () {
+   if ($this->credits_writing == "") {
+    if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
+    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
+   }
+   $this->credits_writing = array();
+   $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing credits");
+   for ( $i = 0; $i < count ($writing_rows); $i++){
+     $cels = $this->get_row_cels ($writing_rows[$i]);
+     if ( count ( $cels) > 2){
+       $wrt["imdb"] = $this->get_imdbname($cels[0]);
+       $wrt["name"] = strip_tags($cels[0]);
+       $role = strip_tags($cels[2]);
+       if ( $role == ""){
+         $wrt["role"] = NULL;
+       }else{
+         $wrt["role"] = $role;
+       }
+       $this->credits_writing[$i] = $wrt;
+     }
+   }
+   return $this->credits_writing;
+  }
+
+  /** Obtain the producer(s)
+   * @method producer
+   * @return array producer (array[0..n] of strings)
+   */
+  function producer () {
+   if ($this->credits_producer == "") {
+    if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
+    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
+   }
+   $this->credits_producer = array();
+   $producer_rows = $this->get_table_rows($this->page["Credits"], "Produced by");
+   for ( $i = 0; $i < count ($producer_rows); $i++){
+	$cels = $this->get_row_cels ($producer_rows[$i]);
+	if ( count ( $cels) > 2){
+		$wrt["imdb"] = $this->get_imdbname($cels[0]);
+		$wrt["name"] = strip_tags($cels[0]);
+		$role = strip_tags($cels[2]);
+		if ( $role == ""){
+			$wrt["role"] = NULL;
+		}else{
+			$wrt["role"] = $role;
+		}
+		$this->credits_producer[$i] = $wrt;
+	}
+   }
+   return $this->credits_producer;
+  }
+
+  /** Obtain the composer(s) ("Original Music by...")
+   * @method composer
+   * @return array composer (array[0..n] of strings)
+   */
+  function composer () {
+   if ($this->credits_composer == "") {
+    if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
+    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
+   }
+   $this->credits_composer = array();
+   $composer_rows = $this->get_table_rows($this->page["Credits"], "Original Music by");
+   for ( $i = 0; $i < count ($composer_rows); $i++){
+	$cels = $this->get_row_cels ($composer_rows[$i]);
+	if ( count ( $cels) > 2){
+		$wrt["imdb"] = $this->get_imdbname($cels[0]);
+		$wrt["name"] = strip_tags($cels[0]);
+		$role = strip_tags($cels[2]);
+		if ( $role == ""){
+			$wrt["role"] = NULL;
+		}else{
+			$wrt["role"] = $role;
+		}
+		$this->credits_composer[$i] = $wrt;
+	}
+   }
+   return $this->credits_composer;
+  }
+
+#-----------------------------------------------------[ /crazycredits page ]---
   /** Get the Crazy Credits
    * @method crazy_credits
    * @return array crazy_credits (array[0..n] of string)
@@ -1054,7 +993,7 @@
   function crazy_credits() {
     if (empty($this->crazy_credits)) {
       if (empty($this->page["CrazyCredits"])) $this->openpage("CrazyCredits");
-      if ($this->page["CrazyCredits"] == "cannot open page") return $this->crazy_credits; // no such page
+      if ( $this->page["CrazyCredits"] == "cannot open page" ) return array(); // no such page
       $tag_s = strpos ($this->page["CrazyCredits"],"<li><tt>");
       $tag_e = strpos ($this->page["CrazyCredits"],"</ul>",$tag_s);
       $cred  = str_replace ("<br>"," ",substr ($this->page["CrazyCredits"],$tag_s, $tag_e - $tag_s));
@@ -1065,6 +1004,26 @@
     return $this->crazy_credits;
   }
 
+#---------------------------------------------------------[ /episodes page ]---
+  /** Get the series episode(s)
+   * @method episodes
+   * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
+   */
+  function episodes() {
+    if ( $this->seasons() == 0 ) return null;
+    if ( $this->main_episodes == "" ) {
+      if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
+      if ( $this->page["Episodes"] == "cannot open page" ) return array(); // no such page
+      if ( preg_match_all('|<h4>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h4><b>Original Air Date: (.*)</b><br>(.*)<br/><br/>|Ui',$this->page["Episodes"],$matches) ) {
+	for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
+          $this->main_episodes[$matches[1][$i]][$matches[2][$i]] = array("imdbid" => $matches[3][$i],"title" => $matches[4][$i], "airdate" => $matches[5][$i], "plot" => $matches[6][$i]);
+        }
+      }
+    }
+    return $this->main_episodes;
+  }
+
+#------------------------------------------------------------[ /goofs page ]---
   /** Get the goofs
    * @method goofs
    * @return array goofs (array[0..n] of array[type,content]
@@ -1072,7 +1031,7 @@
   function goofs() {
     if (empty($this->goofs)) {
       if (empty($this->page["Goofs"])) $this->openpage("Goofs");
-      if ($this->page["Goofs"] == "cannot open page") return $this->goofs; // no such page
+      if ($this->page["Goofs"] == "cannot open page") return array(); // no such page
       $tag_s = strpos($this->page["Goofs"],'<ul class="trivia">');
       $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Goofs"],"</ul>",$tag_e);
@@ -1082,6 +1041,86 @@
       for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
     }
     return $this->goofs;
+  }
+
+#-----------------------------------------------------------[ /quotes page ]---
+  /** Get the quotes for a given movie
+   * @method quotes
+   * @return array quotes (array[0..n] of string)
+   */
+  function quotes() {
+    if ( empty($this->main_quotes) ) {
+      if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
+      if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
+      $tag_s = strpos($this->page["Quotes"], '<a name="qt');
+      if (empty($tag_s)) return FALSE;
+      $tag_e = $tag_s;
+      while ($tag_s = strpos($this->page["Quotes"], '<a name="qt', $tag_e)) {
+        $tag_s = strpos($this->page["Quotes"],">", $tag_s) +1;
+	$tag_e = strpos($this->page["Quotes"],"<hr",$tag_s);
+	$quote = substr($this->page["Quotes"], $tag_s, $tag_e - $tag_s);
+	$this->main_quotes[] = preg_replace('/<a href=\"\/name\/nm/i','<a href="http://'.$this->imdbsite.'/name/nm',$quote);
+	$tag_s = $tag_e;
+      }
+    }
+    return $this->main_quotes;
+  }
+
+#---------------------------------------------------------[ /trailers page ]---
+  /** Get the trailer URLs for a given movie
+   * @method trailers
+   * @return array trailers (array[0..n] of string)
+   */
+  function trailers() {
+    if ( empty($this->main_trailers) ) {
+      if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
+      if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
+      $tag_s = strpos($this->page["Trailers"], '<div class="video-gallery">');
+      if (!empty($tag_s)) { // trailers on the IMDB site itself
+        $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
+        $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
+        $tag_e = 0;
+        while ($tag_s = strpos($trail, '<a href="/rg/VIDEO_TITLE', $tag_e)) {
+          $tag_s = strpos($trail,"=", $tag_s) +2;
+	  $tag_e = strpos($trail,'">',$tag_s);
+          $url   = substr($trail, $tag_s, $tag_e - $tag_s);
+	  $this->main_trailers[] = "http://".$this->imdbsite."/$url";
+          $tag_s = $tag_e;
+        }
+      }
+      $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
+      if (empty($tag_s)) return FALSE;
+      $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
+      $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
+      $tag_e = 0;
+      while ($tag_s = strpos($trail, '<a href=', $tag_e)) {
+        $tag_s = strpos($trail,"=", $tag_s) +2;
+        $tag_e = strpos($trail,'">',$tag_s);
+        $this->main_trailers[] = substr($trail, $tag_s, $tag_e - $tag_s);
+        $tag_s = $tag_e;
+      }
+    }
+    return $this->main_trailers;
+  }
+
+#-----------------------------------------------------------[ /trivia page ]---
+  /** Get the trivia info
+   * @method trivia
+   * @return array trivia (array[0..n] string
+   */
+  function trivia() {
+    if (empty($this->trivia)) {
+      if (empty($this->page["Trivia"])) $this->openpage("Trivia");
+      if ($this->page["Trivia"] == "cannot open page") return array(); // no such page
+      $tag_s = strpos($this->page["Trivia"],'<ul class="trivia">');
+      $tag_e = strrpos($this->page["Trivia"],'<ul class="trivia">'); // maybe more than one
+      $tag_e = strrpos($this->page["Trivia"],"</ul>",$tag_e);
+      $goofs = substr($this->page["Trivia"],$tag_s,$tag_e - $tag_s);
+      preg_match_all("/<li>(.*?)<br><br><\/li>/",$goofs,$matches);
+      $gc = count($matches[1]);
+      for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
+    }
+    return $this->trivia;
   }
 
  } // end class imdb

@@ -1,10 +1,14 @@
-v0.9.1
+v0.9.1 (20.01.2008)
 -------------------
 ! year was screwed up when movie title contained "()"
 ! method rating() did not return any value on subsequent calls (only on the first)
 + added support for retrieving trailer urls (method trailers())
 + added retrieval of 'Crazy Credits' (try with 'The Blues Brothers', they have some)
 + added goof retrieval (again, you can see some with 'The Blues Brothers')
+* some cleanup
+* moved error message output into debug methods so they can be turned off
+  (do so in imdb_config.php with the $this->debug setting)
++ added method trivia() to retrieve the trivias
 
 v0.9.0 (06.01.2008)
 -------------------

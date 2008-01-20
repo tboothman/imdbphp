@@ -254,6 +254,20 @@ if (isset ($_GET["mid"])) {
     echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>";
   }
 
+  # Trivia
+  $trivia = $movie->trivia();
+  $gc     = count($trivia);
+  if ($gc > 0) {
+    echo '<tr><td valign=top><b>Trivia:</b></td><td>';
+    echo "There are $gc entries in the trivia list - like these:<br><ul>";
+    for ($i=0;$i<5;++$i) {
+      if (empty($trivia[$i])) break;
+      echo "<li>".$trivia[$i]."</li>";
+    }
+    echo "</ul></td></tr>";
+  }
+
+
   echo '</TABLE><BR>';
 }
 ?>
