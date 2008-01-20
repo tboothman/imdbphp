@@ -54,6 +54,7 @@
   var $credits_director = "";
   var $credits_writing = "";
   var $credits_producer = "";
+  var $crazy_credits = array();
 
   var $main_director = "";
   var $main_credits = "";
@@ -83,13 +84,14 @@
     return;
    }
    switch ($wt){
-    case "Title"   : $urlname="/"; break;
-    case "Credits" : $urlname="/fullcredits"; break;
-    case "Plot"    : $urlname="/plotsummary"; break;
-    case "Taglines": $urlname="/taglines"; break;
-    case "Episodes": $urlname="/episodes"; break;
-    case "Quotes"  : $urlname="/quotes"; break;
-    case "Trailers": $urlname="/trailers"; break;
+    case "Title"       : $urlname="/"; break;
+    case "Credits"     : $urlname="/fullcredits"; break;
+    case "CrazyCredits": $urlname="/crazycredits"; break;
+    case "Plot"        : $urlname="/plotsummary"; break;
+    case "Taglines"    : $urlname="/taglines"; break;
+    case "Episodes"    : $urlname="/episodes"; break;
+    case "Quotes"      : $urlname="/quotes"; break;
+    case "Trailers"    : $urlname="/trailers"; break;
    }
    if ($this->usecache) {
     $fname = "$this->cachedir/$this->imdbID.$wt";
@@ -122,7 +124,8 @@
    } // end cache
 
    $req = new IMDB_Request("");
-   $req->setURL("http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname);
+   $url = "http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname;
+   $req->setURL($url);
    $req->sendRequest();
    $this->page[$wt]=$req->getResponseBody();
 
@@ -142,7 +145,7 @@
     return;
    }
    $this->page[$wt] = "cannot open page";
-   echo "page not found";
+   echo "page not found ($url)";
   }
 
   /** Retrieve the IMDB ID
@@ -162,6 +165,7 @@
 
    $this->page["Title"] = "";
    $this->page["Credits"] = "";
+   $this->page["CrazyCredits"] = "";
    $this->page["Amazon"] = "";
    $this->page["Goofs"] = "";
    $this->page["Plot"] = "";
@@ -194,6 +198,7 @@
    $this->main_episodes = "";
    $this->main_quotes = array();
    $this->main_trailers = array();
+   $this->crazy_credits = array();
   }
 
   /** Initialize class
@@ -1062,7 +1067,7 @@
    */
   function mpaa () { // patch by Brian Ruth not yet tested (by me...)
    if (empty($this->main_mpaa)) {
-    if ($this->page["Title"] == "") $this->openpage ("");
+    if ($this->page["Title"] == "") $this->openpage ("Title");
     $mpaa_s = 0;
     $mpaa_e = 0;
     $this->main_mpaa = array();
@@ -1078,6 +1083,24 @@
    }
    return $this->main_mpaa;
   }
+
+  /** Get the Crazy Credits
+   * @method crazy_credits
+   * @return array crazy_credits (array[0..n] of string)
+   */
+  function crazy_credits() {
+    if (empty($this->crazy_credits)) {
+      if (empty($this->page["CrazyCredits"])) $this->openpage("CrazyCredits");
+      $tag_s = strpos ($this->page["CrazyCredits"],"<li><tt>");
+      $tag_e = strpos ($this->page["CrazyCredits"],"</ul>",$tag_s);
+      $cred  = str_replace ("<br>"," ",substr ($this->page["CrazyCredits"],$tag_s, $tag_e - $tag_s));
+      $cred  = str_replace ("  "," ",str_replace ("\n"," ",$cred));
+      preg_match_all("/<li><tt>(.*?)<\/tt><\/li>/",$cred,$matches);
+      $this->crazy_credits = $matches[1];
+    }
+    return $this->crazy_credits;
+  }
+# <li><tt>(.*)</tt></li>
 
  } // end class imdb
 
