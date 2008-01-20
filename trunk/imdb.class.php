@@ -566,16 +566,8 @@
   function sound () {
    if ($this->main_sound == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $sound_s = 0;
-    $sound_e = 0;
-    $i = 0;
-    while (strpos ($this->page["Title"], "/List?sound", $sound_e) > $sound_s) {
-	$sound_s = strpos ($this->page["Title"], "/List?sound", $sound_s);
-	$sound_s = strpos ($this->page["Title"], ">", $sound_s);
-	$sound_e = strpos ($this->page["Title"], "<", $sound_s);
-	$this->main_sound[$i] = substr ($this->page["Title"], $sound_s + 1, $sound_e - $sound_s - 1);
-	$i++;
-    }
+    preg_match_all("/\/List\?sound.*?>(.*?)</",$this->page["Title"],$matches);
+    $this->main_sound = $matches[1];
    }
    return $this->main_sound;
   }
@@ -587,23 +579,14 @@
   function mpaa () { // patch by Brian Ruth not yet tested (by me...)
    if (empty($this->main_mpaa)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $mpaa_s = 0;
-    $mpaa_e = 0;
-    $this->main_mpaa = array();
-    while (strpos ($this->page["Title"], "/List?certificates", $mpaa_e) > $mpaa_s) {
-	$mpaa_s = strpos ($this->page["Title"], "/List?certificates", $mpaa_s);
-	$mpaa_s = strpos ($this->page["Title"], ">", $mpaa_s);
-	$mpaa_c = strpos ($this->page["Title"], ":", $mpaa_s);
-	$mpaa_e = strpos ($this->page["Title"], "<", $mpaa_s);
-	$country = substr ($this->page["Title"], $mpaa_s + 1, $mpaa_c - $mpaa_s - 1);
-	$rating = substr ($this->page["Title"], $mpaa_c + 1, $mpaa_e - $mpaa_c - 1);
-	$this->main_mpaa[$country] = $rating;
-    }
+    preg_match_all("/\/List\?certificates.*?>(.*?):(.*?)</",$this->page["Title"],$matches);
+    $cc = count($matches[0]);
+    for ($i=0;$i<$cc;++$i) $this->main_mpaa[$matches[1][$i]] = $matches[2][$i];
    }
    return $this->main_mpaa;
   }
 
-#-------------------------------------------------------------[ /plot page ]---
+#------------------------------------------------------[ /plotsummary page ]---
   /** Get the movies plot(s)
    * @method plot
    * @return array plot (array[0..n] of strings)
@@ -612,16 +595,9 @@
    if ($this->plot_plot == "") {
     if ( $this->page["Plot"] == "" ) $this->openpage ("Plot");
     if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
-    $plot_e = 0;
-    $i = 0;
-    $this->plot_plot = array();
-    while (($plot_s = strpos ($this->page["Plot"], "<p class=\"plotpar\">", $plot_e)) !== FALSE) {
-	$plot_e = strpos ($this->page["Plot"], "</p>", $plot_s);
-	$tmplot = substr ($this->page["Plot"], $plot_s + 19, $plot_e - $plot_s - 19);
-	$tmplot = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$tmplot);
-	$this->plot_plot[$i] = $tmplot;
-	$i++;
-    }
+    preg_match_all("/p class=\"plotpar\">(.*?)<\/p>/",str_replace("\n"," ",$this->page["Plot"]),$matches);
+    for ($i=0;$i<count($matches[0]);++$i)
+      $this->plot_plot[$i] = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$matches[1][$i]);
    }
    return $this->plot_plot;
   }
@@ -635,18 +611,8 @@
    if ($this->taglines == "") {
     if ( $this->page["Taglines"] == "" ) $this->openpage ("Taglines");
     if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
-    $tags_e = 0;
-    $i = 0;
-    $tags_s = strpos ($this->page["Taglines"], "<td width=\"90%\" valign=\"top\" >", $tags_e);
-    $tagend = strpos ($this->page["Taglines"], "<form method=\"post\" action=\"/updates\">", $tags_s);
-    $this->taglines = array();
-    while (($tags_s = strpos ($this->page["Taglines"], "<p>", $tags_e)) < $tagend) {
-	$tags_e = strpos ($this->page["Taglines"], "</p>", $tags_s);
-	$tmptag = substr ($this->page["Taglines"], $tags_s + 3, $tags_e - $tags_s - 3);
-	if (preg_match("/action\=\"\//i",$tmptag)) continue;
-	$this->taglines[$i] = $tmptag;
-	$i++;
-    }
+    preg_match_all("/<p>(.*?)<\/p><hr/",$this->page["Taglines"],$matches);
+    $this->taglines = $matches[1];
    }
    return $this->taglines;
   }
