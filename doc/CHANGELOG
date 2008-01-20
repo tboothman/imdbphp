@@ -1,3 +1,7 @@
+v0.9.2
+-------------------
+* replaced the large loop in the alsoknow() method by a preg_match_all call
+
 v0.9.1 (20.01.2008)
 -------------------
 ! year was screwed up when movie title contained "()"
