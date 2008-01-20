@@ -248,14 +248,16 @@
   }
 
   /** Get general runtime
-   * @method runtime_all
+   * @method private runtime_all
    * @return string runtime
+   * @brief simply returns the complete runtime block. You should not use this
+   *  method - it maybe removed soon ;)
    */
   function runtime_all () {
    if ($this->main_runtime == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $runtime_s = strpos ($this->page["Title"], "Runtime:");
-    $runtime_e = strpos ($this->page["Title"], "<br>", $runtime_s);
+    $runtime_e = strpos ($this->page["Title"], "</div>", $runtime_s);
     $this->main_runtime = substr ($this->page["Title"], $runtime_s + 13, $runtime_e - $runtime_s - 14);
     if ($runtime_s == 0)
 	$this->main_runtime = "";
@@ -268,7 +270,8 @@
    * @return mixed string runtime (if set), NULL otherwise
    */
   function runtime(){
-   $runarr = $this->runtimes();
+   if (empty($this->main_runtimes)) $runarr = $this->runtimes();
+   else $runarr = $this->main_runtimes;
    if (isset($runarr[0]["time"])){
 	return $runarr[0]["time"];
    }else{
@@ -283,32 +286,9 @@
   function runtimes(){
    if ($this->main_runtimes == "") {
     if ($this->runtime_all() == "") return array();
-    $run_arr= explode( "/" , $this->runtime_all());
-    $max = count($run_arr);
-    for ( $i=0; $i < $max ; $i++){
-	$time_e = strpos( $run_arr[$i], " min");
-	$country_e = strpos($run_arr[$i], ":");
-	if ( $country_e == 0){
-	 $time_s = 0;
-	}else{
-	 $time_s = $country_e+1;
-	}
-	$comment_s = strpos( $run_arr[$i], '(');
-	$comment_e = strpos( $run_arr[$i], ')');
-	$runtemp["time"]= substr( $run_arr[$i], $time_s, $time_e - $time_s);
-	$country_s = 0;
-	if ($country_s != $country_e){
-	 $runtemp["country"]= substr( $run_arr[$i], $country_s, $country_e - $country_s);
-	}else{
-	 $runtemp["country"]=NULL;
-	}
-	if ($comment_s != $comment_e){
-	 $runtemp["comment"]= substr( $run_arr[$i], $comment_s + 1, $comment_e - $comment_s - 1);
-	}else{
-	 $runtemp["comment"]=NULL;
-	}
-	$this->main_runtimes[$i] = $runtemp;
-    }
+    if (empty($this->main_runtime)) $runtime = $this->runtime_all;
+    preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches);
+    for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
    }
    return $this->main_runtimes;
   }
@@ -367,15 +347,13 @@
   /** Get movies original language
    * @method language
    * @return string language
+   * @brief There is not really a main language on the IMDB sites (yet), so this
+   *  simply returns the first one
    */
   function language () {
    if ($this->main_language == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $lang_s = strpos ($this->page["Title"], "/Sections/Languages/");
-    if ( $lang_s == 0) return FALSE;
-    $lang_s = strpos ($this->page["Title"], ">", $lang_s);
-    $lang_e = strpos ($this->page["Title"], "<", $lang_s);
-    $this->main_language = substr ($this->page["Title"], $lang_s + 1, $lang_e - $lang_s - 1);
+    if (empty($this->main_languages)) $langs = $this->languages();
+    $this->main_language = $this->main_languages[0];
    }
    return $this->main_language;
   }
@@ -387,17 +365,8 @@
   function languages () {
    if ($this->main_languages == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $lang_s = 0;
-    $lang_e = 0;
-    $i = 0;
-    $this->main_languages = array();
-    while (strpos($this->page["Title"], "/Sections/Languages/", $lang_e) > $lang_s) {
-	$lang_s = strpos ($this->page["Title"], "/Sections/Languages/", $lang_s);
-	$lang_s = strpos ($this->page["Title"], ">", $lang_s);
-	$lang_e = strpos ($this->page["Title"], "<", $lang_s);
-	$this->main_languages[$i] = substr ($this->page["Title"], $lang_s + 1, $lang_e - $lang_s - 1);
-	$i++;
-    }
+    preg_match_all("/\/Sections\/Languages\/.*?>(.*?)</",$this->page["Title"],$matches);
+    $this->main_languages = $matches[1];
    }
    return $this->main_languages;
   }
@@ -405,15 +374,13 @@
   /** Get the movies main genre
    * @method genre
    * @return string genre
+   * @brief There is not really a main genre on the IMDB sites (yet), so this
+   *  simply returns the first one
    */
   function genre () {
    if ($this->main_genre == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $genre_s = strpos ($this->page["Title"], "/Sections/Genres/");
-    if ( $genre_s === FALSE || $genre_s < 0 )	return FALSE;
-    $genre_s = strpos ($this->page["Title"], ">", $genre_s);
-    $genre_e = strpos ($this->page["Title"], "<", $genre_s);
-    $this->main_genre = substr ($this->page["Title"], $genre_s + 1, $genre_e - $genre_s - 1);
+    if (empty($this->main_genres)) $genres = $this->genres();
+    $this->main_genre = $this->main_genres[0];
    }
    return $this->main_genre;
   }
@@ -430,17 +397,8 @@
     if ($genre_s === FALSE) return array(); // no genre found
     $genre_e = strpos($this->page["Title"],"/rg/title-tease/",$genre_s);
     $block = substr($this->page["Title"],$genre_s,$genre_e-$genre_s);
-    $diff = $genre_e-$genre_s;
-    $genre_s = 0;
-    $genre_e = 0;
-    $i = 0;
-    while (strpos($block, "/Sections/Genres/", $genre_e) > $genre_s) {
-	$genre_s = strpos ($block, "/Sections/Genres/", $genre_s);
-	$genre_s = strpos ($block, ">", $genre_s);
-	$genre_e = strpos ($block, "<", $genre_s);
-	$this->main_genres[$i] = substr ($block, $genre_s + 1, $genre_e - $genre_s - 1);
-	$i++;
-    }
+    preg_match_all("/\/Sections\/Genres\/.*?>(.*?)</",$block,$matches);
+    $this->main_genres = $matches[1];
    }
    return $this->main_genres;
   }
