@@ -617,7 +617,7 @@
    return $this->taglines;
   }
 
-#----------------------------------------------------------[ /credits page ]---
+#------------------------------------------------------[ /fullcredits page ]---
   /** Get rows for a given table on the page
    * @method private get_table_rows
    * @param string html
@@ -630,17 +630,9 @@
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   $i=0;
-   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-     $row_s = strpos ( $html, "<tr>", $row_s);
-     $row_e = strpos ($html, "</tr>", $row_s);
-     $temp = trim(substr ($html, $row_s + 4 , $row_e - $row_s - 4));
-     if ( strncmp( $temp, "<td valign=",10) == 0 ){
-       $rows[$i] = $temp;
-       $i++;
-     }
-     $row_s = $row_e;
-   }
+   preg_match_all("/<tr>(.*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches);
+   $mc = count($matches[1]);
+   for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i];
    return $rows;
   }
 
@@ -656,20 +648,8 @@
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   $i=0;
-   while ( ($row_e + 5 < $endtable) && ($row_s != 0) ){
-     $row_s = strpos ( $html, "<tr", $row_s);
-     $row_e = strpos ($html, "</tr>", $row_s);
-     $temp = trim(substr ($html, $row_s , $row_e - $row_s));
-     $row_x = strpos( $temp, '<td class="nm">' );
-     $temp = trim(substr($temp,$row_x));
-     if ( strncmp( $temp, "<td class=",10) == 0 ){
-       $rows[$i] = $temp;
-       $i++;
-     }
-     $row_s = $row_e;
-   }
-   return $rows;
+   preg_match_all("/<tr.*?(<td class=\"nm\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches);
+   return $matches[1];
   }
 
   /** Get content of table row cells
@@ -679,19 +659,8 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   function get_row_cels ( $row ){
-   $cel_s = 0;
-   $cel_e = 0;
-   $endrow = strlen($row);
-   $i = 0;
-   $cels = array();
-   while ( $cel_e + 5 < $endrow ){
-	$cel_s = strpos( $row, "<td",$cel_s);
-	$cel_s = strpos( $row, ">" , $cel_s);
-	$cel_e = strpos( $row, "</td>", $cel_s);
-	$cels[$i] = substr( $row, $cel_s + 1 , $cel_e - $cel_s - 1);
-	$i++;
-   }
-   return $cels;
+   preg_match_all("/<td.*?>(.*?)<\/td>/",$row,$matches);
+   return $matches[1];
   }
 
   /** Get the IMDB name (?)
@@ -704,11 +673,8 @@
    if ( strlen( $href) == 0) return $href;
    $name_s = 15;
    $name_e = strpos ( $href, '"', $name_s);
-   if ( $name_e != 0){
-	return substr( $href, $name_s, $name_e -1 - $name_s);
-   }else{
-	return $href;
-   }
+   if ( $name_e != 0) return substr( $href, $name_s, $name_e -1 - $name_s);
+   else	return $href;
   }
 
   /** Get the director(s) of the movie
