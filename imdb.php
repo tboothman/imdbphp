@@ -238,15 +238,21 @@ if (isset ($_GET["mid"])) {
   echo '</td></tr>';
 
   # Crazy Credits
-  echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
   $crazy = $movie->crazy_credits();
   $cc    = count($crazy);
   if ($cc) {
-    echo "<ul>";
-    for ($i=0;$i<count($crazy);++$i) echo "<li>".$crazy[$i]."</li>";
-    echo "</ul>";
-  } else echo "None";
-  echo '</td></tr>';
+    echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
+    echo "We know about $cc <i>Crazy Credits</i>. One of them reads:<br>$crazy[0]</td></tr>";
+  }
+
+  # Goofs
+  $goofs = $movie->goofs();
+  $gc    = count($goofs);
+  if ($gc > 0) {
+    echo '<tr><td valign=top><b>Goofs:</b></td><td>';
+    echo "We know about $gc goofs. Here comes one of them:<br>";
+    echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>";
+  }
 
   echo '</TABLE><BR>';
 }
