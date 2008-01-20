@@ -235,8 +235,19 @@ if (isset ($_GET["mid"])) {
   for ($i=0;$i<count($trailers);++$i) {
     echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
   }
+  echo '</td></tr>';
+
+  # Crazy Credits
+  echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
+  $crazy = $movie->crazy_credits();
+  $cc    = count($crazy);
+  if ($cc) {
+    echo "<ul>";
+    for ($i=0;$i<count($crazy);++$i) echo "<li>".$crazy[$i]."</li>";
+    echo "</ul>";
+  } else echo "None";
+  echo '</td></tr>';
+
   echo '</TABLE><BR>';
 }
 ?>
-
-
