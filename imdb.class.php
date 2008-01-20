@@ -584,16 +584,8 @@
     if ($country_s === FALSE) return array(); // no country found
     $country_e = strpos($this->page["Title"],"</div>",$country_s);
     $block = substr($this->page["Title"],$country_s,$country_e-$country_s);
-    $country_s = 0;
-    $country_e = 0;
-    $i = 0;
-    while (strpos ($block, "/Sections/Countries/", $country_e) > $country_s) {
-	$country_s = strpos ($block, "/Sections/Countries/", $country_s);
-	$country_s = strpos ($block, ">", $country_s);
-	$country_e = strpos ($block, "<", $country_s);
-	$this->main_country[$i] = substr ($block, $country_s + 1, $country_e - $country_s - 1);
-	$i++;
-    }
+    preg_match_all("/\/Sections\/Countries.*?>(.*?)</",$block,$matches);
+    for ($i=0;$i<count($matches[0]);++$i) $this->main_country[$i] = $matches[1][$i];
    }
    return $this->main_country;
   }
