@@ -71,6 +71,8 @@ class imdb_config {
     // search variants. Valid options are "sevec" and "moonface". Comment out
     // (or set to empty string) to use the default
     $this->searchvariant = "";
+    // turn debug messages on (1)/off (0)
+    $this->debug = 0;
   }
 
 }

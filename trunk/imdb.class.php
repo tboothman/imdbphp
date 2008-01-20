@@ -24,53 +24,15 @@
   * @version $Revision$ $Date$
   */
  class imdb extends imdb_config {
-  var $imdbID = "";
-  var $page;
-
-  var $main_title = "";
-  var $main_year = "";
-  var $main_runtime = "";
-  var $main_runtimes;
-  var $main_rating = "";
-  var $main_votes = "";
-  var $main_language = "";
-  var $main_languages = "";
-  var $main_genre = "";
-  var $main_genres = "";
-  var $main_tagline = "";
-  var $main_plotoutline = "";
-  var $main_comment = "";
-  var $main_alttitle = "";
-  var $main_colors = "";
-  var $main_seasons = "";
-  var $main_episodes = "";
-  var $main_quotes = array();
-  var $main_trailers = array();
-
-  var $plot_plot = "";
-  var $taglines = "";
-
-  var $credits_cast = "";
-  var $credits_director = "";
-  var $credits_writing = "";
-  var $credits_producer = "";
-  var $crazy_credits = array();
-
-  var $main_director = "";
-  var $main_credits = "";
-  var $main_photo = "";
-  var $main_country = "";
-  var $main_alsoknow = "";
-  var $main_sound = "";
 
   function debug_scalar($scalar) {
-    echo "<b><font color='#ff0000'>$scalar</font></b><br>";
+    if ($this->debug) echo "<b><font color='#ff0000'>$scalar</font></b><br>";
   }
   function debug_object($object) {
-    echo "<font color='#ff0000'><pre>";print_r($object);echo "</pre></font>";
+    if ($this->debug) echo "<font color='#ff0000'><pre>";print_r($object);echo "</pre></font>";
   }
   function debug_html($html) {
-    echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
+    if ($this->debug) echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
   }
 
   /** Open an IMDB page
@@ -79,7 +41,7 @@
    */
   function openpage ($wt) {
    if (strlen($this->imdbID) != 7){
-    echo "not valid imdbID: ".$this->imdbID."<BR>".strlen($this->imdbID);
+    $this->debug_scalar("not valid imdbID: ".$this->imdbID."<BR>".strlen($this->imdbID));
     $this->page[$wt] = "cannot open page";
     return;
    }
@@ -93,6 +55,10 @@
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
     case "Goofs"       : $urlname="/goofs"; break;
+    default            :
+      $this->page[$wt] = "unknown page identifier";
+      $this->debug_scalar("Unknown page identifier: $wt");
+      return;
    }
    if ($this->usecache) {
     $fname = "$this->cachedir/$this->imdbID.$wt";
@@ -146,7 +112,7 @@
     return;
    }
    $this->page[$wt] = "cannot open page";
-   echo "page not found ($url)";
+   $this->debug_scalar("cannot open page: $url");
   }
 
   /** Retrieve the IMDB ID
@@ -318,7 +284,6 @@
     if ($this->runtime_all() == ""){
 	return array();
     }
-#echo $this->runtime_all();
     $run_arr= explode( "/" , $this->runtime_all());
     $max = count($run_arr);
     for ( $i=0; $i < $max ; $i++){
@@ -359,7 +324,6 @@
 	$this->openpage ("Title");
     }
     $rate_s = strpos ($this->page["Title"], "User Rating:");
-#    $rate_s = strpos ($this->page["Title"], '/ratings">');
     if ( $rate_s == 0 )	return FALSE;
     $rate_s = strpos ($this->page["Title"], "<b>", $rate_s);
     $rate_e = strpos ($this->page["Title"], "/", $rate_s);
@@ -711,7 +675,6 @@
      $row_s = strpos ( $html, "<tr", $row_s);
      $row_e = strpos ($html, "</tr>", $row_s);
      $temp = trim(substr ($html, $row_s , $row_e - $row_s));
-#     $row_x = strpos( $temp, '<td valign="middle"' );
      $row_x = strpos( $temp, '<td class="nm">' );
      $temp = trim(substr($temp,$row_x));
      if ( strncmp( $temp, "<td class=",10) == 0 ){
@@ -898,10 +861,8 @@
   function photo () {
    if ($this->main_photo == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-#    $tag_s = strpos ($this->page["Title"], "<img border=\"0\" alt=\"cover\"");
     $tag_s = strpos ($this->page["Title"], "<a name=\"poster\"");
     if ($tag_s == 0) return FALSE;
-#    $tag_s = strpos ($this->page["Title"], "http://ia.imdb.com/media",$tag_s);
     $tag_s = strpos ($this->page["Title"], "http://",$tag_s);
     $tag_e = strpos ($this->page["Title"], '"', $tag_s);
     $this->main_photo = substr ($this->page["Title"], $tag_s, $tag_e - $tag_s);
@@ -926,13 +887,13 @@
      || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
 	$fp = $req->getResponseBody();
    }else{
-	echo "<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>";
+	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
 	return false;
    }
 
    $fp2 = fopen ($path, "w");
    if ((!$fp) || (!$fp2)){
-     echo "image error...<BR>";
+     $this->debug_scalar("image error...<BR>");
      return false;
    }
 
@@ -1093,6 +1054,7 @@
   function crazy_credits() {
     if (empty($this->crazy_credits)) {
       if (empty($this->page["CrazyCredits"])) $this->openpage("CrazyCredits");
+      if ($this->page["CrazyCredits"] == "cannot open page") return $this->crazy_credits; // no such page
       $tag_s = strpos ($this->page["CrazyCredits"],"<li><tt>");
       $tag_e = strpos ($this->page["CrazyCredits"],"</ul>",$tag_s);
       $cred  = str_replace ("<br>"," ",substr ($this->page["CrazyCredits"],$tag_s, $tag_e - $tag_s));
@@ -1110,6 +1072,7 @@
   function goofs() {
     if (empty($this->goofs)) {
       if (empty($this->page["Goofs"])) $this->openpage("Goofs");
+      if ($this->page["Goofs"] == "cannot open page") return $this->goofs; // no such page
       $tag_s = strpos($this->page["Goofs"],'<ul class="trivia">');
       $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Goofs"],"</ul>",$tag_e);
