@@ -600,7 +600,7 @@
 
   /** Get movies alternative names
    * @method alsoknow
-   * @return array aka (array[0..n] of strings)
+   * @return array aka (array[0..n] of array[title,year,country,comment])
    */
   function alsoknow () {
    if ($this->main_alsoknow == "") {
@@ -611,54 +611,8 @@
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-    $alsoknow_arr = explode ( "<br>", $alsoknow_all);
-    $j=0;
-    for ( $i=0; $i< count($alsoknow_arr); $i++){
-      if (strpos($alsoknow_arr[$i],"href=")!==FALSE) continue; // link to more AKAs
-      $alsoknow_arr[$i] = trim($alsoknow_arr[$i]);
-      if (strlen($alsoknow_arr[$i])>0) {
-	$tmparr = explode('(', $alsoknow_arr[$i]);
-        unset($ak_temp);
-	$ak_temp["title"]= $tmparr[0];
-        $elems = count($tmparr);
-        for ($k=1;$k<$elems;++$k) {
-          if (strpos($tmparr[$k],')'))
-            $var = substr($tmparr[$k],0,strrpos($tmparr[$k],')'));
-          else $var = $tmparr[$k];
-          if (!isset($ak_temp["year"])) {
-            if (is_numeric($var)) {
-              $ak_temp["year"] = $var;
-              continue;
-            } else {
-              $ak_temp["year"] = "";
-            }
-            if ( ($country_e = strpos($var, ":")) != 0){
-              $ak_temp["country"]= substr( $var, 0, $country_e);
-              $ak_temp["comment"]= substr( $var, $country_e+2, strlen($var) - $country_e -2);
-            }else{
-              $ak_temp["country"]= $var;
-            }
-          } elseif (!isset($ak_temp["country"])) {
-            if ( ($country_e = strpos($var, ":")) != 0){
-              $ak_temp["country"]= substr( $var, 0, $country_e);
-              $ak_temp["comment"]= substr( $var, $country_e+2, strlen($var) - $country_e -2);
-            }else{
-              $ak_temp["country"]= $var;
-            }
-          } else {
-            if (strpos($var,')'))
-              $var = substr($var,0,strrpos($var,')'));
-            if (isset($ak_temp["comment"]) && !empty($ak_temp["comment"])) $ak_temp["comment"] .= "($var)";
-            else $ak_temp["comment"] = $var;
-          }
-        }
-        if (!isset($ak_temp["year"])) $ak_temp["year"] = "";
-        if (!isset($ak_temp["country"])) $ak_temp["country"] = "";
-        if (!isset($ak_temp["comment"])) $ak_temp["comment"] = "";
-        $this->main_alsoknow[$j] = $ak_temp;
-	$j++;
-      }
-    }
+    preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches);
+    for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
    }
    return $this->main_alsoknow;
   }

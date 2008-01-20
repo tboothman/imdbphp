@@ -37,12 +37,17 @@ if (isset ($_GET["mid"])) {
   }
 
   # AKAs
-  echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
-  foreach ( $movie->alsoknow() as $ak){
-    echo $ak["title"].": ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
+  $aka = $movie->alsoknow();
+  $cc  = count($aka);
+  if ($cc > 0) {
+    echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
+    foreach ( $aka as $ak){
+      if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"]." (".$ak["comment"].")<BR>";
+      else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
+    }
+    echo '</td></tr>';
+    flush();
   }
-  echo '</td></tr>';
-  flush();
 
   # Seasons
   if ( $movie->seasons() != 0 ) {
