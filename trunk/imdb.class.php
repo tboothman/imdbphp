@@ -452,16 +452,8 @@
   function colors () {
    if ($this->main_colors == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    $color_s = 0;
-    $color_e = 0;
-    $i = 0;
-    while (strpos ($this->page["Title"], "/List?color-info", $color_e) > $color_s) {
-	$color_s = strpos ($this->page["Title"], "/List?color-info", $color_s);
-	$color_s = strpos ($this->page["Title"], ">", $color_s);
-	$color_e = strpos ($this->page["Title"], "<", $color_s);
-	$this->main_colors[$i] = substr ($this->page["Title"], $color_s + 1, $color_e - $color_s - 1);
-	$i++;
-    }
+    preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches);
+    $this->main_colors = $matches[1];
    }
    return $this->main_colors;
   }
