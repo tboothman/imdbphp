@@ -92,6 +92,7 @@
     case "Episodes"    : $urlname="/episodes"; break;
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
+    case "Goofs"       : $urlname="/goofs"; break;
    }
    if ($this->usecache) {
     $fname = "$this->cachedir/$this->imdbID.$wt";
@@ -199,6 +200,7 @@
    $this->main_quotes = array();
    $this->main_trailers = array();
    $this->crazy_credits = array();
+   $this->goofs = array();
   }
 
   /** Initialize class
@@ -1100,7 +1102,24 @@
     }
     return $this->crazy_credits;
   }
-# <li><tt>(.*)</tt></li>
+
+  /** Get the goofs
+   * @method goofs
+   * @return array goofs (array[0..n] of array[type,content]
+   */
+  function goofs() {
+    if (empty($this->goofs)) {
+      if (empty($this->page["Goofs"])) $this->openpage("Goofs");
+      $tag_s = strpos($this->page["Goofs"],'<ul class="trivia">');
+      $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
+      $tag_e = strrpos($this->page["Goofs"],"</ul>",$tag_e);
+      $goofs = substr($this->page["Goofs"],$tag_s,$tag_e - $tag_s);
+      preg_match_all("/<li><b>(.*?)<\/b>(.*?)<br><br><\/li>/",$goofs,$matches);
+      $gc = count($matches[1]);
+      for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
+    }
+    return $this->goofs;
+  }
 
  } // end class imdb
 
