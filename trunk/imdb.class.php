@@ -693,11 +693,8 @@
 	$dir["imdb"] = $this->get_imdbname($cels[0]);
 	$dir["name"] = strip_tags($cels[0]);
 	$role = trim(strip_tags($cels[2]));
-	if ( $role == ""){
-		$dir["role"] = NULL;
-	}else{
-		$dir["role"] = $role;
-	}
+	if ( $role == "") $dir["role"] = NULL;
+	else $dir["role"] = $role;
 	$this->credits_director[$i] = $dir;
    }
    return $this->credits_director;
@@ -719,11 +716,8 @@
 	$dir["imdb"] = $this->get_imdbname($cels[0]);
 	$dir["name"] = strip_tags($cels[0]);
 	$role = strip_tags($cels[2]);
-	if ( $role == ""){
-		$dir["role"] = NULL;
-	}else{
-		$dir["role"] = $role;
-	}
+	if ( $role == "") $dir["role"] = NULL;
+	else $dir["role"] = $role;
 	$this->credits_cast[$i] = $dir;
    }
    return $this->credits_cast;
@@ -746,11 +740,8 @@
        $wrt["imdb"] = $this->get_imdbname($cels[0]);
        $wrt["name"] = strip_tags($cels[0]);
        $role = strip_tags($cels[2]);
-       if ( $role == ""){
-         $wrt["role"] = NULL;
-       }else{
-         $wrt["role"] = $role;
-       }
+       if ( $role == "") $wrt["role"] = NULL;
+       else $wrt["role"] = $role;
        $this->credits_writing[$i] = $wrt;
      }
    }
@@ -769,18 +760,15 @@
    $this->credits_producer = array();
    $producer_rows = $this->get_table_rows($this->page["Credits"], "Produced by");
    for ( $i = 0; $i < count ($producer_rows); $i++){
-	$cels = $this->get_row_cels ($producer_rows[$i]);
-	if ( count ( $cels) > 2){
-		$wrt["imdb"] = $this->get_imdbname($cels[0]);
-		$wrt["name"] = strip_tags($cels[0]);
-		$role = strip_tags($cels[2]);
-		if ( $role == ""){
-			$wrt["role"] = NULL;
-		}else{
-			$wrt["role"] = $role;
-		}
-		$this->credits_producer[$i] = $wrt;
-	}
+    $cels = $this->get_row_cels ($producer_rows[$i]);
+    if ( count ( $cels) > 2){
+     $wrt["imdb"] = $this->get_imdbname($cels[0]);
+     $wrt["name"] = strip_tags($cels[0]);
+     $role = strip_tags($cels[2]);
+     if ( $role == "") $wrt["role"] = NULL;
+     else $wrt["role"] = $role;
+     $this->credits_producer[$i] = $wrt;
+    }
    }
    return $this->credits_producer;
   }
@@ -797,18 +785,15 @@
    $this->credits_composer = array();
    $composer_rows = $this->get_table_rows($this->page["Credits"], "Original Music by");
    for ( $i = 0; $i < count ($composer_rows); $i++){
-	$cels = $this->get_row_cels ($composer_rows[$i]);
-	if ( count ( $cels) > 2){
-		$wrt["imdb"] = $this->get_imdbname($cels[0]);
-		$wrt["name"] = strip_tags($cels[0]);
-		$role = strip_tags($cels[2]);
-		if ( $role == ""){
-			$wrt["role"] = NULL;
-		}else{
-			$wrt["role"] = $role;
-		}
-		$this->credits_composer[$i] = $wrt;
-	}
+    $cels = $this->get_row_cels ($composer_rows[$i]);
+    if ( count ( $cels) > 2){
+     $wrt["imdb"] = $this->get_imdbname($cels[0]);
+     $wrt["name"] = strip_tags($cels[0]);
+     $role = strip_tags($cels[2]);
+     if ( $role == "") $wrt["role"] = NULL;
+     else $wrt["role"] = $role;
+     $this->credits_composer[$i] = $wrt;
+    }
    }
    return $this->credits_composer;
   }
@@ -880,16 +865,8 @@
     if ( empty($this->main_quotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
-      $tag_s = strpos($this->page["Quotes"], '<a name="qt');
-      if (empty($tag_s)) return FALSE;
-      $tag_e = $tag_s;
-      while ($tag_s = strpos($this->page["Quotes"], '<a name="qt', $tag_e)) {
-        $tag_s = strpos($this->page["Quotes"],">", $tag_s) +1;
-	$tag_e = strpos($this->page["Quotes"],"<hr",$tag_s);
-	$quote = substr($this->page["Quotes"], $tag_s, $tag_e - $tag_s);
-	$this->main_quotes[] = preg_replace('/<a href=\"\/name\/nm/i','<a href="http://'.$this->imdbsite.'/name/nm',$quote);
-	$tag_s = $tag_e;
-      }
+      preg_match_all("/<a name=\"qt.*?<\/a>\s*(.*?)<hr/",str_replace("\n"," ",$this->page["Quotes"]),$matches);
+      $this->main_quotes = $matches[1];
     }
     return $this->main_quotes;
   }
@@ -907,26 +884,15 @@
       if (!empty($tag_s)) { // trailers on the IMDB site itself
         $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
         $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        $tag_e = 0;
-        while ($tag_s = strpos($trail, '<a href="/rg/VIDEO_TITLE', $tag_e)) {
-          $tag_s = strpos($trail,"=", $tag_s) +2;
-	  $tag_e = strpos($trail,'">',$tag_s);
-          $url   = substr($trail, $tag_s, $tag_e - $tag_s);
-	  $this->main_trailers[] = "http://".$this->imdbsite."/$url";
-          $tag_s = $tag_e;
-        }
+        preg_match_all("/<a href=\"(\/rg\/VIDEO_TITLE.*?)\">/",$trail,$matches);
+        for ($i=0;$i<count($matches[0]);++$i) $this->main_trailers[] = "http://".$this->imdbsite.$matches[1][$i];
       }
       $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
       if (empty($tag_s)) return FALSE;
       $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
       $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
-      $tag_e = 0;
-      while ($tag_s = strpos($trail, '<a href=', $tag_e)) {
-        $tag_s = strpos($trail,"=", $tag_s) +2;
-        $tag_e = strpos($trail,'">',$tag_s);
-        $this->main_trailers[] = substr($trail, $tag_s, $tag_e - $tag_s);
-        $tag_s = $tag_e;
-      }
+      preg_match_all("/<a href=\"(.*?)\">/",$trail,$matches);
+      $this->main_trailers = array_merge($this->main_trailers,$matches[1]);
     }
     return $this->main_trailers;
   }
