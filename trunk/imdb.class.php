@@ -60,6 +60,7 @@
     case "Trailers"    : $urlname="/trailers"; break;
     case "Goofs"       : $urlname="/goofs"; break;
     case "Trivia"      : $urlname="/trivia"; break;
+    case "Soundtrack"  : $urlname="/soundtrack"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -174,6 +175,7 @@
    $this->crazy_credits = array();
    $this->goofs = array();
    $this->trivia = array();
+   $this->soundtracks = array();
   }
 
   /** Initialize class
@@ -916,6 +918,28 @@
     }
     return $this->trivia;
   }
+
+#-------------------------------------------------------[ /soundtrack page ]---
+  /** Get the soundtrack listing
+   * @method soundtrack
+   * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits)
+   * @brief Usually, the credits array should hold [0] written by, [1] performed by.
+   *  But IMDB does not always stick to that - so in many cases it holds
+   *  [0] performed by, [1] courtesy of
+   */
+  function soundtrack() {
+   if (empty($this->soundtracks)) {
+    if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
+    if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
+    preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$this->page["Soundtrack"]),$matches);
+    $mc = count($matches[0]);
+    for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
+                                                         str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
+                                                         str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
+   }
+   return $this->soundtracks;
+  }
+
 
  } // end class imdb
 

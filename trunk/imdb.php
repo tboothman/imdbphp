@@ -27,6 +27,7 @@ if (isset ($_GET["mid"])) {
   echo $movie->title().'</B> ('.$movie->year().')</FONT><BR><br>';
   echo "</TD></tr>\n";
   flush();
+$movie->soundtrack();
 
   # Photo
   echo '<TR><TD rowspan=110 valign=top>';
@@ -269,9 +270,22 @@ if (isset ($_GET["mid"])) {
       if (empty($trivia[$i])) break;
       echo "<li>".$trivia[$i]."</li>";
     }
-    echo "</ul></td></tr>";
+    echo "</ul></td></tr>\n";
   }
 
+  # Soundtracks
+  $soundtracks = $movie->soundtrack();
+  $gc = count($soundtracks);
+  if ($gc > 0) {
+    echo '<tr><td valign=top><b>Soundtracks:</b></td><td>';
+    echo "There are $gc soundtracks listed - like these:<br>";
+    echo "<table align='center' border='1' style='border-collapse:collapse'><tr><th>Soundtrack</th><th>Credit 1</th><th>Credit 2</th></tr>";
+    for ($i=0;$i<5;++$i) {
+      if (empty($soundtracks[$i])) break;
+      echo "<tr><td>".$soundtracks[$i]["soundtrack"]."</td><td>".$soundtracks[$i]["credits"][0]."</td><td>".$soundtracks[$i]["credits"][1]."</td></tr>";
+    }
+    echo "</table></td></tr>\n";
+  }
 
   echo '</TABLE><BR>';
 }
