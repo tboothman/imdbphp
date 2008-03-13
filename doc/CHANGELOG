@@ -4,6 +4,7 @@ v0.9.2
 ! runtime was broken for some movies (errors on the IMDB pages?)
 + added soundtrack() method for guess what...
 ! setid() forgot to reset some credits - fixed.
+* no more duplicate IMDB IDs are displayed anymore (thanx to Josh for pointing this out!)
 
 v0.9.1 (20.01.2008)
 -------------------
