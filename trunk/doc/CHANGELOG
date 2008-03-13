@@ -5,6 +5,7 @@ v0.9.2
 + added soundtrack() method for guess what...
 ! setid() forgot to reset some credits - fixed.
 * no more duplicate IMDB IDs are displayed anymore (thanx to Josh for pointing this out!)
+! the result set limit ($maxresults) was not honored (again Josh - thanx!)
 
 v0.9.1 (20.01.2008)
 -------------------
