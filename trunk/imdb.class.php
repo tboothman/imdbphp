@@ -1039,10 +1039,14 @@
    foreach( $searchstring as $srch){
     $res_e = 0;
     $res_s = 0;
+    $mids_checked = array();
     $len = strlen($srch);
     while ((($res_s = strpos ($this->page, $srch, $res_e)) > 10)) {
       $res_e = strpos ($this->page, "(", $res_s);
-      $tmpres = new imdb ( substr($this->page, $res_s+$len, 7)); // make a new imdb object by id
+      $imdb_id = substr($this->page, $res_s + $len, 7);
+      if (in_array($imdb_id,$mids_checked)) continue;
+      $mids_checked[] = $imdb_id;
+      $tmpres = new imdb ($imdb_id); // make a new imdb object by id
       $ts = strpos($this->page, ">",$res_s) +1; // >movie title</a>
       $te = strpos($this->page,"<",$ts);
       $tmpres->main_title = substr($this->page,$ts,$te-$ts);
