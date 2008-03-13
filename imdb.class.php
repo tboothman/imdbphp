@@ -1036,12 +1036,13 @@
 
    $searchstring = array( '<A HREF="/title/tt', '<A href="/title/tt', '<a href="/Title?', '<a href="/title/tt');
    $i = 0;
-   foreach( $searchstring as $srch){
+   foreach($searchstring as $srch){
     $res_e = 0;
     $res_s = 0;
     $mids_checked = array();
     $len = strlen($srch);
     while ((($res_s = strpos ($this->page, $srch, $res_e)) > 10)) {
+      if ($i == $this->maxresults) break(2); // limit result count
       $res_e = strpos ($this->page, "(", $res_s);
       $imdb_id = substr($this->page, $res_s + $len, 7);
       if (in_array($imdb_id,$mids_checked)) continue;
