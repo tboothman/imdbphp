@@ -167,6 +167,10 @@
    $this->main_alttitle = "";
    $this->main_colors = "";
    $this->credits_cast = "";
+   $this->credits_composer = "";
+   $this->credits_director = "";
+   $this->credits_producer = "";
+   $this->credits_writing = "";
    $this->main_director = "";
    $this->main_seasons = "";
    $this->main_episodes = "";
