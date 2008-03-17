@@ -1,54 +1,30 @@
 <?php
-/***************************************************************************
+###############################################################################
+# Browser Emulating file functions v2.0
+# (c) Kai Blankenhorn
+# www.bitfolge.de/en
+# kaib@bitfolge.de
+# -----------------------------------------------------------------------------
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+###############################################################################
 
-Browser Emulating file functions v2.0
-(c) Kai Blankenhorn
-www.bitfolge.de/en
-kaib@bitfolge.de
-
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-****************************************************************************
-
-
-Changelog:
-
-v2.0	03-09-03
-	added a wrapper class; this has the advantage that you no longer need
-		to specify a lot of parameters, just call the methods to set 
-		each option
-	added option to use a special port number, may be given by setPort or
-		as part of the URL (e.g. server.com:80)
-	added getLastResponseHeaders()
-
-v1.5
-	added Basic HTTP user authorization
-	minor optimizations
-
-v1.0
-	initial release
-
-
-
-***************************************************************************/
 /**
  * BrowserEmulator class. Provides methods for opening urls and emulating 
  * a web browser request.
  **/
-     class BrowserEmulator {
+class BrowserEmulator {
 
      var $headerLines = Array ();
      var $postData = Array ();
@@ -77,18 +53,8 @@ v1.0
 	**/
      function resetHeaderLines () {
 	  $this->headerLines = Array ();
-
-		/*******************************************************************************/
-		/**************    YOU MAX SET THE USER AGENT STRING HERE    *******************/
-	  /*                                                                             */
-	  /* default is "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)",            */
-	  /* which means Internet Explorer 6.0 on WinXP                                  */
-
 	  $this->headerLines["User-Agent"] =
 	       "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)";
-
-		/*******************************************************************************/
-
      }
 
 	/**
@@ -241,30 +207,6 @@ v1.0
      function getLastResponseHeaders () {
 	  return $this->lastResponse;
      }
-}
 
-
-
-// example code
-/*
-$be = new BrowserEmulator(); 
-//$be->addHeaderLine("Referer", "http://previous.server.com/");
-//$be->addHeaderLine("Accept-Encoding", "x-compress; x-zip");
-//$be->addPostData("Submit", "OK");
-//$be->addPostData("item", "42");
-//$be->setAuth("admin", "secretpass");
-// also possible: 
-// $be->setPort(10080); 
-
-$file = $be->fopen("http://us.imdb.com/Title?0209144");
-$response = $be->getLastResponseHeaders(); 
-
-while ($line = fgets($file, 1024)) { 
-    // do something with the file
-    echo $line;
-} 
-fclose($file); 
-
-*/
-
+} // end class
 ?>

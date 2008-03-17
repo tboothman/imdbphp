@@ -2,8 +2,8 @@
  #############################################################################
  # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
  # written by Giorgos Giagas                                                 #
- # extended & maintained by Itzchak Rehberg <izzysoft@qumran.org>            #
- # http://www.qumran.org/homes/izzy/                                         #
+ # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+ # http://www.izzysoft.de/                                                   #
  # ------------------------------------------------------------------------- #
  # This program is free software; you can redistribute and/or modify it      #
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -11,8 +11,7 @@
 
  /* $Id$ */
 
-// the proxy to use for connections to imdb.
-// leave it empty for no proxy.
+// the proxy to use for connections to imdb (leave it empty for no proxy).
 // this is only supported with PEAR. 
 define ('PROXY', "");
 define ('PROXY_PORT', "");
@@ -65,14 +64,14 @@ class imdb_config {
     // this is the URL to the images, i.e. start at your servers DOCUMENT_ROOT
     // when specifying absolute path
     $this->photoroot = './images/';
-    // TWEAKING OPTIONS:
+    // turn debug messages on (1)/off (0)
+    $this->debug = 0;
+    #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
     // limit the result set to X movies (0 to disable, comment out to use default of 20)
     $this->maxresults = 20;
     // search variants. Valid options are "sevec" and "moonface". Comment out
     // (or set to empty string) to use the default
     $this->searchvariant = "";
-    // turn debug messages on (1)/off (0)
-    $this->debug = 0;
   }
 
 }
