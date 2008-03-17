@@ -1,3 +1,7 @@
+v0.9.3
+-------------------
+! fixed some incorrect calls to strrpos causing PHP error messages
+
 v0.9.2 (13.03.2008)
 -------------------
 * replacing strpos..substr loops in several functions by preg_match_all constructs

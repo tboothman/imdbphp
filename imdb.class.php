@@ -853,7 +853,7 @@
       if ($this->page["Goofs"] == "cannot open page") return array(); // no such page
       $tag_s = strpos($this->page["Goofs"],'<ul class="trivia">');
       $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
-      $tag_e = strrpos($this->page["Goofs"],"</ul>",$tag_e);
+      $tag_e = strrpos($this->page["Goofs"],"</ul>");
       $goofs = substr($this->page["Goofs"],$tag_s,$tag_e - $tag_s);
       preg_match_all("/<li><b>(.*?)<\/b>(.*?)<br><br><\/li>/",$goofs,$matches);
       $gc = count($matches[1]);
@@ -914,7 +914,7 @@
       if ($this->page["Trivia"] == "cannot open page") return array(); // no such page
       $tag_s = strpos($this->page["Trivia"],'<ul class="trivia">');
       $tag_e = strrpos($this->page["Trivia"],'<ul class="trivia">'); // maybe more than one
-      $tag_e = strrpos($this->page["Trivia"],"</ul>",$tag_e);
+      $tag_e = strrpos($this->page["Trivia"],"</ul>");
       $goofs = substr($this->page["Trivia"],$tag_s,$tag_e - $tag_s);
       preg_match_all("/<li>(.*?)<br><br><\/li>/",$goofs,$matches);
       $gc = count($matches[1]);
