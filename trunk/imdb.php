@@ -27,7 +27,6 @@ if (isset ($_GET["mid"])) {
   echo $movie->title().'</B> ('.$movie->year().')</FONT><BR><br>';
   echo "</TD></tr>\n";
   flush();
-$movie->soundtrack();
 
   # Photo
   echo '<TR><TD rowspan=110 valign=top>';
