@@ -2,8 +2,8 @@
  #############################################################################
  # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
  # written by Giorgos Giagas                                                 #
- # extended & maintained by Itzchak Rehberg <izzysoft@qumran.org>            #
- # http://www.qumran.org/homes/izzy/                                         #
+ # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+ # http://www.izzysoft.de/                                                   #
  # ------------------------------------------------------------------------- #
  # This program is free software; you can redistribute and/or modify it      #
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -582,7 +582,7 @@
    * @method mpaa
    * @return array mpaa (array[country]=rating)
    */
-  function mpaa () { // patch by Brian Ruth not yet tested (by me...)
+  function mpaa () {
    if (empty($this->main_mpaa)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     preg_match_all("/\/List\?certificates.*?>(.*?):(.*?)</",$this->page["Title"],$matches);
