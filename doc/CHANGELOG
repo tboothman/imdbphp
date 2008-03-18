@@ -3,6 +3,8 @@ v0.9.3
 ! fixed some incorrect calls to strrpos causing PHP error messages
 * changing default imdb site from us.imdb.com to akas.imdb.com to also find
   localized AKAs
++ new method movieconnection() returns connected movies (mid, name, year and
+  maybe comment)
 
 v0.9.2 (13.03.2008)
 -------------------
