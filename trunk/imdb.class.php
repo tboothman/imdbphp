@@ -62,6 +62,7 @@
     case "Trivia"      : $urlname="/trivia"; break;
     case "Soundtrack"  : $urlname="/soundtrack"; break;
     case "MovieConnections" : $urlname="/movieconnections"; break;
+    case "ExtReviews"  : $urlname="/externalreviews"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -154,6 +155,7 @@
    $this->page["Quotes"] = "";
    $this->page["Trailers"] = "";
    $this->page["MovieConnections"] = "";
+   $this->page["ExtReviews"] = "";
 
    $this->main_title = "";
    $this->main_year = "";
@@ -183,6 +185,7 @@
    $this->trivia = array();
    $this->soundtracks = array();
    $this->movieconnections = array();
+   $this->extreviews = array();
   }
 
   /** Initialize class
@@ -994,6 +997,23 @@
     return $this->movieconnections;
   }
 
+#-------------------------------------------------[ /externalreviews page ]---
+  /** Get list of external reviews (if any)
+   * @method extReviews
+   * @return array [0..n] of array [url, desc] (or empty array if no data)
+   */
+  function extReviews() {
+    if (empty($this->extreviews)) {
+      if (empty($this->page["ExtReviews"])) $this->openpage("ExtReviews");
+      if ($this->page["ExtReviews"] == "cannot open page") return array(); // no such page
+      preg_match_all("/\<li\>\<a href=\"(.*?)\"\>(.*?)\<\/a\>/",$this->page["ExtReviews"],$matches);
+      $mc = count($matches[0]);
+      for ($i=0;$i<$mc;++$i) {
+        $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
+      }
+    }
+    return $this->extreviews;
+  }
 
  } // end class imdb
 

@@ -5,6 +5,7 @@ v0.9.3
   localized AKAs
 + new method movieconnection() returns connected movies (mid, name, year and
   maybe comment)
++ new method extReviews() returns external reviews for this movie (url,desc)
 
 v0.9.2 (13.03.2008)
 -------------------
