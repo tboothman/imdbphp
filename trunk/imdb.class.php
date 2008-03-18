@@ -394,17 +394,12 @@
    * @return array genres (array[0..n] of strings)
    */
   function genres () {
-   if ($this->main_genres == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $this->main_genres = array();
-    $genre_s = strpos($this->page["Title"],"/Sections/Genres/") -5;
-    if ($genre_s === FALSE) return array(); // no genre found
-    $genre_e = strpos($this->page["Title"],"/rg/title-tease/",$genre_s);
-    $block = substr($this->page["Title"],$genre_s,$genre_e-$genre_s);
-    preg_match_all("/\/Sections\/Genres\/.*?>(.*?)</",$block,$matches);
-    $this->main_genres = $matches[1];
-   }
-   return $this->main_genres;
+    if ($this->main_genres == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches);
+      $this->main_genres = $matches[1];
+    }
+    return $this->main_genres;
   }
 
  #----------------------------------------------------------[ Color format ]---
@@ -413,12 +408,12 @@
    * @return array colors (array[0..1] of strings)
    */
   function colors () {
-   if ($this->main_colors == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches);
-    $this->main_colors = $matches[1];
-   }
-   return $this->main_colors;
+    if ($this->main_colors == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches);
+      $this->main_colors = $matches[1];
+    }
+    return $this->main_colors;
   }
 
  #---------------------------------------------------------------[ Tagline ]---
@@ -427,15 +422,12 @@
    * @return string tagline
    */
   function tagline () {
-   if ($this->main_tagline == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $tag_s = strpos ($this->page["Title"], "Tagline:");
-    if ( $tag_s == 0) return FALSE;
-    $tag_s = strpos ($this->page["Title"], ">", $tag_s);
-    $tag_e = strpos ($this->page["Title"], "<", $tag_s);
-    $this->main_tagline = substr ($this->page["Title"], $tag_s + 1, $tag_e - $tag_s - 1);
-   }
-   return $this->main_tagline;
+    if ($this->main_tagline == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      @preg_match("/Tagline:\<\/h5\>\s*\n(.*?)\<a class\=\"tn15more/ms",$this->page["Title"],$match);
+      $this->main_tagline = $match[1];
+    }
+    return $this->main_tagline;
   }
 
  #---------------------------------------------------------------[ Seasons ]---
@@ -463,11 +455,8 @@
   function plotoutline () {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      $plotoutline_s = strpos ($this->page["Title"], "Plot Outline:");
-      if ( $plotoutline_s == 0) return FALSE;
-      $plotoutline_s = strpos ($this->page["Title"], ">", $plotoutline_s);
-      $plotoutline_e = strpos ($this->page["Title"], "<", $plotoutline_s);
-      $this->main_plotoutline = substr ($this->page["Title"], $plotoutline_s + 1, $plotoutline_e - $plotoutline_s - 1);
+      @preg_match("/Plot Outline:\<\/h5\>\s*\n(.*?)\</ms",$this->page["Title"],$match);
+      $this->main_plotoutline = $match[1];
     }
     return $this->main_plotoutline;
   }
@@ -478,16 +467,13 @@
    * @return mixed photo (string url if found, FALSE otherwise)
    */
   function photo () {
-   if ($this->main_photo == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $tag_s = strpos ($this->page["Title"], "<a name=\"poster\"");
-    if ($tag_s == 0) return FALSE;
-    $tag_s = strpos ($this->page["Title"], "http://",$tag_s);
-    $tag_e = strpos ($this->page["Title"], '"', $tag_s);
-    $this->main_photo = substr ($this->page["Title"], $tag_s, $tag_e - $tag_s);
-    if ($tag_s == 0) return FALSE;
-   }
-   return $this->main_photo;
+    if ($this->main_photo == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
+      if (empty($match[3])) return FALSE;
+      $this->main_photo = $match[3];
+    }
+    return $this->main_photo;
   }
 
   /** Save the photo to disk
@@ -496,28 +482,26 @@
    * @return boolean success
    */
   function savephoto ($path) {
-   $req = new IMDB_Request("");
-   $photo_url = $this->photo ();
-   if (!$photo_url) return FALSE;
-   $req->setURL($photo_url);
-   $req->sendRequest();
-   if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
-     || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
-     || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
+    $req = new IMDB_Request("");
+    $photo_url = $this->photo ();
+    if (!$photo_url) return FALSE;
+    $req->setURL($photo_url);
+    $req->sendRequest();
+    if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
+      || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
+      || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
 	$fp = $req->getResponseBody();
-   }else{
+    }else{
 	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
 	return false;
-   }
-
-   $fp2 = fopen ($path, "w");
-   if ((!$fp) || (!$fp2)){
-     $this->debug_scalar("image error...<BR>");
-     return false;
-   }
-
-   fputs ($fp2, $fp);
-   return TRUE;
+    }
+    $fp2 = fopen ($path, "w");
+    if ((!$fp) || (!$fp2)){
+      $this->debug_scalar("image error...<BR>");
+      return false;
+    }
+    fputs ($fp2, $fp);
+    return TRUE;
   }
 
   /** Get the URL for the movies cover photo
@@ -540,11 +524,7 @@
    if ($this->main_country == "") {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_country = array();
-    $country_s = strpos($this->page["Title"],"/Sections/Countries/") -5;
-    if ($country_s === FALSE) return array(); // no country found
-    $country_e = strpos($this->page["Title"],"</div>",$country_s);
-    $block = substr($this->page["Title"],$country_s,$country_e-$country_s);
-    preg_match_all("/\/Sections\/Countries.*?>(.*?)</",$block,$matches);
+    preg_match_all("/\/Sections\/Countries\/\w+\/\"\>(.*?)<\/a/",$this->page["Title"],$matches);
     for ($i=0;$i<count($matches[0]);++$i) $this->main_country[$i] = $matches[1][$i];
    }
    return $this->main_country;
