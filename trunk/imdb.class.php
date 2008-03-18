@@ -14,17 +14,19 @@
  require_once (dirname(__FILE__)."/browseremulator.class.php");
  require_once (dirname(__FILE__)."/imdb_config.php");
 
- #===============================================[ The IMDB class itself ]===
+ #=================================================[ The IMDB class itself ]===
  /** Accessing IMDB information
   * @package Api
   * @class imdb
   * @extends imdb_config
-  * @author Izzy (izzysoft@qumran.org)
+  * @author Georgos Giagas
+  * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
  class imdb extends imdb_config {
 
+ #---------------------------------------------------------[ Debug helpers ]---
   function debug_scalar($scalar) {
     if ($this->debug) echo "<b><font color='#ff0000'>$scalar</font></b><br>";
   }
@@ -39,6 +41,7 @@
     if ($this->debug) echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
   }
 
+ #-------------------------------------------------------------[ Open Page ]---
   /** Open an IMDB page
    * @method openpage
    * @param string wt
@@ -123,6 +126,7 @@
    $this->debug_scalar("cannot open page: $url");
   }
 
+ #-------------------------------------------------------[ Get current MID ]---
   /** Retrieve the IMDB ID
    * @method imdbid
    * @return string id
@@ -131,6 +135,7 @@
    return $this->imdbID;
   }
 
+ #--------------------------------------------------[ Start (over) / Reset ]---
   /** Setup class for a new IMDB id
    * @method setid
    * @param string id
@@ -188,6 +193,7 @@
    $this->extreviews = array();
   }
 
+ #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor imdb
    * @param string id
@@ -198,6 +204,7 @@
    if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
   }
 
+ #---------------------------------------------------------[ Cache Purging ]---
   /** Check cache and purge outdated files
    *  This method looks for files older than the cache_expire set in the
    *  imdb_config and removes them
@@ -215,9 +222,12 @@
           if ($mod && ($now - $mod > $this->cache_expire)) unlink($fname);
         }
       }
+    } elseif (!empty($this->cachedir)) {
+      $this->debug_scalar("Cache directory (".$this->cachedir.") does not exist - purge aborted.");
     }
   }
 
+ #-----------------------------------------------[ URL to movies main page ]---
   /** Set up the URL to the movie title page
    * @method main_url
    * @return string url
@@ -226,21 +236,24 @@
    return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
   }
 
+ #-------------------------------------------[ Movie title (name) and year ]---
+  /** Set title and year
+   * @method private title_year
+   */
+  function title_year() {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    @preg_match("/\<title\>(.*) \((\d{4}).*\)\<\/title\>/",$this->page["Title"],$match);
+    $this->main_title = $match[1];
+    $this->main_year  = $match[2];
+  }
+
   /** Get movie title
    * @method title
    * @return string title
    */
   function title () {
-   if ($this->main_title == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $this->main_title = strstr ($this->page["Title"], "<title>");
-    $endpos = strpos ($this->main_title, "</title>");
-    $this->main_title = substr ($this->main_title, 7, $endpos - 7);
-    $year_s = strpos ($this->main_title, "(", 0);
-    $year_e = strpos ($this->main_title, ")", 0);
-    $this->main_title = substr ($this->main_title, 0, $year_s - 1);
-   }
-   return $this->main_title;
+    if ($this->main_title == "") $this->title_year();
+    return $this->main_title;
   }
 
   /** Get year
@@ -248,47 +261,33 @@
    * @return string year
    */
   function year () {
-   if ($this->main_year == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $this->main_year = strstr ($this->page["Title"], "<title>");
-    $endpos = strpos ($this->main_title, "</title>");
-    $this->main_year = substr ($this->main_year, 7, $endpos - 7);
-    $y = preg_match("/\((\d{4})\)/",$this->main_year,$match);
-    $this->main_year = $match[1];
-   }
-   return $this->main_year;
+    if ($this->main_year == "") $this->title_year();
+    return $this->main_year;
   }
 
+ #---------------------------------------------------------------[ Runtime ]---
   /** Get general runtime
    * @method private runtime_all
    * @return string runtime
-   * @brief simply returns the complete runtime block. You should not use this
-   *  method - it maybe removed soon ;)
    */
-  function runtime_all () {
-   if ($this->main_runtime == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $runtime_s = strpos ($this->page["Title"], "Runtime:");
-    $runtime_e = strpos ($this->page["Title"], "</div>", $runtime_s);
-    $this->main_runtime = substr ($this->page["Title"], $runtime_s + 13, $runtime_e - $runtime_s - 14);
-    if ($runtime_s == 0)
-	$this->main_runtime = "";
+  function runtime_all() {
+    if ($this->main_runtime == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      @preg_match("/Runtime:\<\/h5\>\n(.*?)\n/m",$this->page["Title"],$match);
+      $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
   }
 
-  /** Get overall runtime
+  /** Get overall runtime (first one mentioned on title page)
    * @method runtime
    * @return mixed string runtime (if set), NULL otherwise
    */
-  function runtime(){
-   if (empty($this->main_runtimes)) $runarr = $this->runtimes();
-   else $runarr = $this->main_runtimes;
-   if (isset($runarr[0]["time"])){
-	return $runarr[0]["time"];
-   }else{
-	return NULL;
-   }
+  function runtime() {
+    if (empty($this->main_runtimes)) $runarr = $this->runtimes();
+    else $runarr = $this->main_runtimes;
+    if (isset($runarr[0]["time"])) return $runarr[0]["time"];
+    return NULL;
   }
 
   /** Retrieve language specific runtimes
@@ -296,13 +295,23 @@
    * @return array runtimes (array[0..n] of array[time,country,comment])
    */
   function runtimes(){
-   if ($this->main_runtimes == "") {
-    if ($this->runtime_all() == "") return array();
-    if (empty($this->main_runtime)) $runtime = $this->runtime_all;
-    preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches);
-    for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
-   }
-   return $this->main_runtimes;
+    if ($this->main_runtimes == "") {
+      if ($this->runtime_all() == "") return array();
+      preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches);
+      for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
+    }
+    return $this->main_runtimes;
+  }
+
+ #----------------------------------------------------------[ Movie Rating ]---
+  /** Setup votes
+   * @method private rate_vote
+   */
+  function rate_vote() {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    @preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*<small\>\(\<a href\=\"ratings\"\>([\d\,]+)/m",$this->page["Title"],$match);
+    $this->main_rating = $match[1];
+    $this->main_votes  = $match[3];
   }
 
   /** Get movie rating
@@ -310,32 +319,8 @@
    * @return string rating
    */
   function rating () {
-   if ($this->main_rating == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $rate_s = strpos ($this->page["Title"], "User Rating:");
-    if ( $rate_s == 0 )	return FALSE;
-    $rate_s = strpos ($this->page["Title"], "<b>", $rate_s);
-    $rate_e = strpos ($this->page["Title"], "/", $rate_s);
-    $this->main_rating = substr ($this->page["Title"], $rate_s + 3, $rate_e - $rate_s - 3);
-    if ($rate_e - $rate_s > 7) $this->main_rating = "";
-   }
-   return $this->main_rating;
-  }
-
-  /** Get movie comment
-   * @method comment
-   * @return string comment
-   */
-  function comment () {
-     if ($this->main_comment == "") {
-      if ($this->page["Title"] == "") $this->openpage ("Title");
-      $comment_s = strpos ($this->page["Title"], "people found the following comment useful:-");
-      if ( $comment_s == 0) return false;
-      $comment_e = strpos ($this->page["Title"], "Was the above comment useful to you?", $comment_s);
-      $this->main_comment = substr ($this->page["Title"], $comment_s + 43, $comment_e - $comment_s - 43);
-      $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$this->main_comment);
-     }
-     return $this->main_comment;
+    if ($this->main_rating == "") $this->rate_vote();
+    return $this->main_rating;
   }
 
   /** Return votes for this movie
@@ -343,19 +328,25 @@
    * @return string votes
    */
   function votes () {
-   if ($this->main_votes == "") {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $vote_s = strpos ($this->page["Title"], "User Rating:");
-    if ( $vote_s == 0) return false;
-    $vote_s = strpos ($this->page["Title"], "(", $vote_s);
-    $vote_e = strpos ($this->page["Title"], "votes", $vote_s);
-    $this->main_votes = substr ($this->page["Title"], $vote_s + 1, $vote_e - $vote_s - 2);
-    $this->main_votes = str_replace("ratings","http://".$this->imdbsite."/title/tt".$this->imdbID."/ratings", $this->main_votes);
-    $this->main_votes .= "</a>";
-   }
-   return $this->main_votes;
+    if ($this->main_votes == "") $this->rate_vote();
+    return $this->main_votes;
   }
 
+ #------------------------------------------------------[ Movie Comment(s) ]---
+  /** Get movie comment
+   * @method comment
+   * @return string comment
+   */
+  function comment () {
+    if ($this->main_comment == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      @preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match);
+      $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
+    }
+    return $this->main_comment;
+  }
+
+ #--------------------------------------------------------[ Language Stuff ]---
   /** Get movies original language
    * @method language
    * @return string language
@@ -383,6 +374,7 @@
    return $this->main_languages;
   }
 
+ #--------------------------------------------------------------[ Genre(s) ]---
   /** Get the movies main genre
    * @method genre
    * @return string genre
@@ -415,6 +407,7 @@
    return $this->main_genres;
   }
 
+ #----------------------------------------------------------[ Color format ]---
   /** Get colors
    * @method colors
    * @return array colors (array[0..1] of strings)
@@ -428,6 +421,7 @@
    return $this->main_colors;
   }
 
+ #---------------------------------------------------------------[ Tagline ]---
   /** Get the main tagline for the movie
    * @method tagline
    * @return string tagline
@@ -444,6 +438,7 @@
    return $this->main_tagline;
   }
 
+ #---------------------------------------------------------------[ Seasons ]---
   /** Get the number of seasons or 0 if not a series
    * @method seasons
    * @return int seasons
@@ -460,6 +455,7 @@
     return $this->main_seasons;
   }
 
+ #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
    * @method plotoutline
    * @return string plotoutline
@@ -476,6 +472,7 @@
     return $this->main_plotoutline;
   }
 
+ #--------------------------------------------------------[ Photo specific ]---
   /** Get cover photo
    * @method photo
    * @return mixed photo (string url if found, FALSE otherwise)
@@ -528,12 +525,13 @@
    * @return mixed url (string URL or FALSE if none)
    */
   function photo_localurl(){
-   $path = $this->photodir.$this->imdbid().".jpg";
-   if ( @fopen($path,"r")) return $this->photoroot.$this->imdbid().'.jpg';
-   if ($this->savephoto($path))	return $this->photoroot.$this->imdbid().'.jpg';
-   return false;
+    $path = $this->photodir.$this->imdbid().".jpg";
+    if ( @fopen($path,"r"))      return $this->photoroot.$this->imdbid().'.jpg';
+    if ($this->savephoto($path)) return $this->photoroot.$this->imdbid().'.jpg';
+    return false;
   }
 
+ #-------------------------------------------------[ Country of Production ]---
   /** Get country of production
    * @method country
    * @return array country (array[0..n] of string)
@@ -552,6 +550,7 @@
    return $this->main_country;
   }
 
+ #------------------------------------------------------------[ Movie AKAs ]---
   /** Get movies alternative names
    * @method alsoknow
    * @return array aka (array[0..n] of array[title,year,country,comment])
@@ -571,6 +570,7 @@
    return $this->main_alsoknow;
   }
 
+ #---------------------------------------------------------[ Sound formats ]---
   /** Get sound formats
    * @method sound
    * @return array sound (array[0..n] of strings)
@@ -584,6 +584,7 @@
    return $this->main_sound;
   }
 
+ #-------------------------------------------------------[ MPAA / PG / FSK ]---
   /** Get the MPAA data (PG?)
    * @method mpaa
    * @return array mpaa (array[country]=rating)
@@ -598,7 +599,7 @@
    return $this->main_mpaa;
   }
 
-#------------------------------------------------------[ /plotsummary page ]---
+ #-----------------------------------------------------[ /plotsummary page ]---
   /** Get the movies plot(s)
    * @method plot
    * @return array plot (array[0..n] of strings)
@@ -614,7 +615,7 @@
    return $this->plot_plot;
   }
 
-#---------------------------------------------------------[ /taglines page ]---
+ #--------------------------------------------------------[ /taglines page ]---
   /** Get all available taglines for the movie
    * @method taglines
    * @return array taglines (array[0..n] of strings)
@@ -629,7 +630,7 @@
    return $this->taglines;
   }
 
-#------------------------------------------------------[ /fullcredits page ]---
+ #-----------------------------------------------------[ /fullcredits page ]---
   /** Get rows for a given table on the page
    * @method private get_table_rows
    * @param string html
@@ -810,7 +811,7 @@
    return $this->credits_composer;
   }
 
-#-----------------------------------------------------[ /crazycredits page ]---
+ #----------------------------------------------------[ /crazycredits page ]---
   /** Get the Crazy Credits
    * @method crazy_credits
    * @return array crazy_credits (array[0..n] of string)
@@ -829,7 +830,7 @@
     return $this->crazy_credits;
   }
 
-#---------------------------------------------------------[ /episodes page ]---
+ #--------------------------------------------------------[ /episodes page ]---
   /** Get the series episode(s)
    * @method episodes
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
@@ -848,7 +849,7 @@
     return $this->main_episodes;
   }
 
-#------------------------------------------------------------[ /goofs page ]---
+ #-----------------------------------------------------------[ /goofs page ]---
   /** Get the goofs
    * @method goofs
    * @return array goofs (array[0..n] of array[type,content]
@@ -868,7 +869,7 @@
     return $this->goofs;
   }
 
-#-----------------------------------------------------------[ /quotes page ]---
+ #----------------------------------------------------------[ /quotes page ]---
   /** Get the quotes for a given movie
    * @method quotes
    * @return array quotes (array[0..n] of string)
@@ -883,7 +884,7 @@
     return $this->main_quotes;
   }
 
-#---------------------------------------------------------[ /trailers page ]---
+ #--------------------------------------------------------[ /trailers page ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
    * @return array trailers (array[0..n] of string)
@@ -909,7 +910,7 @@
     return $this->main_trailers;
   }
 
-#-----------------------------------------------------------[ /trivia page ]---
+ #----------------------------------------------------------[ /trivia page ]---
   /** Get the trivia info
    * @method trivia
    * @return array trivia (array[0..n] string
@@ -929,7 +930,7 @@
     return $this->trivia;
   }
 
-#-------------------------------------------------------[ /soundtrack page ]---
+ #------------------------------------------------------[ /soundtrack page ]---
   /** Get the soundtrack listing
    * @method soundtrack
    * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits)
@@ -950,7 +951,7 @@
    return $this->soundtracks;
   }
 
-#--------------------------------------------------[ /movieconnection page ]---
+ #-------------------------------------------------[ /movieconnection page ]---
   /** Parse connection block (used by method movieconnection only)
    * @method private parseConnection
    * @param string conn connection type
@@ -997,7 +998,7 @@
     return $this->movieconnections;
   }
 
-#-------------------------------------------------[ /externalreviews page ]---
+ #------------------------------------------------[ /externalreviews page ]---
   /** Get list of external reviews (if any)
    * @method extReviews
    * @return array [0..n] of array [url, desc] (or empty array if no data)
