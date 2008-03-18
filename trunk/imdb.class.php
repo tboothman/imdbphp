@@ -61,6 +61,7 @@
     case "Goofs"       : $urlname="/goofs"; break;
     case "Trivia"      : $urlname="/trivia"; break;
     case "Soundtrack"  : $urlname="/soundtrack"; break;
+    case "MovieConnections" : $urlname="/movieconnections"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -152,6 +153,7 @@
    $this->page["Episodes"] = "";
    $this->page["Quotes"] = "";
    $this->page["Trailers"] = "";
+   $this->page["MovieConnections"] = "";
 
    $this->main_title = "";
    $this->main_year = "";
@@ -180,6 +182,7 @@
    $this->goofs = array();
    $this->trivia = array();
    $this->soundtracks = array();
+   $this->movieconnections = array();
   }
 
   /** Initialize class
@@ -942,6 +945,53 @@
                                                          str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
    }
    return $this->soundtracks;
+  }
+
+#--------------------------------------------------[ /movieconnection page ]---
+  /** Parse connection block (used by method movieconnection only)
+   * @method private parseConnection
+   * @param string conn connection type
+   * @return array [0..n] of array mid,name,year,comment - or empty array if not found
+   */
+  function parseConnection($conn) {
+    $tag_s = strpos($this->page["MovieConnections"],"<h5>$conn</h5>");
+    if (empty($tag_s)) return array(); // no such feature
+    $tag_e = strpos($this->page["MovieConnections"],"<h5>",$tag_s+4);
+    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<hr/><h3>",$tag_s);
+    $block = substr($this->page["MovieConnections"],$tag_s,$tag_e-$tag_s);
+    preg_match_all("/\<a href=\"(.*?)\"\>(.*?)\<\/a\> \((\d{4})\)(.*\<br\/\>\&nbsp;-\&nbsp;(.*))?/",$block,$matches);
+    $mc = count($matches[0]);
+    for ($i=0;$i<$mc;++$i) {
+      $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-10); // isolate imdb id from url
+      $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>$matches[5][$i]);
+    }
+    return $arr;
+  }
+
+  /** Get connected movie information
+   * @method movieconnection
+   * @return array connections (versionOf, editedInto, followedBy, spinOff,
+   *         spinOffFrom, references, referenced, features, featured, spoofs,
+   *         spoofed - each an array of mid, name, year, comment or an empty
+   *         array if no connections of that type)
+   */
+  function movieconnection() {
+    if (empty($this->movieconnections)) {
+      if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
+      if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
+      $this->movieconnections["versionOf"]  = $this->parseConnection("Version of");
+      $this->movieconnections["editedInto"] = $this->parseConnection("Edited into");
+      $this->movieconnections["followedBy"] = $this->parseConnection("Followed By");
+      $this->movieconnections["spinOffFrom"] = $this->parseConnection("Spin off from");
+      $this->movieconnections["spinOff"] = $this->parseConnection("Spin off");
+      $this->movieconnections["references"] = $this->parseConnection("References");
+      $this->movieconnections["referenced"] = $this->parseConnection("Referenced in");
+      $this->movieconnections["features"] = $this->parseConnection("Features");
+      $this->movieconnections["featured"] = $this->parseConnection("Featured in");
+      $this->movieconnections["spoofs"] = $this->parseConnection("Spoofs");
+      $this->movieconnections["spoofed"] = $this->parseConnection("Spoofed in");
+    }
+    return $this->movieconnections;
   }
 
 
