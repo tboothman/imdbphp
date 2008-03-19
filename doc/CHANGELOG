@@ -7,6 +7,7 @@ v0.9.3
   maybe comment)
 + new method extReviews() returns external reviews for this movie (url,desc)
 * some code cleanup, optimization and comments
+* minor optical enhancements to the demo pages
 
 v0.9.2 (13.03.2008)
 -------------------

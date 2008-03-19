@@ -1,13 +1,13 @@
-<HTML>
-	<HEAD><TITLE>imdb php classes test</TITLE></HEAD>
-
-	<BODY>
-		<FORM ACTION="imdbsearch.php" METHOD=get>
-			<INPUT TYPE="text" NAME="name" SIZE=30 MAXLENGTH=50><BR>
-			<INPUT TYPE="submit" VALUE="Submit">
-		</FORM>
-		<BR><BR><A href="cache.php">view movies in cache</A>	
-
-	</BODY>
-
-</HTML>
+<HTML><HEAD>
+  <TITLE>imdb php classes test</TITLE>
+</HEAD><BODY>
+<FORM ACTION="imdbsearch.php" METHOD="get">
+ <TABLE ALIGN="center" STYLE="margin-top:20px;border-collapse:collapse;" BORDER="1">
+  <TR><TH COLSPAN="2" STYLE="background-color:#ffb000">Search IMDB for...</TH></TR>
+  <TR><TD>Movie Name:</TD><TD><INPUT TYPE="text" NAME="name" SIZE="30" MAXLENGTH="50"></TD></TR>
+  <TR><TD>or IMDB ID:</TD><TD><INPUT TYPE="text" NAME="mid"  SIZE="30" MAXLENGTH="7"></TD></TR>
+  <TR><TD COLSPAN="2" ALIGN="center"><INPUT TYPE="submit" VALUE="Search"></TD></TR>
+ </TABLE>
+</FORM>
+<P ALIGN="center"><A href="cache.php">view movies in cache</A></P>
+</BODY></HTML>
