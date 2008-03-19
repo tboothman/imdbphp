@@ -1069,14 +1069,9 @@
           return $this->results($header);
           break(4);
         }
-        #--- @moonface variant (not tested)
-        # $idpos = strpos($header, "/Title?") + 7;
-        # $this->resu[0] = new imdb( substr($header, $idpos,7));
-        #--- end @moonface / start sevec variant
         $url = explode("/",$header);
         $id  = substr($url[count($url)-2],2);
         $this->resu[0] = new imdb($id);
-        #--- end Sevec variant
         return $this->resu;
        }else{
         return NULL;

@@ -20,16 +20,15 @@ if (isset ($_GET["mid"])) {
   $movie->setid ($movieid);
 
   echo '<HTML><HEAD><TITLE>'.$movie->title().' ('.$movie->year().')';
-  echo "</TITLE></HEAD>\n<BODY>";
+  echo "</TITLE></HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
-  echo '<TABLE><TR><TD colspan=3><FONT size=6><B>';
-  echo $movie->title().'</B> ('.$movie->year().')</FONT><BR><br>';
-  echo "</TD></tr>\n";
+  echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
+  echo $movie->title().' ('.$movie->year().")</TD></tr>\n";
   flush();
 
   # Photo
-  echo '<TR><TD rowspan=110 valign=top>';
+  echo '<TR><TD rowspan="28" valign="top">';
   if (($photo_url = $movie->photo_localurl() ) != FALSE) {
     echo '<img src="'.$photo_url.'" alt="Cover">';
   } else {
@@ -75,7 +74,7 @@ if (isset ($_GET["mid"])) {
 
   # MPAA
   echo '<TR><TD><B>MPAA:</b></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Country</th><th>Rating</th></tr>";
+  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Country</th><th style='background-color:#07f;'>Rating</th></tr>";
   foreach ($movie->mpaa() as $key=>$mpaa) {
     echo "<tr><td>$key</td><td>$mpaa</td></tr>";
   }
@@ -140,7 +139,7 @@ if (isset ($_GET["mid"])) {
   # director(s)
   $director = $movie->director();
   echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Director</th><th>Role</th></tr>";
+  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
   for ($i = 0; $i < count($director); $i++) {
     echo '<tr><td width=200>';
     echo '<a href="http://us.imdb.com/Name?'.$director[$i]["imdb"].'">';
@@ -152,7 +151,7 @@ if (isset ($_GET["mid"])) {
   # Story
   $write = $movie->writing();
   echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Writer</th><th>Role</th></tr>";
+  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
   for ($i = 0; $i < count($write); $i++) {
     echo '<tr><td width=200>';
     echo '<a href="http://us.imdb.com/Name?'.$write[$i]["imdb"].'">';
@@ -165,7 +164,7 @@ if (isset ($_GET["mid"])) {
   # Producer
   $produce = $movie->producer();
   echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Producer</th><th>Role</th></tr>";
+  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
   for ($i = 0; $i < count($produce); $i++) {
     echo '<tr><td width=200>';
     echo '<a href="http://us.imdb.com/Name?'.$produce[$i]["imdb"].'">';
@@ -178,7 +177,7 @@ if (isset ($_GET["mid"])) {
   $compose = $movie->composer();
   if (!empty($compose)) {
     echo '<TR><TD valign=top><B>Music:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Composer</th><th>Role</th></tr>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($compose); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="http://us.imdb.com/Name?'.$compose[$i]["imdb"].'">';
@@ -191,7 +190,7 @@ if (isset ($_GET["mid"])) {
   # Cast
   $cast = $movie->cast();
   echo '<TR><TD valign=top><B>Cast:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse'><tr><th>Actor</th><th>Role</th></tr>";
+  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
   for ($i = 0; $i < count($cast); $i++) {
     echo '<tr><td width=200>';
     echo '<a href="http://us.imdb.com/Name?'.$cast[$i]["imdb"].'">';
@@ -286,7 +285,7 @@ if (isset ($_GET["mid"])) {
   if ($gc > 0) {
     echo '<tr><td valign=top><b>Soundtracks:</b></td><td>';
     echo "There are $gc soundtracks listed - like these:<br>";
-    echo "<table align='center' border='1' style='border-collapse:collapse'><tr><th>Soundtrack</th><th>Credit 1</th><th>Credit 2</th></tr>";
+    echo "<table align='center' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Soundtrack</th><th style='background-color:#07f;'>Credit 1</th><th style='background-color:#07f;'>Credit 2</th></tr>";
     for ($i=0;$i<5;++$i) {
       if (empty($soundtracks[$i])) break;
       echo "<tr><td>".$soundtracks[$i]["soundtrack"]."</td><td>".$soundtracks[$i]["credits"][0]."</td><td>".$soundtracks[$i]["credits"][1]."</td></tr>";
