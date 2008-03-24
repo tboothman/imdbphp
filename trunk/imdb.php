@@ -132,46 +132,54 @@ if (isset ($_GET["mid"])) {
   }
   echo $sound[$i].'</TD></TR>';
 
-  echo '<TR><TD valign=top><B>Tagline:</B></TD><TD>';
-  echo $movie->tagline().'</TD></TR>';
+  $tagline = $movie->tagline();
+  if (!empty($tagline)) {
+    echo '<TR><TD valign=top><B>Tagline:</B></TD><TD>$tagline</TD></TR>';
+  }
 
   #==[ Staff ]==
   # director(s)
   $director = $movie->director();
-  echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
-  for ($i = 0; $i < count($director); $i++) {
-    echo '<tr><td width=200>';
-    echo '<a href="http://us.imdb.com/Name?'.$director[$i]["imdb"].'">';
-    echo $director[$i]["name"].'</a></td><td>';
-    echo $director[$i]["role"]."</td></tr>\n";
+  if (!empty($director)) {
+    echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    for ($i = 0; $i < count($director); $i++) {
+      echo '<tr><td width=200>';
+      echo '<a href="http://us.imdb.com/Name?'.$director[$i]["imdb"].'">';
+      echo $director[$i]["name"].'</a></td><td>';
+      echo $director[$i]["role"]."</td></tr>\n";
+    }
+    echo '</table></td></tr>';
   }
-  echo '</table></td></tr>';
 
   # Story
   $write = $movie->writing();
-  echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
-  for ($i = 0; $i < count($write); $i++) {
-    echo '<tr><td width=200>';
-    echo '<a href="http://us.imdb.com/Name?'.$write[$i]["imdb"].'">';
-    echo $write[$i]["name"].'</a></td><td>';
-    echo $write[$i]["role"]."</td></tr>\n";
+  if (!empty($write)) {
+    echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    for ($i = 0; $i < count($write); $i++) {
+      echo '<tr><td width=200>';
+      echo '<a href="http://us.imdb.com/Name?'.$write[$i]["imdb"].'">';
+      echo $write[$i]["name"].'</a></td><td>';
+      echo $write[$i]["role"]."</td></tr>\n";
+    }
+    echo '</table></td></tr>';
   }
-  echo '</table></td></tr>';
   flush();
 
   # Producer
   $produce = $movie->producer();
-  echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
-  for ($i = 0; $i < count($produce); $i++) {
-    echo '<tr><td width=200>';
-    echo '<a href="http://us.imdb.com/Name?'.$produce[$i]["imdb"].'">';
-    echo $produce[$i]["name"].'</a></td><td>';
-    echo $produce[$i]["role"]."</td></tr>\n";
+  if (!empty($produce)) {
+    echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    for ($i = 0; $i < count($produce); $i++) {
+      echo '<tr><td width=200>';
+      echo '<a href="http://us.imdb.com/Name?'.$produce[$i]["imdb"].'">';
+      echo $produce[$i]["name"].'</a></td><td>';
+      echo $produce[$i]["role"]."</td></tr>\n";
+    }
+    echo '</table></td></tr>';
   }
-  echo '</table></td></tr>';
 
   # Music
   $compose = $movie->composer();
@@ -214,11 +222,13 @@ if (isset ($_GET["mid"])) {
 
   # Taglines
   $taglines = $movie->taglines();
-  echo '<tr><td valign=top><b>Taglines:</b></td><td><ul>';
-  for ($i = 0; $i < count($taglines); $i++) {
-    echo "<li>".$taglines[$i]."</li>\n";
+  if (!empty($taglines)) {
+    echo '<tr><td valign=top><b>Taglines:</b></td><td><ul>';
+    for ($i = 0; $i < count($taglines); $i++) {
+      echo "<li>".$taglines[$i]."</li>\n";
+    }
+    echo '</ul></td></tr>';
   }
-  echo '</ul></td></tr>';
 
   if ( $movie->seasons() != 0 ) {
     $episodes = $movie->episodes();
