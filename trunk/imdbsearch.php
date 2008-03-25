@@ -27,6 +27,8 @@ if (empty($_GET["name"])) {
 # Still here? Then we need to search for the movie:
 require ("imdb.class.php");
 $search = new imdbsearch ();
+if ($_GET["searchtype"]=="episode") $search->search_episodes(TRUE);
+else $search->search_episodes(FALSE);
 $search->setsearchname ($_GET["name"]);
 echo "<HTML><HEAD><TITLE>Performing IMDB search for '".$_GET["name"]."'...</TITLE></HEAD><BODY>\n";
 $results = $search->results ();
