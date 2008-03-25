@@ -307,8 +307,8 @@
   function runtimes(){
     if (empty($this->main_runtimes)) {
       if ($this->runtime_all() == "") return array();
-      preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches);
-      for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
+      if (preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches))
+        for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
     }
     return $this->main_runtimes;
   }
