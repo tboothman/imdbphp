@@ -4,8 +4,10 @@
 <FORM ACTION="imdbsearch.php" METHOD="get">
  <TABLE ALIGN="center" STYLE="margin-top:20px;border-collapse:collapse;" BORDER="1">
   <TR><TH COLSPAN="2" STYLE="background-color:#ffb000">Search IMDB for...</TH></TR>
-  <TR><TD>Movie Name:</TD><TD><INPUT TYPE="text" NAME="name" SIZE="30" MAXLENGTH="50"></TD></TR>
-  <TR><TD>or IMDB ID:</TD><TD><INPUT TYPE="text" NAME="mid"  SIZE="30" MAXLENGTH="7"></TD></TR>
+  <TR><TD ALIGN="right">Movie Name:<BR>Type:</TD>
+      <TD><INPUT TYPE="text" NAME="name" SIZE="30" MAXLENGTH="50"><BR>
+          <SELECT NAME="searchtype"><OPTION VALUE="movie">Movie</OPTION><OPTION VALUE="episode">Episode</OPTION></SELECT></TD></TR>
+  <TR><TD ALIGN="right">or IMDB ID:</TD><TD><INPUT TYPE="text" NAME="mid"  SIZE="30" MAXLENGTH="7"></TD></TR>
   <TR><TD COLSPAN="2" ALIGN="center"><INPUT TYPE="submit" VALUE="Search"></TD></TR>
  </TABLE>
 </FORM>
