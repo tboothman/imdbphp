@@ -162,35 +162,44 @@
    $this->page["MovieConnections"] = "";
    $this->page["ExtReviews"] = "";
 
-   $this->main_title = "";
-   $this->main_year = "";
-   $this->main_runtime = "";
-   $this->main_rating = "";
-   $this->main_comment = "";
-   $this->main_votes = "";
-   $this->main_language = "";
-   $this->main_genre = "";
-   $this->main_genres = "";
-   $this->main_tagline = "";
-   $this->main_plotoutline = "";
-   $this->main_alttitle = "";
-   $this->main_colors = "";
+   $this->crazy_credits = array();
    $this->credits_cast = "";
    $this->credits_composer = "";
    $this->credits_director = "";
    $this->credits_producer = "";
    $this->credits_writing = "";
-   $this->main_director = "";
-   $this->main_seasons = "";
-   $this->main_episodes = "";
-   $this->main_quotes = array();
-   $this->main_trailers = array();
-   $this->crazy_credits = array();
-   $this->goofs = array();
-   $this->trivia = array();
-   $this->soundtracks = array();
-   $this->movieconnections = array();
    $this->extreviews = array();
+   $this->goofs = array();
+   $this->main_alsoknow = "";
+   $this->main_alttitle = "";
+   $this->main_colors = array();
+   $this->main_comment = "";
+   $this->main_country = array();
+   $this->main_director = "";
+   $this->main_episodes = "";
+   $this->main_genre = "";
+   $this->main_genres = array();
+   $this->main_language = "";
+   $this->main_languages = array();
+   $this->main_mpaa = array();
+   $this->main_photo = "";
+   $this->main_plotoutline = "";
+   $this->main_quotes = array();
+   $this->main_rating = "";
+   $this->main_runtime = "";
+   $this->main_runtimes = array();
+   $this->main_seasons = "";
+   $this->main_sound = array();
+   $this->main_title = "";
+   $this->main_trailers = array();
+   $this->main_votes = "";
+   $this->main_year = "";
+   $this->main_tagline = "";
+   $this->movieconnections = array();
+   $this->plot_plot = array();
+   $this->soundtracks = array();
+   $this->taglines = array();
+   $this->trivia = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -242,9 +251,10 @@
    */
   function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    @preg_match("/\<title\>(.*) \((\d{4}).*\)\<\/title\>/",$this->page["Title"],$match);
-    $this->main_title = $match[1];
-    $this->main_year  = $match[2];
+    if (@preg_match("/\<title\>(.*) \((\d{4}).*\)\<\/title\>/",$this->page["Title"],$match)) {
+      $this->main_title = $match[1];
+      $this->main_year  = $match[2];
+    }
   }
 
   /** Get movie title
@@ -273,8 +283,8 @@
   function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      @preg_match("/Runtime:\<\/h5\>\n(.*?)\n/m",$this->page["Title"],$match);
-      $this->main_runtime = $match[1];
+      if (@preg_match("/Runtime:\<\/h5\>\n(.*?)\n/m",$this->page["Title"],$match))
+        $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
   }
@@ -295,7 +305,7 @@
    * @return array runtimes (array[0..n] of array[time,country,comment])
    */
   function runtimes(){
-    if ($this->main_runtimes == "") {
+    if (empty($this->main_runtimes)) {
       if ($this->runtime_all() == "") return array();
       preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches);
       for ($i=0;$i<count($matches[0]);++$i) $this->main_runtimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
@@ -309,9 +319,10 @@
    */
   function rate_vote() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    @preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*<small\>\(\<a href\=\"ratings\"\>([\d\,]+)/m",$this->page["Title"],$match);
-    $this->main_rating = $match[1];
-    $this->main_votes  = $match[3];
+    if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*<small\>\(\<a href\=\"ratings\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
+      $this->main_rating = $match[1];
+      $this->main_votes  = $match[3];
+    }
   }
 
   /** Get movie rating
@@ -340,8 +351,8 @@
   function comment () {
     if ($this->main_comment == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      @preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match);
-      $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
+      if (@preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match))
+        $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
     }
     return $this->main_comment;
   }
@@ -366,10 +377,10 @@
    * @return array languages (array[0..n] of strings)
    */
   function languages () {
-   if ($this->main_languages == "") {
+   if (empty($this->main_languages)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match_all("/\/Sections\/Languages\/.*?>(.*?)</",$this->page["Title"],$matches);
-    $this->main_languages = $matches[1];
+    if (preg_match_all("/\/Sections\/Languages\/.*?>(.*?)</",$this->page["Title"],$matches))
+      $this->main_languages = $matches[1];
    }
    return $this->main_languages;
   }
@@ -382,9 +393,9 @@
    *  simply returns the first one
    */
   function genre () {
-   if ($this->main_genre == "") {
+   if (empty($this->main_genre)) {
     if (empty($this->main_genres)) $genres = $this->genres();
-    $this->main_genre = $this->main_genres[0];
+    if (!empty($genres)) $this->main_genre = $this->main_genres[0];
    }
    return $this->main_genre;
   }
@@ -394,10 +405,10 @@
    * @return array genres (array[0..n] of strings)
    */
   function genres () {
-    if ($this->main_genres == "") {
+    if (empty($this->main_genres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches);
-      $this->main_genres = $matches[1];
+      if (preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
+        $this->main_genres = $matches[1];
     }
     return $this->main_genres;
   }
@@ -408,10 +419,10 @@
    * @return array colors (array[0..1] of strings)
    */
   function colors () {
-    if ($this->main_colors == "") {
+    if (empty($this->main_colors)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches);
-      $this->main_colors = $matches[1];
+      if (preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches))
+        $this->main_colors = $matches[1];
     }
     return $this->main_colors;
   }
@@ -424,8 +435,10 @@
   function tagline () {
     if ($this->main_tagline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      @preg_match("/Tagline:\<\/h5\>\s*\n(.*?)\<a class\=\"tn15more/ms",$this->page["Title"],$match);
-      $this->main_tagline = $match[1];
+      if (@preg_match("/Tagline:\<\/h5\>\s*\n(.*?)\<\/div/ms",$this->page["Title"],$match)) {
+        if(@preg_match("/^(.*?)\<a class\=\"tn15more/ms",$match[1],$match2)) $this->main_tagline = $match2[1];
+        else $this->main_tagline = $match[1];
+      }
     }
     return $this->main_tagline;
   }
@@ -455,8 +468,8 @@
   function plotoutline () {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      @preg_match("/Plot Outline:\<\/h5\>\s*\n(.*?)\</ms",$this->page["Title"],$match);
-      $this->main_plotoutline = $match[1];
+      if (@preg_match("/Plot Outline:\<\/h5\>\s*\n(.*?)\</ms",$this->page["Title"],$match))
+        $this->main_plotoutline = $match[1];
     }
     return $this->main_plotoutline;
   }
@@ -467,7 +480,7 @@
    * @return mixed photo (string url if found, FALSE otherwise)
    */
   function photo () {
-    if ($this->main_photo == "") {
+    if (empty($this->main_photo)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
       if (empty($match[3])) return FALSE;
@@ -521,11 +534,11 @@
    * @return array country (array[0..n] of string)
    */
   function country () {
-   if ($this->main_country == "") {
+   if (empty($this->main_country)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->main_country = array();
-    preg_match_all("/\/Sections\/Countries\/\w+\/\"\>(.*?)<\/a/",$this->page["Title"],$matches);
-    for ($i=0;$i<count($matches[0]);++$i) $this->main_country[$i] = $matches[1][$i];
+    if (preg_match_all("/\/Sections\/Countries\/\w+\/\"\>(.*?)<\/a/",$this->page["Title"],$matches))
+      for ($i=0;$i<count($matches[0]);++$i) $this->main_country[$i] = $matches[1][$i];
    }
    return $this->main_country;
   }
@@ -536,7 +549,7 @@
    * @return array aka (array[0..n] of array[title,year,country,comment])
    */
   function alsoknow () {
-   if ($this->main_alsoknow == "") {
+   if (empty($this->main_alsoknow)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>");
     if ($ak_s>0) $ak_s += 19;
@@ -544,8 +557,8 @@
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-    preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches);
-    for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
+    if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches))
+      for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
    }
    return $this->main_alsoknow;
   }
@@ -556,10 +569,10 @@
    * @return array sound (array[0..n] of strings)
    */
   function sound () {
-   if ($this->main_sound == "") {
+   if (empty($this->main_sound)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match_all("/\/List\?sound.*?>(.*?)</",$this->page["Title"],$matches);
-    $this->main_sound = $matches[1];
+    if (preg_match_all("/\/List\?sound.*?>(.*?)</",$this->page["Title"],$matches))
+      $this->main_sound = $matches[1];
    }
    return $this->main_sound;
   }
@@ -572,9 +585,10 @@
   function mpaa () {
    if (empty($this->main_mpaa)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match_all("/\/List\?certificates.*?>(.*?):(.*?)</",$this->page["Title"],$matches);
-    $cc = count($matches[0]);
-    for ($i=0;$i<$cc;++$i) $this->main_mpaa[$matches[1][$i]] = $matches[2][$i];
+    if (preg_match_all("/\/List\?certificates.*?>(.*?):(.*?)</",$this->page["Title"],$matches)) {
+      $cc = count($matches[0]);
+      for ($i=0;$i<$cc;++$i) $this->main_mpaa[$matches[1][$i]] = $matches[2][$i];
+    }
    }
    return $this->main_mpaa;
   }
@@ -585,12 +599,12 @@
    * @return array plot (array[0..n] of strings)
    */
   function plot () {
-   if ($this->plot_plot == "") {
+   if (empty($this->plot_plot)) {
     if ( $this->page["Plot"] == "" ) $this->openpage ("Plot");
     if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
-    preg_match_all("/p class=\"plotpar\">(.*?)<\/p>/",str_replace("\n"," ",$this->page["Plot"]),$matches);
-    for ($i=0;$i<count($matches[0]);++$i)
-      $this->plot_plot[$i] = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$matches[1][$i]);
+    if (preg_match_all("/p class=\"plotpar\">(.*?)<\/p>/",str_replace("\n"," ",$this->page["Plot"]),$matches))
+      for ($i=0;$i<count($matches[0]);++$i)
+        $this->plot_plot[$i] = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$matches[1][$i]);
    }
    return $this->plot_plot;
   }
@@ -601,11 +615,11 @@
    * @return array taglines (array[0..n] of strings)
    */
   function taglines () {
-   if ($this->taglines == "") {
+   if (empty($this->taglines)) {
     if ( $this->page["Taglines"] == "" ) $this->openpage ("Taglines");
     if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
-    preg_match_all("/<p>(.*?)<\/p><hr/",$this->page["Taglines"],$matches);
-    $this->taglines = $matches[1];
+    if (preg_match_all("/<p>(.*?)<\/p><hr/",$this->page["Taglines"],$matches))
+      $this->taglines = $matches[1];
    }
    return $this->taglines;
   }
@@ -623,9 +637,10 @@
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   preg_match_all("/<tr>(.*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches);
-   $mc = count($matches[1]);
-   for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i];
+   if (preg_match_all("/<tr>(.*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches)) {
+     $mc = count($matches[1]);
+     for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i];
+   }
    return $rows;
   }
 
@@ -641,8 +656,9 @@
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   preg_match_all("/<tr.*?(<td class=\"nm\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches);
-   return $matches[1];
+   if (preg_match_all("/<tr.*?(<td class=\"nm\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches))
+     return $matches[1];
+   return array();
   }
 
   /** Get content of table row cells
@@ -652,8 +668,8 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   function get_row_cels ( $row ){
-   preg_match_all("/<td.*?>(.*?)<\/td>/",$row,$matches);
-   return $matches[1];
+   if (preg_match_all("/<td.*?>(.*?)<\/td>/",$row,$matches)) return $matches[1];
+   return array();
   }
 
   /** Get the IMDB name (?)
@@ -804,8 +820,8 @@
       $tag_e = strpos ($this->page["CrazyCredits"],"</ul>",$tag_s);
       $cred  = str_replace ("<br>"," ",substr ($this->page["CrazyCredits"],$tag_s, $tag_e - $tag_s));
       $cred  = str_replace ("  "," ",str_replace ("\n"," ",$cred));
-      preg_match_all("/<li><tt>(.*?)<\/tt><\/li>/",$cred,$matches);
-      $this->crazy_credits = $matches[1];
+      if (preg_match_all("/<li><tt>(.*?)<\/tt><\/li>/",$cred,$matches))
+        $this->crazy_credits = $matches[1];
     }
     return $this->crazy_credits;
   }
@@ -842,9 +858,10 @@
       $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Goofs"],"</ul>");
       $goofs = substr($this->page["Goofs"],$tag_s,$tag_e - $tag_s);
-      preg_match_all("/<li><b>(.*?)<\/b>(.*?)<br><br><\/li>/",$goofs,$matches);
-      $gc = count($matches[1]);
-      for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
+      if (preg_match_all("/<li><b>(.*?)<\/b>(.*?)<br><br><\/li>/",$goofs,$matches)) {
+        $gc = count($matches[1]);
+        for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
+      }
     }
     return $this->goofs;
   }
@@ -858,8 +875,8 @@
     if ( empty($this->main_quotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
-      preg_match_all("/<a name=\"qt.*?<\/a>\s*(.*?)<hr/",str_replace("\n"," ",$this->page["Quotes"]),$matches);
-      $this->main_quotes = $matches[1];
+      if (preg_match_all("/<a name=\"qt.*?<\/a>\s*(.*?)<hr/",str_replace("\n"," ",$this->page["Quotes"]),$matches))
+        $this->main_quotes = $matches[1];
     }
     return $this->main_quotes;
   }
@@ -877,15 +894,15 @@
       if (!empty($tag_s)) { // trailers on the IMDB site itself
         $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
         $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        preg_match_all("/<a href=\"(\/rg\/VIDEO_TITLE.*?)\">/",$trail,$matches);
-        for ($i=0;$i<count($matches[0]);++$i) $this->main_trailers[] = "http://".$this->imdbsite.$matches[1][$i];
+        if (preg_match_all("/<a href=\"(\/rg\/VIDEO_TITLE.*?)\">/",$trail,$matches))
+          for ($i=0;$i<count($matches[0]);++$i) $this->main_trailers[] = "http://".$this->imdbsite.$matches[1][$i];
       }
       $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
       if (empty($tag_s)) return FALSE;
       $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
       $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
-      preg_match_all("/<a href=\"(.*?)\">/",$trail,$matches);
-      $this->main_trailers = array_merge($this->main_trailers,$matches[1]);
+      if (preg_match_all("/<a href=\"(.*?)\">/",$trail,$matches))
+        $this->main_trailers = array_merge($this->main_trailers,$matches[1]);
     }
     return $this->main_trailers;
   }
@@ -903,9 +920,10 @@
       $tag_e = strrpos($this->page["Trivia"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Trivia"],"</ul>");
       $goofs = substr($this->page["Trivia"],$tag_s,$tag_e - $tag_s);
-      preg_match_all("/<li>(.*?)<br><br><\/li>/",$goofs,$matches);
-      $gc = count($matches[1]);
-      for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
+      if (preg_match_all("/<li>(.*?)<br><br><\/li>/",$goofs,$matches)) {
+        $gc = count($matches[1]);
+        for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
+      }
     }
     return $this->trivia;
   }
@@ -922,11 +940,12 @@
    if (empty($this->soundtracks)) {
     if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
     if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
-    preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$this->page["Soundtrack"]),$matches);
-    $mc = count($matches[0]);
-    for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
-                                                         str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
-                                                         str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
+    if (preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$this->page["Soundtrack"]),$matches)) {
+      $mc = count($matches[0]);
+      for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
+                                                           str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
+                                                           str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
+    }
    }
    return $this->soundtracks;
   }
@@ -943,11 +962,12 @@
     $tag_e = strpos($this->page["MovieConnections"],"<h5>",$tag_s+4);
     if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<hr/><h3>",$tag_s);
     $block = substr($this->page["MovieConnections"],$tag_s,$tag_e-$tag_s);
-    preg_match_all("/\<a href=\"(.*?)\"\>(.*?)\<\/a\> \((\d{4})\)(.*\<br\/\>\&nbsp;-\&nbsp;(.*))?/",$block,$matches);
-    $mc = count($matches[0]);
-    for ($i=0;$i<$mc;++$i) {
-      $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-10); // isolate imdb id from url
-      $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>$matches[5][$i]);
+    if (preg_match_all("/\<a href=\"(.*?)\"\>(.*?)\<\/a\> \((\d{4})\)(.*\<br\/\>\&nbsp;-\&nbsp;(.*))?/",$block,$matches)) {
+      $mc = count($matches[0]);
+      for ($i=0;$i<$mc;++$i) {
+        $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-10); // isolate imdb id from url
+        $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>$matches[5][$i]);
+      }
     }
     return $arr;
   }
@@ -987,10 +1007,11 @@
     if (empty($this->extreviews)) {
       if (empty($this->page["ExtReviews"])) $this->openpage("ExtReviews");
       if ($this->page["ExtReviews"] == "cannot open page") return array(); // no such page
-      preg_match_all("/\<li\>\<a href=\"(.*?)\"\>(.*?)\<\/a\>/",$this->page["ExtReviews"],$matches);
-      $mc = count($matches[0]);
-      for ($i=0;$i<$mc;++$i) {
-        $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
+      if (preg_match_all("/\<li\>\<a href=\"(.*?)\"\>(.*?)\<\/a\>/",$this->page["ExtReviews"],$matches)) {
+        $mc = count($matches[0]);
+        for ($i=0;$i<$mc;++$i) {
+          $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
+        }
       }
     }
     return $this->extreviews;
@@ -1015,6 +1036,7 @@
    */
   function imdbsearch() {
     $this->imdb_config();
+    $this->search_episodes(FALSE);
   }
 
   /** Search for episodes (true) or movies (false - default)
@@ -1050,7 +1072,7 @@
     $url = $this->url;
    }else{
      if (!isset($this->maxresults)) $this->maxresults = 20;
-     if ($this->maxresults > 0) $query .= ";mx=20";
+     if ($this->maxresults > 0) $query = ";mx=20";
      if ($this->episode_search) $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query.";s=ep";
      else {
        switch ($this->searchvariant) {

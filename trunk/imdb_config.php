@@ -72,6 +72,12 @@ class imdb_config {
     // search variants. Valid options are "sevec" and "moonface". Comment out
     // (or set to empty string) to use the default
     $this->searchvariant = "";
+    // let PHP report any script errors (useful for code debugging). Comment out
+    // to use the default level defined in php.ini, or set to an appropriate
+    // level (E_ALL = all errors/warning/notices, E_ALL ^ E_NOTICE = PHP default;
+    // see PHP documentation for details)
+    # error_reporting(E_ALL);
+    # error_reporting(E_ALL ^ E_NOTICE);
   }
 
 }
