@@ -42,8 +42,8 @@
   }
 
  #-------------------------------------------------------------[ Open Page ]---
-  /** Open an IMDB page
-   * @method openpage
+  /** Load an IMDB page into the corresponding property (variable)
+   * @method private openpage
    * @param string wt
    */
   function openpage ($wt) {
@@ -246,7 +246,7 @@
   }
 
  #-------------------------------------------[ Movie title (name) and year ]---
-  /** Set title and year
+  /** Setup title and year properties
    * @method private title_year
    */
   function title_year() {
@@ -387,6 +387,8 @@
 
  #--------------------------------------------------------------[ Genre(s) ]---
   /** Get the movies main genre
+   *  Since IMDB.COM does not really now a "Main Genre", this simply means the
+   *  first mentioned genre will be returned.
    * @method genre
    * @return string genre
    * @brief There is not really a main genre on the IMDB sites (yet), so this
@@ -578,7 +580,7 @@
   }
 
  #-------------------------------------------------------[ MPAA / PG / FSK ]---
-  /** Get the MPAA data (PG?)
+  /** Get the MPAA data (also known as PG or FSK)
    * @method mpaa
    * @return array mpaa (array[country]=rating)
    */
@@ -672,7 +674,7 @@
    return array();
   }
 
-  /** Get the IMDB name (?)
+  /** Get the IMDB ID from a names URL
    * @method private get_imdbname
    * @param string href
    * @return string
@@ -1039,9 +1041,9 @@
     $this->search_episodes(FALSE);
   }
 
-  /** Search for episodes (true) or movies (false - default)
+  /** Search for episodes or movies
    * @method search_episodes
-   * @param boolean enabled
+   * @param boolean enabled TRUE: Search for episodes; FALSE: Search for movies (default)
    */
   function search_episodes($enable) {
     $this->episode_search = $enable;
@@ -1049,6 +1051,7 @@
 
   /** Set the name (title) to search for
    * @method setsearchname
+   * @param string searchstring what to search for - (part of) the movie name
    */
   function setsearchname ($name) {
    $this->name = $name;
@@ -1056,8 +1059,10 @@
    $this->url = NULL;
   }
 
-  /** Set the URL
+  /** Set the URL (overwrite default search URL and run your own)
+   *  This URL will be reset if you call the setsearchname() method
    * @method seturl
+   * @param string URL to use
    */
   function seturl($url){
    $this->url = $url;
@@ -1088,6 +1093,7 @@
 
   /** Setup search results
    * @method results
+   * @param optional string URL Replace search URL by your own
    * @return array results
    */
   function results ($url="") {
