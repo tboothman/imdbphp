@@ -1,4 +1,4 @@
-v0.9.3
+v0.9.3 (25.03.2008)
 -------------------
 ! fixed some incorrect calls to strrpos causing PHP error messages
 * changing default imdb site from us.imdb.com to akas.imdb.com to also find
