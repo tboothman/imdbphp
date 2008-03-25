@@ -1,3 +1,11 @@
+v0.9.4
+-------------------
+* getting rid of most (all?) of the PHP warnings/notices thrown
+! tagline() method missed to exactly extrac the tagline from the main page when
+  the movie only contained one tagline
+! fixed the season display in the demo page which sometimes was caught in an
+  endless loop (the API itself was not affected)
+
 v0.9.3 (25.03.2008)
 -------------------
 ! fixed some incorrect calls to strrpos causing PHP error messages

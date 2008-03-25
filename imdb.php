@@ -38,103 +38,104 @@ if (isset ($_GET["mid"])) {
   # AKAs
   $aka = $movie->alsoknow();
   $cc  = count($aka);
-  if ($cc > 0) {
+  if (!empty($akas)) {
     echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
     foreach ( $aka as $ak){
       if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"]." (".$ak["comment"].")<BR>";
       else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
     }
-    echo '</td></tr>';
+    echo "</td></tr>\n";
     flush();
   }
 
   # Seasons
   if ( $movie->seasons() != 0 ) {
-   echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons().'</TD></TR>';
+   echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons()."</TD></TR>\n";
     flush();
   }
 
   # Year & runtime
   echo '<TR><TD><B>Year:</B></TD><TD>'.$movie->year().'</TD></TR>';
-  echo '<TR><TD valign=top><B>Runtime:</b></TD><TD>';
-  echo $movie->runtime ().' minutes</TD></TR>';
+  $runtime = $movie->runtime();
+  if (!empty($runtime)) echo "<TR><TD valign=top><B>Runtime:</b></TD><TD>$runtime minutes</TD></TR>\n";
   flush();
-/*
-  # Runtime Line and Runtimes
-  echo '<TR><TD valign=top><B>Runtime line:</b></TD><TD>';
-  echo $movie->runtime_all().'</TD></TR>';
-  echo '<TR><TD valign=top><B>All Runtimes:</b></TD><TD>';
-  $runtimes = $movie->runtimes ();
-  foreach ($runtimes as $runtime){
-    echo $runtime["time"]." min in ".$runtime["country"]." (".$runtime["comment"].")<BR>";
-//    if ( ($i+1) != count($runtime)) echo ", ";
-  }
-  echo '</TD></TR>';
-*/
 
   # MPAA
-  echo '<TR><TD><B>MPAA:</b></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Country</th><th style='background-color:#07f;'>Rating</th></tr>";
-  foreach ($movie->mpaa() as $key=>$mpaa) {
-    echo "<tr><td>$key</td><td>$mpaa</td></tr>";
+  $mpaa = $movie->mpaa();
+  if (!empty($mpaa)) {
+    echo '<TR><TD><B>MPAA:</b></TD><TD>';
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Country</th><th style='background-color:#07f;'>Rating</th></tr>";
+    foreach ($mpaa as $key=>$mpaa) {
+      echo "<tr><td>$key</td><td>$mpaa</td></tr>";
+    }
+    echo "</table></TD></TR>\n";
   }
-  echo '</table></TD></TR>';
 
   # Ratings and votes
-  echo '<TR><TD><B>Rating:</b></TD><TD>';
-  echo $movie->rating().'</TD></TR>';
-  echo '<TR><TD><B>Votes:</B></TD><TD>';
-  echo $movie->votes().'</TD></TR>';
+  $ratv = $movie->rating();
+  if (!empty($ratv)) echo "<TR><TD><B>Rating:</b></TD><TD>$ratv</TD></TR>\n";
+  $ratv = $movie->votes();
+  if (!empty($ratv)) echo "<TR><TD><B>Votes:</B></TD><TD>$ratv</TD></TR>\n";
   flush();
 
   # Languages
-  echo '<TR><TD><B>Languages:</B></TD><TD>';
   $languages = $movie->languages();
-  for ($i = 0; $i + 1 < count($languages); $i++) {
-    echo $languages[$i].', ';
+  if (!empty($languages)) {
+    echo '<TR><TD><B>Languages:</B></TD><TD>';
+    for ($i = 0; $i + 1 < count($languages); $i++) {
+      echo $languages[$i].', ';
+    }
+    echo $languages[$i]."</TD></TR>\n";
   }
-  echo $languages[$i].'</TD></TR>';
   flush();
 
   # Country
-  echo '<TR><TD><B>Country:</B></TD><TD>';
   $country = $movie->country();
-  for ($i = 0; $i + 1 < count($country); $i++) {
-    echo $country[$i].', ';
+  if (!empty($country)) {
+    echo '<TR><TD><B>Country:</B></TD><TD>';
+    for ($i = 0; $i + 1 < count($country); $i++) {
+      echo $country[$i].', ';
+    }
+    echo $country[$i]."</TD></TR>\n";
   }
-  echo $country[$i].'</TD></TR>';
 
   # Genres
-  echo '<TR><TD><B>Genre:</B></TD><TD>';
-  echo $movie->genre().'</TD></TR>';
+  $genre = $movie->genre();
+  if (!empty($genre)) echo "<TR><TD><B>Genre:</B></TD><TD>$genre</TD></TR>\n";
 
-  echo '<TR><TD><B>All Genres:</B></TD><TD>';
   $gen = $movie->genres();
-  for ($i = 0; $i + 1 < count($gen); $i++) {
-    echo $gen[$i].', ';
+  if (!empty($gen)) {
+    echo '<TR><TD><B>All Genres:</B></TD><TD>';
+    for ($i = 0; $i + 1 < count($gen); $i++) {
+      echo $gen[$i].', ';
+    }
+    echo $gen[$i]."</TD></TR>\n";
   }
-  echo $gen[$i].'</TD></TR>';
 
   # Colors
-  echo '<TR><TD><B>Colors:</B></TD><TD>';
   $col = $movie->colors();
-  for ($i = 0; $i + 1 < count($col); $i++) {
-    echo $col[$i].', ';
+  if (!empty($col)) {
+    echo '<TR><TD><B>Colors:</B></TD><TD>';
+    for ($i = 0; $i + 1 < count($col); $i++) {
+      echo $col[$i].', ';
+    }
+    echo $col[$i]."</TD></TR>\n";
   }
-  echo $col[$i].'</TD></TR>';
   flush();
 
   # Sound
-  echo '<TR><TD><B>Sound:</B></TD><TD>';
   $sound = $movie->sound ();
-  for ($i = 0; $i + 1 < count($sound); $i++) {
-    echo $sound[$i].', ';
+  if (!empty($sound)) {
+    echo '<TR><TD><B>Sound:</B></TD><TD>';
+    for ($i = 0; $i + 1 < count($sound); $i++) {
+      echo $sound[$i].', ';
+    }
+    echo $sound[$i]."</TD></TR>\n";
   }
-  echo $sound[$i].'</TD></TR>';
 
   $tagline = $movie->tagline();
   if (!empty($tagline)) {
-    echo '<TR><TD valign=top><B>Tagline:</B></TD><TD>$tagline</TD></TR>';
+    echo "<TR><TD valign='top'><B>Tagline:</B></TD><TD>$tagline</TD></TR>\n";
   }
 
   #==[ Staff ]==
@@ -147,9 +148,9 @@ if (isset ($_GET["mid"])) {
       echo '<tr><td width=200>';
       echo '<a href="http://us.imdb.com/Name?'.$director[$i]["imdb"].'">';
       echo $director[$i]["name"].'</a></td><td>';
-      echo $director[$i]["role"]."</td></tr>\n";
+      echo $director[$i]["role"]."</td></tr>";
     }
-    echo '</table></td></tr>';
+    echo "</table></td></tr>\n";
   }
 
   # Story
@@ -161,9 +162,9 @@ if (isset ($_GET["mid"])) {
       echo '<tr><td width=200>';
       echo '<a href="http://us.imdb.com/Name?'.$write[$i]["imdb"].'">';
       echo $write[$i]["name"].'</a></td><td>';
-      echo $write[$i]["role"]."</td></tr>\n";
+      echo $write[$i]["role"]."</td></tr>";
     }
-    echo '</table></td></tr>';
+    echo "</table></td></tr>\n";
   }
   flush();
 
@@ -176,9 +177,9 @@ if (isset ($_GET["mid"])) {
       echo '<tr><td width=200>';
       echo '<a href="http://us.imdb.com/Name?'.$produce[$i]["imdb"].'">';
       echo $produce[$i]["name"].'</a></td><td>';
-      echo $produce[$i]["role"]."</td></tr>\n";
+      echo $produce[$i]["role"]."</td></tr>";
     }
-    echo '</table></td></tr>';
+    echo "</table></td></tr>\n";
   }
 
   # Music
@@ -189,35 +190,40 @@ if (isset ($_GET["mid"])) {
     for ($i = 0; $i < count($compose); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="http://us.imdb.com/Name?'.$compose[$i]["imdb"].'">';
-      echo $compose[$i]["name"]."</a></td></tr>\n";
+      echo $compose[$i]["name"]."</a></td></tr>";
     }
-    echo '</table></td></tr>';
+    echo "</table></td></tr>\n";
   }
   flush();
 
   # Cast
   $cast = $movie->cast();
-  echo '<TR><TD valign=top><B>Cast:</B></TD><TD>';
-  echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
-  for ($i = 0; $i < count($cast); $i++) {
-    echo '<tr><td width=200>';
-    echo '<a href="http://us.imdb.com/Name?'.$cast[$i]["imdb"].'">';
-    echo $cast[$i]["name"].'</a></td><td>';
-    echo $cast[$i]["role"]."</td></tr>\n";
+  if (!empty($cast)) {
+    echo '<TR><TD valign=top><B>Cast:</B></TD><TD>';
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    for ($i = 0; $i < count($cast); $i++) {
+      echo '<tr><td width=200>';
+      echo '<a href="http://us.imdb.com/Name?'.$cast[$i]["imdb"].'">';
+      echo $cast[$i]["name"].'</a></td><td>';
+      echo $cast[$i]["role"]."</td></tr>";
+    }
+    echo "</table></td></tr>\n";
   }
-  echo '</table></td></tr>';
   flush();
 
   # Plot outline & plot
-  echo '<tr><td valign=top><b>Plot Outline:</b></td><td>';
-  echo $movie->plotoutline().'</td></tr>';
+  $plotoutline = $movie->plotoutline();
+  if (!empty($plotoutline))
+    echo "<tr><td valign='top'><b>Plot Outline:</b></td><td>$plotoutline</td></tr>\n";
 
   $plot = $movie->plot();
-  echo '<tr><td valign=top><b>Plot:</b></td><td><ul>';
-  for ($i = 0; $i < count($plot); $i++) {
-    echo "<li>".$plot[$i]."</li>\n";
+  if (!empty($plot)) {
+    echo '<tr><td valign=top><b>Plot:</b></td><td><ul>';
+    for ($i = 0; $i < count($plot); $i++) {
+      echo "<li>".$plot[$i]."</li>\n";
+    }
+    echo "</ul></td></tr>\n";
   }
-  echo '</ul></td></tr>';
   flush();
 
   # Taglines
@@ -227,44 +233,51 @@ if (isset ($_GET["mid"])) {
     for ($i = 0; $i < count($taglines); $i++) {
       echo "<li>".$taglines[$i]."</li>\n";
     }
-    echo '</ul></td></tr>';
+    echo "</ul></td></tr>\n";
   }
 
-  if ( $movie->seasons() != 0 ) {
+  $seasons = $movie->seasons();
+  if ( $seasons != 0 ) {
     $episodes = $movie->episodes();
     echo '<tr><td valign=top><b>Episodes:</b></td><td>';
-    for ( $season = 1; $season <= $movie->seasons(); $season++ ) {
-      for ( $episode = 1; $episode <= count($episodes[$season]); $episode++ ) {
+    for ( $season = 1; $season <= $seasons; ++$season ) {
+      $eps = @count($episodes[$season]);
+      for ( $episode = 1; $episode <= $eps; ++$episode ) {
         $episodedata = &$episodes[$season][$episode];
         echo '<b>Season '.$season.', Episode '.$episode.': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
       }
     }
-    echo '</td></tr>';
+    echo "</td></tr>\n";
   }
 
   # Selected User Comment
-  echo '<tr><td valign=top><b>User Comments:</b></td><td>';
-  echo $movie->comment().'</td></tr>';
+  $comment = $movie->comment();
+  if (!empty($comment))
+    echo "<tr><td valign='top'><b>User Comments:</b></td><td>$comment</td></tr>\n";
 
   # Quotes
-  echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
   $quotes = $movie->quotes();
-  echo $quotes[0].'</td></tr>';
+  if (!empty($quotes)) {
+    echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
+    echo $quotes[0]."</td></tr>\n";
+  }
 
   # Trailer
-  echo '<tr><td valign=top><b>Trailers:</b></td><td>';
   $trailers = $movie->trailers();
-  for ($i=0;$i<count($trailers);++$i) {
-    echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
+  if (!empty($trailers)) {
+    echo '<tr><td valign=top><b>Trailers:</b></td><td>';
+    for ($i=0;$i<count($trailers);++$i) {
+      echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
+    }
+    echo "</td></tr>\n";
   }
-  echo '</td></tr>';
 
   # Crazy Credits
   $crazy = $movie->crazy_credits();
   $cc    = count($crazy);
   if ($cc) {
     echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
-    echo "We know about $cc <i>Crazy Credits</i>. One of them reads:<br>$crazy[0]</td></tr>";
+    echo "We know about $cc <i>Crazy Credits</i>. One of them reads:<br>$crazy[0]</td></tr>\n";
   }
 
   # Goofs
@@ -273,7 +286,7 @@ if (isset ($_GET["mid"])) {
   if ($gc > 0) {
     echo '<tr><td valign=top><b>Goofs:</b></td><td>';
     echo "We know about $gc goofs. Here comes one of them:<br>";
-    echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>";
+    echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>\n";
   }
 
   # Trivia
