@@ -34,7 +34,7 @@ echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-to
    . " <TR><TH STYLE='background-color:#ffb000'>Movie Details</TH><TH STYLE='background-color:#ffb000'>IMDB page</TH></TR>";
 foreach ($results as $res) {
   echo " <TR><TD><a href='imdb.php?mid=".$res->imdbid()."'>".$res->title()." (".$res->year().")</a></TD>"
-     . "<TD><a href='http://'".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD></TR>\n";
+     . "<TD><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD></TR>\n";
 }
 echo "</TABLE>\n</BODY></HTML>";
 ?>
