@@ -40,37 +40,79 @@ class imdb_config {
    * @constructor imdb_config
    */
   function imdb_config(){
-    // the imdb server to use.
-    // choices are us.imdb.com uk.imdb.com german.imdb.com and italian.imdb.com
-    // the localized ones (i.e. italian and german) are only qualified to find
-    // the movies IMDB ID -- but parsing for the details will fail at the moment.
+    /** IMDB server to use.
+     *  choices are us.imdb.com, uk.imdb.com, akas.imdb.com, german.imdb.com and
+     *  italian.imdb.com - the localized ones (i.e. italian and german) are only
+     *  qualified to find the movies IMDB ID (with the imdbsearch class) -- but
+     *  parsing (with the imdb class) for most of the details will fail at the moment.
+     * @class imdb_config
+     * @attribute string imdbsite
+     */
     $this->imdbsite = "akas.imdb.com";
-    // cachedir should be writable by the webserver. This doesn't need to be
-    // under documentroot.
+    /** Directory to store the cache files. This must be writable by the web
+     *  server. It doesn't need to be under documentroot.
+     * @class imdb_config
+     * @attribute string cachedir
+     */
     $this->cachedir = './cache/';
-    //whether to use a cached page to retrieve the information if available.
+    /** Use a cached page to retrieve the information if available?
+     * @class imdb_config
+     * @attribute boolean usecache
+     */
     $this->usecache = true;
-    //whether to store the pages retrieved for later use.
+    /** Store the pages retrieved for later use?
+     * @class imdb_config
+     * @attribute boolean storecache
+     */
     $this->storecache = true;
-    //wether to use zip compression for caching the retrieved html-files.
+    /** Use zip compression for caching the retrieved html-files?
+     * @class imdb_config
+     * @attribute boolean usezip
+     */
     $this->usezip = true;
-    //wether to convert non-zip cache-files to zip (check file permissions!).
+    /** Convert non-zip cache-files to zip (check file permissions!)?
+     * @class imdb_config
+     * @attribute boolean converttozip
+     */
     $this->converttozip = true;
-    // automatically delete cached files older than X secs
+    /** Cache expiration - cache files older than this value (in seconds) will
+     *  be automatically deleted.
+     * @class imdb_config
+     * @attribute integer cache_expire
+     */
     $this->cache_expire = 600;
-    // images are stored here after calling photo_localurl()
-    // this needs to be under documentroot to be able to display them on your pages.
+    /** Where to store images retrieved from the IMDB site by the method photo_localurl().
+     *  This needs to be under documentroot to be able to display them on your pages.
+     * @class imdb_config
+     * @attribute string photodir
+     */
     $this->photodir = './images/';
-    // this is the URL to the images, i.e. start at your servers DOCUMENT_ROOT
-    // when specifying absolute path
+    /** URL corresponding to photodir, i.e. the URL to the images, i.e. start at
+     *  your servers DOCUMENT_ROOT when specifying absolute path
+     * @class imdb_config
+     * @attribute string photoroot
+     */
     $this->photoroot = './images/';
-    // turn debug messages on (1)/off (0)
+    /** Enable debug mode?
+     * @class imdb_config
+     * @attribute boolean debug
+     */
     $this->debug = 0;
     #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
-    // limit the result set to X movies (0 to disable, comment out to use default of 20)
+    /** Limit for the result set of searches.
+     *  Use 0 for no limit, or the number of maximum entries you wish. Default
+     *  (when commented out) is 20.
+     * @class imdb_config
+     * @attribute integer maxresults
+     */
     $this->maxresults = 20;
-    // search variants. Valid options are "sevec" and "moonface". Comment out
-    // (or set to empty string) to use the default
+    /** Moviename search variant. There are different ways of searching for a
+     *  movie name, with slightly differing result sets. Set the variant you
+     *  prefer, either "sevec", "moonface", or "izzy". The latter one is the
+     *  default if you comment out this setting or use an empty string.
+     * @class imdb_config
+     * @attribute string searchvariant
+     */
     $this->searchvariant = "";
     // let PHP report any script errors (useful for code debugging). Comment out
     // to use the default level defined in php.ini, or set to an appropriate
@@ -81,80 +123,4 @@ class imdb_config {
   }
 
 }
-
-// Don't edit below this line if you don't know exactly what you're doing :)
-
-if ( $PEAR ){
-// Use the HTTP_Request class from the PEAR project.
-  require_once ("HTTP/Request.php");
-
-  class IMDB_Request extends HTTP_Request{
-    function IMDB_Request($url){
-      $this->HTTP_Request($url);
-      if ( PROXY != ""){
-        $this->setProxy(PROXY, PROXY_PORT);
-      }
-      $this->_allowRedirects = false;
-      $this->addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
-    }	
-  }
-}else{
-// Use the browseremu class
-  require_once ("browseremulator.class.php");
-
-  /** The request class
-   *  Here we emulate a browser accessing the IMDB site. You don't need to
-   *  call any of its method directly - they are rather used by the IMDB classes.
-   * @package Api
-   * @class IMDB_Request
-   */
-  class IMDB_Request extends BrowserEmulator{
-    var $maxsize = 100000;
-    /** Constructor: Initialize the BrowserEmulator
-     *  No need to call this.
-     * @constructor IMDB_Request
-     */
-    function IMDB_Request($url){
-      $this->BrowserEmulator();
-      $this->urltoopen = $url;
-    }
-    /** Send a request to the IMDB site
-     * @method sendRequest
-     */
-    function sendRequest(){
-      $this->fpopened = $this->fopen($this->urltoopen);
-    }
-    /** Get the Response body
-     * @method getResponseBody
-     */
-    function getResponseBody(){
-      $page = "";
-      while (!feof ($this->fpopened)) {
-        $page .= fread ($this->fpopened, 1024);
-      }
-      return $page;
-    }
-    /** Set the URL we need to parse
-     * @method setURL
-     */
-    function setURL($url){
-      $this->urltoopen = $url;
-    }
-    /** Obtain the response body
-     * @method getresponseheader
-     * @param optional string header
-     */
-    function getresponseheader($header = false){
-      $headers = $this->getLastResponseHeaders();
-      foreach ($headers as $head){
-        if ( is_integer(strpos ($head, $header) )){
-          $hstart = strpos ($head, ": ");
-          $head = trim(substr($head,$hstart+2,100));
-          return $head;
-        }
-      }
-    }
-  }
-}		
-
 ?>

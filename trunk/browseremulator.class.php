@@ -20,9 +20,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ###############################################################################
 
-/**
- * BrowserEmulator class. Provides methods for opening urls and emulating 
- * a web browser request.
+/** BrowserEmulator class. Provides methods for opening urls and emulating 
+ *  a web browser request.
+ * @package Api
+ * @class BrowserEmulator
+ * @author Kai Blankenhorn (kai AT bitfolge DOT de)
  **/
 class BrowserEmulator {
 
@@ -38,18 +40,19 @@ class BrowserEmulator {
 	  $this->resetPort ();
      }
 
-	/**
-	* Adds a single header field to the HTTP request header. The resulting header
-	* line will have the format
-	* $name: $value\n
+	/** Add a single header field to the HTTP request header. The resulting
+        *   header line will have the format "$name: $value\n"
+        * @method addHeaderLine
+        * @param string name
+        * @param string value
 	**/
      function addHeaderLine ($name, $value) {
 	  $this->headerLines[$name] = $value;
      }
 
-	/**
-	* Deletes all custom header lines. This will not remove the User-Agent header field,
-	* which is necessary for correct operation.
+	/** Delete all custom header lines. This will not remove the User-Agent
+        *   header field, which is necessary for correct operation.
+        * @method resetHeaderLines
 	**/
      function resetHeaderLines () {
 	  $this->headerLines = Array ();
@@ -57,47 +60,53 @@ class BrowserEmulator {
 	       "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)";
      }
 
-	/**
-	* Add a post parameter. Post parameters are sent in the body of an HTTP POST request.
+	/** Add a post parameter. Post parameters are sent in the body of an HTTP POST request.
+        * @method addPostData
+        * @param string name
+        * @param string value
 	**/
      function addPostData ($name, $value) {
 	  $this->postData[$name] = $value;
      }
 
-	/**
-	* Deletes all custom post parameters.
+	/** Delete all custom post parameters.
+        * @method resetPostData
 	**/
      function resetPostData () {
 	  $this->postData = Array ();
      }
 
-	/**
-	* Sets an auth user and password to use for the request.
-	* Set both as empty strings to disable authentication.
+	/** Set an auth user and password to use for the request.
+	*   Set both as empty strings to disable authentication.
+        * @method setAuth
+        * @param string user
+        * @param string pass
 	**/
      function setAuth ($user, $pass) {
 	  $this->authUser = $user;
 	  $this->authPass = $pass;
      }
 
-	/**
-	* Selects a custom port to use for the request.
+	/** Select a custom port to use for the request.
+        * @method setPort
+        * @param integer portNumber
 	**/
      function setPort ($portNumber) {
 	  $this->port = $portNumber;
      }
 
-	/**
-	* Resets the port used for request to the HTTP default (80).
+	/** Reset the port used for request to the HTTP default (80).
+        * @method resetPort
 	**/
      function resetPort () {
 	  $this->port = 80;
      }
 
-	/**
-	* Make an fopen call to $url with the parameters set by previous member
-	* method calls. Send all set headers, post data and user authentication data.
-	* Returns a file handle on success, or false on failure.
+	/** Make an fopen call to $url with the parameters set by previous member
+	*   method calls. Send all set headers, post data and user authentication data.
+	* @method fopen
+	* @param string url
+	* @return mixed file handle on success, FALSE otherwise
 	**/
      function fopen ($url) {
 	  $debug = false;
@@ -184,10 +193,11 @@ class BrowserEmulator {
 	  return $socket;
      }
 
-	/**
-	* Make an file call to $url with the parameters set by previous member
-	* method calls. Send all set headers, post data and user authentication data.
-	* Returns the requested file as an array on success, or false on failure.
+	/** Make an file call to $url with the parameters set by previous member
+	*   method calls. Send all set headers, post data and user authentication data.
+	* @method file
+	* @param string url
+	* @return mixed array file on success, FALSE otherwise
 	**/
      function file ($url) {
 	  $file = Array ();
@@ -204,6 +214,10 @@ class BrowserEmulator {
 	  return $file;
      }
 
+	/** Get the latest server response
+	* @method getLastResponseHeaders
+	* @return string lastResponse
+	*/
      function getLastResponseHeaders () {
 	  return $this->lastResponse;
      }
