@@ -50,6 +50,7 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
     }
     /** Get the Response body
      * @method getResponseBody
+     * @return string page
      */
     function getResponseBody(){
       $page = "";
@@ -64,9 +65,10 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
     function setURL($url){
       $this->urltoopen = $url;
     }
-    /** Obtain the response body
+    /** Obtain the response header
      * @method getresponseheader
      * @param optional string header
+     * @return string header
      */
     function getresponseheader($header = false){
       $headers = $this->getLastResponseHeaders();
