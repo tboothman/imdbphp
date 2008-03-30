@@ -1135,12 +1135,13 @@
       if ($i == $this->maxresults) break(2); // limit result count
       $res_e = strpos ($this->page, "(", $res_s);
       $imdb_id = substr($this->page, $res_s + $len, 7);
-      if (in_array($imdb_id,$mids_checked)) continue;
-      $mids_checked[] = $imdb_id;
-      $tmpres = new imdb ($imdb_id); // make a new imdb object by id
       $ts = strpos($this->page, ">",$res_s) +1; // >movie title</a>
       $te = strpos($this->page,"<",$ts);
-      $tmpres->main_title = substr($this->page,$ts,$te-$ts);
+      $title = substr($this->page,$ts,$te-$ts);
+      if (($title == "") || (in_array($imdb_id,$mids_checked))) continue; // empty titles just come from the images
+      $mids_checked[] = $imdb_id;
+      $tmpres = new imdb ($imdb_id); // make a new imdb object by id
+      $tmpres->main_title = $title;
       $ts = strpos($this->page,"(",$te) +1;
       $te = strpos($this->page,")",$ts);
       $tmpres->main_year=substr($this->page,$ts,$te-$ts);
