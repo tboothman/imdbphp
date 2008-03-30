@@ -9,6 +9,8 @@ v0.9.4
   a movie or an episode by the given name
 * updated some API references to give a better description
 * moved the IMDB_Request class to its own file (separate from the imdb_config)
+! searching akas.imdb.com did not reveal localized akas; if we find them, they
+  are now listed along with their language
 
 v0.9.3 (25.03.2008)
 -------------------

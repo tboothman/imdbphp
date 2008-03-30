@@ -549,7 +549,9 @@
  #------------------------------------------------------------[ Movie AKAs ]---
   /** Get movies alternative names
    * @method alsoknow
-   * @return array aka (array[0..n] of array[title,year,country,comment])
+   * @return array aka array[0..n] of array[title,year,country,comment]; searching
+   *         on akas.imdb.com will add "lang" to the array for localized names,
+   *         "comment" will hold additional countries listed along
    */
   function alsoknow () {
    if (empty($this->main_alsoknow)) {
@@ -562,6 +564,8 @@
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
     if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
+    if (preg_match_all("/<i class=\"transl\">(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\).*?\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches))
+      for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i],"lang"=>$matches[5][$i]);
    }
    return $this->main_alsoknow;
   }

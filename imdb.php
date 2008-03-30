@@ -38,11 +38,16 @@ if (isset ($_GET["mid"])) {
   # AKAs
   $aka = $movie->alsoknow();
   $cc  = count($aka);
-  if (!empty($akas)) {
+  if (!empty($aka)) {
     echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
     foreach ( $aka as $ak){
-      if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"]." (".$ak["comment"].")<BR>";
-      else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
+      if (empty($ak["lang"])) {
+        if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"]." (".$ak["comment"].")<BR>";
+        else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
+      } else {
+        if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"].", ".$ak["comment"]." [".$ak["lang"]."]<BR>";
+        else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"].", ".$ak["comment"]." [".$ak["lang"]."]<BR>";
+      }
     }
     echo "</td></tr>\n";
     flush();
