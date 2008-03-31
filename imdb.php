@@ -19,12 +19,13 @@ if (isset ($_GET["mid"])) {
   $movieid = $_GET["mid"];
   $movie->setid ($movieid);
 
+  echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo '<HTML><HEAD><TITLE>'.$movie->title().' ('.$movie->year().')';
   echo "</TITLE></HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo $movie->title().' ('.$movie->year().")</TD></tr>\n";
+  echo $movie->title().' ('.$movie->year().")</TH></tr>\n";
   flush();
 
   # Photo
