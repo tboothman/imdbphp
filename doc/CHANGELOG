@@ -6,6 +6,8 @@ v0.9.5
   include_path in the distributions php.ini - this means you no longer need
   to include these files with your apps RPM/DEB packages, but simply add the
   appropriate dependency (and include them directly via the include_path)
+! imdb::alsoknow() messed things up on akas.imdb.com if AKA string contained
+  only one term in parenthesis
 
 v0.9.4 (31.03.2008)
 -------------------

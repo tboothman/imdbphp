@@ -41,13 +41,15 @@ if (isset ($_GET["mid"])) {
   if (!empty($aka)) {
     echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
     foreach ( $aka as $ak){
-      if (empty($ak["lang"])) {
-        if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"]." (".$ak["comment"].")<BR>";
-        else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"]." (".$ak["comment"].")<BR>";
-      } else {
-        if (empty($ak["year"])) echo $ak["title"]." =&gt; ".$ak["country"].", ".$ak["comment"]." [".$ak["lang"]."]<BR>";
-        else echo $ak["title"]." =&gt; ".$ak["year"].", ".$ak["country"].", ".$ak["comment"]." [".$ak["lang"]."]<BR>";
+      echo $ak["title"];
+      if (!empty($ak["year"])) echo " ".$ak["year"];
+      echo  " =&gt; ".$ak["country"];
+      if (empty($ak["lang"])) { if (!empty($ak["comment"])) echo " (".$ak["comment"].")"; }
+      else {
+        if (!empty($ak["comment"])) echo ", ".$ak["comment"];
+        echo " [".$ak["lang"]."]";
       }
+      echo "<BR>";
     }
     echo "</td></tr>\n";
     flush();
