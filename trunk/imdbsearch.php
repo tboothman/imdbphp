@@ -30,6 +30,7 @@ $search = new imdbsearch ();
 if ($_GET["searchtype"]=="episode") $search->search_episodes(TRUE);
 else $search->search_episodes(FALSE);
 $search->setsearchname ($_GET["name"]);
+echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 echo "<HTML><HEAD><TITLE>Performing IMDB search for '".$_GET["name"]."'...</TITLE></HEAD><BODY>\n";
 $results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
