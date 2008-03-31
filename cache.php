@@ -12,26 +12,23 @@
  #############################################################################
  # $Id$
 
-require_once("imdb_config.php");
 require_once("imdb.class.php");
 
 $conf = new imdb_config;
 echo "<HTML><HEAD><TITLE>IMDBPHP Cache Contents</TITLE></HEAD><BODY>";
 $movie = new imdb ("0");
 if ($d = opendir ($conf->cachedir)) {
-     while (false !== ($entry = readdir ($d))) {
-	  if (strstr ($entry, "Title")) {
-	       $imdbid = substr ($entry, 0, 7);
-	       $movie->setid ($imdbid);
-	       echo "<a href=imdb.php?mid=${imdbid}>";
-	       echo $movie->title ();
-	       echo "</a>";
-	       echo " <a href=\"http://us.imdb.com/title/tt";
-	       echo $imdbid;
-	       echo "\">imdb page</a>";
-	       echo "<br>\n";
-	  }
-     }
+  echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
+     . " <TR><TH STYLE='background-color:#ffb000'>Movie Details</TH><TH STYLE='background-color:#ffb000'>IMDB page</TH></TR>\n";
+  while (false !== ($entry = readdir ($d))) {
+    if (strstr ($entry, "Title")) {
+       $imdbid = substr ($entry, 0, 7);
+       $movie->setid ($imdbid);
+       echo " <TR><TD><a href=imdb.php?mid=${imdbid}>".$movie->title()."</a></TD>"
+            .    "<TD><a href=\"http://us.imdb.com/title/tt${imdbid}\">imdb page</a></TD></TR>\n";
+    }
+  }
+  echo "</TABLE>\n</BODY></HTML>";
 }
 echo "</BODY></HTML>";
 ?>

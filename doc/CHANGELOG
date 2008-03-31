@@ -1,3 +1,12 @@
+v0.9.5
+-------------------
+* renamed imdb_config.php to imdb_config.class.php
+* updated cache page layout
+* changed Makefile: the classfiles now go to /usr/share/php which is the PHP
+  include_path in the distributions php.ini - this means you no longer need
+  to include these files with your apps RPM/DEB packages, but simply add the
+  appropriate dependency (and include them directly via the include_path)
+
 v0.9.4 (31.03.2008)
 -------------------
 * getting rid of most (all?) of the PHP warnings/notices thrown
