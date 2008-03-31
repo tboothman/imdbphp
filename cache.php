@@ -15,7 +15,8 @@
 require_once("imdb.class.php");
 
 $conf = new imdb_config;
-echo "<HTML><HEAD><TITLE>IMDBPHP Cache Contents</TITLE></HEAD><BODY>";
+echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
+echo "<HTML><HEAD><TITLE>IMDBPHP Cache Contents</TITLE></HEAD><BODY>\n";
 $movie = new imdb ("0");
 if ($d = opendir ($conf->cachedir)) {
   echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
@@ -24,11 +25,11 @@ if ($d = opendir ($conf->cachedir)) {
     if (strstr ($entry, "Title")) {
        $imdbid = substr ($entry, 0, 7);
        $movie->setid ($imdbid);
-       echo " <TR><TD><a href=imdb.php?mid=${imdbid}>".$movie->title()."</a></TD>"
+       echo " <TR><TD><a href='imdb.php?mid=${imdbid}'>".$movie->title()."</a></TD>"
             .    "<TD><a href=\"http://us.imdb.com/title/tt${imdbid}\">imdb page</a></TD></TR>\n";
     }
   }
-  echo "</TABLE>\n</BODY></HTML>";
+  echo "</TABLE>\n";
 }
 echo "</BODY></HTML>";
 ?>
