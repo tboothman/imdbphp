@@ -24,7 +24,7 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
     }	
   }
 } else { // Use the browseremu class
-  require_once ("browseremulator.class.php");
+  require_once (dirname(__FILE__)."/browseremulator.class.php");
 
   /** The request class
    *  Here we emulate a browser accessing the IMDB site. You don't need to
