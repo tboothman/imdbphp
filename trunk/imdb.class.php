@@ -564,8 +564,16 @@
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
     if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
-    if (preg_match_all("/<i class=\"transl\">(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\).*?\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches))
-      for ($i=0;$i<count($matches[0]);++$i) $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i],"lang"=>$matches[5][$i]);
+    if (preg_match_all("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches)) {
+      for ($i=0;$i<count($matches[0]);++$i) {
+        $country = ""; $comment = "";
+        if (preg_match_all("/\((.*?)\)/",$matches[3][$i],$countries)) {
+          $country = $countries[1][0];
+          for ($k=1;$k<count($countries[0]);++$k) $comment .= ", ".$countries[1][$k];
+        }
+        $this->main_alsoknow[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$country,"comment"=>@substr($comment,2),"lang"=>$matches[4][$i],"orig"=>$matches[0][$i]);
+      }
+    }
    }
    return $this->main_alsoknow;
   }
