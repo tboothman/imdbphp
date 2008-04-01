@@ -13,6 +13,8 @@ v0.9.5
   ones, fixing initialization types, renaming some for clearer conventions)
 + imdb::comment_split() added - returns the same comment as imdb::comment, but
   structured into an array so you can access the elements more easily
++ imdb::plot_split() added similarly as pendant to imdb::plot()
+* some more corrections/updates to the API reference
 
 v0.9.4 (31.03.2008)
 -------------------
