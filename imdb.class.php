@@ -196,6 +196,7 @@
    $this->season_episodes = array();
    $this->sound = array();
    $this->soundtracks = array();
+   $this->split_comment = array();
    $this->taglines = array();
    $this->trailers = array();
    $this->trivia = array();
@@ -575,7 +576,7 @@
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
     if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->akas[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
-    if (preg_match_all("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches)) {
+    if (preg_match_all("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches)) { // localized variants on akas.imdb.com
       for ($i=0;$i<count($matches[0]);++$i) {
         $country = ""; $comment = "";
         if (preg_match_all("/\((.*?)\)/",$matches[3][$i],$countries)) {
@@ -633,6 +634,21 @@
         $this->plot_plot[$i] = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$matches[1][$i]);
    }
    return $this->plot_plot;
+  }
+
+  /** Get the movie plot(s) - split-up variant
+   * @method plot_split
+   * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
+   */
+  function plot_split() {
+    if (empty($this->split_plot)) {
+      if (empty($this->plot_plot)) $plots = $this->plot();
+      for ($i=0;$i<count($this->plot_plot);++$i) {
+        if (preg_match("/(.*?)<i>.*<a href=\"(.*?)\">(.*?)<\/a>/",$this->plot_plot[$i],$match))
+          $this->split_plot[] = array("plot"=>$match[1],"author"=>array("name"=>$match[3],"url"=>$match[2]));
+      }
+    }
+    return $this->split_plot;
   }
 
  #--------------------------------------------------------[ /taglines page ]---
@@ -714,7 +730,7 @@
 
   /** Get the director(s) of the movie
    * @method director
-   * @return array director (array[0..n] of strings)
+   * @return array director (array[0..n] of arrays[imdb,name,role])
    */
   function director () {
    if (empty($this->credits_director)) {
@@ -737,7 +753,7 @@
 
   /** Get the actors
    * @method cast
-   * @return array cast (array[0..n] of strings)
+   * @return array cast (array[0..n] of arrays[imdb,name,role])
    */
   function cast () {
    if (empty($this->credits_cast)) {
@@ -760,7 +776,7 @@
 
   /** Get the writer(s)
    * @method writing
-   * @return array writers (array[0..n] of strings)
+   * @return array writers (array[0..n] of arrays[imdb,name,role])
    */
   function writing () {
    if (empty($this->credits_writing)) {
@@ -785,7 +801,7 @@
 
   /** Obtain the producer(s)
    * @method producer
-   * @return array producer (array[0..n] of strings)
+   * @return array producer (array[0..n] of arrays[imdb,name,role])
    */
   function producer () {
    if (empty($this->credits_producer)) {
@@ -810,7 +826,7 @@
 
   /** Obtain the composer(s) ("Original Music by...")
    * @method composer
-   * @return array composer (array[0..n] of strings)
+   * @return array composer (array[0..n] of arrays[imdb,name,role])
    */
   function composer () {
    if (empty($this->credits_composer)) {
