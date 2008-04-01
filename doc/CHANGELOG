@@ -8,6 +8,9 @@ v0.9.5
   appropriate dependency (and include them directly via the include_path)
 ! imdb::alsoknow() messed things up on akas.imdb.com if AKA string contained
   only one term in parenthesis
+* some W3C fixups to the demo pages
+* cleanup of private class properties in class imdb (removing unreferenced
+  ones, fixing initialization types, renaming some for clearer conventions)
 
 v0.9.4 (31.03.2008)
 -------------------
