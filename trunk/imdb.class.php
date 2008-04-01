@@ -179,11 +179,11 @@
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_plotoutline = "";
-   $this->main_rating = "";
+   $this->main_rating = -1;
    $this->main_runtime = "";
    $this->main_title = "";
-   $this->main_votes = "";
-   $this->main_year = "";
+   $this->main_votes = -1;
+   $this->main_year = -1;
    $this->main_tagline = "";
    $this->moviecolors = array();
    $this->movieconnections = array();
@@ -270,14 +270,14 @@
    * @return string year
    */
   function year () {
-    if ($this->main_year == "") $this->title_year();
+    if ($this->main_year == -1) $this->title_year();
     return $this->main_year;
   }
 
  #---------------------------------------------------------------[ Runtime ]---
   /** Get general runtime
    * @method private runtime_all
-   * @return string runtime
+   * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
    */
   function runtime_all() {
     if ($this->main_runtime == "") {
@@ -290,7 +290,7 @@
 
   /** Get overall runtime (first one mentioned on title page)
    * @method runtime
-   * @return mixed string runtime (if set), NULL otherwise
+   * @return mixed string runtime in minutes (if set), NULL otherwise
    */
   function runtime() {
     if (empty($this->movieruntimes)) $runarr = $this->runtimes();
@@ -329,7 +329,7 @@
    * @return string rating
    */
   function rating () {
-    if ($this->main_rating == "") $this->rate_vote();
+    if ($this->main_rating == -1) $this->rate_vote();
     return $this->main_rating;
   }
 
@@ -338,12 +338,12 @@
    * @return string votes
    */
   function votes () {
-    if ($this->main_votes == "") $this->rate_vote();
+    if ($this->main_votes == -1) $this->rate_vote();
     return $this->main_votes;
   }
 
  #------------------------------------------------------[ Movie Comment(s) ]---
-  /** Get movie comment
+  /** Get movie main comment (from title page)
    * @method comment
    * @return string comment
    */
@@ -354,6 +354,19 @@
         $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
     }
     return $this->main_comment;
+  }
+
+  /** Get movie main comment (from title page - split-up variant)
+   * @method comment_split
+   * @return array comment array[string title, string date, array author, string comment]; author: array[string url, string name]
+   */
+  function comment_split() {
+    if (empty($this->split_comment)) {
+      if ($this->main_comment == "") $comm = $this->comment();
+      if (@preg_match("/<b>(.*?)<\/b>, (.*)<br>.*?<a href=\"(.*)\">(.*?)<\/a>.*<p>(.*?)<\/p>/ms",$this->main_comment,$match))
+        $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$match[3],"name"=>$match[4]),"comment"=>trim($match[5]));
+    }
+    return $this->split_comment;
   }
 
  #--------------------------------------------------------[ Language Stuff ]---

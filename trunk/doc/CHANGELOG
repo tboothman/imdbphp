@@ -11,6 +11,8 @@ v0.9.5
 * some W3C fixups to the demo pages
 * cleanup of private class properties in class imdb (removing unreferenced
   ones, fixing initialization types, renaming some for clearer conventions)
++ imdb::comment_split() added - returns the same comment as imdb::comment, but
+  structured into an array so you can access the elements more easily
 
 v0.9.4 (31.03.2008)
 -------------------
