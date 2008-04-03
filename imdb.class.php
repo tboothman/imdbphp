@@ -197,6 +197,7 @@
    $this->sound = array();
    $this->soundtracks = array();
    $this->split_comment = array();
+   $this->split_plot = array();
    $this->taglines = array();
    $this->trailers = array();
    $this->trivia = array();
