@@ -613,7 +613,7 @@
   function mpaa () {
    if (empty($this->mpaas)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/List\?certificates.*?>(.*?):(.*?)</",$this->page["Title"],$matches)) {
+    if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
       $cc = count($matches[0]);
       for ($i=0;$i<$cc;++$i) $this->mpaas[$matches[1][$i]] = $matches[2][$i];
     }
