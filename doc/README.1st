@@ -1,21 +1,12 @@
-Since Sevec is short of time, I temporarily overtook the maintenance of the
-IMDBPHP project in 2004. I use his code in my own project, phpVideoPro, and
-thus I am somehow familiar with it. But for phpVideoPro I made some special
-adaptions to it, so in order to get all changes back to the (stand-alone)
-IMDBPHP project, a little "backporting" is needed.
+People never read documentation. But before giving up, consider some basic steps:
 
-Due to this fact (and the other, that "temporarily" already stayed for more
-than 2 years and probably will stay longer), the file structure was slightly
-changed in 2007 - so all changes made to the IMDB class in the phpVideoPro
-project (and vice versa) can be (back)ported more easily, and (hopefully)
-also released more frequently (when needed).
+* Read installation instructions at http://projects.izzysoft.de/trac/imdbphp/wiki/Installation
+* Installation with the "make" utility: See install.txt
+* Manual installation: See README
 
-However: I mainly test functionality together with the phpVideoPro application,
-and thus may not be aware of any "stand-alone" problems. If you run into some,
-please report - best way to do so is to visit the projects page at
-http://projects.izzysoft.de/?topic=trac;subject=imdbphp and open a ticket,
-which is also the prefered method for bugs and feature requests (though I
-also monitor the discussions at sourceforge.net).
+* IMPORTANT: You may have to adjust the configuration at least concerning the
+  cache and image directories (see README or the Wiki), or you won't be able to
+  use them but instead see a bunch of errors
 
 Izzy
-(Munich, March 2008)
+(Munich, April 2008)
