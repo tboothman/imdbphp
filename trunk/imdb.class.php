@@ -110,6 +110,14 @@
 
    if( $this->page[$wt] ){ //storecache
     if ($this->storecache) {
+     if (!is_dir($this->cachedir)) {
+       $this->debug_scalar("<BR>***ERROR*** Configured cache directory does not exist!<BR>");
+       return;
+     }
+     if (!is_writable($this->cachedir)) {
+       $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
+       return;
+     }
      $fname = "$this->cachedir/$this->imdbID.$wt";
      if ( $this->usezip ) {
       $fp = gzopen ($fname, "w");
@@ -222,15 +230,19 @@
    */
   function purge() {
     if (is_dir($this->cachedir))  {
-      $thisdir = dir($this->cachedir);
-      $now = time();
-      while( $file=$thisdir->read() ) {
-        if ($file!="." && $file!="..") {
-          $fname = $this->cachedir . $file;
-	  if (is_dir($fname)) continue;
-          $mod = filemtime($fname);
-          if ($mod && ($now - $mod > $this->cache_expire)) unlink($fname);
+      if (is_writable($this->cachedir)) {
+        $thisdir = dir($this->cachedir);
+        $now = time();
+        while( $file=$thisdir->read() ) {
+          if ($file!="." && $file!="..") {
+            $fname = $this->cachedir . $file;
+	    if (is_dir($fname)) continue;
+            $mod = filemtime($fname);
+            if ($mod && ($now - $mod > $this->cache_expire)) unlink($fname);
+          }
         }
+      } elseif (!empty($this->cachedir)) {
+        $this->debug_scalar("Cache directory (".$this->cachedir.") lacks write permission - purge aborted.");
       }
     } elseif (!empty($this->cachedir)) {
       $this->debug_scalar("Cache directory (".$this->cachedir.") does not exist - purge aborted.");
@@ -538,8 +550,16 @@
    * @return mixed url (string URL or FALSE if none)
    */
   function photo_localurl(){
+    if (!is_dir($this->photodir)) {
+      $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
+      return false;
+    }
     $path = $this->photodir.$this->imdbid().".jpg";
     if ( @fopen($path,"r"))      return $this->photoroot.$this->imdbid().'.jpg';
+    if (!is_writable($this->photodir)) {
+      $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
+      return false;
+    }
     if ($this->savephoto($path)) return $this->photoroot.$this->imdbid().'.jpg';
     return false;
   }
