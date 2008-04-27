@@ -45,7 +45,7 @@
  #-------------------------------------------------------------[ Open Page ]---
   /** Load an IMDB page into the corresponding property (variable)
    * @method private openpage
-   * @param string wt
+   * @param string wt internal name of the page
    */
   function openpage ($wt) {
    if (strlen($this->imdbID) != 7){
@@ -138,7 +138,7 @@
  #-------------------------------------------------------[ Get current MID ]---
   /** Retrieve the IMDB ID
    * @method imdbid
-   * @return string id
+   * @return string id IMDBID currently used
    */
   function imdbid () {
    return $this->imdbID;
@@ -147,9 +147,10 @@
  #--------------------------------------------------[ Start (over) / Reset ]---
   /** Setup class for a new IMDB id
    * @method setid
-   * @param string id
+   * @param string id IMDBID of the requested movie
    */
   function setid ($id) {
+   if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
    $this->imdbID = $id;
 
    $this->page["Title"] = "";
@@ -214,7 +215,7 @@
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor imdb
-   * @param string id
+   * @param string id IMDBID to use for data retrieval
    */
   function imdb ($id) {
    $this->imdb_config();
@@ -252,7 +253,7 @@
  #-----------------------------------------------[ URL to movies main page ]---
   /** Set up the URL to the movie title page
    * @method main_url
-   * @return string url
+   * @return string url full URL to the current movies main page
    */
   function main_url(){
    return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
@@ -272,7 +273,7 @@
 
   /** Get movie title
    * @method title
-   * @return string title
+   * @return string title movie title (name)
    */
   function title () {
     if ($this->main_title == "") $this->title_year();
@@ -340,7 +341,7 @@
 
   /** Get movie rating
    * @method rating
-   * @return string rating
+   * @return string rating current rating as given by IMDB site
    */
   function rating () {
     if ($this->main_rating == -1) $this->rate_vote();
@@ -349,7 +350,7 @@
 
   /** Return votes for this movie
    * @method votes
-   * @return string votes
+   * @return string votes count of votes for this movie
    */
   function votes () {
     if ($this->main_votes == -1) $this->rate_vote();
@@ -359,7 +360,7 @@
  #------------------------------------------------------[ Movie Comment(s) ]---
   /** Get movie main comment (from title page)
    * @method comment
-   * @return string comment
+   * @return string comment full text of movie comment from the movies main page
    */
   function comment () {
     if ($this->main_comment == "") {
@@ -416,7 +417,7 @@
    *  Since IMDB.COM does not really now a "Main Genre", this simply means the
    *  first mentioned genre will be returned.
    * @method genre
-   * @return string genre
+   * @return string genre first of the genres listed on the movies main page
    * @brief There is not really a main genre on the IMDB sites (yet), so this
    *  simply returns the first one
    */
@@ -474,7 +475,7 @@
  #---------------------------------------------------------------[ Seasons ]---
   /** Get the number of seasons or 0 if not a series
    * @method seasons
-   * @return int seasons
+   * @return int seasons number of seasons
    */
   function seasons() {
     if ( $this->seasoncount == -1 ) {
@@ -519,7 +520,7 @@
 
   /** Save the photo to disk
    * @method savephoto
-   * @param string path
+   * @param string path where to store the file
    * @return boolean success
    */
   function savephoto ($path) {
@@ -737,8 +738,8 @@
 
   /** Get the IMDB ID from a names URL
    * @method private get_imdbname
-   * @param string href
-   * @return string
+   * @param string href url to the staff members IMDB page
+   * @return string IMDBID of the staff member
    * @see used by the methods director, cast, writing, producer, composer
    */
   function get_imdbname( $href){
@@ -1155,7 +1156,7 @@
   /** Setup search results
    * @method results
    * @param optional string URL Replace search URL by your own
-   * @return array results
+   * @return array results array of objects (instances of the imdb class)
    */
   function results ($url="") {
    if ($this->page == "") {
