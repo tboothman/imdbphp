@@ -5,6 +5,8 @@ v1.0.0
 + added some more checks on valid image and cache directories to prevent
   PHP warnings/errors
 + adding some more comments to the API documentation
+! alsoknow() sometimes messed up some AKAs - hopefully fixed.
+* some style changes to the demo pages
 
 v0.9.5 (03.04.2008)
 -------------------

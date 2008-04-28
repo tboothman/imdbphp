@@ -585,7 +585,9 @@
    * @method alsoknow
    * @return array aka array[0..n] of array[title,year,country,comment]; searching
    *         on akas.imdb.com will add "lang" to the array for localized names,
-   *         "comment" will hold additional countries listed along
+   *         "comment" will hold additional countries listed along for these.
+   *         As these things are quite mixed up on the imdb sites, it's hard to
+   *         tell what is an additional country and what is a comment...
    */
   function alsoknow () {
    if (empty($this->akas)) {
@@ -596,8 +598,16 @@
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-    if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\).*?\((.*?)\) <br>/",$alsoknow_all,$matches))
-      for ($i=0;$i<count($matches[0]);++$i) $this->akas[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$matches[4][$i]);
+    if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\)(.*?(\(.*\))|)/",str_replace("<br>","\n",$alsoknow_all),$matches))
+      for ($i=0;$i<count($matches[0]);++$i)
+        if (!strpos($matches[0][$i],"i class=")) {
+          $comm = "";
+          if (preg_match_all("/\((.*?)\)/",$matches[5][$i],$comments)) {
+            $comm = $comments[1][0];
+            for ($k=1;$k<count($comments[0]);++$k)  $comm .= ", ".$comments[1][$k];
+          }
+          $this->akas[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$comm);
+        }
     if (preg_match_all("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches)) { // localized variants on akas.imdb.com
       for ($i=0;$i<count($matches[0]);++$i) {
         $country = ""; $comment = "";

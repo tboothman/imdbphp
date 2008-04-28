@@ -16,7 +16,9 @@ require_once("imdb.class.php");
 
 $conf = new imdb_config;
 echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-echo "<HTML><HEAD><TITLE>IMDBPHP Cache Contents</TITLE></HEAD><BODY>\n";
+echo "<HTML><HEAD>\n <TITLE>IMDBPHP Cache Contents</TITLE>\n";
+echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n";
+echo "</HEAD><BODY>\n";
 $movie = new imdb ("0");
 if ($d = opendir ($conf->cachedir)) {
   echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"

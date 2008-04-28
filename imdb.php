@@ -20,8 +20,9 @@ if (isset ($_GET["mid"])) {
   $movie->setid ($movieid);
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-  echo '<HTML><HEAD><TITLE>'.$movie->title().' ('.$movie->year().')';
-  echo "</TITLE></HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
+  echo "<HTML><HEAD>\n <TITLE>".$movie->title().' ('.$movie->year().")</TITLE>\n";
+  echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n";
+  echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
