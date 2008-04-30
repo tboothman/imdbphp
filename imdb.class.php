@@ -574,7 +574,7 @@
    if (empty($this->countries)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->countries = array();
-    if (preg_match_all("/\/Sections\/Countries\/\w+\/\"\>(.*?)<\/a/",$this->page["Title"],$matches))
+    if (preg_match_all("/\/Sections\/Countries\/\w+\/\"\>\s*(.*?)<\/a/m",$this->page["Title"],$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
    }
    return $this->countries;
