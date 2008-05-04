@@ -383,14 +383,17 @@
  #--------------------------------------------------------[ Photo specific ]---
   /** Get cover photo
    * @method photo
+   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
    */
-  function photo () {
+  function photo($thumb=true) {
     if (empty($this->main_photo)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
       if (empty($match[3])) return FALSE;
-      $this->main_photo = $match[3];
+      if ($thumb) $this->main_photo = $match[3];
+      else $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[3]);
     }
     return $this->main_photo;
   }
@@ -398,11 +401,13 @@
   /** Save the photo to disk
    * @method savephoto
    * @param string path where to store the file
+   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   *        bigger variant (400x600 - FALSE)
    * @return boolean success
    */
-  function savephoto ($path) {
+  function savephoto ($path,$thumb=true) {
     $req = new IMDB_Request("");
-    $photo_url = $this->photo ();
+    $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
     $req->setURL($photo_url);
     $req->sendRequest();
@@ -425,20 +430,23 @@
 
   /** Get the URL for the movies cover photo
    * @method photo_localurl
+   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
    */
-  function photo_localurl(){
+  function photo_localurl($thumb=true){
+    if ($thumb) $ext = ""; else $ext = "_big";
     if (!is_dir($this->photodir)) {
       $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
       return false;
     }
-    $path = $this->photodir.$this->imdbid().".jpg";
-    if ( @fopen($path,"r"))      return $this->photoroot.$this->imdbid().'.jpg';
+    $path = $this->photodir.$this->imdbid()."${ext}.jpg";
+    if ( @fopen($path,"r")) return $this->photoroot.$this->imdbid()."${ext}.jpg";
     if (!is_writable($this->photodir)) {
       $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
       return false;
     }
-    if ($this->savephoto($path)) return $this->photoroot.$this->imdbid().'.jpg';
+    if ($this->savephoto($path,$thumb)) return $this->photoroot.$this->imdbid()."${ext}.jpg";
     return false;
   }
 
