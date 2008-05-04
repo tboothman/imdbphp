@@ -6,6 +6,7 @@ v1.0.1
 * rewrote alsoknow() to give even better/more matches
 ! in quotes(), references pointed to the local server instead of imdb site
 * replaced hardcoded imdb sites in the demo page by the imdb site configured
+! plotoutline() and tagline() were broken due to IMDB site changes
 
 v1.0.0 (04.05.2008)
 -------------------
