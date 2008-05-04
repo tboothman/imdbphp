@@ -3,6 +3,7 @@ v1.0.1
 * code reorganization: Split up the imdb class to create class imdb_base
 + the photo methods now support an optional parameter to retrieve a bigger
   (400x600) image instead of the thumbnail (100x140)
+* rewrote alsoknow() to give even better/more matches
 
 v1.0.0 (04.05.2008)
 -------------------

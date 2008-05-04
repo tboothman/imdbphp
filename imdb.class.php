@@ -469,10 +469,11 @@
   /** Get movies alternative names
    * @method alsoknow
    * @return array aka array[0..n] of array[title,year,country,comment]; searching
-   *         on akas.imdb.com will add "lang" to the array for localized names,
-   *         "comment" will hold additional countries listed along for these.
-   *         As these things are quite mixed up on the imdb sites, it's hard to
-   *         tell what is an additional country and what is a comment...
+   *         on akas.imdb.com will add "lang" (2-char language code) to the array
+   *         for localized names, "comment" will hold additional countries listed
+   *         along for these as well as comments: As these things are quite mixed
+   *         up on the imdb sites, it's hard to tell what is an additional country
+   *         and what is a comment...
    */
   function alsoknow () {
    if (empty($this->akas)) {
@@ -483,24 +484,25 @@
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-    if (preg_match_all("/(.*?) (\(\d{4}\) |)\((.*?)\)(.*?(\(.*\))|)/",str_replace("<br>","\n",$alsoknow_all),$matches))
-      for ($i=0;$i<count($matches[0]);++$i)
-        if (!strpos($matches[0][$i],"i class=")) {
-          $comm = "";
-          if (preg_match_all("/\((.*?)\)/",$matches[5][$i],$comments)) {
-            $comm = $comments[1][0];
-            for ($k=1;$k<count($comments[0]);++$k)  $comm .= ", ".$comments[1][$k];
-          }
-          $this->akas[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$matches[3][$i],"comment"=>$comm);
-        }
-    if (preg_match_all("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i><br>/",$alsoknow_all,$matches)) { // localized variants on akas.imdb.com
-      for ($i=0;$i<count($matches[0]);++$i) {
-        $country = ""; $comment = "";
-        if (preg_match_all("/\((.*?)\)/",$matches[3][$i],$countries)) {
-          $country = $countries[1][0];
-          for ($k=1;$k<count($countries[0]);++$k) $comment .= ", ".$countries[1][$k];
-        }
-        $this->akas[] = array("title"=>$matches[1][$i],"year"=>$matches[2][$i],"country"=>$country,"comment"=>@substr($comment,2),"lang"=>$matches[4][$i],"orig"=>$matches[0][$i]);
+
+    $aka_arr = explode("<br>",str_replace("\n","",$alsoknow_all));
+    foreach ($aka_arr as $aka) {
+      $aka = trim($aka);
+      if (strpos('class="tn15more"',$aka)>0) break; // end of list
+      if (empty($aka)) continue;
+      if (!preg_match("/\(/",$aka)) $this->akas[] = array("title"=>$aka,"year"=>"","country"=>"","comment"=>"");
+      elseif (preg_match("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i>/",$aka,$match)) { // localized variants on akas.imdb.com
+        if (preg_match_all("/\((.*?)\)/",$match[3],$countries)) {
+          $country = $countries[1][0]; $comment = "";
+          for ($i=1;$i<count($countries[0]);++$i) $comment .= ", ".$countries[1][$i];
+        } else $country = $comment = "";
+        $this->akas[] = array("title"=>$match[1],"year"=>$match[2],"country"=>$country,"comment"=>substr($comment,2),"lang"=>$match[4]);
+      } elseif (preg_match("/(.*?) (\(\d{4}\) |)\((.*?)\)(.*?(\(.*\))|)/",$aka,$match)) {
+        if (preg_match_all("/\((.*?)\)/",$match[5],$comments)) {
+          $comm = $comments[1][0];
+          for ($i=1;$i<count($comments[0]);++$i) $comm .= ", ".$comments[1][$i];
+        } else $comm = "";
+        $this->akas[] = array("title"=>$match[1],"year"=>$match[2],"country"=>$match[3],"comment"=>$comm);
       }
     }
    }
