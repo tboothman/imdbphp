@@ -342,8 +342,11 @@
     if ($this->main_tagline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/Tagline:\<\/h5\>\s*\n(.*?)\<\/div/ms",$this->page["Title"],$match)) {
-        if(@preg_match("/^(.*?)\<a class\=\"tn15more/ms",$match[1],$match2)) $this->main_tagline = $match2[1];
-        else $this->main_tagline = $match[1];
+        if (@preg_match("/^(.*?) \<a class=\"tn15more/ms",$match[1],$hit)) {
+          $this->main_tagline = $hit[1];
+        } else {
+          $this->main_tagline = trim($match[1]);
+        }
       }
     }
     return $this->main_tagline;
@@ -374,7 +377,9 @@
   function plotoutline () {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Plot Outline:\<\/h5\>\s*\n(.*?)\</ms",$this->page["Title"],$match))
+      if (@preg_match("/Plot:\<\/h5\>\s*\n(.*?) <a class=\"tn15more/ms",$this->page["Title"],$match))
+        $this->main_plotoutline = $match[1];
+      elseif (@preg_match("/Plot:\<\/h5\>\s*\n(.*?)$/",$this->page["Title"],$match))
         $this->main_plotoutline = $match[1];
     }
     return $this->main_plotoutline;
