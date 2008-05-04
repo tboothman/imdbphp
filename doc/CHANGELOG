@@ -5,6 +5,7 @@ v1.0.1
   (400x600) image instead of the thumbnail (100x140)
 * rewrote alsoknow() to give even better/more matches
 ! in quotes(), references pointed to the local server instead of imdb site
+* replaced hardcoded imdb sites in the demo page by the imdb site configured
 
 v1.0.0 (04.05.2008)
 -------------------
