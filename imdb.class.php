@@ -382,7 +382,7 @@
           $this->main_plotoutline = $hit[1];
         else $this->main_plotoutline = trim($match[1]);
       }
-      if (@preg_match("/^(.*)\|$/",$this->main_plotoutline,$match)) $this->main_plotoutline = $match[1];
+      if (@preg_match("/^(.*)\|\s*$/",$this->main_plotoutline,$match)) $this->main_plotoutline = $match[1];
       $this->main_plotoutline = trim($this->main_plotoutline);
     }
     return $this->main_plotoutline;
