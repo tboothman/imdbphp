@@ -377,11 +377,13 @@
   function plotoutline () {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Plot:\<\/h5\>\s*\n(.*?) <\/div/ms",$this->page["Title"],$match)) {
-        if (@preg_match("/^(.*?) <a class=\"tn15more/ms",$match[1],$hit))
+      if (@preg_match("/Plot:\<\/h5\>\s*\n(.*?)<\/div/ms",$this->page["Title"],$match)) {
+        if (@preg_match("/^(.*?)<a class=\"tn15more/ms",$match[1],$hit))
           $this->main_plotoutline = $hit[1];
         else $this->main_plotoutline = trim($match[1]);
       }
+      if (@preg_match("/^(.*)\|$/",$this->main_plotoutline,$match)) $this->main_plotoutline = $match[1];
+      $this->main_plotoutline = trim($this->main_plotoutline);
     }
     return $this->main_plotoutline;
   }
