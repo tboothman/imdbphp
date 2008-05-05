@@ -213,6 +213,9 @@
     if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*<small\>\(\<a href\=\"ratings\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
       $this->main_rating = $match[1];
       $this->main_votes  = $match[3];
+    } else {
+      $this->main_rating = 0;
+      $this->main_votes  = 0;
     }
   }
 

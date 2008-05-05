@@ -8,6 +8,7 @@ v1.0.1
 * replaced hardcoded imdb sites in the demo page by the imdb site configured
 ! plotoutline() and tagline() were broken due to IMDB site changes
 * some optimization of tagline() and plotoutline()
+! rating() and votes() returned -1 when movie was not yet rated
 
 v1.0.0 (04.05.2008)
 -------------------
