@@ -7,6 +7,7 @@ v1.0.1
 ! in quotes(), references pointed to the local server instead of imdb site
 * replaced hardcoded imdb sites in the demo page by the imdb site configured
 ! plotoutline() and tagline() were broken due to IMDB site changes
+* some optimization of tagline() and plotoutline()
 
 v1.0.0 (04.05.2008)
 -------------------
