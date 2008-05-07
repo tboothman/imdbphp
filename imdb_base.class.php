@@ -55,8 +55,9 @@
   /** Load an IMDB page into the corresponding property (variable)
    * @method private openpage
    * @param string wt internal name of the page
+   * @param optional string type whether its a "movie" (default) or a "person"
    */
-  function openpage ($wt) {
+  function openpage ($wt,$type="movie") {
    if (strlen($this->imdbID) != 7){
     $this->debug_scalar("not valid imdbID: ".$this->imdbID."<BR>".strlen($this->imdbID));
     $this->page[$wt] = "cannot open page";
@@ -96,7 +97,10 @@
    } // end cache
 
    $req = new IMDB_Request("");
-   $url = "http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname;
+   switch ($type) {
+     case "person" : $url = "http://".$this->imdbsite."/name/nm".$this->imdbID.$urlname; break;
+     default       : $url = "http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname;
+   }
    $req->setURL($url);
    $req->sendRequest();
    $this->page[$wt]=$req->getResponseBody();
