@@ -31,6 +31,6 @@ uninstall:
 	rmdir --ignore-fail-on-non-empty $(datadir)/images
 	rm -f $(datadir)/*.html
 	rm -f $(datadir)/*.php
-	rm -f $(libdir)/imdb.class.php $(libdir)/imdb_config.class.php $(libdir)/imdb_request.class.php $(libdir)/browseremulator.class.php
+	rm -f $(libdir)/imdb_base.class.php $(libdir)/imdb.class.php $(libdir)/imdb_config.class.php $(libdir)/imdb_request.class.php $(libdir)/browseremulator.class.php
 	rmdir --ignore-fail-on-non-empty $(datadir)
 	rm -rf $(docdir)
