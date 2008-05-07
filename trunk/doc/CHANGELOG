@@ -1,4 +1,4 @@
-v1.0.1
+v1.0.1 (07.05.2008)
 -------------------
 * code reorganization: Split up the imdb class to create class imdb_base
 + the photo methods now support an optional parameter to retrieve a bigger
