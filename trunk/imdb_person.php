@@ -32,15 +32,23 @@ if (isset ($_GET["mid"])) {
   # Photo
   echo '<TR><TD rowspan="28" valign="top">';
   if (($photo_url = $person->photo_localurl() ) != FALSE) {
-    echo '<img src="'.$photo_url.'" alt="Cover">';
+    echo '<div align="center"><img src="'.$photo_url.'" alt="Cover"></div>';
   } else {
     echo "No photo available";
+  }
+
+  # Birthday
+  $birthday = $person->born();
+  if (!empty($birthday)) {
+    echo "<br><div align='center'>".$person->name()."<br>* ".$birthday["day"].".".$birthday["month"]." ".$birthday["year"];
+    if (!empty($birthday["place"])) echo "<br>in ".$birthday["place"];
+    echo "</div>";
   }
 
   // This also works for all the other filmographies:
   $filmo = $person->movies_actor();
   if (!empty($filmo)) {
-    echo "<TR><TD><b>Actors Filmographie:</b> </td><td>\n";
+    echo "</TD><TD><b>Actors Filmographie:</b> </td><td>\n";
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Character</th></tr>";
     foreach ($filmo as $film) {
       echo "<tr><td><a href='imdb.php?mid=".$film["mid"]."'>".$film["name"]."</a>";
@@ -54,7 +62,6 @@ if (isset ($_GET["mid"])) {
       echo "</td></tr>";
     }
     echo "</table></TD></TR>\n";
-    echo "</td></tr>\n";
   }
 
   echo '</TABLE><BR>';

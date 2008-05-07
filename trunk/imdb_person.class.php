@@ -50,6 +50,7 @@
 
    $this->main_photo      = "";
    $this->fullname        = "";
+   $this->birthday        = array();
    $this->actorsfilms     = array();
    $this->producersfilms  = array();
    $this->soundtrackfilms = array();
@@ -91,6 +92,20 @@
       }
     }
     return $this->fullname;
+  }
+
+ #------------------------------------------------------------------[ Born ]---
+  /** Get Birthday
+   * @method born
+   * @return array birthdate [day,month.year,place]
+   */
+  function born() {
+    if (empty($this->birthday)) {
+      if ($this->page["Name"] == "") $this->openpage ("Name","person");
+      if (preg_match("/Date of Birth:<\/h5>\s*<a href=\"\/OnThisDay\?day\=(\d{1,2})&month\=(.*?)\">.*?<a href\=\"\/BornInYear\?(\d{4}).*?href\=\"\/BornWhere\?.*?\">(.*?)<\/a>/ms",$this->page["Name"],$match))
+        $this->birthday = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3],"place"=>$match[4]);
+    }
+    return $this->birthday;
   }
 
  #--------------------------------------------------------[ Photo specific ]---
