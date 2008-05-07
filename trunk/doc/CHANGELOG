@@ -1,3 +1,7 @@
+v1.0.2
+-------------------
++ new method mpaa_reason() reports why the movie was rated PG-* in the USA
+
 v1.0.1 (07.05.2008)
 -------------------
 * code reorganization: Split up the imdb class to create class imdb_base

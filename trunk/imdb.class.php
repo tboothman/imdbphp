@@ -106,6 +106,7 @@
    $this->moviequotes = array();
    $this->movieruntimes = array();
    $this->mpaas = array();
+   $this->mpaa_justification = "";
    $this->plot_plot = array();
    $this->seasoncount = -1;
    $this->season_episodes = array();
@@ -540,6 +541,20 @@
     }
    }
    return $this->mpaas;
+  }
+
+ #----------------------------------------------------[ MPAA justification ]---
+  /** Find out the reason for the MPAA rating
+   * @method mpaa_reason
+   * @return string reason why the movie was rated such
+   */
+  function mpaa_reason () {
+   if (empty($this->mpaa_justification)) {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (preg_match("/href=\"\/mpaa\"\>.*<\/h5\>\s*(.*?)\s*<\/div/",$this->page["Title"],$match))
+      $this->mpaa_justification = trim($match[1]);
+   }
+   return $this->mpaa_justification;
   }
 
  #-----------------------------------------------------[ /plotsummary page ]---

@@ -72,12 +72,15 @@ if (isset ($_GET["mid"])) {
   # MPAA
   $mpaa = $movie->mpaa();
   if (!empty($mpaa)) {
-    echo '<TR><TD><B>MPAA:</b></TD><TD>';
+    $mpar = $movie->mpaa_reason();
+    if (empty($mpar)) echo '<TR><TD><B>MPAA:</b></TD><TD>';
+    else echo '<TR><TD rowspan="2"><B>MPAA:</b></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Country</th><th style='background-color:#07f;'>Rating</th></tr>";
     foreach ($mpaa as $key=>$mpaa) {
       echo "<tr><td>$key</td><td>$mpaa</td></tr>";
     }
     echo "</table></TD></TR>\n";
+    if (!empty($mpar)) echo "<TR><TD>$mpar</TD></TR>\n";
   }
 
   # Ratings and votes
