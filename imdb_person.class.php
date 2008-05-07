@@ -97,7 +97,7 @@
  #------------------------------------------------------------------[ Born ]---
   /** Get Birthday
    * @method born
-   * @return array birthdate [day,month.year,place]
+   * @return array birthday [day,month.year,place]
    */
   function born() {
     if (empty($this->birthday)) {
@@ -106,6 +106,20 @@
         $this->birthday = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3],"place"=>$match[4]);
     }
     return $this->birthday;
+  }
+
+ #------------------------------------------------------------------[ Died ]---
+  /** Get Deathday
+   * @method died
+   * @return array deathday [day,month.year,place,cause]
+   */
+  function died() {
+    if (empty($this->deathday)) {
+      if ($this->page["Name"] == "") $this->openpage ("Name","person");
+      if (preg_match("/Date of Death:<\/h5>\s*<a href=\"\/OnThisDay\?day\=(\d{1,2})&month\=(.*?)\">.*?<a href\=\"\/DiedInYear\?(\d{4}).*?<\/a>\s*\,\s*(.*?)\s*(\((.*?)\)|)\s*<a class/ms",$this->page["Name"],$match))
+        $this->deathday = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3],"place"=>$match[4],"cause"=>$match[6]);
+    }
+    return $this->deathday;
   }
 
  #--------------------------------------------------------[ Photo specific ]---
