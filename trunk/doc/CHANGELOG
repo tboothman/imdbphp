@@ -4,6 +4,8 @@ v1.0.2
 + introduced new class imdb_person with methods to retrieve name, picture
   and filmographies of staff members
 + imdb_person: New method born() to retrieve birthdate and place
++ imdb_person: New method died() does the same for day of death (including
+  cause, if available)
 
 v1.0.1 (07.05.2008)
 -------------------

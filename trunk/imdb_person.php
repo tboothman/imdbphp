@@ -40,8 +40,17 @@ if (isset ($_GET["mid"])) {
   # Birthday
   $birthday = $person->born();
   if (!empty($birthday)) {
-    echo "<br><div align='center'>".$person->name()."<br>* ".$birthday["day"].".".$birthday["month"]." ".$birthday["year"];
+    echo "<div align='center' style='font-size:10px;'>".$person->name()."<br><b>*</b> ".$birthday["day"].".".$birthday["month"]." ".$birthday["year"];
     if (!empty($birthday["place"])) echo "<br>in ".$birthday["place"];
+    echo "</div>";
+  }
+
+  # Death
+  $death = $person->died();
+  if (!empty($death)) {
+    echo "<div align='center' style='font-size:10px;'><b>+</b> ".$death["day"].".".$death["month"]." ".$death["year"];
+    if (!empty($death["place"])) echo "<br>in ".$death["place"];
+    if (!empty($death["cause"])) echo "<br>Cause: ".$death["cause"];
     echo "</div>";
   }
 
