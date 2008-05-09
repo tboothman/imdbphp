@@ -659,7 +659,7 @@
    */
   function get_imdbname( $href){
    if ( strlen( $href) == 0) return $href;
-   $name_s = 15;
+   $name_s = 17;
    $name_e = strpos ( $href, '"', $name_s);
    if ( $name_e != 0) return substr( $href, $name_s, $name_e -1 - $name_s);
    else	return $href;
