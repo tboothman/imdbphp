@@ -32,7 +32,7 @@ else $search->search_episodes(FALSE);
 $search->setsearchname ($_GET["name"]);
 echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 echo "<HTML><HEAD>\n <TITLE>Performing IMDB search for '".$_GET["name"]."'...</TITLE>\n";
-echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n</HEAD><BODY>\n";
+echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n</HEAD><BODY>\n";
 $results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
    . " <TR><TH STYLE='background-color:#ffb000'>Movie Details</TH><TH STYLE='background-color:#ffb000'>IMDB page</TH></TR>";
