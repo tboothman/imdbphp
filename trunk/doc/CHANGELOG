@@ -9,6 +9,8 @@ v1.0.2
 * links to staff members on the demo imdb.php page now pointing to the new
   imdb_person.php instead of the IMDB site to give insight into the new classes
   capabilities
+! imdb: staff methods (director, cast, writing, producer, composer) did not
+  return the persons IMDBID correctly (fixed: the "nm" prefix is now removed)
 
 v1.0.1 (07.05.2008)
 -------------------
