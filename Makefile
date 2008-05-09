@@ -21,6 +21,7 @@ install: installdirs
 installdirs:
 	mkdir -p $(datadir)/cache
 	mkdir -p $(datadir)/images
+	chmod 0777 $(datadir)/cache $(datadir)/images
 	mkdir -p $(docdir)/apidoc/Api
 	mkdir -p $(libdir)
 	if [ ! -d $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
