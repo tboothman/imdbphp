@@ -68,6 +68,7 @@
    $this->birth_name      = "";
    $this->nick_name       = array();
    $this->bodyheight      = array();
+   $this->bio_bio         = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -387,6 +388,27 @@
    }
    return $this->spouses;
  }
+
+ #---------------------------------------------------------------[ MiniBio ]---
+ /** Get the person's mini bio
+  * @method bio
+  * @return array bio array[string desc, array author[url,name]]
+  */
+  function bio () {
+   if (empty($this->bio_bio)) {
+     if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+     if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
+     if (@preg_match('|<h5>Mini Biography</h5>\s*(.+)\s+.+\s+(.+)|',$this->page["Bio"],$matches)) {
+       $this->bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",$matches[1]));
+       $author = 'Written by '.(str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[2]));
+       if (@preg_match("/href\=\"(.*?)\">(.*?)<\/a>/",$author,$match)) {
+         $this->bio_bio["author"]["url"]  = $match[1];
+         $this->bio_bio["author"]["name"] = $match[2];
+       }
+     }
+   }
+   return $this->bio_bio;
+  }
 
  } // end class imdb_person
 
