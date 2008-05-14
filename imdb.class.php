@@ -287,7 +287,7 @@
   function languages () {
    if (empty($this->langs)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/Sections\/Languages\/.*?>(.*?)</",$this->page["Title"],$matches))
+    if (preg_match_all("/\/Sections\/Languages\/.*?>\s*(.*?)\s*</m",$this->page["Title"],$matches))
       $this->langs = $matches[1];
    }
    return $this->langs;
