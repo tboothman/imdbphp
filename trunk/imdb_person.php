@@ -101,6 +101,12 @@ if (isset ($_GET["mid"])) {
     echo "</table></TD></TR>\n";
   }
 
+  # MiniBio
+  $bio = $person->bio();
+  if (!empty($bio)) {
+    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".$bio["desc"]."</TD></TR>\n";
+  }
+
   // This also works for all the other filmographies:
   $ff = array("producer","director","actor","self");
   foreach ($ff as $var) {
