@@ -54,6 +54,53 @@ if (isset ($_GET["mid"])) {
     echo "</div>";
   }
 
+  # Birthname
+  $bn = $person->birthname();
+  if (empty($bn)) {
+    echo "</TD><TD COLSPAN='2'>&nbsp;</TD></TR>\n";
+  } else {
+    echo "</TD><TD><B>Birth Name:</B></TD><TD>$bn</TD></TR>\n";
+  }
+
+  # Nickname
+  $nicks = $person->nickname();
+  if (!empty($nicks)) {
+    echo "<TR><TD><B>Nicknames:</B></TD><TD>";
+    $txt = "";
+    foreach ($nicks as $nick) $txt .= "<br>$nick";
+    echo substr($txt,4)."</TD></TR>\n";
+  }
+
+  # Body Height
+  $bh = $person->height();
+  if (!empty($bh)) {
+    echo "<TR><TD><B>Body Height:</B></TD><TD>".$bh["metric"]."</TD></TR>\n";
+  }
+
+  # Spouse(s)
+  $sp = $person->spouse();
+  if (!empty($sp)) {
+    echo "<TR><TD><B>Spouse(s):</B></TD><TD>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Spouse</th><th style='background-color:#07f;'>Period</th><th style='background-color:#07f;'>Comment</th></tr>";
+    foreach ($sp as $spouse) {
+      echo "<tr><td><a href='?mid=".$spouse["imdb"]."'>".$spouse["name"]."</a></td>";
+      if (empty($spouse["from"])) echo "<td>&nbsp;</td>";
+      else {
+        echo "<td>".$spouse["from"]["day"].".".$spouse["from"]["month"]." ".$spouse["from"]["year"];
+        if (!empty($spouse["to"])) echo " - ".$spouse["to"]["day"].".".$spouse["to"]["month"]." ".$spouse["to"]["year"];
+        echo "</td>";
+      }
+      if (empty($spouse["comment"])&&empty($spouse["children"])) echo "<td>&nbsp;</td></tr>";
+      else {
+        echo "<td>";
+        if (empty($spouse["comment"])&&!empty($spouse["children"])) echo "Kids: ".$spouse["children"]."</td></tr>";
+        elseif (empty($spouse["children"])&&!empty($spouse["comment"])) echo $spouse["comment"]."</td></tr>";
+        else echo $spouse["comment"]."; Kids: ".$spouse["children"]."</td></tr>";
+      }
+    }
+    echo "</table></TD></TR>\n";
+  }
+
   // This also works for all the other filmographies:
   $ff = array("producer","director","actor","self");
   foreach ($ff as $var) {
@@ -61,7 +108,7 @@ if (isset ($_GET["mid"])) {
     $filmo = $person->$fdt();
     $flname = ucfirst($var)."s Filmography";
     if (!empty($filmo)) {
-      echo "</TD><TD><b>$flname:</b> </td><td>\n";
+      echo "<TR><TD><b>$flname:</b> </td><td>\n";
       echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Character</th></tr>";
       foreach ($filmo as $film) {
         echo "<tr><td><a href='imdb.php?mid=".$film["mid"]."'>".$film["name"]."</a>";
