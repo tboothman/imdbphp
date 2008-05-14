@@ -24,6 +24,7 @@
   */
  class imdb_person extends imdb_base {
 
+ #========================================================[ Common methods ]===
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
    * @method private set_pagename
@@ -33,6 +34,7 @@
   function set_pagename($wt) {
    switch ($wt){
     case "Name"        : $urlname="/"; break;
+    case "Bio"         : $urlname="/bio"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -47,7 +49,9 @@
    */
   function reset_vars() {
    $this->page["Name"] = "";
+   $this->page["Bio"]  = "";
 
+   // "Name" page:
    $this->main_photo      = "";
    $this->fullname        = "";
    $this->birthday        = array();
@@ -59,6 +63,11 @@
    $this->thanxfilms      = array();
    $this->selffilms       = array();
    $this->archivefilms    = array();
+
+   // "Bio" page:
+   $this->birth_name      = "";
+   $this->nick_name       = array();
+   $this->bodyheight      = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -79,6 +88,7 @@
    return "http://".$this->imdbsite."/name/nm".$this->imdbid()."/";
   }
 
+ #=============================================================[ Main Page ]===
  #------------------------------------------------------------------[ Name ]---
   /** Get the name of the person
    * @method name
@@ -287,6 +297,96 @@
     if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"archive");
     return $this->archivefilms;
   }
+
+ #==================================================================[ /bio ]===
+ #------------------------------------------------------------[ Birth Name ]---
+ /** Get the birth name
+  * @method birthname
+  * @return string birthname
+  */
+ function birthname() {
+   if (empty($this->birth_name)) {
+    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    if (preg_match("/Birth Name<\/h5>\s*\n(.*?)\n/m",$this->page["Bio"],$match))
+      $this->birth_name = trim($match[1]);
+   }
+   return $this->birth_name;
+ }
+
+ #-------------------------------------------------------------[ Nick Name ]---
+ /** Get the nick name
+  * @method nickname
+  * @return array nicknames array[0..n] of strings
+  */
+ function nickname() {
+   if (empty($this->nick_name)) {
+    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    if (preg_match("/Nickname<\/h5>\s*\n(.*?)\n<h5>/ms",$this->page["Bio"],$match)) {
+      $nicks = explode("<br/>",$match[1]);
+      foreach ($nicks as $nick) {
+        $nick = trim($nick);
+        if (!empty($nick)) $this->nick_name[] = $nick;
+      }
+    }
+   }
+   return $this->nick_name;
+ }
+
+ #-----------------------------------------------------------[ Body Height ]---
+ /** Get the body height
+  * @method height
+  * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
+  */
+ function height() {
+   if (empty($this->bodyheight)) {
+    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    if (preg_match("/Height<\/h5>\s*\n(.*?)\s*\((.*?)\)/m",$this->page["Bio"],$match)) {
+      $this->bodyheight["imperial"] = trim($match[1]);
+      $this->bodyheight["metric"] = trim($match[2]);
+    }
+   }
+   return $this->bodyheight;
+ }
+
+ #----------------------------------------------------------------[ Spouse ]---
+ /** Get spouse(s)
+  * @method spouse
+  * @return array [0..n] of array spouses [string imdb, string name, array from,
+  *         array to, string comment, string children], where from/to are array
+  *         [day,month,year], comment usually is "divorced" (ouch), children is
+  *         the number of children
+  */
+ function spouse() {
+   if (empty($this->spouses)) {
+     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+     $pos_s = strpos($this->page["Bio"],"<h5>Spouse</h5>");
+     $pos_e = strpos($this->page["Bio"],"</table>",$pos_s);
+     $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s +8);
+     if (@preg_match_all("/<tr>.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",$block,$matches)) { // table lines
+       $mc = count($matches[0]);
+       for ($i=0;$i<$mc;++$i) {
+         unset($tmp);
+         if (preg_match("/href\=\"\/name\/nm(\d{7})\/\">(.*?)<\/a>/i",$matches[1][$i],$match)) { // col#1: MID + name
+           $tmp["imdb"] = trim($match[1]);
+           $tmp["name"] = trim($match[2]);
+         } else {
+           $tmp["name"] = trim($matches[1][$i]);
+         }
+#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\"/",$matches[2][$i],$match)) { // col#2: date (from)
+#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})|)/",$matches[2][$i],$match)) { // col#2: date from + to
+#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)/",$matches[2][$i],$match)) { // col#2: date, comment
+         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)(\s*(\d+) child|)/",$matches[2][$i],$match)) { // col#2: date, children
+           $tmp["from"] = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3]);
+           $tmp["to"]   = array("day"=>$match[5],"month"=>$match[6],"year"=>$match[7]);
+           $tmp["comment"] = $match[8];
+           $tmp["children"] = $match[10];
+         }
+         $this->spouses[] = $tmp;
+       }
+     }
+   }
+   return $this->spouses;
+ }
 
  } // end class imdb_person
 
