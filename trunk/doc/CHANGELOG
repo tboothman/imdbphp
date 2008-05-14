@@ -1,6 +1,7 @@
 v1.0.3
 -------------------
 + imdb_person: methods to retrieve birthname, nicknames, body height and spouses
+! imdb: languages() method was broken due to IMDB site changes
 
 v1.0.2 (14.05.2008)
 -------------------
