@@ -395,18 +395,24 @@
  #---------------------------------------------------------------[ MiniBio ]---
  /** Get the person's mini bio
   * @method bio
-  * @return array bio array[string desc, array author[url,name]]
+  * @return array bio array [0..n] of array[string desc, array author[url,name]]
   */
   function bio () {
    if (empty($this->bio_bio)) {
      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
-     if (@preg_match('|<h5>Mini Biography</h5>\s*(.+)\s+.+\s+(.+)|',$this->page["Bio"],$matches)) {
-       $this->bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",$matches[1]));
-       $author = 'Written by '.(str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[2]));
-       if (@preg_match("/href\=\"(.*?)\">(.*?)<\/a>/",$author,$match)) {
-         $this->bio_bio["author"]["url"]  = $match[1];
-         $this->bio_bio["author"]["name"] = $match[2];
+     if (@preg_match_all('|<h5>Mini Biography</h5>\s*(.+)\s+.+\s+(.+)|',$this->page["Bio"],$matches)) {
+       for ($i=0;$i<count($matches[0]);++$i) {
+         $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",
+                              str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",
+                                str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[1][$i])));
+         $author = 'Written by '.(str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[2][$i]));
+         if (@preg_match("/href\=\"(.*?)\">(.*?)<\/a>/",$author,$match)) {
+           $bio_bio["author"]["url"]  = $match[1][$i];
+           $bio_bio["author"]["name"] = $match[2][$i];
+         }
+         $this->bio_bio[] = $bio_bio;
+         unset($bio_bio,$author);
        }
      }
    }
