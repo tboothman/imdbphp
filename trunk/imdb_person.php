@@ -119,6 +119,14 @@ if (isset ($_GET["mid"])) {
     echo "</UL></TD></TR>\n";
   }
 
+  # Trademarks
+  $tm = $person->trademark();
+  if (!empty($tm)) {
+    echo "<TR><TD><B>Trademarks:</B></TD><TD><UL>";
+    foreach ($tm as $trade) echo "<LI>$trade</LI>";
+    echo "</UL></TD></TR>\n";
+  }
+
   # Salary
   $sal = $person->salary();
   if (!empty($sal)) {
