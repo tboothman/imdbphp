@@ -70,6 +70,7 @@
    $this->bodyheight      = array();
    $this->bio_bio         = array();
    $this->bio_trivia      = array();
+   $this->bio_tm          = array();
    $this->bio_salary      = array();
   }
 
@@ -423,7 +424,10 @@
     $pos_s = strpos($this->page["Bio"],"<h5>$name</h5>");
     $pos_e = strpos($this->page["Bio"],"<br",$pos_s);
     $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
-    if (preg_match_all("/<p>(.*?)<\/p>/ms",$block,$matches)) $res = $matches[1];
+    if (preg_match_all("/<p>(.*?)<\/p>/ms",$block,$matches))
+      foreach ($matches[1] as $match)
+        $res[] = str_replace('href="/name/nm', 'href="http://'.$this->imdbsite.'/name/nm',
+                 str_replace('href="/title/tt','href="http://'.$this->imdbsite.'/title/tt',$match));
   }
 
  #----------------------------------------------------------------[ Trivia ]---
@@ -444,6 +448,16 @@
   function quotes() {
     if (empty($this->bio_quotes)) $this->parparse("Personal Quotes",$this->bio_quotes);
     return $this->bio_quotes;
+  }
+
+ #------------------------------------------------------------[ Trademarks ]---
+  /** Get the "trademarks" of the person
+   * @method trademark
+   * @return array trademarks array[0..n] of strings
+   */
+  function trademark() {
+    if (empty($this->bio_tm)) $this->parparse("Trade Mark",$this->bio_tm);
+    return $this->bio_tm;
   }
 
  #----------------------------------------------------------------[ Salary ]---
