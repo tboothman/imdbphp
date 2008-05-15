@@ -107,6 +107,18 @@ if (isset ($_GET["mid"])) {
     echo "<TR><TD><B>Mini Bio:</B></TD><TD>".$bio["desc"]."</TD></TR>\n";
   }
 
+  # Some Trivia (Personal Quotes work the same)
+  $trivia = $person->trivia();
+  if (!empty($trivia)) {
+    $tc = count($trivia);
+    echo "<TR><TD><B>Trivia:</B></TD><TD>There are $tc trivia records. Some examples:<UL>";
+    for ($i=0;$i<$tc;++$i) {
+      if ($i==5) break;
+      echo "<LI>".$trivia[$i]."</LI>";
+    }
+    echo "</UL></TD></TR>\n";
+  }
+
   // This also works for all the other filmographies:
   $ff = array("producer","director","actor","self");
   foreach ($ff as $var) {

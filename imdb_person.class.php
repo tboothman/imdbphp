@@ -69,6 +69,7 @@
    $this->nick_name       = array();
    $this->bodyheight      = array();
    $this->bio_bio         = array();
+   $this->bio_trivia      = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -408,6 +409,40 @@
      }
    }
    return $this->bio_bio;
+  }
+
+ #-----------------------------------------[ Helper to Trivia, Quotes, ... ]---
+  /** Parse Trivia, Quotes, etc (same structs)
+   * @method private parparse
+   * @param string name
+   * @param ref array res
+   */
+  function parparse($name,&$res) {
+    if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+    $pos_s = strpos($this->page["Bio"],"<h5>$name</h5>");
+    $pos_e = strpos($this->page["Bio"],"<br",$pos_s);
+    $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
+    if (preg_match_all("/<p>(.*?)<\/p>/ms",$block,$matches)) $res = $matches[1];
+  }
+
+ #----------------------------------------------------------------[ Trivia ]---
+  /** Get the Trivia
+   * @method trivia
+   * @return array trivia array[0..n] of string
+   */
+  function trivia() {
+    if (empty($this->bio_trivia)) $this->parparse("Trivia",$this->bio_trivia);
+    return $this->bio_trivia;
+  }
+
+ #----------------------------------------------------------------[ Quotes ]---
+  /** Get the Personal Quotes
+   * @method quotes
+   * @return array quotes array[0..n] of string
+   */
+  function quotes() {
+    if (empty($this->bio_quotes)) $this->parparse("Personal Quotes",$this->bio_quotes);
+    return $this->bio_quotes;
   }
 
  } // end class imdb_person
