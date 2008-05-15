@@ -119,6 +119,22 @@ if (isset ($_GET["mid"])) {
     echo "</UL></TD></TR>\n";
   }
 
+  # Salary
+  $sal = $person->salary();
+  if (!empty($sal)) {
+    echo "<TR><TD><B>Salary:</B></TD><TD>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Salary</th></tr>";
+    $tc = count($sal);
+    for ($i=0;$i<$tc;++$i) {
+      echo "<tr><td>";
+      if (!empty($sal[$i]["movie"]["imdb"])) echo "<a href='imdb.php?mid=".$sal[$i]["movie"]["imdb"]."'>".$sal[$i]["movie"]["name"]."</a>";
+      else echo $sal[$i]["movie"]["name"];
+      if (!empty($sal[$i]["movie"]["year"])) echo " (".$sal[$i]["movie"]["year"].")";
+      echo "</td><td>".$sal[$i]["salary"]."</td></tr>";
+    }
+    echo "</table></TD></TR>\n";
+  }
+
   // This also works for all the other filmographies:
   $ff = array("producer","director","actor","self");
   foreach ($ff as $var) {

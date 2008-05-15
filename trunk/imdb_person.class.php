@@ -70,6 +70,7 @@
    $this->bodyheight      = array();
    $this->bio_bio         = array();
    $this->bio_trivia      = array();
+   $this->bio_salary      = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -443,6 +444,34 @@
   function quotes() {
     if (empty($this->bio_quotes)) $this->parparse("Personal Quotes",$this->bio_quotes);
     return $this->bio_quotes;
+  }
+
+ #----------------------------------------------------------------[ Salary ]---
+  /** Get the salary list
+   * @method salary
+   * @return array salary array[0..n] of array movie[strings imdb,name,year], string salary
+   */
+  function salary() {
+    if (empty($this->bio_salary)) {
+      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+      $pos_s = strpos($this->page["Bio"],"<h5>Salary</h5>");
+      $pos_e = strpos($this->page["Bio"],"</table",$pos_s);
+      $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
+      if (preg_match_all("/<tr.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",$block,$matches)) { // for each table row
+        $mc = count($matches[0]);
+        for ($i=0;$i<$mc;++$i) {
+          if (preg_match("/\/title\/tt(\d{7})\/\">(.*?)<\/a>\s*\((\d{4})\)/",$matches[1][$i],$match)) {
+            $movie["imdb"] = $match[1];
+            $movie["name"] = $match[2];
+            $movie["year"] = $match[3];
+          } else {
+            $movie["name"] = $matches[1][$i];
+          }
+          $this->bio_salary[] = array("movie"=>$movie,"salary"=>$matches[2][$i]);
+        }
+      }
+    }
+    return $this->bio_salary;
   }
 
  } // end class imdb_person
