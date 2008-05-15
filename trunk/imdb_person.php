@@ -104,7 +104,7 @@ if (isset ($_GET["mid"])) {
   # MiniBio
   $bio = $person->bio();
   if (!empty($bio)) {
-    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".$bio["desc"]."</TD></TR>\n";
+    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1',$bio[1]["desc"])."</TD></TR>\n";
   }
 
   # Some Trivia (Personal Quotes work the same)
