@@ -93,6 +93,7 @@
    $this->main_genre = "";
    $this->main_language = "";
    $this->main_photo = "";
+   $this->main_thumb = "";
    $this->main_plotoutline = "";
    $this->main_rating = -1;
    $this->main_runtime = "";
@@ -385,6 +386,19 @@
   }
 
  #--------------------------------------------------------[ Photo specific ]---
+  /** Setup cover photo (thumbnail and big variant)
+   * @method thumbphoto
+   * @return boolean success (TRUE if found, FALSE otherwise)
+   */
+  function thumbphoto() {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
+    if (empty($match[3])) return FALSE;
+    $this->main_thumb = $match[3];
+    $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[3]);
+    return true;
+  }
+
   /** Get cover photo
    * @method photo
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
@@ -392,13 +406,9 @@
    * @return mixed photo (string url if found, FALSE otherwise)
    */
   function photo($thumb=true) {
-    if (empty($this->main_photo)) {
-      if ($this->page["Title"] == "") $this->openpage ("Title");
-      preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
-      if (empty($match[3])) return FALSE;
-      if ($thumb) $this->main_photo = $match[3];
-      else $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[3]);
-    }
+    if (empty($this->main_photo)) $this->thumbphoto();
+    if (empty($this->main_photo)) return false;
+    if ($thumb) return $this->main_thumb;
     return $this->main_photo;
   }
 
