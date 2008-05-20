@@ -23,7 +23,7 @@
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
-  * @version $Revision: 99 $ $Date: 2008-04-30 08:24:14 +0200 (Mi, 30 Apr 2008) $
+  * @version $Revision$ $Date$
   */
  class imdb_base extends imdb_config {
 
