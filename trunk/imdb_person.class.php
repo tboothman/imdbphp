@@ -20,7 +20,7 @@
   * @extends imdb_base
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright 2008 by Itzchak Rehberg and IzzySoft
-  * @version $Revision: 114 $ $Date: 2008-05-07 13:12:10 +0200 (Mi, 07 Mai 2008) $
+  * @version $Revision$ $Date$
   */
  class imdb_person extends imdb_base {
 
