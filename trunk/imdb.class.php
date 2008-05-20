@@ -332,7 +332,7 @@
   function colors () {
     if (empty($this->moviecolors)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("/\/List\?color-info.*?>(.*?)</",$this->page["Title"],$matches))
+      if (preg_match_all("/\/List\?color-info.*?>\s*(.*?)</",$this->page["Title"],$matches))
         $this->moviecolors = $matches[1];
     }
     return $this->moviecolors;
@@ -531,7 +531,7 @@
   function sound () {
    if (empty($this->sound)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/List\?sound.*?>(.*?)</",$this->page["Title"],$matches))
+    if (preg_match_all("/\/List\?sound.*?>\s*(.*?)</",$this->page["Title"],$matches))
       $this->sound = $matches[1];
    }
    return $this->sound;
