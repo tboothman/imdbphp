@@ -18,6 +18,7 @@ require_once(dirname(__FILE__)."/helpers.inc");
 
 echo "<H3>Checking class imdb...</H3>\n";
 $imdb = new imdb("0117500"); // The Rock
+$imdb->cachedir = "../cache";
 
 page("Title");
  setid($imdb,"0117500");

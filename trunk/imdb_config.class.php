@@ -54,7 +54,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute string cachedir
      */
-    $this->cachedir = '../cache/';
+    $this->cachedir = './cache/';
     /** Use a cached page to retrieve the information if available?
      * @class imdb_config
      * @attribute boolean usecache

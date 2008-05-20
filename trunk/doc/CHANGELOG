@@ -4,6 +4,7 @@ v1.0.4
   (instead of unlimited)
 ! imdb: colors(), sounds() and episodes() have been broken due to IMDB site changes
 + added set of test pages (for verification of all methods)
+* default cache expiry increased from 600 (10min) to 3600 (1h)
 
 v1.0.3 (20.05.2008)
 -------------------
