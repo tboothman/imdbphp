@@ -3,6 +3,7 @@ v1.0.4
 ! imdb_search: if maxresults was set to 0, no results have been returned
   (instead of unlimited)
 ! imdb: colors(), sounds() and episodes() have been broken due to IMDB site changes
++ added set of test pages (for verification of all methods)
 
 v1.0.3 (20.05.2008)
 -------------------

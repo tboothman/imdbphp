@@ -54,7 +54,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute string cachedir
      */
-    $this->cachedir = './cache/';
+    $this->cachedir = '../cache/';
     /** Use a cached page to retrieve the information if available?
      * @class imdb_config
      * @attribute boolean usecache
@@ -80,7 +80,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute integer cache_expire
      */
-    $this->cache_expire = 600;
+    $this->cache_expire = 3600;
     /** Where to store images retrieved from the IMDB site by the method photo_localurl().
      *  This needs to be under documentroot to be able to display them on your pages.
      * @class imdb_config
