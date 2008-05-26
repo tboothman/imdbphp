@@ -182,6 +182,20 @@ if (isset ($_GET["mid"])) {
     echo "</table></TD></TR>\n";
   }
 
+  # Biographical movies
+  $pm = $person->pubmovies();
+  if (!empty($pm)) {
+    echo "<TR><TD><B>Biographical movies:</B></TD><TD>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Year</th></tr>";
+    $tc = count($pm);
+    for ($i=0;$i<$tc;++$i) {
+      echo "<tr><td><a href='imdb.php?mid=".$pm[$i]["imdb"]."'>".$pm[$i]["name"]."</a></td><td>";
+      if (empty($pm[$i]["year"])) echo "&nbsp;</td></tr>";
+      else echo $pm[$i]["year"]."</td></tr>";
+    }
+    echo "</table></TD></TR>\n";
+  }
+
   echo '</TABLE><BR>';
 }
 ?>

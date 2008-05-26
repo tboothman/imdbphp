@@ -20,5 +20,6 @@ echo "<HTML><HEAD>\n"
 require ("imdb.inc");
 require ("imdb_person.inc");
 
+echo "<b>Tests done.</b>";
 echo "</BODY></HTML>\n";
 ?>

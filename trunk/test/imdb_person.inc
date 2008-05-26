@@ -50,5 +50,6 @@ page("Bio");
 endpage();
 page("Publicity");
  method($imdbp,"pubprints");
+ method($imdbp,"pubmovies");
 endpage();
 ?>
