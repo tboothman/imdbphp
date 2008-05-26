@@ -525,27 +525,49 @@
     return $this->pub_prints;
   }
 
+  /** Parse movie helper
+   * @method private parsepubmovies
+   * @param ref array res where to store the results
+   * @param string page name of the page
+   * @param string header header of the block on the IMDB site
+   * @brief helper to pubmovies() and portrayedmovies()
+   */
+  function parsepubmovies(&$res,$page,$header) {
+    if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
+    $pos_s = strpos($this->page[$page],"<h5>$header</h5>");
+    $pos_e = strpos($this->page[$page],"<h5",$pos_s+5);
+    $skip  = strlen($header)+9;
+    $block = substr($this->page[$page],$pos_s+$skip,$pos_e - $pos_s -$skip);
+    $arr = explode("<br/><br/>",$block);
+    $pc = count($arr);
+    for ($i=0;$i<$pc;++$i) {
+      if (preg_match('/href="\/title\/tt(\d+)\/">(.*)<\/a>\s*(\((\d+)\)|)/',$arr[$i],$match)) {
+        $res[] = array("imdb"=>$match[1],"name"=>$match[2],"year"=>$match[4]);
+      }
+    }
+ }
+
  #----------------------------------------------------[ Biographical movies ]---
   /** Biographical Movies
    * @method pubmovies
    * @return array pubmovies array[0..n] of array[imdb,name,year]
    */
   function pubmovies() {
-    if (empty($this->pub_movies)) {
-      if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
-      $pos_s = strpos($this->page["Publicity"],"<h5>Biographical movies</h5>");
-      $pos_e = strpos($this->page["Publicity"],"<h5",$pos_s+5);
-      $block = substr($this->page["Publicity"],$pos_s+28,$pos_e - $pos_s -28);
-      $arr = explode("<br/><br/>",$block);
-      $pc = count($arr);
-      for ($i=0;$i<$pc;++$i) {
-        if (preg_match('/href="\/title\/tt(\d+)\/">(.*)<\/a>\s*(\((\d+)\)|)/',$arr[$i],$match)) {
-          $this->pub_movies[] = array("imdb"=>$match[1],"name"=>$match[2],"year"=>$match[4]);
-        }
-      }
-    }
+    if (empty($this->pub_movies)) $this->parsepubmovies($this->pub_movies,"Publicity","Biographical movies");
     return $this->pub_movies;
   }
+
+ #-----------------------------------------------------------[ Portrayed in ]---
+  /** List of movies protraying the person
+   * @method pubportraits
+   * @return array pubmovies array[0..n] of array[imdb,name,year]
+   */
+  function pubportraits() {
+    if (empty($this->pub_portraits)) $this->parsepubmovies($this->pub_portraits,"Publicity","Portrayed in");
+    return $this->pub_portraits;
+  }
+
+
  } // end class imdb_person
 
 ?>

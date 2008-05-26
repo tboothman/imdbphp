@@ -51,5 +51,6 @@ endpage();
 page("Publicity");
  method($imdbp,"pubprints");
  method($imdbp,"pubmovies");
+ method($imdbp,"pubportraits");
 endpage();
 ?>

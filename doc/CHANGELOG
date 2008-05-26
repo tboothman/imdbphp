@@ -2,6 +2,7 @@ v1.0.5
 -------------------
 + imdb_person: added method to retrieve printed publications (pubprints())
 + imdb_person: added method to retrieve biographical movies (pubmovies())
++ imdb_person: same for "portrayed in"
 
 v1.0.4 (26.05.2008)
 -------------------
