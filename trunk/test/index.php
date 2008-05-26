@@ -20,6 +20,9 @@ echo "<HTML><HEAD>\n"
 require ("imdb.inc");
 require ("imdb_person.inc");
 
-echo "<b>Tests done.</b>";
+$passed  = $methods - $failures;
+$percent = round(100*$passed/$methods)."%";
+echo "<H3>Test Results:</H3><UL><LI>Methods: $methods</LI><LI>Passed: $passed</LI><LI>Failures: $failures</LI><LI>Success: $percent</LI></UL>";
+if ($percent == "100%") echo "<b>Congratulations!</b> Looks like the complete API is working perfectly.";
 echo "</BODY></HTML>\n";
 ?>

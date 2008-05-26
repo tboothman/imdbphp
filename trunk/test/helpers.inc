@@ -13,6 +13,9 @@
 
  /* $Id$ */
 
+$methods  = 0;
+$failures = 0;
+
 function page($title) {
   echo "<B>Checking $title page:</B><UL>\n";
   flush();
@@ -29,6 +32,7 @@ function pass() {
 
 function fail() {
   echo "<SPAN STYLE='color:#f00;font-weight:bold;'>FAIL</SPAN>";
+  ++$GLOBALS["failures"];
 }
 
 function method(&$class,$name) {
@@ -37,6 +41,7 @@ function method(&$class,$name) {
   if (empty($rv)) fail();
   else pass();
   echo "</LI>\n";
+  ++$GLOBALS["methods"];
 }
 
 function setid(&$class,$id) {
