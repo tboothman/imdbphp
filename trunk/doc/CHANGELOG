@@ -1,3 +1,7 @@
+v1.0.5
+-------------------
++ imdb_person: added method to retrieve printed publications (pubprints())
+
 v1.0.4 (26.05.2008)
 -------------------
 ! imdb_search: if maxresults was set to 0, no results have been returned

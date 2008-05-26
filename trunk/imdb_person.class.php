@@ -35,6 +35,7 @@
    switch ($wt){
     case "Name"        : $urlname="/"; break;
     case "Bio"         : $urlname="/bio"; break;
+    case "Publicity"   : $urlname="/publicity"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -72,6 +73,9 @@
    $this->bio_trivia      = array();
    $this->bio_tm          = array();
    $this->bio_salary      = array();
+
+   // "Publicity" page:
+   $this->pub_prints      = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -492,6 +496,31 @@
       }
     }
     return $this->bio_salary;
+  }
+
+ #============================================================[ /publicity ]===
+  /** Books about this person
+   * @method pubprints
+   * @return array prints array[0..n] of array[author,title,place,publisher,year,isbn,url],
+   *         where "place" refers to the place of publication, and "url" is a link to the ISBN
+   */
+  function pubprints() {
+    if (empty($this->pub_prints)) {
+      if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
+      $pos_s = strpos($this->page["Publicity"],"<h5>Biography (print)</h5>");
+      $pos_e = strpos($this->page["Publicity"],"<br",$pos_s);
+      $block = substr($this->page["Publicity"],$pos_s,$pos_e - $pos_s);
+      $arr = explode("<p>",$block);
+      $pc = count($arr);
+      for ($i=1;$i<$pc;++$i) {
+        if (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.|)\s*ISBN\s*<a href="(.*)">(.*)<\/a>/iU',$arr[$i],$match)) {
+          $this->pub_prints[] = array("author"=>$match[1],"title"=>$match[2],"place"=>trim($match[4]),"publisher"=>trim($match[6]),"year"=>$match[8],"isbn"=>$match[10],"url"=>$match[9]);
+        } elseif (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.)/iU',$arr[$i],$match)) {
+          $this->pub_prints[] = array("author"=>$match[1],"title"=>$match[2],"place"=>trim($match[4]),"publisher"=>trim($match[6]),"year"=>$match[8],"isbn"=>"","url"=>"");
+        }
+      }
+    }
+    return $this->pub_prints;
   }
 
  } // end class imdb_person

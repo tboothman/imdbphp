@@ -167,6 +167,21 @@ if (isset ($_GET["mid"])) {
     }
   }
 
+  # Publications about this person
+  $books = $person->pubprints();
+  if (!empty($books)) {
+    echo "<TR><TD><B>Publications:</B></TD><TD>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Author</th><th style='background-color:#07f;'>Title</th><th style='background-color:#07f;'>Year</th><th style='background-color:#07f;'>ISBN</th></tr>";
+    $tc = count($books);
+    for ($i=0;$i<$tc;++$i) {
+      echo "<tr><td>".$books[$i]["author"]."</td><td>".$books[$i]["title"]."</td><td>".$books[$i]["year"]."</td><td>";
+      if (!empty($books[$i]["url"])) echo "<a href='".$books[$i]["url"]."'>".$books[$i]["isbn"]."</a></td></tr>";
+      elseif (!empty($books[$i]["isbn"])) echo $books[$i]["isbn"]."</td></tr>";
+      else echo "&nbsp;</td></tr>";
+    }
+    echo "</table></TD></TR>\n";
+  }
+
   echo '</TABLE><BR>';
 }
 ?>

@@ -48,4 +48,7 @@ page("Bio");
  method($imdbp,"trademark");
  method($imdbp,"salary");
 endpage();
+page("Publicity");
+ method($imdbp,"pubprints");
+endpage();
 ?>
