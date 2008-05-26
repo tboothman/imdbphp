@@ -76,6 +76,7 @@
 
    // "Publicity" page:
    $this->pub_prints      = array();
+   $this->pub_movies      = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -499,7 +500,8 @@
   }
 
  #============================================================[ /publicity ]===
-  /** Books about this person
+ #-----------------------------------------------------------[ Print media ]---
+  /** Print media about this person
    * @method pubprints
    * @return array prints array[0..n] of array[author,title,place,publisher,year,isbn,url],
    *         where "place" refers to the place of publication, and "url" is a link to the ISBN
@@ -523,6 +525,27 @@
     return $this->pub_prints;
   }
 
+ #----------------------------------------------------[ Biographical movies ]---
+  /** Biographical Movies
+   * @method pubmovies
+   * @return array pubmovies array[0..n] of array[imdb,name,year]
+   */
+  function pubmovies() {
+    if (empty($this->pub_movies)) {
+      if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
+      $pos_s = strpos($this->page["Publicity"],"<h5>Biographical movies</h5>");
+      $pos_e = strpos($this->page["Publicity"],"<h5",$pos_s+5);
+      $block = substr($this->page["Publicity"],$pos_s+28,$pos_e - $pos_s -28);
+      $arr = explode("<br/><br/>",$block);
+      $pc = count($arr);
+      for ($i=0;$i<$pc;++$i) {
+        if (preg_match('/href="\/title\/tt(\d+)\/">(.*)<\/a>\s*(\((\d+)\)|)/',$arr[$i],$match)) {
+          $this->pub_movies[] = array("imdb"=>$match[1],"name"=>$match[2],"year"=>$match[4]);
+        }
+      }
+    }
+    return $this->pub_movies;
+  }
  } // end class imdb_person
 
 ?>
