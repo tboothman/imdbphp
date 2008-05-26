@@ -77,6 +77,7 @@
    // "Publicity" page:
    $this->pub_prints      = array();
    $this->pub_movies      = array();
+   $this->pub_interviews  = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -567,6 +568,31 @@
     return $this->pub_portraits;
   }
 
+ #-------------------------------------------------------------[ Interviews ]---
+  /** Interviews
+   * @method interviews
+   * @return array interviews array[0..n] of array[inturl,name,date,details,auturl,author]
+   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         (full: as displayed on the IMDB site)
+   */
+  function interviews() {
+    if (empty($this->pub_interviews)) {
+      if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
+      $pos_s = strpos($this->page["Publicity"],"<h5>Interview</h5>");
+      $pos_e = strpos($this->page["Publicity"],"</table",$pos_s);
+      $block = substr($this->page["Publicity"],$pos_s,$pos_e-$pos_s);
+      @preg_match_all("|<tr>(.*)</tr>|iU",$block,$matches); // get the rows
+      $lc = count($matches[0]);
+      for ($i=0;$i<$lc;++$i) {
+        if (@preg_match('/href="(.*)">(.*)<\/a>.*valign="top">(.*),\s*(.*|)(,\s*by.*"author" href="(.*)">(.*)|)</iU',$matches[1][$i],$match)) {
+          @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i',$match[3],$dat);
+          $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"year"=>trim($dat[3]),"full"=>$match[3]);
+          $this->pub_interviews[] = array("inturl"=>$match[1],"name"=>$match[2],"date"=>$datum,"details"=>trim($match[4]),"auturl"=>$match[6],"author"=>$match[7]);
+        }
+      }
+    }
+    return $this->pub_interviews;
+  }
 
  } // end class imdb_person
 
