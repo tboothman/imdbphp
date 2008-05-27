@@ -78,6 +78,9 @@
    $this->pub_prints      = array();
    $this->pub_movies      = array();
    $this->pub_interviews  = array();
+   $this->pub_articles    = array();
+   $this->pub_pictorial   = array();
+   $this->pub_magcovers   = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -526,6 +529,7 @@
     return $this->pub_prints;
   }
 
+ #----------------------------------------------[ Helper for movie parsing ]---
   /** Parse movie helper
    * @method private parsepubmovies
    * @param ref array res where to store the results
@@ -568,6 +572,30 @@
     return $this->pub_portraits;
   }
 
+ #--------------------------------------------[ Helper for Article parsing ]---
+  /** Helper for article parsing
+   * @method private parsearticles
+   * @param ref array res where to store the results
+   * @param string page name of the page
+   * @param string title title of the block
+   * @brief used by interviews(), articles()
+   */
+  function parsearticles(&$res,$page,$title) {
+    if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
+    $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
+    $pos_e = strpos($this->page[$page],"</table",$pos_s);
+    $block = substr($this->page[$page],$pos_s,$pos_e-$pos_s);
+    @preg_match_all("|<tr>(.*)</tr>|iU",$block,$matches); // get the rows
+    $lc = count($matches[0]);
+    for ($i=0;$i<$lc;++$i) {
+      if (@preg_match('/href="(.*)">(.*)<\/a>.*valign="top">(.*),\s*(.*|)(,\s*by.*"author" href="(.*)">(.*)|)</iU',$matches[1][$i],$match)) {
+        @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i',$match[3],$dat);
+        $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"year"=>trim($dat[3]),"full"=>$match[3]);
+        $res[] = array("inturl"=>$match[1],"name"=>$match[2],"date"=>$datum,"details"=>trim($match[4]),"auturl"=>$match[6],"author"=>$match[7]);
+      }
+    }
+  }
+
  #-------------------------------------------------------------[ Interviews ]---
   /** Interviews
    * @method interviews
@@ -576,22 +604,44 @@
    *         (full: as displayed on the IMDB site)
    */
   function interviews() {
-    if (empty($this->pub_interviews)) {
-      if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
-      $pos_s = strpos($this->page["Publicity"],"<h5>Interview</h5>");
-      $pos_e = strpos($this->page["Publicity"],"</table",$pos_s);
-      $block = substr($this->page["Publicity"],$pos_s,$pos_e-$pos_s);
-      @preg_match_all("|<tr>(.*)</tr>|iU",$block,$matches); // get the rows
-      $lc = count($matches[0]);
-      for ($i=0;$i<$lc;++$i) {
-        if (@preg_match('/href="(.*)">(.*)<\/a>.*valign="top">(.*),\s*(.*|)(,\s*by.*"author" href="(.*)">(.*)|)</iU',$matches[1][$i],$match)) {
-          @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i',$match[3],$dat);
-          $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"year"=>trim($dat[3]),"full"=>$match[3]);
-          $this->pub_interviews[] = array("inturl"=>$match[1],"name"=>$match[2],"date"=>$datum,"details"=>trim($match[4]),"auturl"=>$match[6],"author"=>$match[7]);
-        }
-      }
-    }
+    if (empty($this->pub_interviews)) $this->parsearticles($this->pub_interviews,"Publicity","Interview");
     return $this->pub_interviews;
+  }
+
+ #--------------------------------------------------------------[ Articles ]---
+  /** Articles
+   * @method articles
+   * @return array articles array[0..n] of array[inturl,name,date,details,auturl,author]
+   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         (full: as displayed on the IMDB site)
+   */
+  function articles() {
+    if (empty($this->pub_articles)) $this->parsearticles($this->pub_articles,"Publicity","Article");
+    return $this->pub_articles;
+  }
+
+ #--------------------------------------------------------------[ Articles ]---
+  /** Pictorials
+   * @method pictorials
+   * @return array pictorials array[0..n] of array[inturl,name,date,details,auturl,author]
+   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         (full: as displayed on the IMDB site)
+   */
+  function pictorials() {
+    if (empty($this->pub_pictorials)) $this->parsearticles($this->pub_pictorials,"Publicity","Pictorial");
+    return $this->pub_pictorials;
+  }
+
+ #--------------------------------------------------------------[ Articles ]---
+  /** Magazine cover photos
+   * @method magcovers
+   * @return array magcovers array[0..n] of array[inturl,name,date,details,auturl,author]
+   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         (full: as displayed on the IMDB site)
+   */
+  function magcovers() {
+    if (empty($this->pub_magcovers)) $this->parsearticles($this->pub_magcovers,"Publicity","Magazine cover photo");
+    return $this->pub_magcovers;
   }
 
  } // end class imdb_person

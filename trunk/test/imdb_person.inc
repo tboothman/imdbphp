@@ -53,5 +53,8 @@ page("Publicity");
  method($imdbp,"pubmovies");
  method($imdbp,"pubportraits");
  method($imdbp,"interviews");
+ method($imdbp,"articles");
+ method($imdbp,"pictorials");
+ method($imdbp,"magcovers");
 endpage();
 ?>

@@ -196,7 +196,7 @@ if (isset ($_GET["mid"])) {
     echo "</table></TD></TR>\n";
   }
 
-  # Interviews
+  # Interviews (articles, pictorials, and magcovers work the same)
   $iv = $person->interviews();
   if (!empty($iv)) {
     echo "<TR><TD><B>Interviews:</B></TD><TD>";
