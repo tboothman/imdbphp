@@ -5,6 +5,7 @@ v1.0.5
 + imdb_person: added method to retrieve interview list (interviews())
 + added overall results to the API test page
 + imdb_person: added methods for articles, pictorials and magazine covers
+* class tests updated - results should be more precise now
 
 v1.0.4 (26.05.2008)
 -------------------

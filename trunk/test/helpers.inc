@@ -38,7 +38,7 @@ function fail() {
 function method(&$class,$name) {
   echo " <LI>method $name(): ";
   $rv = $class->$name();
-  if (empty($rv)) fail();
+  if (empty($rv)||$rv=-1) fail();
   else pass();
   echo "</LI>\n";
   ++$GLOBALS["methods"];
