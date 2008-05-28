@@ -40,7 +40,7 @@ function method(&$class,$name) {
   $rv = $class->$name();
   if (empty($rv)||$rv==-1) fail();
   else pass();
-  echo " ($rv)</LI>\n";
+  echo "</LI>\n";
   ++$GLOBALS["methods"];
 }
 
