@@ -105,6 +105,15 @@
    $req->sendRequest();
    $this->page[$wt]=$req->getResponseBody();
 
+   // Checking for redirects
+   if (@preg_match('|<TITLE>(.*)</TITLE>.*The document has moved <A HREF="(.*)">|iUms',$this->page[$wt],$match)) {
+     if ($match[1]=="302 Found") {
+       $req->setURL($match[2]);
+       $req->sendRequest();
+       $this->page[$wt]=$req->getResponseBody();
+     }
+   }
+
    if( $this->page[$wt] ){ //storecache
     if ($this->storecache) {
      if (!is_dir($this->cachedir)) {
