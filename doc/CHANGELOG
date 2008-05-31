@@ -7,6 +7,7 @@ v1.0.5
 + imdb_person: added methods for articles, pictorials and magazine covers
 * class tests updated - results should be more precise now
 ! fixed a problem with redirected pages (e.g. movie 0068709)
+! fixed a problem with movies having no year set (but "????" instead)
 
 v1.0.4 (26.05.2008)
 -------------------
