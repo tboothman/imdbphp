@@ -44,9 +44,12 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
     }
     /** Send a request to the IMDB site
      * @method sendRequest
+     * @return boolean success
      */
     function sendRequest(){
       $this->fpopened = $this->fopen($this->urltoopen);
+      if ($this->fpopened!==false) return true;
+      return false;
     }
     /** Get the Response body
      * @method getResponseBody
