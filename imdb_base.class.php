@@ -75,7 +75,7 @@
     if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
     else ($head[0] = "HTTP/1.1 000");
     $response = explode(" ",$head[0]);
-    $this->lastServerResponse = array_pop($response);
+    $this->lastServerResponse = $response[1];
     switch (substr($head[0],0,12)) {
       case "HTTP/1.1 000":
         $this->page[$wt] = "cannot open page";
