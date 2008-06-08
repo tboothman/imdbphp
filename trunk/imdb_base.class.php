@@ -52,6 +52,32 @@
    return false;
   }
 
+  /** Obtain page from web server
+   * @method private getWebPage
+   * @param string wt internal name of the page
+   * @param string url URL to open
+   */
+  function getWebPage($wt,$url) {
+    $req = new IMDB_Request("");
+    $req->setURL($url);
+    if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
+    else ($head[0] = "HTTP/1.1 000");
+    switch (substr($head[0],0,12)) {
+      case "HTTP/1.1 000":
+        $this->page[$wt] = "cannot open page";
+        $this->debug_scalar("cannot open page (could not connect to host): $url");
+        return false; break;
+      case "HTTP/1.1 404":
+        $this->page[$wt] = "cannot open page";
+        $this->debug_scalar("cannot open page (error 404): $url");
+        return false; break;
+      case "HTTP/1.1 302":
+      case "HTTP/1.1 200": break;
+      default: $this->debug_scalar("HTTP response code not handled explicitly: '".$head[0]."'"); break;
+    }
+    $this->page[$wt]=$req->getResponseBody();
+  }
+
   /** Load an IMDB page into the corresponding property (variable)
    * @method private openpage
    * @param string wt internal name of the page
@@ -96,24 +122,20 @@
     }
    } // end cache
 
-   $req = new IMDB_Request("");
    switch ($type) {
      case "person" : $url = "http://".$this->imdbsite."/name/nm".$this->imdbID.$urlname; break;
      default       : $url = "http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname;
    }
-   $req->setURL($url);
-   $req->sendRequest();
-   $this->page[$wt]=$req->getResponseBody();
+   $this->getWebPage($wt,$url);
 
    // Checking for redirects
    if (@preg_match('|<TITLE>(.*)</TITLE>.*The document has moved <A HREF="(.*)">|iUms',$this->page[$wt],$match)) {
      if ($match[1]=="302 Found") {
-       $req->setURL($match[2]);
-       $req->sendRequest();
-       $this->page[$wt]=$req->getResponseBody();
+       $this->getWebPage($wt,$match[2]);
      }
    }
 
+   if ($this->page[$wt] == "cannot open page") return; // this should not go to the cache!
    if( $this->page[$wt] ){ //storecache
     if ($this->storecache) {
      if (!is_dir($this->cachedir)) {
@@ -202,7 +224,7 @@
         $this->debug_scalar("Cache directory (".$this->cachedir.") lacks write permission - purge aborted.");
       }
     } elseif (!empty($this->cachedir)) {
-      $this->debug_scalar("Cache directory (".$this->cachedir.") does not exist - purge aborted.");
+      $this->debug_scalar("Cache directory ('".$this->cachedir."') does not exist - purge aborted.");
     }
   }
 

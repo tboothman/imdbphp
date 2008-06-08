@@ -127,7 +127,7 @@ class BrowserEmulator {
 	  if ($path == "")
 	       $path = "/";
 	  $socket = false;
-	  $socket = fsockopen ($server, $this->port);
+	  $socket = @fsockopen ($server, $this->port);
 	  if ($socket) {
 	       $this->headerLines["Host"] = $server;
 

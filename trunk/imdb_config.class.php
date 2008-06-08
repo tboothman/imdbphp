@@ -97,7 +97,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute boolean debug
      */
-    $this->debug = 1;
+    $this->debug = 0;
     #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
     /** Limit for the result set of searches.
      *  Use 0 for no limit, or the number of maximum entries you wish. Default

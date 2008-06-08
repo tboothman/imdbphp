@@ -1,3 +1,8 @@
+v1.0.6
+-------------------
+! preventing endless loops on connection problems (i.e. IMDB site offline)
+! failed pages are no longer cached
+
 v1.0.5 (03.06.2008)
 -------------------
 + imdb_person: added methods to retrieve printed publications (pubprints()),
