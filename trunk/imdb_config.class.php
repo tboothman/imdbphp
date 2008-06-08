@@ -54,7 +54,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute string cachedir
      */
-    $this->cachedir = './cache/';
+    $this->cachedir = dirname(__FILE__).'/cache/';
     /** Use a cached page to retrieve the information if available?
      * @class imdb_config
      * @attribute boolean usecache
@@ -97,7 +97,7 @@ class imdb_config {
      * @class imdb_config
      * @attribute boolean debug
      */
-    $this->debug = 0;
+    $this->debug = 1;
     #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
     /** Limit for the result set of searches.
      *  Use 0 for no limit, or the number of maximum entries you wish. Default
