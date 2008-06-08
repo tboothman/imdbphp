@@ -216,8 +216,14 @@ class BrowserEmulator {
 
 	/** Get the latest server response
 	* @method getLastResponseHeaders
-	* @return string lastResponse
-	*/
+	* @return array lastResponse <ul>
+        *  <li>0: HTTP response (e.g. "HTTP/1.1 404 Not Found")</li>
+        *  <li>1: Date (e.g. "Date: Sun, 08 Jun 2008 16:36:37 GMT")</li>
+        *  <li>2: ServerInfo (e.g. "Server: Apache/2.2.3 (Ubuntu) PHP/5.2.1"</li>
+        *  <li>3: Content length (e.g. "Content-Length: 214"</li>
+        *  <li>4: Connection (e.g. "Connection: close")</li>
+        *  <li>5: Content type (e.g. "Content-Type: text/html; charset=iso-8859-1")</li></ul>
+        */
      function getLastResponseHeaders () {
 	  return $this->lastResponse;
      }
