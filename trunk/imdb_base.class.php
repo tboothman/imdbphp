@@ -15,7 +15,7 @@
  require_once (dirname(__FILE__)."/imdb_config.class.php");
  require_once (dirname(__FILE__)."/imdb_request.class.php");
 
- #=================================================[ The IMDB class itself ]===
+ #===================================================[ The IMDB Base class ]===
  /** Accessing IMDB information
   * @package Api
   * @class imdb_base
@@ -26,6 +26,18 @@
   * @version $Revision$ $Date$
   */
  class imdb_base extends imdb_config {
+
+  /** Last response from the IMDB server
+   *  This is a 3-digit code according to RFC2616. This is e.g. a "200" for "OK",
+   *  "404" for "not found", etc.). This attribute holds the response from the
+   *  last query to the server and is overwritten on the next. Additional to the
+   *  codes defined in RFC2616, "000" means the server could not be contacted -
+   *  e.g. IMDB site down, or networking problems. If it is completely empty, you
+   *  did not run any request yet ;) Consider this attribute read-only - you can
+   *  use it to figure out why no information is returned in some cases.
+   * @class imdb_base
+   * @attribute string lastServerResponse
+   */
 
  #---------------------------------------------------------[ Debug helpers ]---
   function debug_scalar($scalar) {
@@ -62,6 +74,8 @@
     $req->setURL($url);
     if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
     else ($head[0] = "HTTP/1.1 000");
+    $response = explode(" ",$head[0]);
+    $this->lastServerResponse = array_pop($response);
     switch (substr($head[0],0,12)) {
       case "HTTP/1.1 000":
         $this->page[$wt] = "cannot open page";
@@ -198,6 +212,7 @@
   function imdb_base ($id) {
    $this->imdb_config();
    $this->setid($id);
+   $this->lastServerResponse = "";
    if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
   }
 
