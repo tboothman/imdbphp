@@ -2,6 +2,10 @@ v1.0.6
 -------------------
 ! preventing endless loops on connection problems (i.e. IMDB site offline)
 ! failed pages are no longer cached
++ added the attribute lastServerResponse (3-digit codes according to RFC2616)
+  to the imdb_base class. You can check this to find out why there have been
+  no results - e.g. "404" means the page was not found. "000" usually means
+  the server could not be contacted (site down, network problems, ...)
 
 v1.0.5 (03.06.2008)
 -------------------
