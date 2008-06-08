@@ -19,6 +19,18 @@ require_once(dirname(__FILE__)."/helpers.inc");
 echo "<H3>Checking class imdb_person...</H3>\n";
 $imdbp = new imdb_person("0000197"); // Jack Nicholson
 $imdbp->cachedir = "../cache";
+switch ($_REQUEST["cache"]) {
+  case "false":
+  case "off"  :
+  case "0"    : $imdbp->usecache = 0; $imdbp->storecache = 0; 
+                echo "<p>Caching turned off.</p>";
+                break;
+  case "true" :
+  case "on"   :
+  case 1      : $imdbp->usecache = 1; $imdbp->storecache = 1;
+                echo "<p>Caching turned on.</p>";
+                break;
+}
 
 page("Name");
  setid($imdbp,"0000197");

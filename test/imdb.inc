@@ -19,6 +19,18 @@ require_once(dirname(__FILE__)."/helpers.inc");
 echo "<H3>Checking class imdb...</H3>\n";
 $imdb = new imdb("0117500"); // The Rock
 $imdb->cachedir = "../cache";
+switch ($_REQUEST["cache"]) {
+  case "false":
+  case "off"  :
+  case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
+                echo "<p>Caching turned off.</p>";
+                break;
+  case "true" :
+  case "on"   :
+  case 1      : $imdb->usecache = 1; $imdb->storecache = 1;
+                echo "<p>Caching turned on.</p>";
+                break;
+}
 
 page("Title");
  setid($imdb,"0117500");

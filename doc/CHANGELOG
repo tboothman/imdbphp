@@ -6,6 +6,8 @@ v1.0.6
   to the imdb_base class. You can check this to find out why there have been
   no results - e.g. "404" means the page was not found. "000" usually means
   the server could not be contacted (site down, network problems, ...)
++ test pages now allow to turn the cache on/off via the URL, applying
+  "?cache=on" or "?cache=off" to it
 
 v1.0.5 (03.06.2008)
 -------------------
