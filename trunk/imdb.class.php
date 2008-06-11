@@ -46,6 +46,7 @@
     case "Soundtrack"  : $urlname="/soundtrack"; break;
     case "MovieConnections" : $urlname="/movieconnections"; break;
     case "ExtReviews"  : $urlname="/externalreviews"; break;
+    case "ReleaseInfo" : $urlname="/releaseinfo"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -77,6 +78,7 @@
    $this->page["Trailers"] = "";
    $this->page["MovieConnections"] = "";
    $this->page["ExtReviews"] = "";
+   $this->page["ReleaseInfo"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -109,6 +111,7 @@
    $this->mpaas = array();
    $this->mpaa_justification = "";
    $this->plot_plot = array();
+   $this->release_info = array();
    $this->seasoncount = -1;
    $this->season_episodes = array();
    $this->sound = array();
@@ -1005,6 +1008,25 @@
       }
     }
     return $this->extreviews;
+  }
+
+ #-----------------------------------------------------[ /releaseinfo page ]---
+  /** Obtain Release Info (if any)
+   * @method releaseInfo
+   * @return array release_info array[0..n] of strings (country,day,month,year,comment)
+   */
+  function releaseInfo() {
+    if (empty($this->release_info)) {
+      if (empty($this->page["ReleaseInfo"])) $this->openpage("ReleaseInfo");
+      if ($this->page["ReleaseInfo"] == "cannot open page") return array(); // no such page
+      $tag_s = strpos($this->page["ReleaseInfo"],'<th class="xxxx">Country</th><th class="xxxx">Date</th>');
+      $tag_e = strpos($this->page["ReleaseInfo"],'</table',$tag_s);
+      $block = substr($this->page["ReleaseInfo"],$tag_s,$tag_e-$tag_s);
+      preg_match_all('/<tr>.*">(.*)<.*<td.*href=.*day=(\d+).*month=(.*)">.*>(\d{4})<.*<td>\s*(\((.*)\)\s*|<\/td>)/iUms',$block,$matches);
+      $mc = count($matches[0]);
+      for ($i=0;$i<$mc;++$i) $this->release_info[] = array("country"=>$matches[1][$i],"day"=>$matches[2][$i],"month"=>$matches[3][$i],"year"=>$matches[4][$i],"comment"=>$matches[6][$i]);
+    }
+    return $this->release_info;
   }
 
  } // end class imdb

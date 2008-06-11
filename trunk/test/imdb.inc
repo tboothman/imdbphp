@@ -99,5 +99,8 @@ endpage();
 page("ExtReviews");
  method($imdb,"extReviews");
 endpage();
+page("ReleaseInfo");
+ method($imdb,"releaseInfo");
+endpage();
 
 ?>
