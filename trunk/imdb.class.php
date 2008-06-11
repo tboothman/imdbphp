@@ -1022,7 +1022,7 @@
       $tag_s = strpos($this->page["ReleaseInfo"],'<th class="xxxx">Country</th><th class="xxxx">Date</th>');
       $tag_e = strpos($this->page["ReleaseInfo"],'</table',$tag_s);
       $block = substr($this->page["ReleaseInfo"],$tag_s,$tag_e-$tag_s);
-      preg_match_all('/<tr>.*">(.*)<.*<td.*href=.*day=(\d+).*month=(.*)">.*>(\d{4})<.*<td>\s*(\((.*)\)\s*|<\/td>)/iUms',$block,$matches);
+      preg_match_all('/<tr>.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|<\/td>)/ims',$block,$matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) $this->release_info[] = array("country"=>$matches[1][$i],"day"=>$matches[2][$i],"month"=>$matches[3][$i],"year"=>$matches[4][$i],"comment"=>$matches[6][$i]);
     }
