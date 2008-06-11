@@ -1,4 +1,4 @@
-v1.0.6
+v1.0.6 (11.06.2008)
 -------------------
 ! preventing endless loops on connection problems (i.e. IMDB site offline)
 ! failed pages are no longer cached
