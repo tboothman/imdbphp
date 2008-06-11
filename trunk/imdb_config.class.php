@@ -22,6 +22,9 @@ $PEAR = false;
 /** Configuration part of the IMDB classes
  * @package Api
  * @class imdb_config
+ * @author Izzy (izzysoft AT qumran DOT org)
+ * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
+ * @version $Revision$ $Date$
  */
 class imdb_config {
   var $imdbsite;
