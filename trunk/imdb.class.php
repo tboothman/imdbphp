@@ -399,7 +399,8 @@
     preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
     if (empty($match[3])) return FALSE;
     $this->main_thumb = $match[3];
-    $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[3]);
+    preg_match('|(.*@@\._V1).*|iUs',$match[3],$mo);
+    $this->main_photo = $mo[1];
     return true;
   }
 
