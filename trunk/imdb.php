@@ -18,11 +18,12 @@ $movie = new imdb ($_GET["mid"]);
 if (isset ($_GET["mid"])) {
   $movieid = $_GET["mid"];
   $movie->setid ($movieid);
+  $rows = 2; // count for the rowspan; init with photo + year
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo "<HTML><HEAD>\n <TITLE>".$movie->title().' ('.$movie->year().")</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
-  echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
+  echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
@@ -30,7 +31,7 @@ if (isset ($_GET["mid"])) {
   flush();
 
   # Photo
-  echo '<TR><TD rowspan="28" valign="top">';
+  echo '<TR><TD id="photocol" rowspan="29" valign="top">';
   if (($photo_url = $movie->photo_localurl() ) != FALSE) {
     echo '<img src="'.$photo_url.'" alt="Cover">';
   } else {
@@ -59,19 +60,24 @@ if (isset ($_GET["mid"])) {
 
   # Seasons
   if ( $movie->seasons() != 0 ) {
-   echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons()."</TD></TR>\n";
+    ++$rows;
+    echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons()."</TD></TR>\n";
     flush();
   }
 
   # Year & runtime
   echo '<TR><TD><B>Year:</B></TD><TD>'.$movie->year().'</TD></TR>';
   $runtime = $movie->runtime();
-  if (!empty($runtime)) echo "<TR><TD valign=top><B>Runtime:</b></TD><TD>$runtime minutes</TD></TR>\n";
+  if (!empty($runtime)) {
+    ++$rows;
+    echo "<TR><TD valign=top><B>Runtime:</b></TD><TD>$runtime minutes</TD></TR>\n";
+  }
   flush();
 
   # MPAA
   $mpaa = $movie->mpaa();
   if (!empty($mpaa)) {
+    ++$rows;
     $mpar = $movie->mpaa_reason();
     if (empty($mpar)) echo '<TR><TD><B>MPAA:</b></TD><TD>';
     else echo '<TR><TD rowspan="2"><B>MPAA:</b></TD><TD>';
@@ -85,14 +91,15 @@ if (isset ($_GET["mid"])) {
 
   # Ratings and votes
   $ratv = $movie->rating();
-  if (!empty($ratv)) echo "<TR><TD><B>Rating:</b></TD><TD>$ratv</TD></TR>\n";
+  if (!empty($ratv)) { echo "<TR><TD><B>Rating:</b></TD><TD>$ratv</TD></TR>\n"; ++$rows; }
   $ratv = $movie->votes();
-  if (!empty($ratv)) echo "<TR><TD><B>Votes:</B></TD><TD>$ratv</TD></TR>\n";
+  if (!empty($ratv)) { echo "<TR><TD><B>Votes:</B></TD><TD>$ratv</TD></TR>\n"; ++$rows; }
   flush();
 
   # Languages
   $languages = $movie->languages();
   if (!empty($languages)) {
+    ++$rows;
     echo '<TR><TD><B>Languages:</B></TD><TD>';
     for ($i = 0; $i + 1 < count($languages); $i++) {
       echo $languages[$i].', ';
@@ -104,6 +111,7 @@ if (isset ($_GET["mid"])) {
   # Country
   $country = $movie->country();
   if (!empty($country)) {
+    ++$rows;
     echo '<TR><TD><B>Country:</B></TD><TD>';
     for ($i = 0; $i + 1 < count($country); $i++) {
       echo $country[$i].', ';
@@ -113,10 +121,11 @@ if (isset ($_GET["mid"])) {
 
   # Genres
   $genre = $movie->genre();
-  if (!empty($genre)) echo "<TR><TD><B>Genre:</B></TD><TD>$genre</TD></TR>\n";
+  if (!empty($genre)) { echo "<TR><TD><B>Genre:</B></TD><TD>$genre</TD></TR>\n"; ++$rows; }
 
   $gen = $movie->genres();
   if (!empty($gen)) {
+    ++$rows;
     echo '<TR><TD><B>All Genres:</B></TD><TD>';
     for ($i = 0; $i + 1 < count($gen); $i++) {
       echo $gen[$i].', ';
@@ -127,6 +136,7 @@ if (isset ($_GET["mid"])) {
   # Colors
   $col = $movie->colors();
   if (!empty($col)) {
+    ++$rows;
     echo '<TR><TD><B>Colors:</B></TD><TD>';
     for ($i = 0; $i + 1 < count($col); $i++) {
       echo $col[$i].', ';
@@ -138,6 +148,7 @@ if (isset ($_GET["mid"])) {
   # Sound
   $sound = $movie->sound ();
   if (!empty($sound)) {
+    ++$rows;
     echo '<TR><TD><B>Sound:</B></TD><TD>';
     for ($i = 0; $i + 1 < count($sound); $i++) {
       echo $sound[$i].', ';
@@ -147,6 +158,7 @@ if (isset ($_GET["mid"])) {
 
   $tagline = $movie->tagline();
   if (!empty($tagline)) {
+    ++$rows;
     echo "<TR><TD valign='top'><B>Tagline:</B></TD><TD>$tagline</TD></TR>\n";
   }
 
@@ -154,6 +166,7 @@ if (isset ($_GET["mid"])) {
   # director(s)
   $director = $movie->director();
   if (!empty($director)) {
+    ++$rows;
     echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($director); $i++) {
@@ -168,6 +181,7 @@ if (isset ($_GET["mid"])) {
   # Story
   $write = $movie->writing();
   if (!empty($write)) {
+    ++$rows;
     echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($write); $i++) {
@@ -183,6 +197,7 @@ if (isset ($_GET["mid"])) {
   # Producer
   $produce = $movie->producer();
   if (!empty($produce)) {
+    ++$rows;
     echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($produce); $i++) {
@@ -197,6 +212,7 @@ if (isset ($_GET["mid"])) {
   # Music
   $compose = $movie->composer();
   if (!empty($compose)) {
+    ++$rows;
     echo '<TR><TD valign=top><B>Music:</B></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($compose); $i++) {
@@ -211,6 +227,7 @@ if (isset ($_GET["mid"])) {
   # Cast
   $cast = $movie->cast();
   if (!empty($cast)) {
+    ++$rows;
     echo '<TR><TD valign=top><B>Cast:</B></TD><TD>';
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($cast); $i++) {
@@ -225,11 +242,14 @@ if (isset ($_GET["mid"])) {
 
   # Plot outline & plot
   $plotoutline = $movie->plotoutline();
-  if (!empty($plotoutline))
+  if (!empty($plotoutline)) {
+    ++$rows;
     echo "<tr><td valign='top'><b>Plot Outline:</b></td><td>$plotoutline</td></tr>\n";
+  }
 
   $plot = $movie->plot();
   if (!empty($plot)) {
+    ++$rows;
     echo '<tr><td valign=top><b>Plot:</b></td><td><ul>';
     for ($i = 0; $i < count($plot); $i++) {
       echo "<li>".$plot[$i]."</li>\n";
@@ -241,6 +261,7 @@ if (isset ($_GET["mid"])) {
   # Taglines
   $taglines = $movie->taglines();
   if (!empty($taglines)) {
+    ++$rows;
     echo '<tr><td valign=top><b>Taglines:</b></td><td><ul>';
     for ($i = 0; $i < count($taglines); $i++) {
       echo "<li>".$taglines[$i]."</li>\n";
@@ -250,6 +271,7 @@ if (isset ($_GET["mid"])) {
 
   $seasons = $movie->seasons();
   if ( $seasons != 0 ) {
+    ++$rows;
     $episodes = $movie->episodes();
     echo '<tr><td valign=top><b>Episodes:</b></td><td>';
     for ( $season = 1; $season <= $seasons; ++$season ) {
@@ -264,12 +286,15 @@ if (isset ($_GET["mid"])) {
 
   # Selected User Comment
   $comment = $movie->comment();
-  if (!empty($comment))
+  if (!empty($comment)) {
+    ++$rows;
     echo "<tr><td valign='top'><b>User Comments:</b></td><td>$comment</td></tr>\n";
+  }
 
   # Quotes
   $quotes = $movie->quotes();
   if (!empty($quotes)) {
+    ++$rows;
     echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
     echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","imdb_person.php?mid=\\1",$quotes[0])."</td></tr>\n";
   }
@@ -277,6 +302,7 @@ if (isset ($_GET["mid"])) {
   # Trailer
   $trailers = $movie->trailers();
   if (!empty($trailers)) {
+    ++$rows;
     echo '<tr><td valign=top><b>Trailers:</b></td><td>';
     for ($i=0;$i<count($trailers);++$i) {
       echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
@@ -288,6 +314,7 @@ if (isset ($_GET["mid"])) {
   $crazy = $movie->crazy_credits();
   $cc    = count($crazy);
   if ($cc) {
+    ++$rows;
     echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
     echo "We know about $cc <i>Crazy Credits</i>. One of them reads:<br>$crazy[0]</td></tr>\n";
   }
@@ -296,6 +323,7 @@ if (isset ($_GET["mid"])) {
   $goofs = $movie->goofs();
   $gc    = count($goofs);
   if ($gc > 0) {
+    ++$rows;
     echo '<tr><td valign=top><b>Goofs:</b></td><td>';
     echo "We know about $gc goofs. Here comes one of them:<br>";
     echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>\n";
@@ -305,6 +333,7 @@ if (isset ($_GET["mid"])) {
   $trivia = $movie->trivia();
   $gc     = count($trivia);
   if ($gc > 0) {
+    ++$rows;
     echo '<tr><td valign=top><b>Trivia:</b></td><td>';
     echo "There are $gc entries in the trivia list - like these:<br><ul>";
     for ($i=0;$i<5;++$i) {
@@ -318,6 +347,7 @@ if (isset ($_GET["mid"])) {
   $soundtracks = $movie->soundtrack();
   $gc = count($soundtracks);
   if ($gc > 0) {
+    ++$rows;
     echo '<tr><td valign=top><b>Soundtracks:</b></td><td>';
     echo "There are $gc soundtracks listed - like these:<br>";
     echo "<table align='center' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Soundtrack</th><th style='background-color:#07f;'>Credit 1</th><th style='background-color:#07f;'>Credit 2</th></tr>";
@@ -330,6 +360,11 @@ if (isset ($_GET["mid"])) {
     echo "</table></td></tr>\n";
   }
 
-  echo '</TABLE><BR>';
+  echo "</TABLE><BR>\n";
+  echo "<SCRIPT TYPE='text/javascript'>// <!--\n";
+  echo "  function fix_colspan() {\n";
+  echo "    document.getElementById('photocol').rowspan = '$rows';\n";
+  echo "  }\n//-->\n</SCRIPT>\n";
+  echo "</BODY></HTML>";
 }
 ?>
