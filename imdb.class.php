@@ -399,7 +399,7 @@
     preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
     if (empty($match[3])) return FALSE;
     $this->main_thumb = $match[3];
-    preg_match('|(.*@@\._V1).*|iUs',$match[3],$mo);
+    preg_match('|(.*\._V1).*|iUs',$match[3],$mo);
     $this->main_photo = $mo[1];
     return true;
   }
@@ -412,7 +412,8 @@
    */
   function photo($thumb=true) {
     if (empty($this->main_photo)) $this->thumbphoto();
-    if (empty($this->main_photo)) return false;
+    if (!$thumb && empty($this->main_photo)) return false;
+    if ($thumb && empty($this->main_thumb)) return false;
     if ($thumb) return $this->main_thumb;
     return $this->main_photo;
   }
