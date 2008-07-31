@@ -2,6 +2,8 @@ v1.0.7
 -------------------
 + imdb (movie) : added method releaseInfo()
 * changed the way to get the big image - should now match better
+! thumbnail was not returned when big image was missing, and big image did not
+  always work correctly (image names changed?)
 
 v1.0.6 (11.06.2008)
 -------------------
