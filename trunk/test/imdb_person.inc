@@ -37,6 +37,7 @@ page("Name");
  method($imdbp,"name");
  method($imdbp,"born");
  method($imdbp,"photo");
+ method($imdbp,"movies_all");
  method($imdbp,"movies_actor");
  method($imdbp,"movies_director");
  method($imdbp,"movies_producer");
