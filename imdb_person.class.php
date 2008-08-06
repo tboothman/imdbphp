@@ -225,7 +225,8 @@
    */
   function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
-    if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match)) {
+    if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match) || empty($type)) {
+      if (empty($type)) $match[1] = $this->page["Name"];
       if (preg_match_all("/<a(.*?)href=\"\/title\/tt(\d{7})\/\">(.*?)<\/a>\s*(\((\d{4})\)|)([^<]*?\.\.\.\.\s*<a href=\"\/character\/ch(\d{7})\/\">(.*?)<\/a>|([^<]*?|\s*<small>.*?<\/small>\s*)\.\.\.\.\s*(.*?)\s*<|)/i",$match[1],$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
@@ -234,6 +235,20 @@
         }
       }
     }
+  }
+
+  /** Get complete filmography
+   *  This method ignores the categories and tries to collect the complete
+   *  filmography. Useful e.g. for pages without categories on. It may, however,
+   *  contain duplicates if there are categories and a movie is listed in more
+   *  than one of them
+   * @method movies_all
+   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
+   *         character IMDB ID, and chname the character name
+   */
+  function movies_all() {
+    if (empty($this->allfilms)) $this->filmograf($this->allfilms,"");
+    return $this->allfilms;
   }
 
   /** Get actors filmography
