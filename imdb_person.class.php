@@ -56,6 +56,8 @@
    $this->main_photo      = "";
    $this->fullname        = "";
    $this->birthday        = array();
+   $this->allfilms        = array();
+   $this->actressfilms    = array();
    $this->actorsfilms     = array();
    $this->producersfilms  = array();
    $this->soundtrackfilms = array();
@@ -250,6 +252,16 @@
     if (empty($this->allfilms)) $this->filmograf($this->allfilms,"");
     return $this->allfilms;
   }
+
+  /** Get actress filmography
+   * @method movies_actress
+   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
+   *         character IMDB ID, and chname the character name
+   */
+  function movies_actress() {
+     if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
+     return $this->actressfilms;
+   }
 
   /** Get actors filmography
    * @method movies_actor

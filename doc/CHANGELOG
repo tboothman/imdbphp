@@ -6,6 +6,7 @@ v1.0.7
   always work correctly (image names changed?)
 + tests can now be restricted to either movie only, name only, or all (default)
 + imdb_person: added method to retrieve complete filmography (ignoring categories)
++ imdb_person: added method for category "actress"
 
 v1.0.6 (11.06.2008)
 -------------------

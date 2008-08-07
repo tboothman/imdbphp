@@ -38,6 +38,9 @@ page("Name");
  method($imdbp,"born");
  method($imdbp,"photo");
  method($imdbp,"movies_all");
+ setid($imdbp,"0000402"); // Carrie Fisher
+ method($imdbp,"movies_actress");
+ setid($imdbp,"0000197");
  method($imdbp,"movies_actor");
  method($imdbp,"movies_director");
  method($imdbp,"movies_producer");
