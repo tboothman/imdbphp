@@ -518,7 +518,7 @@
         } else $country = $comment = "";
         $this->akas[] = array("title"=>$match[1],"year"=>$match[2],"country"=>$country,"comment"=>substr($comment,2),"lang"=>$match[4]);
       } elseif (preg_match("/(.*?) (\(\d{4}\) |)\((.*?)\)(.*?(\(.*\))|)/",$aka,$match)) {
-        if (preg_match_all("/\((.*?)\)/",$match[5],$comments)) {
+        if (!empty($match[5]) && preg_match_all("/\((.*?)\)/",$match[5],$comments)) {
           $comm = $comments[1][0];
           for ($i=1;$i<count($comments[0]);++$i) $comm .= ", ".$comments[1][$i];
         } else $comm = "";
