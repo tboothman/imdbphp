@@ -1,4 +1,4 @@
-v1.0.7
+v1.0.7 (02.09.2008)
 -------------------
 + imdb (movie) : added method releaseInfo()
 * changed the way to get the big image - should now match better
