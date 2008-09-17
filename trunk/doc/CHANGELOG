@@ -3,6 +3,7 @@ v1.0.8
 ! fixing strange problem with filmographies sometimes missing some years in the
   middle (just fixed by an ugly work-around - still not sure what is broken)
 + added the imdbXML class provided by Pablo Castorino (thanx Pablo!)
+! fixed rating (due to IMDB site changes). Tnx to sourcer for the patch!
 
 v1.0.7 (02.09.2008)
 -------------------

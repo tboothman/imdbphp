@@ -216,7 +216,7 @@
    */
   function rate_vote() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*<small\>\(\<a href\=\"ratings\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
+    if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*&nbsp;&nbsp;\<a href\=\"ratings\" class=\"tn15more\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
       $this->main_rating = $match[1];
       $this->main_votes  = $match[3];
     } else {
