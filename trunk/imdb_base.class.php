@@ -12,7 +12,8 @@
  /* $Id$ */
 
  require_once (dirname(__FILE__)."/browseremulator.class.php");
- require_once (dirname(__FILE__)."/imdb_config.class.php");
+ if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
+ else require_once (dirname(__FILE__)."/imdb_config.class.php");
  require_once (dirname(__FILE__)."/imdb_request.class.php");
 
  #===================================================[ The IMDB Base class ]===
