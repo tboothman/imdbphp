@@ -1,4 +1,4 @@
-v1.0.8
+v1.0.8 (17.09.2008)
 -------------------
 ! fixing strange problem with filmographies sometimes missing some years in the
   middle (just fixed by an ugly work-around - still not sure what is broken)
