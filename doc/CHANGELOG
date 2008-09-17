@@ -4,6 +4,7 @@ v1.0.8
   middle (just fixed by an ugly work-around - still not sure what is broken)
 + added the imdbXML class provided by Pablo Castorino (thanx Pablo!)
 ! fixed rating (due to IMDB site changes). Tnx to sourcer for the patch!
++ allowing to define a different config file defined by the constant IMDBPHP_CONFIG
 
 v1.0.7 (02.09.2008)
 -------------------
