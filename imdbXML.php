@@ -73,7 +73,7 @@ class imdbXML extends XML_Serializer {
 			if (!in_array($name, $banned_tags) && $value != -1 && $value !="") {
 			if (is_array($value) && count($value) == 0) continue;
 			    	// Strip tag name prefix (main and credits)
-				//$name = eregi_replace("main_|credits_", NULL, $name);
+				$name = eregi_replace("main_|credits_", NULL, $name);
 				$parse_arr[$name] = $value;
 			}
 		}
