@@ -43,10 +43,11 @@ foreach ($arraytrailers as $trail_url) {
   if (strpos($url,"alltrailers.net")!==FALSE) // AllTrailers.Net
     $res = $showtrailer->getFlashCodeAllTrailers($trail_url);
 }
-if (count($res)<1||empty($res[0])) fail();
+if (count($res)<1||empty($res[0]["url"])) fail();
 else pass();
 echo "</LI>\n";
 ++$GLOBALS["methods"];
+flush();
 
 echo " <LI>method getFlashCodeMovieMaze(): ";
 $imdb->setid("0758774"); // page with MovieMaze trailers
@@ -56,10 +57,47 @@ foreach ($arraytrailers as $trail_url) {
   if ( strpos($url,"www.moviemaze.de")!==FALSE ) // moviemaze URL
     $res = $showtrailer->getFlashCodeMovieMaze($trail_url);
 }
-if (count($res)<10||empty($res[0])) fail();
+if (count($res)<10||empty($res[0]["url"])) fail();
 else pass();
 echo "</LI>\n";
 ++$GLOBALS["methods"];
+flush();
+
+echo " <LI>method getImdbTrailers(): ";
+foreach ($arraytrailers as $trail_url) {
+  $url = strtolower($trail_url);
+  if ( strpos($url,"imdb.com/rg/VIDEO_TITLE/GALLERY")!==FALSE ) // moviemaze URL
+    $res = $showtrailer->getImdbTrailers($trail_url);
+}
+if (count($res)<1||empty($res[0]["url"])) fail();
+else pass();
+echo "</LI>\n";
+++$GLOBALS["methods"];
+flush();
+
+echo " <LI>method getMoviePlayerTrailers(): ";
+foreach ($arraytrailers as $trail_url) {
+  $url = strtolower($trail_url);
+  if ( strpos($url,"www.movieplayer.it")!==FALSE ) // moviemaze URL
+    $res = $showtrailer->getMoviePlayerTrailers($trail_url);
+}
+if (count($res)<1||empty($res[0]["url"])) fail();
+else pass();
+echo "</LI>\n";
+++$GLOBALS["methods"];
+flush();
+
+echo " <LI>method getAZMovieTrailers(): ";
+foreach ($arraytrailers as $trail_url) {
+  $url = strtolower($trail_url);
+  if ( strpos($url,"azmovietrailers.com")!==FALSE ) // moviemaze URL
+    $res = $showtrailer->getAZMovieTrailers($trail_url);
+}
+if (count($res)<1||empty($res[0]["url"])) fail();
+else pass();
+echo "</LI>\n";
+++$GLOBALS["methods"];
+flush();
 
 echo "<hr>\n";
 flush();
