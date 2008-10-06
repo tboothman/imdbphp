@@ -55,7 +55,8 @@
 	  preg_match_all('/<a href="([^\"]*)\.(flv|mov)"/iUms',$this->page,$matches);
 	  $mc = count($matches[0]);
 	  for ($i=0;$i<$mc;++$i) {
-	    $list[] = array("url"=>$matches[1][$i].".".$matches[2][$i],"format"=>$matches[2][$i]);
+	    if ( strpos($matches[1][$i],"http://")===0 ) $list[] = array("url"=>$matches[1][$i].".".$matches[2][$i],"format"=>$matches[2][$i]);
+	    else $list[] = array("url"=>$this->moviemazeurl.$matches[1][$i].".".$matches[2][$i],"format"=>$matches[2][$i]);
 	  }
 	  return $list;
 	}
@@ -96,7 +97,7 @@
 	 preg_match('|so\.addVariable\("file",\s*"(http.*)"|iUms',$this->page,$match);
 	 $url = urldecode($match[1]);
 	 preg_match('|type\=\.(.{3})|i',$url,$format);
-	 return array( array("url"=>$url,"format"=>$format[1]) );
+	 if (!empty($url)) return array( array("url"=>$url,"format"=>$format[1]) );
        }
 
        /** Get all possible trailers
@@ -123,20 +124,4 @@
        }
  } // end class imdb_trailers
 
-/*
-/// Example of using with IMDB class:
-
-$movie = new imdb($mid);
-$showtrailer = new imdb_trailers();
-$arraytrailers = $movie->trailers();
-
-foreach ($arraytrailers as $trail_url) {
-  $url = strtolower($trail_url);
-  if ( strpos($url,"www.moviemaze.de")!==FALSE ) // moviemaze URL
-    $mm_urls = $showtrailer->getFlashCodeMovieMaze($trail_url);
-  elseif (strpos($url,"alltrailers.net")!==FALSE) // AllTrailers.Net
-    $at_urls = $showtrailer->getFlashCodeAllTrailers($trail_url);
-}
-
-*/
 ?>
