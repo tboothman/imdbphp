@@ -100,6 +100,36 @@
 	 if (!empty($url)) return array( array("url"=>$url,"format"=>$format[1]) );
        }
 
+       /** Retrieve trailers from movieplayer.it (Italian)
+        * @method getMoviePlayerTrailers
+	* @param string url page url as retrieved with imdb::trailers
+	* @return array [0..n] of array[url,format] of movie trailers (Flash)
+	*/
+       function getMoviePlayerTrailers($url) {
+	 $req = new IMDB_Request($url);
+	 $req->sendRequest();
+	 $this->page=$req->getResponseBody();
+	 if($this->page=="" || $this->page==false) return false;
+	 preg_match('|s1\.addVariable\("file",\s*"(http.*)"|iUms',$this->page,$match);
+	 preg_match('|\.(.{3})$|i',$match[1],$format);
+	 if (!empty($match[1])) return array( array("url"=>$match[1],"format"=>$format[1]) );
+       }
+
+       /** Retrieve trailers from azmovietrailers.com
+        * @method getAZMovieTrailers
+	* @param string url page url as retrieved with imdb::trailers
+	* @return array [0..n] of array[url,format] of movie trailers (Flash)
+	*/
+       function getAZMovieTrailers($url) {
+	 $req = new IMDB_Request($url);
+	 $req->sendRequest();
+	 $this->page=$req->getResponseBody();
+	 if($this->page=="" || $this->page==false) return false;
+	 preg_match('|flashvars\="file\=(http.*)\&|iUms',$this->page,$match);
+	 preg_match('|\.(.{3})$|i',$match[1],$format);
+	 if (!empty($match[1])) return array( array("url"=>$match[1],"format"=>$format[1]) );
+       }
+
        /** Get all possible trailers
         * @method getAllTrailers
 	* @param string mid IMDB ID
@@ -112,12 +142,16 @@
          foreach ($arraytrailers as $url) {
 	   unset($tl);
 	   $tmp = strtolower($url);
-	   if ( strpos($tmp,"www.moviemaze.de")!==FALSE )   // moviemaze.de
+	   if ( strpos($tmp,"www.moviemaze.de")!==FALSE )
 	     $tl = $this->getFlashCodeMovieMaze($url);
-	   elseif ( strpos($tmp,"alltrailers.net")!==FALSE) // AllTrailers.Net
+	   elseif ( strpos($tmp,"alltrailers.net")!==FALSE)
 	     $tl = $this->getFlashCodeAllTrailers($url);
-	   elseif ( strpos($url,"imdb.com/rg/VIDEO_TITLE/GALLERY")!==FALSE ) // IMDB.Com itself
+	   elseif ( strpos($url,"imdb.com/rg/VIDEO_TITLE/GALLERY")!==FALSE )
 	     $tl = $this->getImdbTrailers($url);
+	   elseif ( strpos($tmp,"www.movieplayer.it")!==FALSE )
+	     $tl = $this->getMoviePlayerTrailers($url);
+	   elseif ( strpos($tmp,"azmovietrailers.com")!==FALSE)
+	     $tl = $this->getAZMovieTrailers($url);
 	   if ( isset($tl) ) $list = array_merge($list,$tl);
 	 }
 	 return $list;
