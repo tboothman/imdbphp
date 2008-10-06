@@ -23,16 +23,19 @@ $check_movie   = false;
 $check_name    = false;
 $check_charts  = false;
 $check_nowplay = false;
+$check_trail   = false;
 switch ($_REQUEST["check"]) {
   case "movie"   : $check_movie   = true; break;
   case "name"    : $check_name    = true; break;
   case "charts"  : $check_charts  = true; break;
   case "nowplay" : $check_nowplay = true; break;
+  case "trail"   : $check_trail   = true; break;
   default:
     $check_movie   = true;
     $check_name    = true;
     $check_charts  = true;
     $check_nowplay = true;
+    $check_trail   = true;
 }
 
 #=========================================================[ Run the tests ]===
@@ -40,6 +43,7 @@ if ($check_movie)   require ("imdb.inc");
 if ($check_name)    require ("imdb_person.inc");
 if ($check_charts)  require ("imdb_charts.inc");
 if ($check_nowplay) require ("imdb_nowplaying.inc");
+if ($check_trail)   require ("imdb_trailers.inc");
 
 #===============================================[ Summary and HTML footer ]===
 $passed  = $methods - $failures;
