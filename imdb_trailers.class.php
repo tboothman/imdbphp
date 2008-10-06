@@ -15,7 +15,7 @@
  #############################################################################
  # $Id$
 
- require_once (dirname(__FILE__)."/imdb_base.class.php");
+ require_once (dirname(__FILE__)."/imdb.class.php");
 
  #=================================================[ The IMDB Charts class ]===
  /** Obtaining the URL of the trailer Flash Movie
@@ -45,7 +45,7 @@
         * @method getFlashCodeMovieMaze
 	* @param string url trailer url as retrieved with imdb::trailers
 	* @brief the URL of the trailer in http://www.moviemaze.de, this URL its obtained from the IMDB class, using the trailer function.
-	* @return array URLs of movie trailers (Flash or Quicktime)
+	* @return array [0..n] of array[url,format] of movie trailers (Flash or Quicktime)
 	*/
        function getFlashCodeMovieMaze($url){
 	  $req = new IMDB_Request($url);
@@ -55,7 +55,7 @@
 	  preg_match_all('/<a href="([^\"]*)\.(flv|mov)"/iUms',$this->page,$matches);
 	  $mc = count($matches[0]);
 	  for ($i=0;$i<$mc;++$i) {
-	    $list[] = $matches[1][$i].".".$matches[2][$i];
+	    $list[] = array("url"=>$matches[1][$i].".".$matches[2][$i],"format"=>$matches[2][$i]);
 	  }
 	  return $list;
 	}
@@ -64,7 +64,7 @@
         * @method getFlashCodeAllTrailers
 	* @param string url page url as retrieved with imdb::trailers
 	* @brief the URL of the trailer in http://www.alltrailers.net, this URL its obtained from the IMDB class, using the trailer function.
-	* @return array URLs of movie trailers (Flash or Quicktime)
+	* @return array [0..n] of array[url,format] of movie trailers (Flash)
 	*/
 	function getFlashCodeAllTrailers($url){
 	  if (strpos($url,"http://alltrailers")!==FALSE) $url = str_replace("http://","http://www.",$url);
@@ -76,10 +76,50 @@
 	  preg_match_all('|<embed src="([^\"]*)"|iUms',$this->page,$matches);
 	  $mc = count($matches[1]);
 	  for ($i=0;$i<$mc;++$i) {
-	    if (strpos($matches[1][$i],"http://")===0) $list[$i] = $matches[1][$i];
-	    else $list[$i] = $this->alltrailersurl.$matches[1][$i];
+	    if (strpos($matches[1][$i],"http://")===0) $list[$i] = array("url"=>$matches[1][$i],"format"=>"flv");
+	    else $list[$i] = array("url"=>$this->alltrailersurl.$matches[1][$i],"format"=>"flv");
 	  }
 	  return $list;
+       }
+
+       /** Retrieve trailers from IMDB site
+        * @method getImdbTrailers
+	* @param string url page url as retrieved with imdb::trailers
+	* @return array [0..n] of array[url,format] of movie trailers (Flash)
+	*/
+       function getImdbTrailers($url) {
+         $url = str_replace("rg/VIDEO_TITLE/GALLERY/","",$url)."player";
+	 $req = new IMDB_Request($url);
+	 $req->sendRequest();
+	 $this->page=$req->getResponseBody();
+	 if($this->page=="" || $this->page==false) return false;
+	 preg_match('|so\.addVariable\("file",\s*"(http.*)"|iUms',$this->page,$match);
+	 $url = urldecode($match[1]);
+	 preg_match('|type\=\.(.{3})|i',$url,$format);
+	 return array( array("url"=>$url,"format"=>$format[1]) );
+       }
+
+       /** Get all possible trailers
+        * @method getAllTrailers
+	* @param string mid IMDB ID
+	* @return array [0..n] of array[url,format] of movie trailers
+	*/
+       function getAllTrailers($mid) {
+         $movie = new imdb($mid);
+         $arraytrailers = $movie->trailers();
+	 $list = array();
+         foreach ($arraytrailers as $url) {
+	   unset($tl);
+	   $tmp = strtolower($url);
+	   if ( strpos($tmp,"www.moviemaze.de")!==FALSE )   // moviemaze.de
+	     $tl = $this->getFlashCodeMovieMaze($url);
+	   elseif ( strpos($tmp,"alltrailers.net")!==FALSE) // AllTrailers.Net
+	     $tl = $this->getFlashCodeAllTrailers($url);
+	   elseif ( strpos($url,"imdb.com/rg/VIDEO_TITLE/GALLERY")!==FALSE ) // IMDB.Com itself
+	     $tl = $this->getImdbTrailers($url);
+	   if ( isset($tl) ) $list = array_merge($list,$tl);
+	 }
+	 return $list;
        }
  } // end class imdb_trailers
 
