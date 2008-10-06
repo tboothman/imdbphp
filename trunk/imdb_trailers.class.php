@@ -44,7 +44,7 @@
        /** Retrieve trailer URLs from moviemaze.de
         * @method getFlashCodeMovieMaze
 	* @param string url trailer url as retrieved with imdb::trailers
-	* @comment the URL of the trailer in http://www.moviemaze.de, this URL its obtained from the IMDB class, using the trailer function.
+	* @brief the URL of the trailer in http://www.moviemaze.de, this URL its obtained from the IMDB class, using the trailer function.
 	* @return array URLs of movie trailers (Flash or Quicktime)
 	*/
        function getFlashCodeMovieMaze($url){
@@ -63,7 +63,7 @@
        /** Retrieve trailers from alltrailers.net
         * @method getFlashCodeAllTrailers
 	* @param string url page url as retrieved with imdb::trailers
-	* @comment the URL of the trailer in http://www.alltrailers.net, this URL its obtained from the IMDB class, using the trailer function.
+	* @brief the URL of the trailer in http://www.alltrailers.net, this URL its obtained from the IMDB class, using the trailer function.
 	* @return array URLs of movie trailers (Flash or Quicktime)
 	*/
 	function getFlashCodeAllTrailers($url){
