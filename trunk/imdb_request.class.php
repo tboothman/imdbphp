@@ -21,7 +21,11 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
       }
       $this->_allowRedirects = false;
       $this->addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
-    }	
+    }
+    function getLastResponseHeaders($url) {
+      $head = $this->head($url);
+      return array($head["response"],$head["Date"],$head["Server"],"",$head["Connection"],$head["Content-Type"]);
+    }
   }
 } else { // Use the browseremu class
   require_once (dirname(__FILE__)."/browseremulator.class.php");
