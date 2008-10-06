@@ -1,6 +1,6 @@
 v1.0.9
 -------------------
-+ added the imdb_topcharts class provided by banzap
++ added the imdb_topcharts and imdb_nowplaying classes provided by banzap
 
 v1.0.8 (17.09.2008)
 -------------------
