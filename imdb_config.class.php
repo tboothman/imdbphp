@@ -96,6 +96,13 @@ class imdb_config {
      * @attribute string photoroot
      */
     $this->photoroot = './images/';
+    /** Where the local IMDB images reside (look for the "showtimes/" directory)
+     *  This should be either a relative, an absolute, or an URL including the
+     *  protocol (e.g. when a different server shall deliver them)
+     * @class imdb_config
+     * @attribute string imdb_img_url
+     */
+    $this->imdb_img_url = './imgs/';
     /** Enable debug mode?
      * @class imdb_config
      * @attribute boolean debug
