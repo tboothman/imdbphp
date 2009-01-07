@@ -253,6 +253,7 @@
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match))
         $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
+        $this->main_comment = str_replace("http://i.media-imdb.com/images/showtimes","imgs/showtimes",$this->main_comment);
     }
     return $this->main_comment;
   }
