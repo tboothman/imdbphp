@@ -83,6 +83,9 @@
    $this->pub_articles    = array();
    $this->pub_pictorial   = array();
    $this->pub_magcovers   = array();
+
+   // SearchDetails
+   $this->SearchDetails   = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -672,6 +675,27 @@
     return $this->pub_magcovers;
   }
 
+ #---------------------------------------------------------[ Search Details ]---
+  /** Set some search details
+   * @method setSearchDetails
+   * @param string role
+   * @param integer mid IMDB ID
+   * @param string name movie-name
+   * @param integer year
+   */
+  function setSearchDetails($role,$mid,$name,$year) {
+    $this->SearchDetails = array("role"=>$role,"mid"=>$mid,"moviename"=>$name,"year"=>$year);
+  }
+  /** Get the search details
+   *  They are just set when the imdb_person object has been initialized by the
+   *  imdbpsearch class
+   * @method getSearchDetails
+   * @return array SearchDetails (mid,name,role,moviename,year)
+   */
+  function getSearchDetails() {
+    return $this->SearchDetails;
+  }
+
  } // end class imdb_person
 
  #==========================================[ The IMDB Person search class ]===
@@ -739,21 +763,30 @@
    } // end (page="")
 
    if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
-#   preg_match_all('|<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>\s*<small>\((.*)\)|Uims',$this->page,$matches);
-   preg_match_all('|<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>|Uims',$this->page,$matches);
-#   echo "<pre>";print_r($matches);die("</pre>");
+   // make sure to catch col #3, not #1 (pic only)
+   preg_match_all('|<tr>\s*<td.*>.*</td>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>(.*)</td>|Uims',$this->page,$matches);
    $mc = count($matches[0]);
    $mids_checked = array();
    for ($i=0;$i<$mc;++$i) {
-     if ($i == $maxresults) break(2); // limit result count
-     $imdb_id = $matches[1][$i];
-     if (in_array($imdb_id,$mids_checked)) continue;
-     $mids_checked[] = $imdb_id;
+     if ($i == $maxresults) break; // limit result count
+     $pid = $matches[1][$i];
+     if (in_array($pid,$mids_checked)) continue;
+     $mids_checked[] = $pid;
      $name    = $matches[2][$i];
-     //$info    = $matches[3][$i];
-     $tmpres  = new imdb_person($imdb_id);
+     $info    = $matches[3][$i];
+     $tmpres  = new imdb_person($pid);
      $tmpres->fullname = $name;
+     if (!empty($info)) {
+       if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7})/">(.*)</a>\s*\((\d{4})\)\)|Ui',$info,$match)) {
+         $role = $match[1];
+         $mid  = $match[2];
+         $movie= $match[3];
+         $year = $match[4];
+         $tmpres->setSearchDetails($role,$mid,$movie,$year);
+       }
+     }
      $this->resu[$i] = $tmpres;
+     unset($tmpres);
    }
    return $this->resu;
   }
