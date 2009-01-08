@@ -753,7 +753,7 @@
         }
         $url = explode("/",$header);
         $id  = substr($url[count($url)-2],2);
-        $this->resu[0] = new imdb($id);
+        $this->resu[0] = new imdb_person($id);
         return $this->resu;
        }else{
         return NULL;
