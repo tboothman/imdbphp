@@ -674,4 +674,89 @@
 
  } // end class imdb_person
 
+ #==========================================[ The IMDB Person search class ]===
+ /** Searching IMDB staff information
+  * @package Api
+  * @class imdbpsearch
+  * @extends imdbsearch
+  * @author Izzy (izzysoft AT qumran DOT org)
+  * @copyright 2008-2009 by Itzchak Rehberg and IzzySoft
+  * @version $Revision$ $Date$
+  */
+ class imdbpsearch extends imdbsearch {
+ #-----------------------------------------------------------[ Constructor ]---
+  /** Initialize class (read config etc.)
+   * @constructor imdbpsearch
+   */
+   function imdbpsearch() {
+     $this->imdbsearch();
+   }
+
+ #-------------------------------------------------------[ private helpers ]---
+  /** Create the IMDB URL for the name search
+   * @method private mkurl
+   * @return string url
+   */
+  function mkurl () {
+   if ($this->url !== NULL) {
+    $url = $this->url;
+   } else {
+     $query = ";s=nm";
+     if (!isset($this->maxresults)) $this->maxresults = 20;
+     if ($this->maxresults > 0) $query .= ";mx=20";
+     $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query;
+   }
+   return $url;
+  }
+
+ #-----------------------------------------------------------[ get results ]---
+  /** Setup search results
+   * @method results
+   * @param optional string URL Replace search URL by your own
+   * @return array results array of objects (instances of the imdb_person class)
+   */
+  function results ($url="") {
+   if ($this->page == "") {
+     if (empty($url)) $url = $this->mkurl();
+     $be = new IMDB_Request($url);
+     $be->sendrequest();
+     $fp = $be->getResponseBody();
+     if ( !$fp ){
+       if ($header = $be->getResponseHeader("Location")){
+        if (strpos($header,$this->imdbsite."/find?")) {
+          return $this->results($header);
+          break(4);
+        }
+        $url = explode("/",$header);
+        $id  = substr($url[count($url)-2],2);
+        $this->resu[0] = new imdb($id);
+        return $this->resu;
+       }else{
+        return NULL;
+       }
+     }
+     $this->page = $fp;
+   } // end (page="")
+
+   if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
+#   preg_match_all('|<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>\s*<small>\((.*)\)|Uims',$this->page,$matches);
+   preg_match_all('|<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>|Uims',$this->page,$matches);
+#   echo "<pre>";print_r($matches);die("</pre>");
+   $mc = count($matches[0]);
+   $mids_checked = array();
+   for ($i=0;$i<$mc;++$i) {
+     if ($i == $maxresults) break(2); // limit result count
+     $imdb_id = $matches[1][$i];
+     if (in_array($imdb_id,$mids_checked)) continue;
+     $mids_checked[] = $imdb_id;
+     $name    = $matches[2][$i];
+     //$info    = $matches[3][$i];
+     $tmpres  = new imdb_person($imdb_id);
+     $tmpres->fullname = $name;
+     $this->resu[$i] = $tmpres;
+   }
+   return $this->resu;
+  }
+ }
+
 ?>

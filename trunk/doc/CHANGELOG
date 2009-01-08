@@ -3,6 +3,7 @@ v1.0.9
 + added the imdb_topcharts and imdb_nowplaying classes provided by banzap
 + added imdb_trailers class (rewrite of code provided by banzap)
 + added showtimes images locally (since they are somehow protected at the IMDB site)
++ added name (imdb person) search
 
 v1.0.8 (17.09.2008)
 -------------------
