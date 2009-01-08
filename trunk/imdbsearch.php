@@ -51,7 +51,11 @@ echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-to
 foreach ($results as $res) {
   switch($_GET["searchtype"]) {
     case "nm" :
-      echo " <TR><TD><a href='imdb_person.php?mid=".$res->imdbid()."'>".$res->name()."</a></TD>"
+      $details = $res->getSearchDetails();
+      if (!empty($details)) {
+        $hint = " (".$details["role"]." in <a href='imdb.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
+      }
+      echo " <TR><TD><a href='imdb_person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
          . "<TD><a href='http://".$search->imdbsite."/title/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
       break;
     default   :
