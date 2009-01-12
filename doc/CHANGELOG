@@ -1,4 +1,9 @@
-v1.0.9
+$Id$
+
+History for IMDBPHP
+===================
+
+v1.1.0 (12.01.2009)
 -------------------
 + added the imdb_topcharts and imdb_nowplaying classes provided by banzap
 + added imdb_trailers class (rewrite of code provided by banzap)
