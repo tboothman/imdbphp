@@ -5,10 +5,11 @@ History for IMDBPHP
 
 v1.1.1
 -------------------
-! names->died() and names->born() did not return complete information
+! names::died() and names::born() did not return complete information
   (or even returned garbage in some cases) due to site changes
-! names->spouse() and names->salary() returned garbage if the corresponding
+! names::spouse() and names::salary() returned garbage if the corresponding
   items were not available on the corresponding page
+! trailer::getFlashCodeAllTrailers() was broken due to site changes on alltrailers.net
 
 v1.1.0 (12.01.2009)
 -------------------

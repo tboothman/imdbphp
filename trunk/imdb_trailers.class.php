@@ -74,7 +74,7 @@
   	  $pattern = "'";
 	  $this->page=$req->getResponseBody();
 	  if($this->page=="" || $this->page==false) return false;
-	  preg_match_all('|<embed src="([^\"]*)"|iUms',$this->page,$matches);
+	  preg_match_all('|<embed .* src="([^\"]*)"|iUms',$this->page,$matches);
 	  $mc = count($matches[1]);
 	  for ($i=0;$i<$mc;++$i) {
 	    if (strpos($matches[1][$i],"http://")===0) $list[$i] = array("url"=>$matches[1][$i],"format"=>"flv");
