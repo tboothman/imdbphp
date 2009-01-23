@@ -242,11 +242,14 @@
     if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match) || empty($type)) {
       if (empty($type)) $match[1] = $this->page["Name"];
       else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-      if (preg_match_all("/<a(.*?)href=\"\/title\/tt(\d{7})\/\">(.*?)<\/a>\s*(\((\d{4})\)|)([^<]*?\.\.\.\.\s*<a href=\"\/character\/ch(\d{7})\/\">(.*?)<\/a>|([^<]*?|\s*<small>.*?<\/small>\s*)\.\.\.\.\s*(.*?)\s*<|)/i",$match[1],$matches)) {
+      if (preg_match_all('|<a(.*?)href=\"/title/tt(\d{7})/\">(.*?)</a>(.*?)</li>|i',$match[1],$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
-          if (empty($matches[8][$i])) $matches[8][$i] = $matches[10][$i];
-          $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$matches[5][$i],"chid"=>$matches[7][$i],"chname"=>$matches[8][$i]);
+          preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
+          $str = preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
+          preg_match_all('/(\(.*\))/U',$str,$addons);
+          preg_match('|<a href=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char);
+          $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$char[1],"chname"=>$char[2],"addons"=>$addons[1]);
         }
       }
     }
@@ -258,8 +261,9 @@
    *  contain duplicates if there are categories and a movie is listed in more
    *  than one of them
    * @method movies_all
-   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
-   *         character IMDB ID, and chname the character name
+   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   *         the character IMDB ID, chname the character name, and addons an
+   *         array of additional remarks (the things in parenthesis)
    */
   function movies_all() {
     if (empty($this->allfilms)) $this->filmograf($this->allfilms,"");
@@ -268,8 +272,9 @@
 
   /** Get actress filmography
    * @method movies_actress
-   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
-   *         character IMDB ID, and chname the character name
+   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   *         the character IMDB ID, chname the character name, and addons an
+   *         array of additional remarks (the things in parenthesis)
    */
   function movies_actress() {
      if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
@@ -278,8 +283,9 @@
 
   /** Get actors filmography
    * @method movies_actor
-   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
-   *         character IMDB ID, and chname the character name
+   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   *         the character IMDB ID, chname the character name, and addons an
+   *         array of additional remarks (the things in parenthesis)
    */
   function movies_actor() {
     if (empty($this->actorsfilms)) $this->filmograf($this->actorsfilms,"actor");
@@ -288,7 +294,9 @@
 
   /** Get producers filmography
    * @method movies_producer
-   * @return array array[0..n][mid,name,year]
+   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   *         the character IMDB ID, chname the character name, and addons an
+   *         array of additional remarks (the things in parenthesis)
    */
   function movies_producer() {
     if (empty($this->producersfilms)) $this->filmograf($this->producersfilms,"producer");
