@@ -413,6 +413,7 @@
    if (empty($this->spouses)) {
      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
      $pos_s = strpos($this->page["Bio"],"<h5>Spouse</h5>");
+     if (!$pos_s) return $this->spouses;
      $pos_e = strpos($this->page["Bio"],"</table>",$pos_s);
      $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s +8);
      if (@preg_match_all("/<tr>.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",$block,$matches)) { // table lines
@@ -524,6 +525,7 @@
     if (empty($this->bio_salary)) {
       if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
       $pos_s = strpos($this->page["Bio"],"<h5>Salary</h5>");
+      if (!$pos_s) return $this->bio_salary;
       $pos_e = strpos($this->page["Bio"],"</table",$pos_s);
       $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
       if (preg_match_all("/<tr.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",$block,$matches)) { // for each table row
