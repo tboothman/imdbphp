@@ -35,7 +35,6 @@ switch ($_REQUEST["cache"]) {
 page("Name");
  setid($imdbp,"0000197");
  method($imdbp,"name");
- method($imdbp,"born");
  method($imdbp,"photo");
  method($imdbp,"movies_all");
  setid($imdbp,"0000402"); // Carrie Fisher
@@ -49,10 +48,11 @@ page("Name");
  method($imdbp,"movies_thanx");
  method($imdbp,"movies_self");
  method($imdbp,"movies_archive");
- setid($imdbp,"0000008"); // Marlon Brando
- method($imdbp,"died");
 endpage();
 page("Bio");
+ setid($imdbp,"0000008"); // Marlon Brando
+ method($imdbp,"born");
+ method($imdbp,"died");
  setid($imdbp,"0000197");
  method($imdbp,"birthname");
  method($imdbp,"nickname");
