@@ -10,6 +10,8 @@ v1.1.1
 ! names::spouse() and names::salary() returned garbage if the corresponding
   items were not available on the corresponding page
 ! trailer::getFlashCodeAllTrailers() was broken due to site changes on alltrailers.net
++ collecting more details from the filmografie - all the remarks in parenthesis
+  are now collected into the $addons array
 
 v1.1.0 (12.01.2009)
 -------------------
