@@ -3,6 +3,11 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.1.1
+-------------------
+! names->died() and names->born() did not return complete information
+  (or even returned garbage in some cases) due to site changes
+
 v1.1.0 (12.01.2009)
 -------------------
 + added the imdb_topcharts and imdb_nowplaying classes provided by banzap

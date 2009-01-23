@@ -129,9 +129,13 @@
    */
   function born() {
     if (empty($this->birthday)) {
-      if ($this->page["Name"] == "") $this->openpage ("Name","person");
-      if (preg_match("/Date of Birth:<\/h5>\s*<a href=\"\/OnThisDay\?day\=(\d{1,2})&month\=(.*?)\">.*?<a href\=\"\/BornInYear\?(\d{4}).*?href\=\"\/BornWhere\?.*?\">(.*?)<\/a>/ms",$this->page["Name"],$match))
-        $this->birthday = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3],"place"=>$match[4]);
+      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+      if ($rc=preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match)) {
+        preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
+	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
+	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
+        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[1]);
+      }
     }
     return $this->birthday;
   }
@@ -144,12 +148,13 @@
   function died() {
     if (empty($this->deathday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match))
+      if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match)) {
         preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
 	preg_match('/DiedInYear\?(\d{4})/ims',$match[1],$dyear);
 	preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
 	preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
         $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
+      }
     }
     return $this->deathday;
   }
