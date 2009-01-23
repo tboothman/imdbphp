@@ -15,7 +15,7 @@
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"])) {
   switch($_GET["searchtype"]) {
-    case "nm" : header("Location: imdbperson.php?mid=".$_GET["mid"]); break;
+    case "nm" : header("Location: imdb_person.php?mid=".$_GET["mid"]); break;
     default   : header("Location: imdb.php?mid=".$_GET["mid"]); break;
   }
   exit;
