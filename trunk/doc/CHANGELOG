@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.1
+v1.1.1 (26.01.2009)
 -------------------
 ! names::died() and names::born() did not return complete information
   (or even returned garbage in some cases) due to site changes
