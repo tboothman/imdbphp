@@ -3,6 +3,11 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.1.2
+-------------------
++ movie: added methods to retrieve company credits (production companies,
+  distributors, special effects, other companies)
+
 v1.1.1 (26.01.2009)
 -------------------
 ! names::died() and names::born() did not return complete information
