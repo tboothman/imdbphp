@@ -20,7 +20,7 @@
   * @extends imdb_base
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
-  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
+  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
  class imdb extends imdb_base {
@@ -47,6 +47,7 @@
     case "MovieConnections" : $urlname="/movieconnections"; break;
     case "ExtReviews"  : $urlname="/externalreviews"; break;
     case "ReleaseInfo" : $urlname="/releaseinfo"; break;
+    case "CompanyCredits" : $urlname="/companycredits"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -79,6 +80,7 @@
    $this->page["MovieConnections"] = "";
    $this->page["ExtReviews"] = "";
    $this->page["ReleaseInfo"] = "";
+   $this->page["CompanyCredits"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -121,6 +123,10 @@
    $this->taglines = array();
    $this->trailers = array();
    $this->trivia = array();
+   $this->compcred_prod = array();
+   $this->compcred_dist = array();
+   $this->compcred_special = array();
+   $this->compcred_other = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -1030,6 +1036,80 @@
       for ($i=0;$i<$mc;++$i) $this->release_info[] = array("country"=>$matches[1][$i],"day"=>$matches[2][$i],"month"=>$matches[3][$i],"year"=>$matches[4][$i],"comment"=>$matches[6][$i]);
     }
     return $this->release_info;
+  }
+
+ #-------------------------------------------------------[ /companycredits ]---
+  /** Parse company info
+   * @method private companyParse
+   * @param ref string text to parse
+   * @param ref array parse target
+   */
+  function companyParse(&$text,&$target) {
+    preg_match_all('|<li><a href="(.*)">(.*)</a>(.*)</li>|iUms',$text,$matches);
+    $mc = count($matches[0]);
+    for ($i=0;$i<$mc;++$i) {
+      $target[] = array("name"=>$matches[2][$i], "url"=>$matches[1][$i], "notes"=>$matches[3][$i]);
+    }
+  }
+
+  /** Info about Production Companies
+   * @method prodCompany
+   * @return array [0..n] of array (name,url,notes)
+   */
+  function prodCompany() {
+    if (empty($this->compcred_prod)) {
+      if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
+      if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
+      if (preg_match('|<h2>Production Companies</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+        $this->companyParse($match[1],$this->compcred_prod);
+      }
+    }
+    return $this->compcred_prod;
+  }
+
+  /** Info about distributors
+   * @method distCompany
+   * @return array [0..n] of array (name,url,notes)
+   */
+  function distCompany() {
+    if (empty($this->compcred_dist)) {
+      if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
+      if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
+      if (preg_match('|<h2>Distributors</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+        $this->companyParse($match[1],$this->compcred_dist);
+      }
+    }
+    return $this->compcred_dist;
+  }
+
+  /** Info about Special Effects companies
+   * @method specialCompany
+   * @return array [0..n] of array (name,url,notes)
+   */
+  function specialCompany() {
+    if (empty($this->compcred_special)) {
+      if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
+      if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
+      if (preg_match('|<h2>Special Effects</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+        $this->companyParse($match[1],$this->compcred_special);
+      }
+    }
+    return $this->compcred_special;
+  }
+
+  /** Info about other companies
+   * @method otherCompany
+   * @return array [0..n] of array (name,url,notes)
+   */
+  function otherCompany() {
+    if (empty($this->compcred_other)) {
+      if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
+      if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
+      if (preg_match('|<h2>Other Companies</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+        $this->companyParse($match[1],$this->compcred_other);
+      }
+    }
+    return $this->compcred_other;
   }
 
  } // end class imdb

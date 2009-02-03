@@ -102,5 +102,13 @@ endpage();
 page("ReleaseInfo");
  method($imdb,"releaseInfo");
 endpage();
+page("CompanyCredits");
+ setid($imdb,"0096895"); // Batman
+ method($imdb,"prodCompany");
+ method($imdb,"distCompany");
+ method($imdb,"specialCompany");
+ method($imdb,"otherCompany");
+endpage();
+
 
 ?>
