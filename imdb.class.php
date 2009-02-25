@@ -49,6 +49,7 @@
     case "ExtReviews"  : $urlname="/externalreviews"; break;
     case "ReleaseInfo" : $urlname="/releaseinfo"; break;
     case "CompanyCredits" : $urlname="/companycredits"; break;
+    case "ParentalGuide"  : $urlname="/parentalguide"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -83,6 +84,7 @@
    $this->page["ExtReviews"] = "";
    $this->page["ReleaseInfo"] = "";
    $this->page["CompanyCredits"] = "";
+   $this->page["ParentalGuide"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -130,6 +132,7 @@
    $this->compcred_dist = array();
    $this->compcred_special = array();
    $this->compcred_other = array();
+   $this->parental_guide = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -1128,6 +1131,39 @@
       }
     }
     return $this->compcred_other;
+  }
+
+ #--------------------------------------------------------[ /parentalguide ]---
+  /** Detailed Parental Guide
+   * @method parentalGuide
+   * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
+   *         Frightening - and maybe more
+   */
+  function parentalGuide() {
+    if (empty($this->parental_guide)) {
+      if (empty($this->page["ParentalGuide"])) $this->openpage("ParentalGuide");
+      if ($this->page["ParentalGuide"] == "cannot open page") return array(); // no such page
+      if (preg_match_all('/<div class="section">(.*)<div id="swiki(\.\d+\.\d+|_last)">/iUms',$this->page["ParentalGuide"],$matches)) {
+        $mc = count($matches[0]);
+	for ($i=0;$i<$mc;++$i) {
+	  preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match);
+	  $section = $match[1];
+	  preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match);
+	  $content = trim($match[1]);
+	  preg_match('/^(.*)(\s|\/)/U',$section,$match);
+	  $sgot = $match[1]; if (empty($sgot)) $sgot = $section;
+	  switch($sgot) {
+	    case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
+	    case "Sex"        :
+	    case "Violence"   :
+	    case "Profanity"  :
+	    case "Frightening":
+	    default           : $this->parental_guide[$sgot] = trim($content); break;
+	  }
+	}
+      }
+    }
+    return $this->parental_guide;
   }
 
  } // end class imdb
