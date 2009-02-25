@@ -8,6 +8,7 @@ v1.1.2
 + movie: added methods to retrieve company credits (production companies,
   distributors, special effects, other companies)
 + movie: added method to retrieve the synopsis
++ movie: added method to retrieve detailed parental guide info
 
 v1.1.1 (26.01.2009)
 -------------------

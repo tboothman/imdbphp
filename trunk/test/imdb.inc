@@ -113,6 +113,8 @@ page("CompanyCredits");
  method($imdb,"specialCompany");
  method($imdb,"otherCompany");
 endpage();
-
+page("ParentalGuide");
+ method($imdb,"parentalGuide");
+endpage();
 
 ?>
