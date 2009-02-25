@@ -55,6 +55,10 @@ page("Title");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
 endpage();
+page("Synopsis");
+ setid($imdb,"0758774"); // Body of Lies
+ method($imdb,"synopsis");
+endpage();
 page("Plotsummary");
  setid($imdb,"0117500");
  method($imdb,"plot");

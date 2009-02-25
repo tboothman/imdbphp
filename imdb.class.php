@@ -37,6 +37,7 @@
     case "Credits"     : $urlname="/fullcredits"; break;
     case "CrazyCredits": $urlname="/crazycredits"; break;
     case "Plot"        : $urlname="/plotsummary"; break;
+    case "Synopsis"    : $urlname="/synopsis"; break;
     case "Taglines"    : $urlname="/taglines"; break;
     case "Episodes"    : $urlname="/episodes"; break;
     case "Quotes"      : $urlname="/quotes"; break;
@@ -68,6 +69,7 @@
    $this->page["Goofs"] = "";
    $this->page["Trivia"] = "";
    $this->page["Plot"] = "";
+   $this->page["Synopsis"] = "";
    $this->page["Comments"] = "";
    $this->page["Quotes"] = "";
    $this->page["Taglines"] = "";
@@ -113,6 +115,7 @@
    $this->mpaas = array();
    $this->mpaa_justification = "";
    $this->plot_plot = array();
+   $this->synopsis_wiki = "";
    $this->release_info = array();
    $this->seasoncount = -1;
    $this->season_episodes = array();
@@ -609,6 +612,21 @@
       }
     }
     return $this->split_plot;
+  }
+
+ #--------------------------------------------------------[ /synopsis page ]---
+  /** Get the movies synopsis
+   * @method synopsis
+   * @return string synopsis
+   */
+  function synopsis() {
+    if (empty($this->synopsis_wiki)) {
+    if ( $this->page["Synopsis"] == "" ) $this->openpage ("Synopsis");
+    if ( $this->page["Synopsis"] == "cannot open page" ) return $this->synopsis_wiki; // no such page
+    if (preg_match('|<div id="swiki\.2\.1">(.*?)</div>|ims',$this->page["Synopsis"],$match))
+      $this->synopsis_wiki = trim($match[1]);
+    }
+    return $this->synopsis_wiki;
   }
 
  #--------------------------------------------------------[ /taglines page ]---
