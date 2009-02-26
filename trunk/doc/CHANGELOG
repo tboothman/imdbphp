@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.2
+v1.1.2 (26.02.2009)
 -------------------
 + movie: added methods to retrieve company credits (production companies,
   distributors, special effects, other companies)
