@@ -111,6 +111,7 @@
   /** Get the name of the person
    * @method name
    * @return string name full name of the person
+   * @see IMDB person page / (Main page)
    */
   function name() {
     if (empty($this->fullname)) {
@@ -122,49 +123,13 @@
     return $this->fullname;
   }
 
- #------------------------------------------------------------------[ Born ]---
-  /** Get Birthday
-   * @method born
-   * @return array birthday [day,month.year,place]
-   */
-  function born() {
-    if (empty($this->birthday)) {
-      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if ($rc=preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match)) {
-        preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
-	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
-	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
-        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[1]);
-      }
-    }
-    return $this->birthday;
-  }
-
- #------------------------------------------------------------------[ Died ]---
-  /** Get Deathday
-   * @method died
-   * @return array deathday [day,month.year,place,cause]
-   */
-  function died() {
-    if (empty($this->deathday)) {
-      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match)) {
-        preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
-	preg_match('/DiedInYear\?(\d{4})/ims',$match[1],$dyear);
-	preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
-	preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
-      }
-    }
-    return $this->deathday;
-  }
-
  #--------------------------------------------------------[ Photo specific ]---
   /** Get cover photo
    * @method photo
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
+   * @see IMDB person page / (Main page)
    */
   function photo($thumb=true) {
     if (empty($this->main_photo)) {
@@ -185,6 +150,7 @@
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return boolean success
+   * @see IMDB person page / (Main page)
    */
   function savephoto ($path,$thumb=true) {
     $req = new IMDB_Request("");
@@ -214,6 +180,7 @@
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
+   * @see IMDB person page / (Main page)
    */
   function photo_localurl($thumb=true){
     if ($thumb) $ext = ""; else $ext = "_big";
@@ -264,6 +231,7 @@
    * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
+   * @see IMDB person page / (Main page)
    */
   function movies_all() {
     if (empty($this->allfilms)) $this->filmograf($this->allfilms,"");
@@ -275,6 +243,7 @@
    * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
+   * @see IMDB person page / (Main page)
    */
   function movies_actress() {
      if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
@@ -286,6 +255,7 @@
    * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
+   * @see IMDB person page / (Main page)
    */
   function movies_actor() {
     if (empty($this->actorsfilms)) $this->filmograf($this->actorsfilms,"actor");
@@ -297,6 +267,7 @@
    * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
+   * @see IMDB person page / (Main page)
    */
   function movies_producer() {
     if (empty($this->producersfilms)) $this->filmograf($this->producersfilms,"producer");
@@ -306,6 +277,7 @@
   /** Get directors filmography
    * @method movies_director
    * @return array array[0..n][mid,name,year]
+   * @see IMDB person page / (Main page)
    */
   function movies_director() {
     if (empty($this->directorsfilms)) $this->filmograf($this->directorsfilms,"director");
@@ -315,6 +287,7 @@
   /** Get soundtrack filmography
    * @method movies_soundtrack
    * @return array array[0..n][mid,name,year]
+   * @see IMDB person page / (Main page)
    */
   function movies_soundtrack() {
     if (empty($this->soundtrackfilms)) $this->filmograf($this->soundtrackfilms,"soundtrack");
@@ -324,6 +297,7 @@
   /** Get "Misc Crew" filmography
    * @method movies_crew
    * @return array array[0..n][mid,name,year]
+   * @see IMDB person page / (Main page)
    */
   function movies_crew() {
     if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"miscellaneousX20crew");
@@ -333,6 +307,7 @@
   /** Get "Thanx" filmography
    * @method movies_thanx
    * @return array array[0..n][mid,name,year]
+   * @see IMDB person page / (Main page)
    */
   function movies_thanx() {
     if (empty($this->thanxfilms)) $this->filmograf($this->thanxfilms,"thanks");
@@ -343,6 +318,7 @@
    * @method movies_self
    * @return array array[0..n][mid,name,year,chid,chname], where chid is the
    *         character IMDB ID, and chname the character name
+   * @see IMDB person page / (Main page)
    */
   function movies_self() {
     if (empty($this->selffilms)) $this->filmograf($this->selffilms,"self");
@@ -353,6 +329,7 @@
    * @method movies_archive
    * @return array array[0..n][mid,name,year,chid,chname], where chid is the
    *         character IMDB ID, and chname the character name
+   * @see IMDB person page / (Main page)
    */
   function movies_archive() {
     if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"archive");
@@ -364,6 +341,7 @@
  /** Get the birth name
   * @method birthname
   * @return string birthname
+  * @see IMDB person page /bio
   */
  function birthname() {
    if (empty($this->birth_name)) {
@@ -378,6 +356,7 @@
  /** Get the nick name
   * @method nickname
   * @return array nicknames array[0..n] of strings
+  * @see IMDB person page /bio
   */
  function nickname() {
    if (empty($this->nick_name)) {
@@ -393,10 +372,50 @@
    return $this->nick_name;
  }
 
+ #------------------------------------------------------------------[ Born ]---
+  /** Get Birthday
+   * @method born
+   * @return array birthday [day,month.year,place]
+   * @see IMDB person page /bio
+   */
+  function born() {
+    if (empty($this->birthday)) {
+      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+      if ($rc=preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match)) {
+        preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
+	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
+	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
+        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[1]);
+      }
+    }
+    return $this->birthday;
+  }
+
+ #------------------------------------------------------------------[ Died ]---
+  /** Get Deathday
+   * @method died
+   * @return array deathday [day,month.year,place,cause]
+   * @see IMDB person page /bio
+   */
+  function died() {
+    if (empty($this->deathday)) {
+      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+      if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match)) {
+        preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
+	preg_match('/DiedInYear\?(\d{4})/ims',$match[1],$dyear);
+	preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
+	preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
+        $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
+      }
+    }
+    return $this->deathday;
+  }
+
  #-----------------------------------------------------------[ Body Height ]---
  /** Get the body height
   * @method height
   * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
+  * @see IMDB person page /bio
   */
  function height() {
    if (empty($this->bodyheight)) {
@@ -416,6 +435,7 @@
   *         array to, string comment, string children], where from/to are array
   *         [day,month,year], comment usually is "divorced" (ouch), children is
   *         the number of children
+  * @see IMDB person page /bio
   */
  function spouse() {
    if (empty($this->spouses)) {
@@ -454,6 +474,7 @@
  /** Get the person's mini bio
   * @method bio
   * @return array bio array [0..n] of array[string desc, array author[url,name]]
+  * @see IMDB person page /bio
   */
   function bio () {
    if (empty($this->bio_bio)) {
@@ -498,6 +519,7 @@
   /** Get the Trivia
    * @method trivia
    * @return array trivia array[0..n] of string
+   * @see IMDB person page /bio
    */
   function trivia() {
     if (empty($this->bio_trivia)) $this->parparse("Trivia",$this->bio_trivia);
@@ -508,6 +530,7 @@
   /** Get the Personal Quotes
    * @method quotes
    * @return array quotes array[0..n] of string
+   * @see IMDB person page /bio
    */
   function quotes() {
     if (empty($this->bio_quotes)) $this->parparse("Personal Quotes",$this->bio_quotes);
@@ -518,6 +541,7 @@
   /** Get the "trademarks" of the person
    * @method trademark
    * @return array trademarks array[0..n] of strings
+   * @see IMDB person page /bio
    */
   function trademark() {
     if (empty($this->bio_tm)) $this->parparse("Trade Mark",$this->bio_tm);
@@ -528,6 +552,7 @@
   /** Get the salary list
    * @method salary
    * @return array salary array[0..n] of array movie[strings imdb,name,year], string salary
+   * @see IMDB person page /bio
    */
   function salary() {
     if (empty($this->bio_salary)) {
@@ -559,6 +584,7 @@
    * @method pubprints
    * @return array prints array[0..n] of array[author,title,place,publisher,year,isbn,url],
    *         where "place" refers to the place of publication, and "url" is a link to the ISBN
+   * @see IMDB person page /publicity
    */
   function pubprints() {
     if (empty($this->pub_prints)) {
@@ -606,6 +632,7 @@
   /** Biographical Movies
    * @method pubmovies
    * @return array pubmovies array[0..n] of array[imdb,name,year]
+   * @see IMDB person page /publicity
    */
   function pubmovies() {
     if (empty($this->pub_movies)) $this->parsepubmovies($this->pub_movies,"Publicity","Biographical movies");
@@ -616,6 +643,7 @@
   /** List of movies protraying the person
    * @method pubportraits
    * @return array pubmovies array[0..n] of array[imdb,name,year]
+   * @see IMDB person page /publicity
    */
   function pubportraits() {
     if (empty($this->pub_portraits)) $this->parsepubmovies($this->pub_portraits,"Publicity","Portrayed in");
@@ -629,6 +657,7 @@
    * @param string page name of the page
    * @param string title title of the block
    * @brief used by interviews(), articles()
+   * @see IMDB person page /publicity
    */
   function parsearticles(&$res,$page,$title) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
@@ -652,6 +681,7 @@
    * @return array interviews array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,year,full]
    *         (full: as displayed on the IMDB site)
+   * @see IMDB person page /publicity
    */
   function interviews() {
     if (empty($this->pub_interviews)) $this->parsearticles($this->pub_interviews,"Publicity","Interview");
@@ -664,6 +694,7 @@
    * @return array articles array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,year,full]
    *         (full: as displayed on the IMDB site)
+   * @see IMDB person page /publicity
    */
   function articles() {
     if (empty($this->pub_articles)) $this->parsearticles($this->pub_articles,"Publicity","Article");
@@ -676,6 +707,7 @@
    * @return array pictorials array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,year,full]
    *         (full: as displayed on the IMDB site)
+   * @see IMDB person page /publicity
    */
   function pictorials() {
     if (empty($this->pub_pictorials)) $this->parsearticles($this->pub_pictorials,"Publicity","Pictorial");
@@ -688,6 +720,7 @@
    * @return array magcovers array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,year,full]
    *         (full: as displayed on the IMDB site)
+   * @see IMDB person page /publicity
    */
   function magcovers() {
     if (empty($this->pub_magcovers)) $this->parsearticles($this->pub_magcovers,"Publicity","Magazine cover photo");
