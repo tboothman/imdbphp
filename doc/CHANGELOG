@@ -3,6 +3,11 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.1.3
+-------------------
+* updated ApiDoc: the methods for retrieving details now use the "see also" tag
+  to show which IMDB page the information is taken from
+
 v1.1.2 (26.02.2009)
 -------------------
 + movie: added methods to retrieve company credits (production companies,

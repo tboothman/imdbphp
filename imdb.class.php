@@ -13,7 +13,9 @@
 
  require_once (dirname(__FILE__)."/imdb_base.class.php");
 
+ #=============================================================================
  #=================================================[ The IMDB class itself ]===
+ #=============================================================================
  /** Accessing IMDB information
   * @package Api
   * @class imdb
@@ -25,6 +27,7 @@
   */
  class imdb extends imdb_base {
 
+ #======================================================[ Common functions ]===
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
    * @method private set_pagename
@@ -153,6 +156,7 @@
    return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
   }
 
+ #======================================================[ Title page infos ]===
  #-------------------------------------------[ Movie title (name) and year ]---
   /** Setup title and year properties
    * @method private title_year
@@ -169,6 +173,7 @@
   /** Get movie title
    * @method title
    * @return string title movie title (name)
+   * @see IMDB page / (TitlePage)
    */
   function title () {
     if ($this->main_title == "") $this->title_year();
@@ -178,6 +183,7 @@
   /** Get year
    * @method year
    * @return string year
+   * @see IMDB page / (TitlePage)
    */
   function year () {
     if ($this->main_year == -1) $this->title_year();
@@ -201,6 +207,7 @@
   /** Get overall runtime (first one mentioned on title page)
    * @method runtime
    * @return mixed string runtime in minutes (if set), NULL otherwise
+   * @see IMDB page / (TitlePage)
    */
   function runtime() {
     if (empty($this->movieruntimes)) $runarr = $this->runtimes();
@@ -212,6 +219,7 @@
   /** Retrieve language specific runtimes
    * @method runtimes
    * @return array runtimes (array[0..n] of array[time,country,comment])
+   * @see IMDB page / (TitlePage)
    */
   function runtimes(){
     if (empty($this->movieruntimes)) {
@@ -240,6 +248,7 @@
   /** Get movie rating
    * @method rating
    * @return string rating current rating as given by IMDB site
+   * @see IMDB page / (TitlePage)
    */
   function rating () {
     if ($this->main_rating == -1) $this->rate_vote();
@@ -249,6 +258,7 @@
   /** Return votes for this movie
    * @method votes
    * @return string votes count of votes for this movie
+   * @see IMDB page / (TitlePage)
    */
   function votes () {
     if ($this->main_votes == -1) $this->rate_vote();
@@ -259,6 +269,7 @@
   /** Get movie main comment (from title page)
    * @method comment
    * @return string comment full text of movie comment from the movies main page
+   * @see IMDB page / (TitlePage)
    */
   function comment () {
     if ($this->main_comment == "") {
@@ -273,6 +284,7 @@
   /** Get movie main comment (from title page - split-up variant)
    * @method comment_split
    * @return array comment array[string title, string date, array author, string comment]; author: array[string url, string name]
+   * @see IMDB page / (TitlePage)
    */
   function comment_split() {
     if (empty($this->split_comment)) {
@@ -289,6 +301,7 @@
    * @return string language
    * @brief There is not really a main language on the IMDB sites (yet), so this
    *  simply returns the first one
+   * @see IMDB page / (TitlePage)
    */
   function language () {
    if ($this->main_language == "") {
@@ -301,6 +314,7 @@
   /** Get all langauges this movie is available in
    * @method languages
    * @return array languages (array[0..n] of strings)
+   * @see IMDB page / (TitlePage)
    */
   function languages () {
    if (empty($this->langs)) {
@@ -319,6 +333,7 @@
    * @return string genre first of the genres listed on the movies main page
    * @brief There is not really a main genre on the IMDB sites (yet), so this
    *  simply returns the first one
+   * @see IMDB page / (TitlePage)
    */
   function genre () {
    if (empty($this->main_genre)) {
@@ -331,6 +346,7 @@
   /** Get all genres the movie is registered for
    * @method genres
    * @return array genres (array[0..n] of strings)
+   * @see IMDB page / (TitlePage)
    */
   function genres () {
     if (empty($this->moviegenres)) {
@@ -345,6 +361,7 @@
   /** Get colors
    * @method colors
    * @return array colors (array[0..1] of strings)
+   * @see IMDB page / (TitlePage)
    */
   function colors () {
     if (empty($this->moviecolors)) {
@@ -359,6 +376,7 @@
   /** Get the main tagline for the movie
    * @method tagline
    * @return string tagline
+   * @see IMDB page / (TitlePage)
    */
   function tagline () {
     if ($this->main_tagline == "") {
@@ -374,6 +392,7 @@
   /** Get the number of seasons or 0 if not a series
    * @method seasons
    * @return int seasons number of seasons
+   * @see IMDB page / (TitlePage)
    */
   function seasons() {
     if ( $this->seasoncount == -1 ) {
@@ -391,6 +410,7 @@
   /** Get the main Plot outline for the movie
    * @method plotoutline
    * @return string plotoutline
+   * @see IMDB page / (TitlePage)
    */
   function plotoutline () {
     if ($this->main_plotoutline == "") {
@@ -406,6 +426,7 @@
   /** Setup cover photo (thumbnail and big variant)
    * @method thumbphoto
    * @return boolean success (TRUE if found, FALSE otherwise)
+   * @see IMDB page / (TitlePage)
    */
   function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
@@ -422,6 +443,7 @@
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
+   * @see IMDB page / (TitlePage)
    */
   function photo($thumb=true) {
     if (empty($this->main_photo)) $this->thumbphoto();
@@ -437,6 +459,7 @@
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return boolean success
+   * @see IMDB page / (TitlePage)
    */
   function savephoto ($path,$thumb=true) {
     $req = new IMDB_Request("");
@@ -466,6 +489,7 @@
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
+   * @see IMDB page / (TitlePage)
    */
   function photo_localurl($thumb=true){
     if ($thumb) $ext = ""; else $ext = "_big";
@@ -487,6 +511,7 @@
   /** Get country of production
    * @method country
    * @return array country (array[0..n] of string)
+   * @see IMDB page / (TitlePage)
    */
   function country () {
    if (empty($this->countries)) {
@@ -507,6 +532,7 @@
    *         along for these as well as comments: As these things are quite mixed
    *         up on the imdb sites, it's hard to tell what is an additional country
    *         and what is a comment...
+   * @see IMDB page / (TitlePage)
    */
   function alsoknow () {
    if (empty($this->akas)) {
@@ -546,6 +572,7 @@
   /** Get sound formats
    * @method sound
    * @return array sound (array[0..n] of strings)
+   * @see IMDB page / (TitlePage)
    */
   function sound () {
    if (empty($this->sound)) {
@@ -560,6 +587,7 @@
   /** Get the MPAA data (also known as PG or FSK)
    * @method mpaa
    * @return array mpaa (array[country]=rating)
+   * @see IMDB page / (TitlePage)
    */
   function mpaa () {
    if (empty($this->mpaas)) {
@@ -576,6 +604,7 @@
   /** Find out the reason for the MPAA rating
    * @method mpaa_reason
    * @return string reason why the movie was rated such
+   * @see IMDB page / (TitlePage)
    */
   function mpaa_reason () {
    if (empty($this->mpaa_justification)) {
@@ -586,10 +615,12 @@
    return $this->mpaa_justification;
   }
 
- #-----------------------------------------------------[ /plotsummary page ]---
+ #=====================================================[ /plotsummary page ]===
+ #--------------------------------------------------[ Full Plot (combined) ]---
   /** Get the movies plot(s)
    * @method plot
    * @return array plot (array[0..n] of strings)
+   * @see IMDB page /plotsummary
    */
   function plot () {
    if (empty($this->plot_plot)) {
@@ -602,9 +633,11 @@
    return $this->plot_plot;
   }
 
+ #-----------------------------------------------------[ Full Plot (split) ]---
   /** Get the movie plot(s) - split-up variant
    * @method plot_split
    * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
+   * @see IMDB page /plotsummary
    */
   function plot_split() {
     if (empty($this->split_plot)) {
@@ -617,10 +650,12 @@
     return $this->split_plot;
   }
 
- #--------------------------------------------------------[ /synopsis page ]---
+ #========================================================[ /synopsis page ]===
+ #---------------------------------------------------------[ Full Synopsis ]---
   /** Get the movies synopsis
    * @method synopsis
    * @return string synopsis
+   * @see IMDB page /synopsis
    */
   function synopsis() {
     if (empty($this->synopsis_wiki)) {
@@ -632,10 +667,12 @@
     return $this->synopsis_wiki;
   }
 
- #--------------------------------------------------------[ /taglines page ]---
+ #========================================================[ /taglines page ]===
+ #--------------------------------------------------------[ Taglines Array ]---
   /** Get all available taglines for the movie
    * @method taglines
    * @return array taglines (array[0..n] of strings)
+   * @see IMDB page /taglines
    */
   function taglines () {
    if (empty($this->taglines)) {
@@ -647,7 +684,8 @@
    return $this->taglines;
   }
 
- #-----------------------------------------------------[ /fullcredits page ]---
+ #=====================================================[ /fullcredits page ]===
+ #-----------------------------------------------------[ Helper: TableRows ]---
   /** Get rows for a given table on the page
    * @method private get_table_rows
    * @param string html
@@ -667,6 +705,7 @@
    return $rows;
   }
 
+ #------------------------------------------------[ Helper: Cast TableRows ]---
   /** Get rows for the cast table on the page
    * @method private get_table_rows_cast
    * @param string html
@@ -684,6 +723,7 @@
    return array();
   }
 
+ #------------------------------------------------------[ Helper: RowCells ]---
   /** Get content of table row cells
    * @method private get_row_cels
    * @param string row (as returned by imdb::get_table_rows)
@@ -695,6 +735,7 @@
    return array();
   }
 
+ #-------------------------------------------[ Helper: Get IMDBID from URL ]---
   /** Get the IMDB ID from a names URL
    * @method private get_imdbname
    * @param string href url to the staff members IMDB page
@@ -709,9 +750,11 @@
    else	return $href;
   }
 
+ #-------------------------------------------------------------[ Directors ]---
   /** Get the director(s) of the movie
    * @method director
    * @return array director (array[0..n] of arrays[imdb,name,role])
+   * @see IMDB page /fullcredits
    */
   function director () {
    if (empty($this->credits_director)) {
@@ -732,9 +775,11 @@
    return $this->credits_director;
   }
 
+ #----------------------------------------------------------------[ Actors ]---
   /** Get the actors
    * @method cast
    * @return array cast (array[0..n] of arrays[imdb,name,role])
+   * @see IMDB page /fullcredits
    */
   function cast () {
    if (empty($this->credits_cast)) {
@@ -755,9 +800,11 @@
    return $this->credits_cast;
   }
 
+ #---------------------------------------------------------------[ Writers ]---
   /** Get the writer(s)
    * @method writing
    * @return array writers (array[0..n] of arrays[imdb,name,role])
+   * @see IMDB page /fullcredits
    */
   function writing () {
    if (empty($this->credits_writing)) {
@@ -780,9 +827,11 @@
    return $this->credits_writing;
   }
 
+ #-------------------------------------------------------------[ Producers ]---
   /** Obtain the producer(s)
    * @method producer
    * @return array producer (array[0..n] of arrays[imdb,name,role])
+   * @see IMDB page /fullcredits
    */
   function producer () {
    if (empty($this->credits_producer)) {
@@ -805,9 +854,11 @@
    return $this->credits_producer;
   }
 
+ #-------------------------------------------------------------[ Composers ]---
   /** Obtain the composer(s) ("Original Music by...")
    * @method composer
    * @return array composer (array[0..n] of arrays[imdb,name,role])
+   * @see IMDB page /fullcredits
    */
   function composer () {
    if (empty($this->credits_composer)) {
@@ -830,10 +881,12 @@
    return $this->credits_composer;
   }
 
- #----------------------------------------------------[ /crazycredits page ]---
+ #====================================================[ /crazycredits page ]===
+ #----------------------------------------------------[ CrazyCredits Array ]---
   /** Get the Crazy Credits
    * @method crazy_credits
    * @return array crazy_credits (array[0..n] of string)
+   * @see IMDB page /crazycredits
    */
   function crazy_credits() {
     if (empty($this->crazy_credits)) {
@@ -849,10 +902,12 @@
     return $this->crazy_credits;
   }
 
- #--------------------------------------------------------[ /episodes page ]---
+ #========================================================[ /episodes page ]===
+ #--------------------------------------------------------[ Episodes Array ]---
   /** Get the series episode(s)
    * @method episodes
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
+   * @see IMDB page /episodes
    */
   function episodes() {
     if ( $this->seasons() == 0 ) return null;
@@ -868,10 +923,12 @@
     return $this->season_episodes;
   }
 
- #-----------------------------------------------------------[ /goofs page ]---
+ #===========================================================[ /goofs page ]===
+ #-----------------------------------------------------------[ Goofs Array ]---
   /** Get the goofs
    * @method goofs
    * @return array goofs (array[0..n] of array[type,content]
+   * @see IMDB page /goofs
    */
   function goofs() {
     if (empty($this->goofs)) {
@@ -889,10 +946,12 @@
     return $this->goofs;
   }
 
- #----------------------------------------------------------[ /quotes page ]---
+ #==========================================================[ /quotes page ]===
+ #----------------------------------------------------------[ Quotes Array ]---
   /** Get the quotes for a given movie
    * @method quotes
    * @return array quotes (array[0..n] of string)
+   * @see IMDB page /quotes
    */
   function quotes() {
     if ( empty($this->moviequotes) ) {
@@ -904,10 +963,12 @@
     return $this->moviequotes;
   }
 
- #--------------------------------------------------------[ /trailers page ]---
+ #========================================================[ /trailers page ]===
+ #--------------------------------------------------------[ Trailers Array ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
    * @return array trailers (array[0..n] of string)
+   * @see IMDB page /trailers
    */
   function trailers() {
     if ( empty($this->trailers) ) {
@@ -930,10 +991,12 @@
     return $this->trailers;
   }
 
- #----------------------------------------------------------[ /trivia page ]---
+ #==========================================================[ /trivia page ]===
+ #----------------------------------------------------------[ Trivia Array ]---
   /** Get the trivia info
    * @method trivia
    * @return array trivia (array[0..n] string
+   * @see IMDB page /trivia
    */
   function trivia() {
     if (empty($this->trivia)) {
@@ -951,13 +1014,15 @@
     return $this->trivia;
   }
 
- #------------------------------------------------------[ /soundtrack page ]---
+ #======================================================[ /soundtrack page ]===
+ #------------------------------------------------------[ Soundtrack Array ]---
   /** Get the soundtrack listing
    * @method soundtrack
    * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits)
    * @brief Usually, the credits array should hold [0] written by, [1] performed by.
    *  But IMDB does not always stick to that - so in many cases it holds
    *  [0] performed by, [1] courtesy of
+   * @see IMDB page /soundtrack
    */
   function soundtrack() {
    if (empty($this->soundtracks)) {
@@ -973,7 +1038,8 @@
    return $this->soundtracks;
   }
 
- #-------------------------------------------------[ /movieconnection page ]---
+ #=================================================[ /movieconnection page ]===
+ #----------------------------------------[ Helper: ConnectionBlock Parser ]---
   /** Parse connection block (used by method movieconnection only)
    * @method private parseConnection
    * @param string conn connection type
@@ -995,12 +1061,14 @@
     return $arr;
   }
 
+ #-------------------------------------------------[ MovieConnection Array ]---
   /** Get connected movie information
    * @method movieconnection
    * @return array connections (versionOf, editedInto, followedBy, spinOff,
    *         spinOffFrom, references, referenced, features, featured, spoofs,
    *         spoofed - each an array of mid, name, year, comment or an empty
    *         array if no connections of that type)
+   * @see IMDB page /movieconnection
    */
   function movieconnection() {
     if (empty($this->movieconnections)) {
@@ -1021,10 +1089,12 @@
     return $this->movieconnections;
   }
 
- #------------------------------------------------[ /externalreviews page ]---
+ #=================================================[ /externalreviews page ]===
+ #-------------------------------------------------[ ExternalReviews Array ]---
   /** Get list of external reviews (if any)
    * @method extReviews
    * @return array [0..n] of array [url, desc] (or empty array if no data)
+   * @see IMDB page /externalreviews
    */
   function extReviews() {
     if (empty($this->extreviews)) {
@@ -1040,10 +1110,12 @@
     return $this->extreviews;
   }
 
- #-----------------------------------------------------[ /releaseinfo page ]---
+ #=====================================================[ /releaseinfo page ]===
+ #-----------------------------------------------------[ ReleaseInfo Array ]---
   /** Obtain Release Info (if any)
    * @method releaseInfo
    * @return array release_info array[0..n] of strings (country,day,month,year,comment)
+   * @see IMDB page /releaseinfo
    */
   function releaseInfo() {
     if (empty($this->release_info)) {
@@ -1059,7 +1131,8 @@
     return $this->release_info;
   }
 
- #-------------------------------------------------------[ /companycredits ]---
+ #==================================================[ /companycredits page ]===
+ #---------------------------------------------[ Helper: Parse CompanyInfo ]---
   /** Parse company info
    * @method private companyParse
    * @param ref string text to parse
@@ -1073,9 +1146,11 @@
     }
   }
 
+ #---------------------------------------------------[ Producing Companies ]---
   /** Info about Production Companies
    * @method prodCompany
    * @return array [0..n] of array (name,url,notes)
+   * @see IMDB page /companycredits
    */
   function prodCompany() {
     if (empty($this->compcred_prod)) {
@@ -1088,9 +1163,11 @@
     return $this->compcred_prod;
   }
 
+ #------------------------------------------------[ Distributing Companies ]---
   /** Info about distributors
    * @method distCompany
    * @return array [0..n] of array (name,url,notes)
+   * @see IMDB page /companycredits
    */
   function distCompany() {
     if (empty($this->compcred_dist)) {
@@ -1103,9 +1180,11 @@
     return $this->compcred_dist;
   }
 
+ #---------------------------------------------[ Special Effects Companies ]---
   /** Info about Special Effects companies
    * @method specialCompany
    * @return array [0..n] of array (name,url,notes)
+   * @see IMDB page /companycredits
    */
   function specialCompany() {
     if (empty($this->compcred_special)) {
@@ -1118,9 +1197,11 @@
     return $this->compcred_special;
   }
 
+ #-------------------------------------------------------[ Other Companies ]---
   /** Info about other companies
    * @method otherCompany
    * @return array [0..n] of array (name,url,notes)
+   * @see IMDB page /companycredits
    */
   function otherCompany() {
     if (empty($this->compcred_other)) {
@@ -1133,11 +1214,13 @@
     return $this->compcred_other;
   }
 
- #--------------------------------------------------------[ /parentalguide ]---
+ #===================================================[ /parentalguide page ]===
+ #-------------------------------------------------[ ParentalGuide Details ]---
   /** Detailed Parental Guide
    * @method parentalGuide
    * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
    *         Frightening - and maybe more
+   * @see IMDB page /parentalguide
    */
   function parentalGuide() {
     if (empty($this->parental_guide)) {
