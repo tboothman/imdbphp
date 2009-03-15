@@ -116,5 +116,8 @@ endpage();
 page("ParentalGuide");
  method($imdb,"parentalGuide");
 endpage();
+page("OfficialSites");
+ method($imdb,"officialSites");
+endpage();
 
 ?>
