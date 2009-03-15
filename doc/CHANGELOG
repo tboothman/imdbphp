@@ -8,6 +8,7 @@ v1.1.3
 * updated ApiDoc: the methods for retrieving details now use the "see also" tag
   to show which IMDB page the information is taken from
 + movie: added method officialSites to retrieve the "official" URLs
+! person: movies_archive() was broken due to site changes
 
 v1.1.2 (26.02.2009)
 -------------------
