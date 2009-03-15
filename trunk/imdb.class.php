@@ -53,6 +53,7 @@
     case "ReleaseInfo" : $urlname="/releaseinfo"; break;
     case "CompanyCredits" : $urlname="/companycredits"; break;
     case "ParentalGuide"  : $urlname="/parentalguide"; break;
+    case "OfficialSites"  : $urlname="/officialsites"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -88,6 +89,7 @@
    $this->page["ReleaseInfo"] = "";
    $this->page["CompanyCredits"] = "";
    $this->page["ParentalGuide"] = "";
+   $this->page["OfficialSites"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -136,6 +138,7 @@
    $this->compcred_special = array();
    $this->compcred_other = array();
    $this->parental_guide = array();
+   $this->official_sites = array();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -1247,6 +1250,27 @@
       }
     }
     return $this->parental_guide;
+  }
+
+ #===================================================[ /officialsites page ]===
+ #---------------------------------------------------[ Official Sites URLs ]---
+  /** URLs of Official Sites
+   * @method officialSites
+   * @return array [0..n] of url, name
+   * @see IMDB page /officialsites
+   */
+  function officialSites() {
+    if (empty($this->official_sites)) {
+      if (empty($this->page["OfficialSites"])) $this->openpage("OfficialSites");
+      if ($this->page["OfficialSites"] == "cannot open page") return array(); // no such page
+      if (preg_match_all('|<li><a href="(.*?)">(.*?)</a></li>|ims',$this->page["OfficialSites"],$matches)) {
+        $mc = count($matches[0]);
+	for ($i=0;$i<$mc;++$i) {
+          $this->official_sites[] = array("url"=>$matches[1][$i],"name"=>$matches[2][$i]);
+        }
+      }
+    }
+    return $this->official_sites;
   }
 
  } // end class imdb
