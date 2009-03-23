@@ -10,6 +10,7 @@ v1.1.3
 + movie: added method officialSites to retrieve the "official" URLs
 ! person: movies_archive() was broken due to site changes
 ! movie: releaseInfo() was messed up if one entry contained an incomplete date
+! movie: director() returned nothing on series main page (thanx for the fix, moonface!)
 
 v1.1.2 (26.02.2009)
 -------------------
