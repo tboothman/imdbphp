@@ -1127,9 +1127,18 @@
       $tag_s = strpos($this->page["ReleaseInfo"],'<th class="xxxx">Country</th><th class="xxxx">Date</th>');
       $tag_e = strpos($this->page["ReleaseInfo"],'</table',$tag_s);
       $block = substr($this->page["ReleaseInfo"],$tag_s,$tag_e-$tag_s);
-      preg_match_all('/<tr>.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|<\/td>)/ims',$block,$matches);
+      preg_match_all('!<tr><td><b><a href="/Recent/(.*?)</td></tr>!ims',$block,$matches);
       $mc = count($matches[0]);
-      for ($i=0;$i<$mc;++$i) $this->release_info[] = array("country"=>$matches[1][$i],"day"=>$matches[2][$i],"month"=>$matches[3][$i],"year"=>$matches[4][$i],"comment"=>$matches[6][$i]);
+      for ($i=0;$i<$mc;++$i) {
+        $date = '!!';
+        if ( preg_match('/.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|)$/ims',$matches[1][$i],$match) ) {
+          $this->release_info[] = array("country"=>$match[1],"day"=>$match[2],"month"=>$match[3],"year"=>$match[4],"comment"=>$match[6]);
+        } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
+          $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>$match[5]);
+        } else {
+          echo "NO MATCH ON<pre>".htmlentities($matches[1][$i])."</pre>";
+        }
+      }
     }
     return $this->release_info;
   }
