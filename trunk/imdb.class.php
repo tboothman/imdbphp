@@ -765,6 +765,7 @@
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
    }
    $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
+   if($director_rows==null) $director_rows = $this->get_table_rows($this->page["Credits"], "Series Directed by");
    for ( $i = 0; $i < count ($director_rows); $i++){
 	$cels = $this->get_row_cels ($director_rows[$i]);
 	if (!isset ($cels[0])) return array();
