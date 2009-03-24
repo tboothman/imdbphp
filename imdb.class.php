@@ -107,6 +107,7 @@
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_thumb = "";
+   $this->main_pictures = array();
    $this->main_plotoutline = "";
    $this->main_rating = -1;
    $this->main_runtime = "";
@@ -508,6 +509,32 @@
     }
     if ($this->savephoto($path,$thumb)) return $this->photoroot.$this->imdbid()."${ext}.jpg";
     return false;
+  }
+
+  /** Get URLs for the pictures on the main page
+   * @method mainPictures
+   * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
+   *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
+   *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
+   *    <LI>bigsrc is the URL of the "big size" image itself</LI>
+   * @author moonface
+   * @author izzy
+   */
+  function mainPictures() {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (empty($this->main_pictures)) {
+      if (@preg_match_all("/\<div class=\"media_strip_thumb\">\<a href=\"(.*?)\">\<img height=\"90\" width=\"90\" src\=\"(.*?)\"/",$this->page["Title"],$matches)) {
+        for ($i=0;$i<count($matches[0]);++$i) {
+	  $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
+          if (substr($matches[1][$i],0,4)!="http") $matches[1][$i] = "http://".$this->imdbsite.$matches[1][$i];
+          $this->main_pictures[$i]["imglink"] = $matches[1][$i];
+          preg_match('|(.*\._V1).*|iUs',$matches[2][$i],$big);
+          $ext = substr($matches[2][$i],-3);
+          $this->main_pictures[$i]["bigsrc"] = $big[1].".${ext}";
+	}
+      }
+    }
+    return $this->main_pictures;
   }
 
  #-------------------------------------------------[ Country of Production ]---
