@@ -11,6 +11,8 @@ v1.1.3
 ! person: movies_archive() was broken due to site changes
 ! movie: releaseInfo() was messed up if one entry contained an incomplete date
 ! movie: director() returned nothing on series main page (thanx for the fix, moonface!)
++ movie: added method mainPictures() to retrieve information on the pictures
+  displayed on the main page (thanx to moonface for the initial code!)
 
 v1.1.2 (26.02.2009)
 -------------------
