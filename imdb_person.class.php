@@ -375,7 +375,8 @@
  #------------------------------------------------------------------[ Born ]---
   /** Get Birthday
    * @method born
-   * @return array birthday [day,month.year,place]
+   * @return array birthday [day,month,mon,year,place]
+   *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
   function born() {
@@ -385,7 +386,7 @@
         preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
 	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
 	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
-        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[1]);
+        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"mon"=>$this->monthNo($daymon[4]),"year"=>$dyear[1],"place"=>$dloc[1]);
       }
     }
     return $this->birthday;
@@ -394,7 +395,8 @@
  #------------------------------------------------------------------[ Died ]---
   /** Get Deathday
    * @method died
-   * @return array deathday [day,month.year,place,cause]
+   * @return array deathday [day,month.mon,year,place,cause]
+   *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
   function died() {
@@ -405,7 +407,7 @@
 	preg_match('/DiedInYear\?(\d{4})/ims',$match[1],$dyear);
 	preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
 	preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
+        $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"mon"=>$this->monthNo($daymon[4]),"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
       }
     }
     return $this->deathday;
@@ -433,8 +435,8 @@
   * @method spouse
   * @return array [0..n] of array spouses [string imdb, string name, array from,
   *         array to, string comment, string children], where from/to are array
-  *         [day,month,year], comment usually is "divorced" (ouch), children is
-  *         the number of children
+  *         [day,month,mon,year] (month is the name, mon the number of the month),
+  *         comment usually is "divorced" (ouch), children is the number of children
   * @see IMDB person page /bio
   */
  function spouse() {
@@ -458,8 +460,8 @@
 #         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})|)/",$matches[2][$i],$match)) { // col#2: date from + to
 #         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)/",$matches[2][$i],$match)) { // col#2: date, comment
          if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)(\s*(\d+) child|)/",$matches[2][$i],$match)) { // col#2: date, children
-           $tmp["from"] = array("day"=>$match[1],"month"=>$match[2],"year"=>$match[3]);
-           $tmp["to"]   = array("day"=>$match[5],"month"=>$match[6],"year"=>$match[7]);
+           $tmp["from"] = array("day"=>$match[1],"month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3]);
+           $tmp["to"]   = array("day"=>$match[5],"month"=>$match[6],"mon"=>$this->monthNo($match[6]),"year"=>$match[7]);
            $tmp["comment"] = $match[8];
            $tmp["children"] = $match[10];
          }
@@ -669,7 +671,7 @@
     for ($i=0;$i<$lc;++$i) {
       if (@preg_match('/href="(.*)">(.*)<\/a>.*valign="top">(.*),\s*(.*|)(,\s*by.*"author" href="(.*)">(.*)|)</iU',$matches[1][$i],$match)) {
         @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i',$match[3],$dat);
-        $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"year"=>trim($dat[3]),"full"=>$match[3]);
+        $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"mon"=>$this->monthNo(trim($dat[2])),"year"=>trim($dat[3]),"full"=>$match[3]);
         $res[] = array("inturl"=>$match[1],"name"=>$match[2],"date"=>$datum,"details"=>trim($match[4]),"auturl"=>$match[6],"author"=>$match[7]);
       }
     }
@@ -679,7 +681,7 @@
   /** Interviews
    * @method interviews
    * @return array interviews array[0..n] of array[inturl,name,date,details,auturl,author]
-   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
@@ -692,7 +694,7 @@
   /** Articles
    * @method articles
    * @return array articles array[0..n] of array[inturl,name,date,details,auturl,author]
-   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
@@ -705,7 +707,7 @@
   /** Pictorials
    * @method pictorials
    * @return array pictorials array[0..n] of array[inturl,name,date,details,auturl,author]
-   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
@@ -718,7 +720,7 @@
   /** Magazine cover photos
    * @method magcovers
    * @return array magcovers array[0..n] of array[inturl,name,date,details,auturl,author]
-   *         where all elements are strings - just date is an array[day,month,year,full]
+   *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */

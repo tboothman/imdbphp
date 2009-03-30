@@ -23,7 +23,7 @@
   * @extends imdb_config
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
-  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
+  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
  class imdb_base extends imdb_config {
@@ -53,6 +53,19 @@
   }
   function debug_html($html) {
     if ($this->debug) echo "<b><font color='#ff0000'>".htmlentities($html)."</font></b><br>";
+  }
+
+ #---------------------------------------------------------[ Other Helpers ]---
+  /** Get numerical value for month name
+   * @method monthNo
+   * @param string name name of month
+   * @return integer month number
+   */
+  function monthNo($mon) {
+    static $months = array("January"=>"01","February"=>"02","March"=>"03","April"=>"04",
+           "May"=>"05","June"=>"06","July"=>"07","August"=>"08","September"=>"09",
+	   "October"=>"10","November"=>"11","December"=>"12");
+    return $months[$mon];
   }
 
  #-------------------------------------------------------------[ Open Page ]---
