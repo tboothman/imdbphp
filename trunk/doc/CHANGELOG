@@ -6,6 +6,8 @@ History for IMDBPHP
 v1.1.4
 -------------------
 + movie: added method mpaa_hist() to include multiple ratings per country (if set)
++ methods returning a data array now have the additional element "mon" holding
+  the months number (while "month" still keeps the name as it was before)
 
 v1.1.3 (26.03.2009)
 -------------------

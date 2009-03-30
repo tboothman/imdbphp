@@ -1162,7 +1162,8 @@
  #-----------------------------------------------------[ ReleaseInfo Array ]---
   /** Obtain Release Info (if any)
    * @method releaseInfo
-   * @return array release_info array[0..n] of strings (country,day,month,year,comment)
+   * @return array release_info array[0..n] of strings (country,day,month,mon,
+             year,comment) - "month" is the month name, "mon" the number
    * @see IMDB page /releaseinfo
    */
   function releaseInfo() {
@@ -1177,7 +1178,7 @@
       for ($i=0;$i<$mc;++$i) {
         $date = '!!';
         if ( preg_match('/.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|)$/ims',$matches[1][$i],$match) ) {
-          $this->release_info[] = array("country"=>$match[1],"day"=>$match[2],"month"=>$match[3],"year"=>$match[4],"comment"=>$match[6]);
+          $this->release_info[] = array("country"=>$match[1],"day"=>$match[2],"month"=>$match[3],"mon"=>$this->monthNo($match[3]),"year"=>$match[4],"comment"=>$match[6]);
         } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
           $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>$match[5]);
         } else {
