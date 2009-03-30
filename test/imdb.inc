@@ -51,6 +51,7 @@ page("Title");
  method($imdb,"alsoknow");
  method($imdb,"sound");
  method($imdb,"mpaa");
+ method($imdb,"mpaa_hist");
  method($imdb,"mpaa_reason");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");

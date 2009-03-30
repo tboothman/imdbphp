@@ -121,6 +121,7 @@
    $this->moviequotes = array();
    $this->movieruntimes = array();
    $this->mpaas = array();
+   $this->mpaas_hist = array();
    $this->mpaa_justification = "";
    $this->plot_plot = array();
    $this->synopsis_wiki = "";
@@ -628,6 +629,22 @@
     }
    }
    return $this->mpaas;
+  }
+
+  /** Get the MPAA data (also known as PG or FSK) - including historical data
+   * @method mpaa_hist
+   * @return array mpaa (array[country][0..n]=rating)
+   * @see IMDB page / (TitlePage)
+   */
+  function mpaa_hist () {
+   if (empty($this->mpaas_hist)) {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
+      $cc = count($matches[0]);
+      for ($i=0;$i<$cc;++$i) $this->mpaas_hist[$matches[1][$i]][] = $matches[2][$i];
+    }
+   }
+   return $this->mpaas_hist;
   }
 
  #----------------------------------------------------[ MPAA justification ]---
