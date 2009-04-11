@@ -55,6 +55,8 @@ page("Title");
  method($imdb,"mpaa_reason");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
+ setid($imdb,"1212428"); // The Lost City of Z - 2010
+ method($imdb,"prodNotes");
 endpage();
 page("Synopsis");
  setid($imdb,"0758774"); // Body of Lies
