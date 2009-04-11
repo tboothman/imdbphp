@@ -115,6 +115,7 @@
    $this->main_votes = -1;
    $this->main_year = -1;
    $this->main_tagline = "";
+   $this->main_prodnotes = array();
    $this->moviecolors = array();
    $this->movieconnections = array();
    $this->moviegenres = array();
@@ -660,6 +661,29 @@
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
+  }
+
+ #------------------------------------------------------[ Production Notes ]---
+  /** For not-yet completed movies, we can get the production state
+   * @method prodNotes
+   * @returns array
+   * @see IMDB page / (TitlePage)
+   */
+  function prodNotes() {
+   if (empty($this->main_prodnotes)) {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (!preg_match('!(<h3>Production Notes.*?)<h3!ims',$this->page["Title"],$match)) return $this->main_prodnotes; // no info available
+    preg_match('!<h5>Status:</h5>\s*(.*?)\|(.*?)</div>!ims',$match[1],$tmp);
+    $status = trim($tmp[1]); $statnote = trim($tmp[2]);
+    preg_match('!<h5>Status Updated:</h5>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp);
+    $update = array("day"=>$tmp[1],"month"=>$tmp[2],"mon"=>$this->monthNo($tmp[2]),"year"=>$tmp[3]);
+    preg_match('!<h5>More Info:</h5>\s*(.*?)</div!ims',$match[1],$tmp);
+    $more = trim($tmp[1]);
+    preg_match('!<h5>Note:</h5>\s*<span class="note">\s*(.*?)</span!ims',$match[1],$tmp);
+    $note = trim($tmp[1]);
+    $this->main_prodnotes = array("status"=>$status,"statnote"=>$statnote,"lastUpdate"=>$update,"more"=>$more,"note"=>$note);
+   }
+   return $this->main_prodnotes;
   }
 
  #=====================================================[ /plotsummary page ]===
