@@ -666,7 +666,7 @@
  #------------------------------------------------------[ Production Notes ]---
   /** For not-yet completed movies, we can get the production state
    * @method prodNotes
-   * @returns array
+   * @returns array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
    * @see IMDB page / (TitlePage)
    */
   function prodNotes() {
