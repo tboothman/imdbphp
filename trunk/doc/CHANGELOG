@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.4
+v1.1.4 (26.04.2009)
 -------------------
 + movie: added method mpaa_hist() to include multiple ratings per country (if set)
 + methods returning a data array now have the additional element "mon" holding
