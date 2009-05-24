@@ -61,6 +61,7 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
      */
     function getResponseBody(){
       $page = "";
+      if ($this->fpopened===FALSE) return $page;
       while (!feof ($this->fpopened)) {
         $page .= fread ($this->fpopened, 1024);
       }
