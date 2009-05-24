@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.1.5
+-------------------
+! hopefully fixed "invalid stream resource" on some network timeouts
+
 v1.1.4 (26.04.2009)
 -------------------
 + movie: added method mpaa_hist() to include multiple ratings per country (if set)
