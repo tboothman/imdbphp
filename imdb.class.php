@@ -116,6 +116,7 @@
    $this->main_year = -1;
    $this->main_tagline = "";
    $this->main_prodnotes = array();
+   $this->main_movietypes = array();
    $this->moviecolors = array();
    $this->movieconnections = array();
    $this->moviegenres = array();
@@ -194,6 +195,23 @@
   function year () {
     if ($this->main_year == -1) $this->title_year();
     return $this->main_year;
+  }
+
+  /** Get movie types (if any specified)
+   * @method movieTypes
+   * @return array [0..n] of strings (or empty array if no movie types specified)
+   * @see IMDB page / (TitlePage)
+   */
+  function movieTypes() {
+    if ( empty($this->main_movietypes) ) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if (@preg_match("/\<title\>(.*)\<\/title\>/",$this->page["Title"],$match)) {
+        if (preg_match_all('|\(([^\)]*)\)|',$match[1],$matches)) {
+	  for ($i=0;$i<count($matches[0]);++$i) if (!preg_match('|^\d{4}$|',$matches[1][$i])) $this->main_movietypes[] = $matches[1][$i];
+        }
+      }
+    }
+    return $this->main_movietypes;
   }
 
  #---------------------------------------------------------------[ Runtime ]---
