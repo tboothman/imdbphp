@@ -57,6 +57,8 @@ page("Title");
  method($imdb,"seasons");
  setid($imdb,"1212428"); // The Lost City of Z - 2010
  method($imdb,"prodNotes");
+ setid($imdb,"0094592"); // 14 going 30 (TV)
+ method($imdb,"movieTypes");
 endpage();
 page("Synopsis");
  setid($imdb,"0758774"); // Body of Lies
