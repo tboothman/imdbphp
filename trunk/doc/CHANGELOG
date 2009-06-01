@@ -7,6 +7,7 @@ v1.1.5
 -------------------
 ! hopefully fixed "invalid stream resource" on some network timeouts
 + movie: added method to retrieve movie types (if specified)
+! person: fixed a property missing in initialization
 
 v1.1.4 (26.04.2009)
 -------------------
