@@ -56,6 +56,7 @@
    $this->main_photo      = "";
    $this->fullname        = "";
    $this->birthday        = array();
+   $this->deathday        = array();
    $this->allfilms        = array();
    $this->actressfilms    = array();
    $this->actorsfilms     = array();
