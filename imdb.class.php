@@ -1224,7 +1224,7 @@
         } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
           $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>$match[5]);
         } else {
-          echo "NO MATCH ON<pre>".htmlentities($matches[1][$i])."</pre>";
+          $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[1][$i])."</pre>");
         }
       }
     }
