@@ -3,13 +3,14 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.5
+v1.1.5 (24.09.2009)
 -------------------
 ! hopefully fixed "invalid stream resource" on some network timeouts
 + movie: added method to retrieve movie types (if specified)
 ! person: fixed a property missing in initialization
 ! movie: some methods were broken due to site changes. Fixed goofs(), trailers(),
   and trivia()
+* some minor updates and changes
 
 v1.1.4 (26.04.2009)
 -------------------
