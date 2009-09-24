@@ -1090,7 +1090,7 @@
       $tag_e = strrpos($this->page["Trivia"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Trivia"],"</ul>");
       $goofs = substr($this->page["Trivia"],$tag_s,$tag_e - $tag_s);
-      if (preg_match_all("/<li>(.*?)<br><br><\/li>/",$goofs,$matches)) {
+      if (preg_match_all("|<li><a name.+?</a>(.*?)<br>\s*<br></li>|is",$goofs,$matches)) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
       }
