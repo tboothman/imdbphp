@@ -1064,19 +1064,13 @@
     if ( empty($this->trailers) ) {
       if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
       if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
-      $tag_s = strpos($this->page["Trailers"], '<div class="video-gallery">');
+      $tag_s = strpos($this->page["Trailers"], '<div id="search-results">');
       if (!empty($tag_s)) { // trailers on the IMDB site itself
-        $tag_e = strpos($this->page["Trailers"],"</a>\n</div",$tag_s);
+        $tag_e = strpos($this->page["Trailers"],"</ol>",$tag_s);
         $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        if (preg_match_all("/<a href=\"(\/rg\/VIDEO_TITLE.*?)\">/",$trail,$matches))
+        if (preg_match_all('|<a href="(/rg/video-search.*?)">|',$trail,$matches))
           for ($i=0;$i<count($matches[0]);++$i) $this->trailers[] = "http://".$this->imdbsite.$matches[1][$i];
       }
-      $tag_s = strpos($this->page["Trailers"], "<h3>Trailers on Other Sites</h3>");
-      if (empty($tag_s)) return FALSE;
-      $tag_e = strpos($this->page["Trailers"], "<h3>Related Links</h3>", $tag_s);
-      $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s);
-      if (preg_match_all("/<a href=\"(.*?)\">/",$trail,$matches))
-        $this->trailers = array_merge($this->trailers,$matches[1]);
     }
     return $this->trailers;
   }
