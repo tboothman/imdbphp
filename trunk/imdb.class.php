@@ -1028,7 +1028,7 @@
       $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
       $tag_e = strrpos($this->page["Goofs"],"</ul>");
       $goofs = substr($this->page["Goofs"],$tag_s,$tag_e - $tag_s);
-      if (preg_match_all("/<li><b>(.*?)<\/b>(.*?)<br><br><\/li>/",$goofs,$matches)) {
+      if (preg_match_all("/<li>.*?<b>(.*?)<\/b>(.*?)<br>\s*<br><\/li>/ims",$goofs,$matches)) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
       }
