@@ -1313,7 +1313,7 @@
   /** Detailed Parental Guide
    * @method parentalGuide
    * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
-   *         Frightening - and maybe more
+   *         Frightening - and maybe more; values: arguments for the rating
    * @see IMDB page /parentalguide
    */
   function parentalGuide() {
@@ -1323,7 +1323,7 @@
       if (preg_match_all('/<div class="section">(.*)<div id="swiki(\.\d+\.\d+|_last)">/iUms',$this->page["ParentalGuide"],$matches)) {
         $mc = count($matches[0]);
 	for ($i=0;$i<$mc;++$i) {
-	  preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match);
+	  if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
 	  $section = $match[1];
 	  preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match);
 	  $content = trim($match[1]);
