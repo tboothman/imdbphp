@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.1.6
+-------------------
++ movie: added method to retrieve keywords (thanx to Balamir for the code!)
+
 v1.1.5 (24.09.2009)
 -------------------
 ! hopefully fixed "invalid stream resource" on some network timeouts
