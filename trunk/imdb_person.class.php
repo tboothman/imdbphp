@@ -383,7 +383,7 @@
   function born() {
     if (empty($this->birthday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if ($rc=preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match)) {
+      if ( preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match) ) {
         preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
 	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
 	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
