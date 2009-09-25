@@ -818,12 +818,12 @@
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the method cast
    */
-  function get_table_rows_cast ( $html, $table_start ){
+  function get_table_rows_cast ( $html, $table_start, $class="nm" ){
    $row_s = strpos ( $html, '<table class="cast">');
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   if (preg_match_all("/<tr.*?(<td class=\"nm\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches))
+   if (preg_match_all("/<tr.*?(<td class=\"$class\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches))
      return $matches[1];
    return array();
   }
@@ -884,7 +884,7 @@
  #----------------------------------------------------------------[ Actors ]---
   /** Get the actors
    * @method cast
-   * @return array cast (array[0..n] of arrays[imdb,name,role])
+   * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
    * @see IMDB page /fullcredits
    */
   function cast () {
@@ -892,15 +892,18 @@
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
    }
-   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast");
+   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "hs");
    for ( $i = 0; $i < count ($cast_rows); $i++){
 	$cels = $this->get_row_cels ($cast_rows[$i]);
 	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[0]);
-	$dir["name"] = strip_tags($cels[0]);
-	$role = strip_tags($cels[2]);
+	$dir["imdb"] = $this->get_imdbname($cels[1]);
+	$dir["name"] = strip_tags($cels[1]);
+	$role = strip_tags($cels[3]);
 	if ( $role == "") $dir["role"] = NULL;
 	else $dir["role"] = $role;
+	$dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
+	if (strpos($dir["thumb"],'@@._V1'))
+	  $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
 	$this->credits_cast[$i] = $dir;
    }
    return $this->credits_cast;
