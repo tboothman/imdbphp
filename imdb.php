@@ -58,6 +58,12 @@ if (isset ($_GET["mid"])) {
     flush();
   }
 
+  # Keywords
+  $keywords = $movie->keywords();
+  if ( !empty($keywords) ) {
+    echo '<TR><TD><B>Keywords:</B></TD><TD>'.implode(' ',$keywords)."</TD></TR>\n";
+  }
+
   # Seasons
   if ( $movie->seasons() != 0 ) {
     ++$rows;

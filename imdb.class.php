@@ -104,6 +104,7 @@
    $this->langs = array();
    $this->main_comment = "";
    $this->main_genre = "";
+   $this->main_keywords = "";
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_thumb = "";
@@ -317,6 +318,21 @@
         $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$match[3],"name"=>$match[4]),"comment"=>trim($match[5]));
     }
     return $this->split_comment;
+  }
+
+ #--------------------------------------------------------------[ Keywords ]---
+  /** Get the keywords for the movie
+   * @method keywords
+   * @return array keywords
+   * @see IMDB page / (TitlePage)
+   */
+  function keywords () {
+    if (empty($this->moviekeywords)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if (preg_match_all("/\<a href\=\"\/keyword\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
+        $this->main_keywords = $matches[1];
+    }
+    return $this->main_keywords;
   }
 
  #--------------------------------------------------------[ Language Stuff ]---
