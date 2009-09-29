@@ -153,7 +153,7 @@
    */
   function imdb ($id) {
    $this->imdb_base($id);
-   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision: 111$');
+   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
   }
 
  #-----------------------------------------------[ URL to movies main page ]---
