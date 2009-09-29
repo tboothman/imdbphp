@@ -17,18 +17,18 @@ require_once("imdb.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 
 $imdb = new imdb("0117500"); // The Rock
-echo "<H3>Class imdb (Version ".$imdb->version.", Revision ".$imdb->revision.")</H3>\n";
+headline("Class imdb (Version ".$imdb->version.", Revision ".$imdb->revision.")");
 $imdb->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
-                echo "<p>Caching turned off.</p>";
+                comment("Caching turned off.");
                 break;
   case "true" :
   case "on"   :
   case 1      : $imdb->usecache = 1; $imdb->storecache = 1;
-                echo "<p>Caching turned on.</p>";
+                comment("Caching turned on.");
                 break;
 }
 

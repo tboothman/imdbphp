@@ -21,26 +21,26 @@ switch ($_REQUEST["cache"]) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
-                echo "<p>Caching turned off.</p>";
+                comment("Caching turned off.");
                 break;
   case "true" :
   case "on"   :
   case 1      : $imdb->usecache = 1; $imdb->storecache = 1;
-                echo "<p>Caching turned on.</p>";
+                comment("Caching turned on.");
                 break;
 }
 
 $imdb = new imdb_nowplaying();
 
-echo "<H3>Class imdb_nowplaying (Revision ".$imdb->revision.")</H3>\n";
+headline("Class imdb_nowplaying (Revision ".$imdb->revision.")","imdb_nowplaying");
 
-echo " <LI>method getNowPlayingMovies(): ";
+raw(" <LI>method getNowPlayingMovies(): ");
 $res  = $imdb->getNowPlayingMovies();
-if (empty($res)||empty($res[0])) fail();
+if (empty($res)||empty($res[0])) fail("getNowPlayingMovies");
 else pass();
-echo "</LI>\n";
+raw("</LI>\n");
 ++$GLOBALS["methods"];
 
-echo "<hr>\n";
+raw("<hr>\n");
 flush();
 ?>
