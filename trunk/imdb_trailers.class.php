@@ -39,7 +39,7 @@
 	 * @constructor imdb_trailers
 	 */
 	function imdb_trailers(){
-	  $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision: 111$');
+	  $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
 	}
 		
        /** Retrieve trailer URLs from moviemaze.de
