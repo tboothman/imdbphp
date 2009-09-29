@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.6
+v1.1.6 (29.09.2009)
 -------------------
 + movie: added method to retrieve keywords (thanx to Balamir for the code!)
 + movie: method cast() now also has the headshots included (thumbs and big)
