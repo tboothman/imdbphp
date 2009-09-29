@@ -11,6 +11,13 @@
 
  /* $Id$ */
 
+#=====================================[ Make sure it works out-of-the-box ]===
+$os = php_uname('s');
+$win = FALSE;
+$path = ini_get('include_path');
+if (strtolower(substr($os,0,3))=="win") ini_set('include_path',".;..;$path");
+else ini_set('include_path',".:..:$path");
+
 #====================================================[ Output HTML Header ]===
 echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 echo "<HTML><HEAD>\n"

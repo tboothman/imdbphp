@@ -20,7 +20,7 @@ require_once(dirname(__FILE__)."/helpers.inc");
 $showtrailer = new imdb_trailers();
 $imdb = new imdb("0117571"); // page with AllTrailers trailer
 
-echo "<H3>Checking class imdb_trailers...</H3>\n";
+echo "<H3>Class imdb_trailers (Revision ".$showtrailer->revision.")</H3>\n";
 
 $imdb->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {

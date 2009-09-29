@@ -16,8 +16,6 @@
 require_once ("imdb_nowplaying.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 
-echo "<H3>Checking class imdb_nowplaying...</H3>\n";
-
 $imdb->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
   case "false":
@@ -33,6 +31,8 @@ switch ($_REQUEST["cache"]) {
 }
 
 $imdb = new imdb_nowplaying();
+
+echo "<H3>Class imdb_nowplaying (Revision ".$imdb->revision.")</H3>\n";
 
 echo " <LI>method getNowPlayingMovies(): ";
 $res  = $imdb->getNowPlayingMovies();

@@ -39,6 +39,7 @@
    * @class imdb_base
    * @attribute string lastServerResponse
    */
+  var $version = '1.1.5';
 
  #---------------------------------------------------------[ Debug helpers ]---
   function debug_scalar($scalar) {

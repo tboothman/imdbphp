@@ -9,6 +9,10 @@ v1.1.6
 + movie: method cast() now also has the headshots included (thumbs and big)
 * test/ directory has been missing in Makefile, and "make uninstall" left some
   files on the system
++ added version and revision info to the classes (to be shown with the test page
+  results)
++ let the test page prepend "." and ".." to PHPs include_path so it runs out of
+  the box
 
 v1.1.5 (24.09.2009)
 -------------------
