@@ -35,6 +35,7 @@
 	   $req = new IMDB_Request($this->nowplayingpage);
 	   $req->sendRequest();
 	   $this->page=$req->getResponseBody();
+	   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision: 111$');
 	}
 
 	/** Retrieve the Now Playing Movies

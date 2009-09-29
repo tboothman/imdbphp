@@ -16,8 +16,8 @@
 require_once("imdb_person.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 
-echo "<H3>Checking class imdb_person...</H3>\n";
 $imdbp = new imdb_person("0000197"); // Jack Nicholson
+echo "<H3>Class imdb_person (Version ".$imdbp->version.", Revision ".$imdbp->revision.")</H3>\n";
 $imdbp->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
   case "false":

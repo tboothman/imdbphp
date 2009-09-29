@@ -17,7 +17,7 @@ require_once("imdb_charts.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 $imdb = new imdb_topcharts;
 
-echo "<H3>Checking class imdb_topcharts...</H3>\n";
+echo "<H3>Class imdb_topcharts (Revision ".$imdb->revision.")</H3>\n";
 
 $imdb->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
