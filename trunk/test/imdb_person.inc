@@ -17,18 +17,18 @@ require_once("imdb_person.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 
 $imdbp = new imdb_person("0000197"); // Jack Nicholson
-echo "<H3>Class imdb_person (Version ".$imdbp->version.", Revision ".$imdbp->revision.")</H3>\n";
+headline("Class imdb_person (Version ".$imdbp->version.", Revision ".$imdbp->revision.")","imdb_person");
 $imdbp->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
   case "false":
   case "off"  :
   case "0"    : $imdbp->usecache = 0; $imdbp->storecache = 0; 
-                echo "<p>Caching turned off.</p>";
+                comment("Caching turned off.");
                 break;
   case "true" :
   case "on"   :
   case 1      : $imdbp->usecache = 1; $imdbp->storecache = 1;
-                echo "<p>Caching turned on.</p>";
+                comment("Caching turned on.");
                 break;
 }
 

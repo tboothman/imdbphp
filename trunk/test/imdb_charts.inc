@@ -17,36 +17,36 @@ require_once("imdb_charts.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 $imdb = new imdb_topcharts;
 
-echo "<H3>Class imdb_topcharts (Revision ".$imdb->revision.")</H3>\n";
+headline("Class imdb_topcharts (Revision ".$imdb->revision.")","imdb_topcharts");
 
 $imdb->cachedir = "../cache";
 switch ($_REQUEST["cache"]) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
-                echo "<p>Caching turned off.</p>";
+                comment("Caching turned off.");
                 break;
   case "true" :
   case "on"   :
   case 1      : $imdb->usecache = 1; $imdb->storecache = 1;
-                echo "<p>Caching turned on.</p>";
+                comment("Caching turned on.");
                 break;
 }
 
-echo " <LI>method getChartsTop10(): ";
+raw(" <LI>method getChartsTop10(): ");
 $res = $imdb->getChartsTop10();
-if (count($res)<10||empty($res[0])) fail();
+if (count($res)<10||empty($res[0])) fail("getChartsTop10");
 else pass();
-echo "</LI>\n";
+raw("</LI>\n");
 ++$GLOBALS["methods"];
 
-echo " <LI>method getChartsTop10(): ";
+raw(" <LI>method getChartsTop10(): ");
 $res = $imdb->getChartsBoxOffice();
-if (count($res)<10||empty($res[0][0])) fail();
+if (count($res)<10||empty($res[0][0])) fail("getChartsBoxOffice");
 else pass();
-echo "</LI>\n";
+raw("</LI>\n");
 ++$GLOBALS["methods"];
 
-echo "<hr>\n";
+raw("<hr>\n");
 flush();
 ?>
