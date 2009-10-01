@@ -104,7 +104,7 @@
    $this->langs = array();
    $this->main_comment = "";
    $this->main_genre = "";
-   $this->main_keywords = "";
+   $this->main_keywords = array();
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_thumb = "";
