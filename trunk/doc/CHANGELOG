@@ -8,6 +8,7 @@ v1.1.7
 + the test pages now support a "cron-mode" passing "cron=1" at the URL, i.e.
   plain text output, and only on failures (intended for automated tests)
 ! movie: fixed a small initialization issue (wrong type for keywords)
+! movie: episodes() returned bool false (instead of empty array) if no episodes
 
 v1.1.6 (29.09.2009)
 -------------------

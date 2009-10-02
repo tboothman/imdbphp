@@ -1020,7 +1020,7 @@
    * @see IMDB page /episodes
    */
   function episodes() {
-    if ( $this->seasons() == 0 ) return null;
+    if ( $this->seasons() == 0 ) return $this->season_episodes;
     if ( empty($this->season_episodes) ) {
       if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
       if ( $this->page["Episodes"] == "cannot open page" ) return array(); // no such page
