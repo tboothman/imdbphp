@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.1.7
+v1.2.0 (04.10.2009)
 -------------------
 + the test pages now support a "cron-mode" passing "cron=1" at the URL, i.e.
   plain text output, and only on failures (intended for automated tests)
