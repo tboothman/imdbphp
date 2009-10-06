@@ -1,0 +1,863 @@
+<?php
+ #############################################################################
+ # IMDBPHP.MoviePilot                                    (c) Itzchak Rehberg #
+ # written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
+ # http://www.izzysoft.de/                                                   #
+ # ------------------------------------------------------------------------- #
+ # This program is free software; you can redistribute and/or modify it      #
+ # under the terms of the GNU General Public License (see doc/LICENSE)       #
+ #############################################################################
+
+ /* $Id$ */
+
+ require_once (dirname(__FILE__)."/movie_base.class.php");
+
+ #=============================================================================
+ #================================================[ The Pilot class itself ]===
+ #=============================================================================
+ /** Accessing MoviePilot information
+  * @package MoviePilot
+  * @class pilot
+  * @extends pilot_base
+  * @author Izzy (izzysoft AT qumran DOT org)
+  * @copyright (c) 2009 by Itzchak Rehberg and IzzySoft
+  * @version $Revision$ $Date$
+  */
+ class pilot extends movie_base {
+
+ #======================================================[ Common functions ]===
+ #-------------------------------------------------------------[ Open Page ]---
+  /** Load an IMDB page into the corresponding property (variable)
+   * @method private openpage
+   * @param string wt internal name of the page
+   * @param optional string type whether its a "movie" (default) or a "person"
+   */
+  function openpage ($wt,$type="pilot") {
+    parent::openpage($wt,$type);
+    if ($this->page[$wt] == "cannot open page") return;
+    $this->page[$wt] = json_decode($this->page[$wt]);
+  }
+
+ #----------------------------------------------------------[ Set Pagename ]---
+  /** Define page urls
+   * @method protected set_pagename
+   * @param string wt internal name of the page
+   * @return string urlname page URL
+   */
+  protected function set_pagename($wt) {
+   switch ($wt){
+    case "Title"       : $urlname="/movies/imdb-id-".(int)$this->imdbid().".json"; break;
+    case "Credits"     : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/casts.json"; break;
+    default            :
+      $this->page[$wt] = "unknown page identifier";
+      $this->debug_scalar("Unknown page identifier: $wt");
+      return false;
+   }
+   return $urlname;
+  }
+
+ #-----------------------------------------------------------[ Constructor ]---
+  /** Initialize class
+   * @constructor imdb
+   * @param string id IMDBID to use for data retrieval
+   */
+  function __construct ($id) {
+   parent::__construct($id);
+   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+  }
+
+ #======================================================[ Title page infos ]===
+ #-------------------------------------------[ Movie title (name) and year ]---
+  /** Get movie title
+   * @method title
+   * @return string title movie title (name)
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function title() {
+    if ($this->main_title == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_title = $this->page["Title"]->{'display_title'};
+    }
+    return $this->main_title;
+  }
+
+  /** Get year
+   * @method year
+   * @return string year
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function year () {
+    if ($this->main_year == -1) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_year = $this->page["Title"]->{'production_year'};
+    }
+    return $this->main_year;
+  }
+
+  /** Get movie types (if any specified)
+   * @method movieTypes
+   * @return array [0..n] of strings (or empty array if no movie types specified)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function movieTypes() {
+    return $this->main_movietypes;
+  }
+
+ #---------------------------------------------------------------[ Runtime ]---
+  /** Get overall runtime (first one mentioned on title page)
+   * @method runtime
+   * @return mixed string runtime in minutes (if set), NULL otherwise
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function runtime() {
+    if (empty($this->movieruntimes)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_runtime = $this->page["Title"]->{'runtime'};
+    }
+    if ($this->main_runtime) return $this->main_runtime;
+    else return NULL;
+  }
+
+  /** Retrieve language specific runtimes
+   * @method runtimes
+   * @return array runtimes (array[0..n] of array[time,country,comment])
+   * @see MoviePilot page / (TitlePage)
+   * @version this is a fake
+   */
+  public function runtimes(){
+    if (empty($this->movieruntimes)) {
+      $country = $this->country();
+      $runtime = $this->runtime();
+      if ( empty($country[0]) || empty($runtime) ) return array();
+      $this->movieruntimes[] = array("time"=>$runtime,"country"=>$country[0],"comment"=>"");
+    }
+    return $this->movieruntimes;
+  }
+
+ #----------------------------------------------------------[ Movie Rating ]---
+  /** Get movie rating
+   * @method rating
+   * @return string rating current rating as given by MoviePilot site
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function rating () {
+    if ($this->main_rating == -1) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_rating = $this->page["Title"]->{'average_community_rating'};
+    }
+    return $this->main_rating;
+  }
+
+  /** Return votes for this movie
+   * @method votes
+   * @return string votes count of votes for this movie
+   * @see MoviePilot page / (TitlePage)
+   * @version no data provided, so we fake some
+   */
+  public function votes () {
+    return 1;
+    //return $this->main_votes;
+  }
+
+ #------------------------------------------------------[ Movie Comment(s) ]---
+  /** Get movie main comment (from title page)
+   * @method comment
+   * @return string comment full text of movie comment from the movies main page
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function comment() {
+    if ($this->main_comment == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_comment = html_entity_decode($this->page["Title"]->{'long_description'});
+    }
+    return $this->main_comment;
+  }
+
+  /** Get movie main comment (from title page - split-up variant)
+   * @method comment_split
+   * @return array comment array[string title, string date, array author, string comment]; author: array[string url, string name]
+   * @see MoviePilot page / (TitlePage)
+   * @version not yet available
+   */
+  public function comment_split() {
+    //$this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$match[3],"name"=>$match[4]),"comment"=>trim($match[5]));
+    return $this->split_comment;
+  }
+
+ #--------------------------------------------------------------[ Keywords ]---
+  /** Get the keywords for the movie
+   * @method keywords
+   * @return array keywords
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function keywords () {
+    if (empty($this->main_keywords)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_keywords = explode(",",$this->page["Title"]->{'plots_list'});
+    }
+    return $this->main_keywords;
+  }
+
+ #--------------------------------------------------------[ Language Stuff ]---
+  /** Get movies original language
+   * @method language
+   * @return string language
+   * @brief There is not really a main language on the IMDB sites (yet), so this
+   *  simply returns the first one
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function language () {
+    return $this->main_language;
+  }
+
+  /** Get all langauges this movie is available in
+   * @method languages
+   * @return array languages (array[0..n] of strings)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function languages () {
+    return $this->langs;
+  }
+
+ #--------------------------------------------------------------[ Genre(s) ]---
+  /** Get the movies main genre
+   *  Since IMDB.COM does not really now a "Main Genre", this simply means the
+   *  first mentioned genre will be returned.
+   * @method genre
+   * @return string genre first of the genres listed on the movies main page
+   * @brief There is not really a main genre on the IMDB sites (yet), so this
+   *  simply returns the first one
+   * @see MoviePilot page / (TitlePage)
+   * @version does currently not match the IMDB genres (hopefully will in the future)
+   */
+  public function genre () {
+   if (empty($this->main_genre)) {
+    if (empty($this->moviegenres)) $genres = $this->genres();
+    if (!empty($genres)) $this->main_genre = $this->moviegenres[0];
+   }
+   return $this->main_genre;
+  }
+
+  /** Get all genres the movie is registered for
+   * @method genres
+   * @return array genres (array[0..n] of strings)
+   * @see MoviePilot page / (TitlePage)
+   * @version does currently not match the IMDB genres (hopefully will in the future)
+   */
+  public function genres () {
+    if (empty($this->moviegenres)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->moviegenres = explode(",",$this->page["Title"]->{'genres_list'});
+    }
+    return $this->moviegenres;
+  }
+
+ #----------------------------------------------------------[ Color format ]---
+  /** Get colors
+   * @method colors
+   * @return array colors (array[0..1] of strings)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function colors () {
+    return $this->moviecolors;
+  }
+
+ #---------------------------------------------------------------[ Tagline ]---
+  /** Get the main tagline for the movie
+   * @method tagline
+   * @return string tagline
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function tagline () {
+    return $this->main_tagline;
+  }
+
+ #---------------------------------------------------------------[ Seasons ]---
+  /** Get the number of seasons or 0 if not a series
+   * @method seasons
+   * @return int seasons number of seasons
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function seasons() {
+    return 0;
+    //return $this->seasoncount;
+  }
+
+ #--------------------------------------------------------[ Plot (Outline) ]---
+  /** Get the main Plot outline for the movie
+   * @method plotoutline
+   * @return string plotoutline
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function plotoutline () {
+    if ($this->main_plotoutline == "") {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      $this->main_plotoutline = $this->page["Title"]->{'short_description'};
+    }
+    return $this->main_plotoutline;
+  }
+
+ #--------------------------------------------------------[ Photo specific ]---
+  /** Setup cover photo (thumbnail and big variant)
+   * @method private thumbphoto
+   * @return boolean success (TRUE if found, FALSE otherwise)
+   * @see MoviePilot page / (TitlePage)
+   */
+  private function thumbphoto() {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if ($this->page["Title"] == "cannot open page") return false; // no such page
+    if (empty($this->page["Title"]->poster)) return false; // no pics
+    $baseurl = $this->page["Title"]->poster->base_url.$this->page["Title"]->poster->photo_id."/"
+             . $this->page["Title"]->poster->file_name_base;
+    $this->main_photo = $baseurl.".".$this->page["Title"]->poster->extension;
+    $this->main_thumb = $baseurl."_poster".".".$this->page["Title"]->poster->extension;;
+    return true;
+  }
+
+  /** Get cover photo
+   * @method photo
+   * @param optional boolean thumb get the thumbnail (about 60x45px, default) or the
+   *        original variant (FALSE).
+   * @return mixed photo (string url if found, FALSE otherwise)
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function photo($thumb=true) {
+    if (empty($this->main_photo)) $this->thumbphoto();
+    if (!$thumb && empty($this->main_photo)) return false;
+    if ($thumb && empty($this->main_thumb)) return false;
+    if ($thumb) return $this->main_thumb;
+    return $this->main_photo;
+  }
+
+  /** Save the photo to disk
+   * @method savephoto
+   * @param string path where to store the file
+   * @param optional boolean thumb get the thumbnail (about 60x45px, default) or the
+   *        original variant (FALSE)
+   * @return boolean success
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function savephoto ($path,$thumb=true) {
+    $req = new MDB_Request("");
+    $photo_url = $this->photo ($thumb);
+    if (!$photo_url) return FALSE;
+    $req->setURL($photo_url);
+    $req->sendRequest();
+    if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
+      || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
+      || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
+	$fp = $req->getResponseBody();
+    }else{
+	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
+	return false;
+    }
+    $fp2 = fopen ($path, "w");
+    if ((!$fp) || (!$fp2)){
+      $this->debug_scalar("image error...<BR>");
+      return false;
+    }
+    fputs ($fp2, $fp);
+    return TRUE;
+  }
+
+  /** Get the URL for the movies cover photo
+   * @method photo_localurl
+   * @param optional boolean thumb get the thumbnail (about 60x45, default) or the
+   *        original variant (FALSE)
+   * @return mixed url (string URL or FALSE if none)
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function photo_localurl($thumb=true){
+    if ($thumb) $ext = ""; else $ext = "_big";
+    if (!is_dir($this->photodir)) {
+      $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
+      return false;
+    }
+    $path = $this->photodir.$this->imdbid()."${ext}.jpg";
+    if ( @fopen($path,"r")) return $this->photoroot.$this->imdbid()."${ext}.jpg";
+    if (!is_writable($this->photodir)) {
+      $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
+      return false;
+    }
+    if ($this->savephoto($path,$thumb)) return $this->photoroot.$this->imdbid()."${ext}.jpg";
+    return false;
+  }
+
+  /** Get URLs for the pictures on the main page
+   * @method mainPictures
+   * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
+   *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
+   *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
+   *    <LI>bigsrc is the URL of the "big size" image itself</LI>
+   * @author moonface
+   * @author izzy
+   * @version not yet available
+   */
+  public function mainPictures() {
+    return $this->main_pictures;
+  }
+
+ #-------------------------------------------------[ Country of Production ]---
+  /** Get country of production
+   * @method country
+   * @return array country (array[0..n] of string)
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function country () {
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    $this->countries = explode(",",$this->page["Title"]->{'countries_list'});
+    return $this->countries;
+  }
+
+ #------------------------------------------------------------[ Movie AKAs ]---
+  /** Get movies alternative names
+   * @method alsoknow
+   * @return array aka array[0..n] of array[title,year,country,comment]; searching
+   *         on akas.imdb.com will add "lang" (2-char language code) to the array
+   *         for localized names, "comment" will hold additional countries listed
+   *         along for these as well as comments: As these things are quite mixed
+   *         up on the imdb sites, it's hard to tell what is an additional country
+   *         and what is a comment...
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function alsoknow () {
+    return $this->akas;
+  }
+
+ #---------------------------------------------------------[ Sound formats ]---
+  /** Get sound formats
+   * @method sound
+   * @return array sound (array[0..n] of strings)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function sound () {
+    return $this->sound;
+  }
+
+ #-------------------------------------------------------[ MPAA / PG / FSK ]---
+  /** Get the MPAA data (also known as PG or FSK)
+   * @method mpaa
+   * @return array mpaa (array[country]=rating)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function mpaa () {
+    return $this->mpaas;
+  }
+
+  /** Get the MPAA data (also known as PG or FSK) - including historical data
+   * @method mpaa_hist
+   * @return array mpaa (array[country][0..n]=rating)
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function mpaa_hist () {
+    return $this->mpaas_hist;
+  }
+
+ #----------------------------------------------------[ MPAA justification ]---
+  /** Find out the reason for the MPAA rating
+   * @method mpaa_reason
+   * @return string reason why the movie was rated such
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function mpaa_reason () {
+    return $this->mpaa_justification;
+  }
+
+ #------------------------------------------------------[ Production Notes ]---
+  /** For not-yet completed movies, we can get the production state
+   * @method prodNotes
+   * @returns array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
+   * @see MoviePilot page / (TitlePage)
+   * @version no data available
+   */
+  public function prodNotes() {
+    return $this->main_prodnotes;
+  }
+
+ #--------------------------------------------------[ Full Plot (combined) ]---
+  /** Get the movies plot(s)
+   * @method plot
+   * @return array plot (array[0..n] of strings)
+   * @see MoviePilot page (Titlepage)
+   * @version no data available - so lets fake some using plotoutline()
+   */
+  public function plot () {
+    if (empty($this->plot_plot))
+      $this->plot_plot[0] = $this->plotoutline();
+    return $this->plot_plot;
+  }
+
+ #-----------------------------------------------------[ Full Plot (split) ]---
+  /** Get the movie plot(s) - split-up variant
+   * @method plot_split
+   * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
+   * @see MoviePilot page (Titlepage)
+   * @version no data available, and nothing we can fake it from
+   */
+  public function plot_split() {
+    return $this->split_plot;
+  }
+
+ #========================================================[ /synopsis page ]===
+ #---------------------------------------------------------[ Full Synopsis ]---
+  /** Get the movies synopsis
+   * @method synopsis
+   * @return string synopsis
+   * @see MoviePilot page /synopsis
+   * @version no such data available
+   */
+  public function synopsis() {
+    return $this->synopsis_wiki;
+  }
+
+ #========================================================[ /taglines page ]===
+ #--------------------------------------------------------[ Taglines Array ]---
+  /** Get all available taglines for the movie
+   * @method taglines
+   * @return array taglines (array[0..n] of strings)
+   * @see MoviePilot page /taglines
+   * @version no such data available
+   */
+  public function taglines () {
+    return $this->taglines;
+  }
+
+ #=====================================================[ /fullcredits page ]===
+ #---------------------------------------------[ Helper: Get the cast list ]---
+  /** Obtain all cast data
+   * @method private castlist
+   */
+  private function castlist() {
+    if (empty($this->castlist)) {
+      if (empty($this->page["Credits"])) $this->openpage("Credits");
+      foreach(array("actor","soundtrack","director","screenplay","production") as $function) $this->castlist[$function] = array(); // fill the important ones
+      if ($this->page["Credits"] == "cannot open page") return $this->castlist; // no such page
+      //$this->page["Credits"]->{'total_entries'} equals count($this->page["Credits"]->{'movies_people'})
+      foreach($this->page["Credits"]->{'movies_people'} as $person) {
+        $function = preg_replace('|.*/(.*?)$|','$1',$person->{'function_restful_url'});
+	$person->person->character = $person->character;
+	$this->castlist[$function][] = $person->person;
+#	echo "$function\n";
+      }
+    }
+  }
+ 
+ #-------------------------------------------------------------[ Directors ]---
+  /** Get the director(s) of the movie
+   * @method director
+   * @return array director (array[0..n] of arrays[imdb,name,role])
+   * @see MoviePilot page /fullcredits
+   * @version imdbid is missing here!!!
+   */
+  public function director() {
+    if (empty($this->credits_director)) $this->castlist();
+    $this->credits_director = array();
+    foreach ($this->castlist["director"] as $person) {
+      $this->credits_director[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+    }
+    return $this->credits_director;
+  }
+
+ #----------------------------------------------------------------[ Actors ]---
+  /** Get the actors
+   * @method cast
+   * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
+   * @see MoviePilot page /fullcredits
+   * @version imdbid is missing here!!!
+   */
+  public function cast() {
+    if (empty($this->credits_cast)) $this->castlist();
+    $this->credits_cast = array();
+    foreach ($this->castlist["actor"] as $person) {
+      $this->credits_cast[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+    }
+    return $this->credits_cast;
+  }
+
+ #---------------------------------------------------------------[ Writers ]---
+  /** Get the writer(s)
+   * @method writing
+   * @return array writers (array[0..n] of arrays[imdb,name,role])
+   * @see MoviePilot page /fullcredits
+   * @version imdbid is missing here!!!
+   */
+  public function writing() {
+    if (empty($this->credits_writing)) $this->castlist();
+    $this->credits_writing = array();
+    foreach ($this->castlist["screenplay"] as $person) {
+      $this->credits_writing[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+    }
+    return $this->credits_writing;
+  }
+
+ #-------------------------------------------------------------[ Producers ]---
+  /** Obtain the producer(s)
+   * @method producer
+   * @return array producer (array[0..n] of arrays[imdb,name,role])
+   * @see MoviePilot page /fullcredits
+   * @version imdbid is missing here!!!
+   */
+  public function producer() {
+    if (empty($this->credits_producer)) $this->castlist();
+    $this->credits_producer = array();
+    foreach ($this->castlist["production"] as $person) {
+      $this->credits_producer[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+    }
+    return $this->credits_producer;
+  }
+
+ #-------------------------------------------------------------[ Composers ]---
+  /** Obtain the composer(s) ("Original Music by...")
+   * @method composer
+   * @return array composer (array[0..n] of arrays[imdb,name,role])
+   * @see MoviePilot page /fullcredits
+   * @version imdbid is missing here!!!
+   */
+  public function composer() {
+    if (empty($this->credits_composer)) $this->castlist();
+    $this->credits_composer = array();
+    foreach ($this->castlist["soundtrack"] as $person) {
+      $this->credits_composer[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+    }
+    return $this->credits_composer;
+  }
+
+ #====================================================[ /crazycredits page ]===
+ #----------------------------------------------------[ CrazyCredits Array ]---
+  /** Get the Crazy Credits
+   * @method crazy_credits
+   * @return array crazy_credits (array[0..n] of string)
+   * @see MoviePilot page /crazycredits
+   * @version no such data available
+   */
+  public function crazy_credits() {
+    return $this->crazy_credits;
+  }
+
+ #========================================================[ /episodes page ]===
+ #--------------------------------------------------------[ Episodes Array ]---
+  /** Get the series episode(s)
+   * @method episodes
+   * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
+   * @see MoviePilot page /episodes
+   * @version not yet available
+   */
+  public function episodes() {
+    return $this->season_episodes;
+  }
+
+ #===========================================================[ /goofs page ]===
+ #-----------------------------------------------------------[ Goofs Array ]---
+  /** Get the goofs
+   * @method goofs
+   * @return array goofs (array[0..n] of array[type,content]
+   * @see MoviePilot page /goofs
+   * @version no such data available
+   */
+  public function goofs() {
+    return $this->goofs;
+  }
+
+ #==========================================================[ /quotes page ]===
+ #----------------------------------------------------------[ Quotes Array ]---
+  /** Get the quotes for a given movie
+   * @method quotes
+   * @return array quotes (array[0..n] of string)
+   * @see MoviePilot page /quotes
+   * @version no such data available
+   */
+  public function quotes() {
+    return $this->moviequotes;
+  }
+
+ #========================================================[ /trailers page ]===
+ #--------------------------------------------------------[ Trailers Array ]---
+  /** Get the trailer URLs for a given movie
+   * @method trailers
+   * @return array trailers (array[0..n] of string)
+   * @see MoviePilot page /trailers
+   * @version no such data available
+   */
+  public function trailers() {
+    return $this->trailers;
+  }
+
+ #==========================================================[ /trivia page ]===
+ #----------------------------------------------------------[ Trivia Array ]---
+  /** Get the trivia info
+   * @method trivia
+   * @return array trivia (array[0..n] string
+   * @see MoviePilot page /trivia
+   * @version no such data available
+   */
+  public function trivia() {
+    return $this->trivia;
+  }
+
+ #======================================================[ /soundtrack page ]===
+ #------------------------------------------------------[ Soundtrack Array ]---
+  /** Get the soundtrack listing
+   * @method soundtrack
+   * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits)
+   * @brief Usually, the credits array should hold [0] written by, [1] performed by.
+   *  But IMDB does not always stick to that - so in many cases it holds
+   *  [0] performed by, [1] courtesy of
+   * @see MoviePilot page /soundtrack
+   * @version no such data available
+   */
+  public function soundtrack() {
+    return $this->soundtracks;
+  }
+
+ #=================================================[ /movieconnection page ]===
+ #-------------------------------------------------[ MovieConnection Array ]---
+  /** Get connected movie information
+   * @method movieconnection
+   * @return array connections (versionOf, editedInto, followedBy, spinOff,
+   *         spinOffFrom, references, referenced, features, featured, spoofs,
+   *         spoofed - each an array of mid, name, year, comment or an empty
+   *         array if no connections of that type)
+   * @see MoviePilot page /movieconnection
+   * @version no data available (coming soon)
+   */
+  public function movieconnection() {
+#    if (empty($this->movieconnections)) {
+#      if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
+#      if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
+      $this->movieconnections["versionOf"]   = array();
+      $this->movieconnections["editedInto"]  = array();
+      $this->movieconnections["followedBy"]  = array();
+      $this->movieconnections["spinOffFrom"] = array();
+      $this->movieconnections["spinOff"]     = array();
+      $this->movieconnections["references"]  = array();
+      $this->movieconnections["referenced"]  = array();
+      $this->movieconnections["features"]    = array();
+      $this->movieconnections["featured"]    = array();
+      $this->movieconnections["spoofs"]      = array();
+      $this->movieconnections["spoofed"]     = array();
+#    }
+    return $this->movieconnections;
+  }
+
+ #=================================================[ /externalreviews page ]===
+ #-------------------------------------------------[ ExternalReviews Array ]---
+  /** Get list of external reviews (if any)
+   * @method extReviews
+   * @return array [0..n] of array [url, desc] (or empty array if no data)
+   * @see MoviePilot page /externalreviews
+   * @version no data available
+   */
+  public function extReviews() {
+    return $this->extreviews;
+  }
+
+ #=====================================================[ /releaseinfo page ]===
+ #-----------------------------------------------------[ ReleaseInfo Array ]---
+  /** Obtain Release Info (if any)
+   * @method releaseInfo
+   * @return array release_info array[0..n] of strings (country,day,month,mon,
+             year,comment) - "month" is the month name, "mon" the number
+   * @see MoviePilot page (Titlepage)
+   * @version no complete data available
+   */
+  public function releaseInfo() {
+    if (empty($this->release_info)) {
+      if (empty($this->page["Title"])) $this->openpage("Title");
+      if ($this->page["Title"] == "cannot open page") return array(); // no such page
+      $country = $this->country();
+      preg_match('|^(\d+).(\d+).(\d+)$|',$this->page["Title"]->{'premiere_date'},$match);
+      $m = array_flip($this->months);
+      $this->release_info[0] = array("country"=>$country[0],"day"=>$match[3],"month"=>$m[$match[2]],"mon"=>$match[2],"year"=>$match[1],"comment"=>"");
+    }
+    return $this->release_info;
+  }
+
+ #==================================================[ /companycredits page ]===
+ #---------------------------------------------------[ Producing Companies ]---
+  /** Info about Production Companies
+   * @method prodCompany
+   * @return array [0..n] of array (name,url,notes)
+   * @see MoviePilot page /companycredits
+   * @version no data available
+   */
+  public function prodCompany() {
+    return $this->compcred_prod;
+  }
+
+ #------------------------------------------------[ Distributing Companies ]---
+  /** Info about distributors
+   * @method distCompany
+   * @return array [0..n] of array (name,url,notes)
+   * @see MoviePilot page /companycredits
+   * @version no data available
+   */
+  public function distCompany() {
+    return $this->compcred_dist;
+  }
+
+ #---------------------------------------------[ Special Effects Companies ]---
+  /** Info about Special Effects companies
+   * @method specialCompany
+   * @return array [0..n] of array (name,url,notes)
+   * @see MoviePilot page /companycredits
+   * @version no data available
+   */
+  public function specialCompany() {
+    return $this->compcred_special;
+  }
+
+ #-------------------------------------------------------[ Other Companies ]---
+  /** Info about other companies
+   * @method otherCompany
+   * @return array [0..n] of array (name,url,notes)
+   * @see MoviePilot page /companycredits
+   * @version no data available
+   */
+  public function otherCompany() {
+    return $this->compcred_other;
+  }
+
+ #===================================================[ /parentalguide page ]===
+ #-------------------------------------------------[ ParentalGuide Details ]---
+  /** Detailed Parental Guide
+   * @method parentalGuide
+   * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
+   *         Frightening - and maybe more; values: arguments for the rating
+   * @see MoviePilot page /parentalguide
+   * @version no data available
+   */
+  public function parentalGuide() {
+    return $this->parental_guide;
+  }
+
+ #===================================================[ /officialsites page ]===
+ #---------------------------------------------------[ Official Sites URLs ]---
+  /** URLs of Official Sites
+   * @method officialSites
+   * @return array [0..n] of url, name
+   * @see MoviePilot page (Title)
+   * @version no complete data available here, but we can get the homepage
+   */
+  public function officialSites() {
+    if (empty($this->official_sites)) {
+      if (empty($this->page["Title"])) $this->openpage("Title");
+      if ($this->page["Title"] == "cannot open page") return array(); // no such page
+      $this->official_sites[0] = array("url"=>$this->page["Title"]->{'homepage'},"name"=>"Homepage");
+    }
+    return $this->official_sites;
+  }
+
+ } // end class pilot
+
+?>

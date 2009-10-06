@@ -14,11 +14,11 @@
  #############################################################################
  # $Id$
 
- require_once (dirname(__FILE__)."/imdb_base.class.php");
+ require_once (dirname(__FILE__)."/mdb_base.class.php");
 
  #=================================================[ The IMDB Person class ]===
  /** Obtain the Now Playing Movies in theaters of USA, from IMDB
-  * @package Api
+  * @package IMDB
   * @class imdb_nowplaying
   * @extends imdb_base
   * @author Ricardo Silva (banzap) <banzap@gmail.com>
@@ -32,7 +32,7 @@
 	 * @constructor imdb_nowplaying
 	 */
 	function imdb_nowplaying(){
-	   $req = new IMDB_Request($this->nowplayingpage);
+	   $req = new MDB_Request($this->nowplayingpage);
 	   $req->sendRequest();
 	   $this->page=$req->getResponseBody();
 	   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');

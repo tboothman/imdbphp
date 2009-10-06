@@ -11,13 +11,13 @@
 
  /* $Id$ */
 
- require_once (dirname(__FILE__)."/imdb_base.class.php");
+ require_once (dirname(__FILE__)."/movie_base.class.php");
 
  #=============================================================================
  #=================================================[ The IMDB class itself ]===
  #=============================================================================
  /** Accessing IMDB information
-  * @package Api
+  * @package IMDB
   * @class imdb
   * @extends imdb_base
   * @author Georgos Giagas
@@ -25,16 +25,16 @@
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class imdb extends imdb_base {
+ class imdb extends movie_base {
 
  #======================================================[ Common functions ]===
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
-   * @method private set_pagename
+   * @method protected set_pagename
    * @param string wt internal name of the page
    * @return string urlname page URL
    */
-  function set_pagename($wt) {
+  protected function set_pagename($wt) {
    switch ($wt){
     case "Title"       : $urlname="/"; break;
     case "Credits"     : $urlname="/fullcredits"; break;
@@ -62,97 +62,13 @@
    return $urlname;
   }
 
- #--------------------------------------------------[ Start (over) / Reset ]---
-  /** Reset page vars
-   * @method private reset_vars
-   */
-  function reset_vars() {
-   $this->page["Title"] = "";
-   $this->page["Credits"] = "";
-   $this->page["CrazyCredits"] = "";
-   $this->page["Amazon"] = "";
-   $this->page["Goofs"] = "";
-   $this->page["Trivia"] = "";
-   $this->page["Plot"] = "";
-   $this->page["Synopsis"] = "";
-   $this->page["Comments"] = "";
-   $this->page["Quotes"] = "";
-   $this->page["Taglines"] = "";
-   $this->page["Plotoutline"] = "";
-   $this->page["Trivia"] = "";
-   $this->page["Directed"] = "";
-   $this->page["Episodes"] = "";
-   $this->page["Quotes"] = "";
-   $this->page["Trailers"] = "";
-   $this->page["MovieConnections"] = "";
-   $this->page["ExtReviews"] = "";
-   $this->page["ReleaseInfo"] = "";
-   $this->page["CompanyCredits"] = "";
-   $this->page["ParentalGuide"] = "";
-   $this->page["OfficialSites"] = "";
-
-   $this->akas = array();
-   $this->countries = array();
-   $this->crazy_credits = array();
-   $this->credits_cast = array();
-   $this->credits_composer = array();
-   $this->credits_director = array();
-   $this->credits_producer = array();
-   $this->credits_writing = array();
-   $this->extreviews = array();
-   $this->goofs = array();
-   $this->langs = array();
-   $this->main_comment = "";
-   $this->main_genre = "";
-   $this->main_keywords = array();
-   $this->main_language = "";
-   $this->main_photo = "";
-   $this->main_thumb = "";
-   $this->main_pictures = array();
-   $this->main_plotoutline = "";
-   $this->main_rating = -1;
-   $this->main_runtime = "";
-   $this->main_title = "";
-   $this->main_votes = -1;
-   $this->main_year = -1;
-   $this->main_tagline = "";
-   $this->main_prodnotes = array();
-   $this->main_movietypes = array();
-   $this->moviecolors = array();
-   $this->movieconnections = array();
-   $this->moviegenres = array();
-   $this->moviequotes = array();
-   $this->movieruntimes = array();
-   $this->mpaas = array();
-   $this->mpaas_hist = array();
-   $this->mpaa_justification = "";
-   $this->plot_plot = array();
-   $this->synopsis_wiki = "";
-   $this->release_info = array();
-   $this->seasoncount = -1;
-   $this->season_episodes = array();
-   $this->sound = array();
-   $this->soundtracks = array();
-   $this->split_comment = array();
-   $this->split_plot = array();
-   $this->taglines = array();
-   $this->trailers = array();
-   $this->trivia = array();
-   $this->compcred_prod = array();
-   $this->compcred_dist = array();
-   $this->compcred_special = array();
-   $this->compcred_other = array();
-   $this->parental_guide = array();
-   $this->official_sites = array();
-  }
-
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor imdb
    * @param string id IMDBID to use for data retrieval
    */
-  function imdb ($id) {
-   $this->imdb_base($id);
+  function __construct($id) {
+   parent::__construct($id);
    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
   }
 
@@ -161,7 +77,7 @@
    * @method main_url
    * @return string url full URL to the current movies main page
    */
-  function main_url(){
+  public function main_url(){
    return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
   }
 
@@ -170,7 +86,7 @@
   /** Setup title and year properties
    * @method private title_year
    */
-  function title_year() {
+  private function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match("/\<title\>(.*) \((\d{4}|\?{4}).*\)\<\/title\>/",$this->page["Title"],$match)) {
       $this->main_title = $match[1];
@@ -184,7 +100,7 @@
    * @return string title movie title (name)
    * @see IMDB page / (TitlePage)
    */
-  function title () {
+  public function title() {
     if ($this->main_title == "") $this->title_year();
     return $this->main_title;
   }
@@ -194,7 +110,7 @@
    * @return string year
    * @see IMDB page / (TitlePage)
    */
-  function year () {
+  public function year() {
     if ($this->main_year == -1) $this->title_year();
     return $this->main_year;
   }
@@ -204,7 +120,7 @@
    * @return array [0..n] of strings (or empty array if no movie types specified)
    * @see IMDB page / (TitlePage)
    */
-  function movieTypes() {
+  public function movieTypes() {
     if ( empty($this->main_movietypes) ) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/\<title\>(.*)\<\/title\>/",$this->page["Title"],$match)) {
@@ -221,7 +137,7 @@
    * @method private runtime_all
    * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
    */
-  function runtime_all() {
+  private function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/Runtime:\<\/h5\>\n(.*?)\n/m",$this->page["Title"],$match))
@@ -235,7 +151,7 @@
    * @return mixed string runtime in minutes (if set), NULL otherwise
    * @see IMDB page / (TitlePage)
    */
-  function runtime() {
+  public function runtime() {
     if (empty($this->movieruntimes)) $runarr = $this->runtimes();
     else $runarr = $this->movieruntimes;
     if (isset($runarr[0]["time"])) return $runarr[0]["time"];
@@ -247,7 +163,7 @@
    * @return array runtimes (array[0..n] of array[time,country,comment])
    * @see IMDB page / (TitlePage)
    */
-  function runtimes(){
+  public function runtimes(){
     if (empty($this->movieruntimes)) {
       if ($this->runtime_all() == "") return array();
       if (preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches))
@@ -260,7 +176,7 @@
   /** Setup votes
    * @method private rate_vote
    */
-  function rate_vote() {
+  private function rate_vote() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*&nbsp;&nbsp;\<a href\=\"ratings\" class=\"tn15more\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
       $this->main_rating = $match[1];
@@ -276,7 +192,7 @@
    * @return string rating current rating as given by IMDB site
    * @see IMDB page / (TitlePage)
    */
-  function rating () {
+  public function rating () {
     if ($this->main_rating == -1) $this->rate_vote();
     return $this->main_rating;
   }
@@ -286,7 +202,7 @@
    * @return string votes count of votes for this movie
    * @see IMDB page / (TitlePage)
    */
-  function votes () {
+  public function votes() {
     if ($this->main_votes == -1) $this->rate_vote();
     return $this->main_votes;
   }
@@ -297,7 +213,7 @@
    * @return string comment full text of movie comment from the movies main page
    * @see IMDB page / (TitlePage)
    */
-  function comment () {
+  public function comment() {
     if ($this->main_comment == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match))
@@ -312,7 +228,7 @@
    * @return array comment array[string title, string date, array author, string comment]; author: array[string url, string name]
    * @see IMDB page / (TitlePage)
    */
-  function comment_split() {
+  public function comment_split() {
     if (empty($this->split_comment)) {
       if ($this->main_comment == "") $comm = $this->comment();
       if (@preg_match("/<b>(.*?)<\/b>, (.*)<br>.*?<a href=\"(.*)\">(.*?)<\/a>.*<p>(.*?)<\/p>/ms",$this->main_comment,$match))
@@ -327,7 +243,7 @@
    * @return array keywords
    * @see IMDB page / (TitlePage)
    */
-  function keywords () {
+  public function keywords() {
     if (empty($this->moviekeywords)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (preg_match_all("/\<a href\=\"\/keyword\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
@@ -344,7 +260,7 @@
    *  simply returns the first one
    * @see IMDB page / (TitlePage)
    */
-  function language () {
+  public function language() {
    if ($this->main_language == "") {
     if (empty($this->langs)) $langs = $this->languages();
     $this->main_language = $this->langs[0];
@@ -357,7 +273,7 @@
    * @return array languages (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
-  function languages () {
+  public function languages() {
    if (empty($this->langs)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match_all("/\/Sections\/Languages\/.*?>\s*(.*?)\s*</m",$this->page["Title"],$matches))
@@ -376,7 +292,7 @@
    *  simply returns the first one
    * @see IMDB page / (TitlePage)
    */
-  function genre () {
+  public function genre() {
    if (empty($this->main_genre)) {
     if (empty($this->moviegenres)) $genres = $this->genres();
     if (!empty($genres)) $this->main_genre = $this->moviegenres[0];
@@ -389,7 +305,7 @@
    * @return array genres (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
-  function genres () {
+  public function genres() {
     if (empty($this->moviegenres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
@@ -404,7 +320,7 @@
    * @return array colors (array[0..1] of strings)
    * @see IMDB page / (TitlePage)
    */
-  function colors () {
+  public function colors() {
     if (empty($this->moviecolors)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (preg_match_all("/\/List\?color-info.*?>\s*(.*?)</",$this->page["Title"],$matches))
@@ -419,7 +335,7 @@
    * @return string tagline
    * @see IMDB page / (TitlePage)
    */
-  function tagline () {
+  public function tagline() {
     if ($this->main_tagline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/Tagline:\<\/h5\>\s*\n(.*?)(<\/div|<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
@@ -435,7 +351,7 @@
    * @return int seasons number of seasons
    * @see IMDB page / (TitlePage)
    */
-  function seasons() {
+  public function seasons() {
     if ( $this->seasoncount == -1 ) {
       if ( $this->page["Title"] == "" ) $this->openpage("Title");
       if ( preg_match_all('|<a href="episodes#season-\d+">(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
@@ -453,7 +369,7 @@
    * @return string plotoutline
    * @see IMDB page / (TitlePage)
    */
-  function plotoutline () {
+  public function plotoutline() {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/Plot:\<\/h5\>\s*\n(.*?)(<\/div|\||<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
@@ -465,11 +381,11 @@
 
  #--------------------------------------------------------[ Photo specific ]---
   /** Setup cover photo (thumbnail and big variant)
-   * @method thumbphoto
+   * @method private thumbphoto
    * @return boolean success (TRUE if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
    */
-  function thumbphoto() {
+  private function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
     if (empty($match[3])) return FALSE;
@@ -486,7 +402,7 @@
    * @return mixed photo (string url if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
    */
-  function photo($thumb=true) {
+  public function photo($thumb=true) {
     if (empty($this->main_photo)) $this->thumbphoto();
     if (!$thumb && empty($this->main_photo)) return false;
     if ($thumb && empty($this->main_thumb)) return false;
@@ -502,8 +418,8 @@
    * @return boolean success
    * @see IMDB page / (TitlePage)
    */
-  function savephoto ($path,$thumb=true) {
-    $req = new IMDB_Request("");
+  public function savephoto($path,$thumb=true) {
+    $req = new MDB_Request("");
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
     $req->setURL($photo_url);
@@ -532,7 +448,7 @@
    * @return mixed url (string URL or FALSE if none)
    * @see IMDB page / (TitlePage)
    */
-  function photo_localurl($thumb=true){
+  public function photo_localurl($thumb=true){
     if ($thumb) $ext = ""; else $ext = "_big";
     if (!is_dir($this->photodir)) {
       $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
@@ -557,7 +473,7 @@
    * @author moonface
    * @author izzy
    */
-  function mainPictures() {
+  public function mainPictures() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (empty($this->main_pictures)) {
       if (@preg_match_all("/\<div class=\"media_strip_thumb\">\<a href=\"(.*?)\">\<img height=\"90\" width=\"90\" src\=\"(.*?)\"/",$this->page["Title"],$matches)) {
@@ -580,7 +496,7 @@
    * @return array country (array[0..n] of string)
    * @see IMDB page / (TitlePage)
    */
-  function country () {
+  public function country() {
    if (empty($this->countries)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->countries = array();
@@ -601,7 +517,7 @@
    *         and what is a comment...
    * @see IMDB page / (TitlePage)
    */
-  function alsoknow () {
+  public function alsoknow() {
    if (empty($this->akas)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>");
@@ -641,7 +557,7 @@
    * @return array sound (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
-  function sound () {
+  public function sound() {
    if (empty($this->sound)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match_all("/\/List\?sound.*?>\s*(.*?)</",$this->page["Title"],$matches))
@@ -656,7 +572,7 @@
    * @return array mpaa (array[country]=rating)
    * @see IMDB page / (TitlePage)
    */
-  function mpaa () {
+  public function mpaa() {
    if (empty($this->mpaas)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
@@ -672,7 +588,7 @@
    * @return array mpaa (array[country][0..n]=rating)
    * @see IMDB page / (TitlePage)
    */
-  function mpaa_hist () {
+  public function mpaa_hist() {
    if (empty($this->mpaas_hist)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
@@ -689,7 +605,7 @@
    * @return string reason why the movie was rated such
    * @see IMDB page / (TitlePage)
    */
-  function mpaa_reason () {
+  public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match("/href=\"\/mpaa\"\>.*<\/h5\>\s*(.*?)\s*<\/div/",$this->page["Title"],$match))
@@ -704,7 +620,7 @@
    * @returns array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
    * @see IMDB page / (TitlePage)
    */
-  function prodNotes() {
+  public function prodNotes() {
    if (empty($this->main_prodnotes)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (!preg_match('!(<h3>Production Notes.*?)<h3!ims',$this->page["Title"],$match)) return $this->main_prodnotes; // no info available
@@ -728,7 +644,7 @@
    * @return array plot (array[0..n] of strings)
    * @see IMDB page /plotsummary
    */
-  function plot () {
+  public function plot() {
    if (empty($this->plot_plot)) {
     if ( $this->page["Plot"] == "" ) $this->openpage ("Plot");
     if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
@@ -745,7 +661,7 @@
    * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
    * @see IMDB page /plotsummary
    */
-  function plot_split() {
+  public function plot_split() {
     if (empty($this->split_plot)) {
       if (empty($this->plot_plot)) $plots = $this->plot();
       for ($i=0;$i<count($this->plot_plot);++$i) {
@@ -763,7 +679,7 @@
    * @return string synopsis
    * @see IMDB page /synopsis
    */
-  function synopsis() {
+  public function synopsis() {
     if (empty($this->synopsis_wiki)) {
     if ( $this->page["Synopsis"] == "" ) $this->openpage ("Synopsis");
     if ( $this->page["Synopsis"] == "cannot open page" ) return $this->synopsis_wiki; // no such page
@@ -780,7 +696,7 @@
    * @return array taglines (array[0..n] of strings)
    * @see IMDB page /taglines
    */
-  function taglines () {
+  public function taglines() {
    if (empty($this->taglines)) {
     if ( $this->page["Taglines"] == "" ) $this->openpage ("Taglines");
     if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
@@ -799,7 +715,7 @@
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the methods director, cast, writing, producer, composer
    */
-  function get_table_rows ( $html, $table_start ){
+  private function get_table_rows( $html, $table_start ) {
    $row_s = strpos ( $html, ">".$table_start."<");
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
@@ -819,7 +735,7 @@
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the method cast
    */
-  function get_table_rows_cast ( $html, $table_start, $class="nm" ){
+  private function get_table_rows_cast( $html, $table_start, $class="nm" ) {
    $row_s = strpos ( $html, '<table class="cast">');
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
@@ -836,7 +752,7 @@
    * @return array cells (array[0..n] of strings)
    * @see used by the methods director, cast, writing, producer, composer
    */
-  function get_row_cels ( $row ){
+  private function get_row_cels( $row ) {
    if (preg_match_all("/<td.*?>(.*?)<\/td>/",$row,$matches)) return $matches[1];
    return array();
   }
@@ -848,7 +764,7 @@
    * @return string IMDBID of the staff member
    * @see used by the methods director, cast, writing, producer, composer
    */
-  function get_imdbname( $href){
+  private function get_imdbname($href) {
    if ( strlen( $href) == 0) return $href;
    $name_s = 17;
    $name_e = strpos ( $href, '"', $name_s);
@@ -862,7 +778,7 @@
    * @return array director (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
-  function director () {
+  public function director() {
    if (empty($this->credits_director)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -888,7 +804,7 @@
    * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
    * @see IMDB page /fullcredits
    */
-  function cast () {
+  public function cast() {
    if (empty($this->credits_cast)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -916,7 +832,7 @@
    * @return array writers (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
-  function writing () {
+  public function writing() {
    if (empty($this->credits_writing)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -943,7 +859,7 @@
    * @return array producer (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
-  function producer () {
+  public function producer() {
    if (empty($this->credits_producer)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -970,7 +886,7 @@
    * @return array composer (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
-  function composer () {
+  public function composer() {
    if (empty($this->credits_composer)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -998,7 +914,7 @@
    * @return array crazy_credits (array[0..n] of string)
    * @see IMDB page /crazycredits
    */
-  function crazy_credits() {
+  public function crazy_credits() {
     if (empty($this->crazy_credits)) {
       if (empty($this->page["CrazyCredits"])) $this->openpage("CrazyCredits");
       if ( $this->page["CrazyCredits"] == "cannot open page" ) return array(); // no such page
@@ -1019,7 +935,7 @@
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
    * @see IMDB page /episodes
    */
-  function episodes() {
+  public function episodes() {
     if ( $this->seasons() == 0 ) return $this->season_episodes;
     if ( empty($this->season_episodes) ) {
       if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
@@ -1040,7 +956,7 @@
    * @return array goofs (array[0..n] of array[type,content]
    * @see IMDB page /goofs
    */
-  function goofs() {
+  public function goofs() {
     if (empty($this->goofs)) {
       if (empty($this->page["Goofs"])) $this->openpage("Goofs");
       if ($this->page["Goofs"] == "cannot open page") return array(); // no such page
@@ -1063,7 +979,7 @@
    * @return array quotes (array[0..n] of string)
    * @see IMDB page /quotes
    */
-  function quotes() {
+  public function quotes() {
     if ( empty($this->moviequotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
@@ -1080,7 +996,7 @@
    * @return array trailers (array[0..n] of string)
    * @see IMDB page /trailers
    */
-  function trailers() {
+  public function trailers() {
     if ( empty($this->trailers) ) {
       if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
       if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
@@ -1102,7 +1018,7 @@
    * @return array trivia (array[0..n] string
    * @see IMDB page /trivia
    */
-  function trivia() {
+  public function trivia() {
     if (empty($this->trivia)) {
       if (empty($this->page["Trivia"])) $this->openpage("Trivia");
       if ($this->page["Trivia"] == "cannot open page") return array(); // no such page
@@ -1128,7 +1044,7 @@
    *  [0] performed by, [1] courtesy of
    * @see IMDB page /soundtrack
    */
-  function soundtrack() {
+  public function soundtrack() {
    if (empty($this->soundtracks)) {
     if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
     if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
@@ -1149,7 +1065,7 @@
    * @param string conn connection type
    * @return array [0..n] of array mid,name,year,comment - or empty array if not found
    */
-  function parseConnection($conn) {
+  private function parseConnection($conn) {
     $tag_s = strpos($this->page["MovieConnections"],"<h5>$conn</h5>");
     if (empty($tag_s)) return array(); // no such feature
     $tag_e = strpos($this->page["MovieConnections"],"<h5>",$tag_s+4);
@@ -1174,7 +1090,7 @@
    *         array if no connections of that type)
    * @see IMDB page /movieconnection
    */
-  function movieconnection() {
+  public function movieconnection() {
     if (empty($this->movieconnections)) {
       if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
       if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
@@ -1200,7 +1116,7 @@
    * @return array [0..n] of array [url, desc] (or empty array if no data)
    * @see IMDB page /externalreviews
    */
-  function extReviews() {
+  public function extReviews() {
     if (empty($this->extreviews)) {
       if (empty($this->page["ExtReviews"])) $this->openpage("ExtReviews");
       if ($this->page["ExtReviews"] == "cannot open page") return array(); // no such page
@@ -1222,7 +1138,7 @@
              year,comment) - "month" is the month name, "mon" the number
    * @see IMDB page /releaseinfo
    */
-  function releaseInfo() {
+  public function releaseInfo() {
     if (empty($this->release_info)) {
       if (empty($this->page["ReleaseInfo"])) $this->openpage("ReleaseInfo");
       if ($this->page["ReleaseInfo"] == "cannot open page") return array(); // no such page
@@ -1252,7 +1168,7 @@
    * @param ref string text to parse
    * @param ref array parse target
    */
-  function companyParse(&$text,&$target) {
+  public function companyParse(&$text,&$target) {
     preg_match_all('|<li><a href="(.*)">(.*)</a>(.*)</li>|iUms',$text,$matches);
     $mc = count($matches[0]);
     for ($i=0;$i<$mc;++$i) {
@@ -1266,7 +1182,7 @@
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
-  function prodCompany() {
+  public function prodCompany() {
     if (empty($this->compcred_prod)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
@@ -1283,7 +1199,7 @@
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
-  function distCompany() {
+  public function distCompany() {
     if (empty($this->compcred_dist)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
@@ -1300,7 +1216,7 @@
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
-  function specialCompany() {
+  public function specialCompany() {
     if (empty($this->compcred_special)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
@@ -1317,7 +1233,7 @@
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
-  function otherCompany() {
+  public function otherCompany() {
     if (empty($this->compcred_other)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
@@ -1336,7 +1252,7 @@
    *         Frightening - and maybe more; values: arguments for the rating
    * @see IMDB page /parentalguide
    */
-  function parentalGuide() {
+  public function parentalGuide() {
     if (empty($this->parental_guide)) {
       if (empty($this->page["ParentalGuide"])) $this->openpage("ParentalGuide");
       if ($this->page["ParentalGuide"] == "cannot open page") return array(); // no such page
@@ -1370,7 +1286,7 @@
    * @return array [0..n] of url, name
    * @see IMDB page /officialsites
    */
-  function officialSites() {
+  public function officialSites() {
     if (empty($this->official_sites)) {
       if (empty($this->page["OfficialSites"])) $this->openpage("OfficialSites");
       if ($this->page["OfficialSites"] == "cannot open page") return array(); // no such page

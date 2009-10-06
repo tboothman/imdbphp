@@ -11,23 +11,38 @@
 
  /* $Id$ */
 
-require ("imdb.class.php");
-
-$movie = new imdb ($_GET["mid"]);
-
 if (isset ($_GET["mid"])) {
   $movieid = $_GET["mid"];
+
+  switch($_GET["engine"]) {
+    case "pilot":
+        require("pilot.class.php");
+  	$movie = new pilot($_GET["mid"]);
+  	$charset = "utf8";
+  	$source  = "<A HREF='?engine=imdb&mid=$movieid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
+        break;
+    default:
+        require("imdb.class.php");
+        $movie = new imdb($_GET["mid"]);
+        $charset = "iso-8859-1";
+        $source  = "<B CLASS='active'>IMDB</B> | <A HREF='?engine=pilot&mid=$movieid'>MoviePilot</A>";
+        break;
+  }
+
   $movie->setid ($movieid);
   $rows = 2; // count for the rowspan; init with photo + year
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo "<HTML><HEAD>\n <TITLE>".$movie->title().' ('.$movie->year().")</TITLE>\n";
-  echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
+  echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } b.active { color:#b00;background-color:#fff;text-decoration:underline;}</STYLE>\n";
+  echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo $movie->title().' ('.$movie->year().")</TH></tr>\n";
+  echo $movie->title().' ('.$movie->year().")";
+  echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
+  echo "</TH></TR>\n";
   flush();
 
   # Photo
@@ -174,7 +189,7 @@ if (isset ($_GET["mid"])) {
   if (!empty($director)) {
     ++$rows;
     echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($director); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="imdb_person.php?mid='.$director[$i]["imdb"].'">';
@@ -189,7 +204,7 @@ if (isset ($_GET["mid"])) {
   if (!empty($write)) {
     ++$rows;
     echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($write); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="imdb_person.php?mid='.$write[$i]["imdb"].'">';
@@ -205,7 +220,7 @@ if (isset ($_GET["mid"])) {
   if (!empty($produce)) {
     ++$rows;
     echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($produce); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="imdb_person.php?mid='.$produce[$i]["imdb"].'">';
@@ -220,7 +235,7 @@ if (isset ($_GET["mid"])) {
   if (!empty($compose)) {
     ++$rows;
     echo '<TR><TD valign=top><B>Music:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
+    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($compose); $i++) {
       echo '<tr><td width=200>';
       echo '<a href="imdb_person.php?mid='.$compose[$i]["imdb"].'">';
