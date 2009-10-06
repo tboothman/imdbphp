@@ -43,7 +43,7 @@ class mdb_config {
    * @constructor mdb_config
    */
   function __construct() {
-    /** MoviePilot server to use.
+    /** IMDB server to use.
      *  choices are us.imdb.com, uk.imdb.com, akas.imdb.com, german.imdb.com and
      *  italian.imdb.com - the localized ones (i.e. italian and german) are only
      *  qualified to find the movies IMDB ID (with the imdbsearch class) -- but
@@ -52,13 +52,14 @@ class mdb_config {
      * @attribute string imdbsite
      */
     $this->imdbsite = "akas.imdb.com";
-    /** IMDB server to use.
+    /** MoviePilot server to use.
      *  choices are &lt;lang&gt;.api.moviepilot.com - where &lt;lang&gt; is one
-     *  of de|pl|...
+     *  of de|en|es|fr|pl currently (more may be added in the future), where the
+     *  prefix also reflects the language of the content
      * @class mdb_config
      * @attribute string pilotsite
      */
-    $this->pilotsite = "www.moviepilot.de";
+    $this->pilotsite = "de.api.moviepilot.com";
     /** The MoviePilot API requires an API key. We initialize it empty here, so
      *  it is left to you to set it from your own script files (or in your own
      *  configuration defined by the constant IMDBPHP_CONFIG)
