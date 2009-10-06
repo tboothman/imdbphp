@@ -35,7 +35,20 @@
   function openpage ($wt,$type="pilot") {
     parent::openpage($wt,$type);
     if ($this->page[$wt] == "cannot open page") return;
+    if ($this->page[$wt] == '{"error":"please provide a valid api key. "}') {
+      $this->debug_scalar('ERROR: invalid API key');
+      return;
+    }
     $this->page[$wt] = json_decode($this->page[$wt]);
+  }
+
+ #-----------------------------------------------[ URL to person main page ]---
+  /** Set up the URL to the movie title page
+   * @method main_url
+   * @return string url full URL to the current movies main page
+   */
+  public function main_url(){
+   return "http://".$this->pilotsite."/movies/imdb-id-".(int)$this->imdbid();
   }
 
  #----------------------------------------------------------[ Set Pagename ]---
@@ -544,7 +557,7 @@
       foreach(array("actor","soundtrack","director","screenplay","production") as $function) $this->castlist[$function] = array(); // fill the important ones
       if ($this->page["Credits"] == "cannot open page") return $this->castlist; // no such page
       //$this->page["Credits"]->{'total_entries'} equals count($this->page["Credits"]->{'movies_people'})
-      foreach($this->page["Credits"]->{'movies_people'} as $person) {
+      if (is_array($this->page["Credits"]->{'movies_people'})) foreach($this->page["Credits"]->{'movies_people'} as $person) {
         $function = preg_replace('|.*/(.*?)$|','$1',$person->{'function_restful_url'});
 	$person->person->character = $person->character;
 	$this->castlist[$function][] = $person->person;
