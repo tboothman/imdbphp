@@ -3,6 +3,12 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.2.1
+-------------------
+* started restructuring the classes and files to provide a core API for extensions
++ first extension added: basic functionality for MoviePilot
+  (http://www.moviepilot.de/), supporting some movie functionality only
+
 v1.2.0 (04.10.2009)
 -------------------
 + the test pages now support a "cron-mode" passing "cron=1" at the URL, i.e.

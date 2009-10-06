@@ -19,9 +19,8 @@
 
  #=================================================[ The IMDB Charts class ]===
  /** Obtaining the URL of the trailer Flash Movie
-  * @package Api
+  * @package IMDB
   * @class imdb_trailers
-  * @extends imdb_base
   * @author Ricardo Silva (banzap) <banzap@gmail.com>
   * @version $Revision$ $Date$
   */
@@ -49,7 +48,7 @@
 	* @return array [0..n] of array[url,format] of movie trailers (Flash or Quicktime)
 	*/
        function getFlashCodeMovieMaze($url){
-	  $req = new IMDB_Request($url);
+	  $req = new MDB_Request($url);
 	  $req->sendRequest();
 	  $this->page=$req->getResponseBody();
 	  if($this->page=="" || $this->page==false) return false;
@@ -70,7 +69,7 @@
 	*/
 	function getFlashCodeAllTrailers($url){
 	  if (strpos($url,"http://alltrailers")!==FALSE) $url = str_replace("http://","http://www.",$url);
-	  $req = new IMDB_Request($url);
+	  $req = new MDB_Request($url);
 	  $req->sendRequest();
   	  $pattern = "'";
 	  $this->page=$req->getResponseBody();
@@ -91,7 +90,7 @@
 	*/
        function getImdbTrailers($url) {
          $url = str_replace("rg/VIDEO_TITLE/GALLERY/","",$url)."player";
-	 $req = new IMDB_Request($url);
+	 $req = new MDB_Request($url);
 	 $req->sendRequest();
 	 $this->page=$req->getResponseBody();
 	 if($this->page=="" || $this->page==false) return false;
@@ -107,7 +106,7 @@
 	* @return array [0..n] of array[url,format] of movie trailers (Flash)
 	*/
        function getMoviePlayerTrailers($url) {
-	 $req = new IMDB_Request($url);
+	 $req = new MDB_Request($url);
 	 $req->sendRequest();
 	 $this->page=$req->getResponseBody();
 	 if($this->page=="" || $this->page==false) return false;
@@ -122,7 +121,7 @@
 	* @return array [0..n] of array[url,format] of movie trailers (Flash)
 	*/
        function getAZMovieTrailers($url) {
-	 $req = new IMDB_Request($url);
+	 $req = new MDB_Request($url);
 	 $req->sendRequest();
 	 $this->page=$req->getResponseBody();
 	 if($this->page=="" || $this->page==false) return false;

@@ -11,27 +11,28 @@
 
  /* $Id$ */
 
- require_once (dirname(__FILE__)."/imdb_base.class.php");
+ require_once (dirname(__FILE__)."/mdb_base.class.php");
+ require_once (dirname(__FILE__)."/imdbsearch.class.php");
 
  #=================================================[ The IMDB Person class ]===
  /** Accessing IMDB staff information
-  * @package Api
+  * @package IMDB
   * @class imdb_person
   * @extends imdb_base
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright 2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class imdb_person extends imdb_base {
+ class imdb_person extends mdb_base {
 
  #========================================================[ Common methods ]===
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
-   * @method private set_pagename
+   * @method protected set_pagename
    * @param string wt internal name of the page
    * @return string urlname page URL
    */
-  function set_pagename($wt) {
+  protected function set_pagename($wt) {
    switch ($wt){
     case "Name"        : $urlname="/"; break;
     case "Bio"         : $urlname="/bio"; break;
@@ -44,58 +45,13 @@
    return $urlname;
   }
 
- #--------------------------------------------------[ Start (over) / Reset ]---
-  /** Reset page vars
-   * @method private reset_vars
-   */
-  function reset_vars() {
-   $this->page["Name"] = "";
-   $this->page["Bio"]  = "";
-
-   // "Name" page:
-   $this->main_photo      = "";
-   $this->fullname        = "";
-   $this->birthday        = array();
-   $this->deathday        = array();
-   $this->allfilms        = array();
-   $this->actressfilms    = array();
-   $this->actorsfilms     = array();
-   $this->producersfilms  = array();
-   $this->soundtrackfilms = array();
-   $this->directorsfilms  = array();
-   $this->crewsfilms      = array();
-   $this->thanxfilms      = array();
-   $this->selffilms       = array();
-   $this->archivefilms    = array();
-
-   // "Bio" page:
-   $this->birth_name      = "";
-   $this->nick_name       = array();
-   $this->bodyheight      = array();
-   $this->bio_bio         = array();
-   $this->bio_trivia      = array();
-   $this->bio_tm          = array();
-   $this->bio_salary      = array();
-
-   // "Publicity" page:
-   $this->pub_prints      = array();
-   $this->pub_movies      = array();
-   $this->pub_interviews  = array();
-   $this->pub_articles    = array();
-   $this->pub_pictorial   = array();
-   $this->pub_magcovers   = array();
-
-   // SearchDetails
-   $this->SearchDetails   = array();
-  }
-
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor imdb_person
    * @param string id IMDBID to use for data retrieval
    */
-  function imdb_person ($id) {
-   $this->imdb_base($id);
+  function __construct($id) {
+   parent::__construct($id);
    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
   }
 
@@ -104,7 +60,7 @@
    * @method main_url
    * @return string url full URL to the current movies main page
    */
-  function main_url(){
+  public function main_url(){
    return "http://".$this->imdbsite."/name/nm".$this->imdbid()."/";
   }
 
@@ -115,7 +71,7 @@
    * @return string name full name of the person
    * @see IMDB person page / (Main page)
    */
-  function name() {
+  public function name() {
     if (empty($this->fullname)) {
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
       if (preg_match("/<title>(.*?)<\/title>/i",$this->page["Name"],$match)) {
@@ -133,7 +89,7 @@
    * @return mixed photo (string url if found, FALSE otherwise)
    * @see IMDB person page / (Main page)
    */
-  function photo($thumb=true) {
+  public function photo($thumb=true) {
     if (empty($this->main_photo)) {
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
       if (preg_match('/\<a name="headshot".+"(http:\/\/.+\.jpg)".+<\/a>/',$this->page["Name"],$match)) {
@@ -154,8 +110,8 @@
    * @return boolean success
    * @see IMDB person page / (Main page)
    */
-  function savephoto ($path,$thumb=true) {
-    $req = new IMDB_Request("");
+  public function savephoto($path,$thumb=true) {
+    $req = new MDB_Request("");
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
     $req->setURL($photo_url);
@@ -184,7 +140,7 @@
    * @return mixed url (string URL or FALSE if none)
    * @see IMDB person page / (Main page)
    */
-  function photo_localurl($thumb=true){
+  public function photo_localurl($thumb=true){
     if ($thumb) $ext = ""; else $ext = "_big";
     if (!is_dir($this->photodir)) {
       $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
@@ -206,7 +162,7 @@
    * @param ref array where to store the filmography
    * @param string type Which filmografie to retrieve ("actor",)
    */
-  function filmograf(&$res,$type) {
+  private function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
     if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match) || empty($type)) {
       if (empty($type)) $match[1] = $this->page["Name"];
@@ -235,7 +191,7 @@
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
    */
-  function movies_all() {
+  public function movies_all() {
     if (empty($this->allfilms)) $this->filmograf($this->allfilms,"");
     return $this->allfilms;
   }
@@ -247,7 +203,7 @@
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
    */
-  function movies_actress() {
+  public function movies_actress() {
      if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
      return $this->actressfilms;
    }
@@ -259,7 +215,7 @@
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
    */
-  function movies_actor() {
+  public function movies_actor() {
     if (empty($this->actorsfilms)) $this->filmograf($this->actorsfilms,"actor");
     return $this->actorsfilms;
   }
@@ -271,7 +227,7 @@
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
    */
-  function movies_producer() {
+  public function movies_producer() {
     if (empty($this->producersfilms)) $this->filmograf($this->producersfilms,"producer");
     return $this->producersfilms;
   }
@@ -281,7 +237,7 @@
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
-  function movies_director() {
+  public function movies_director() {
     if (empty($this->directorsfilms)) $this->filmograf($this->directorsfilms,"director");
     return $this->directorsfilms;
   }
@@ -291,7 +247,7 @@
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
-  function movies_soundtrack() {
+  public function movies_soundtrack() {
     if (empty($this->soundtrackfilms)) $this->filmograf($this->soundtrackfilms,"soundtrack");
     return $this->soundtrackfilms;
   }
@@ -301,7 +257,7 @@
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
-  function movies_crew() {
+  public function movies_crew() {
     if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"miscellaneousX20crew");
     return $this->crewsfilms;
   }
@@ -311,7 +267,7 @@
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
-  function movies_thanx() {
+  public function movies_thanx() {
     if (empty($this->thanxfilms)) $this->filmograf($this->thanxfilms,"thanks");
     return $this->thanxfilms;
   }
@@ -322,7 +278,7 @@
    *         character IMDB ID, and chname the character name
    * @see IMDB person page / (Main page)
    */
-  function movies_self() {
+  public function movies_self() {
     if (empty($this->selffilms)) $this->filmograf($this->selffilms,"self");
     return $this->selffilms;
   }
@@ -333,7 +289,7 @@
    *         character IMDB ID, and chname the character name
    * @see IMDB person page / (Main page)
    */
-  function movies_archive() {
+  public function movies_archive() {
     if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"archive");
     return $this->archivefilms;
   }
@@ -345,7 +301,7 @@
   * @return string birthname
   * @see IMDB person page /bio
   */
- function birthname() {
+ public function birthname() {
    if (empty($this->birth_name)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
     if (preg_match("/Birth Name<\/h5>\s*\n(.*?)\n/m",$this->page["Bio"],$match))
@@ -360,7 +316,7 @@
   * @return array nicknames array[0..n] of strings
   * @see IMDB person page /bio
   */
- function nickname() {
+ public function nickname() {
    if (empty($this->nick_name)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
     if (preg_match("/Nickname<\/h5>\s*\n(.*?)\n<h5>/ms",$this->page["Bio"],$match)) {
@@ -381,7 +337,7 @@
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
-  function born() {
+  public function born() {
     if (empty($this->birthday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if ( preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match) ) {
@@ -401,7 +357,7 @@
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
-  function died() {
+  public function died() {
     if (empty($this->deathday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match)) {
@@ -421,7 +377,7 @@
   * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
   * @see IMDB person page /bio
   */
- function height() {
+ public function height() {
    if (empty($this->bodyheight)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
     if (preg_match("/Height<\/h5>\s*\n(.*?)\s*\((.*?)\)/m",$this->page["Bio"],$match)) {
@@ -441,7 +397,7 @@
   *         comment usually is "divorced" (ouch), children is the number of children
   * @see IMDB person page /bio
   */
- function spouse() {
+ public function spouse() {
    if (empty($this->spouses)) {
      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
      $pos_s = strpos($this->page["Bio"],"<h5>Spouse</h5>");
@@ -480,7 +436,7 @@
   * @return array bio array [0..n] of array[string desc, array author[url,name]]
   * @see IMDB person page /bio
   */
-  function bio () {
+  public function bio() {
    if (empty($this->bio_bio)) {
      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
@@ -508,7 +464,7 @@
    * @param string name
    * @param ref array res
    */
-  function parparse($name,&$res) {
+  private function parparse($name,&$res) {
     if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
     $pos_s = strpos($this->page["Bio"],"<h5>$name</h5>");
     $pos_e = strpos($this->page["Bio"],"<br",$pos_s);
@@ -525,7 +481,7 @@
    * @return array trivia array[0..n] of string
    * @see IMDB person page /bio
    */
-  function trivia() {
+  public function trivia() {
     if (empty($this->bio_trivia)) $this->parparse("Trivia",$this->bio_trivia);
     return $this->bio_trivia;
   }
@@ -536,7 +492,7 @@
    * @return array quotes array[0..n] of string
    * @see IMDB person page /bio
    */
-  function quotes() {
+  public function quotes() {
     if (empty($this->bio_quotes)) $this->parparse("Personal Quotes",$this->bio_quotes);
     return $this->bio_quotes;
   }
@@ -547,7 +503,7 @@
    * @return array trademarks array[0..n] of strings
    * @see IMDB person page /bio
    */
-  function trademark() {
+  public function trademark() {
     if (empty($this->bio_tm)) $this->parparse("Trade Mark",$this->bio_tm);
     return $this->bio_tm;
   }
@@ -558,7 +514,7 @@
    * @return array salary array[0..n] of array movie[strings imdb,name,year], string salary
    * @see IMDB person page /bio
    */
-  function salary() {
+  public function salary() {
     if (empty($this->bio_salary)) {
       if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
       $pos_s = strpos($this->page["Bio"],"<h5>Salary</h5>");
@@ -590,7 +546,7 @@
    *         where "place" refers to the place of publication, and "url" is a link to the ISBN
    * @see IMDB person page /publicity
    */
-  function pubprints() {
+  public function pubprints() {
     if (empty($this->pub_prints)) {
       if ( $this->page["Publicity"] == "" ) $this->openpage ("Publicity","person");
       $pos_s = strpos($this->page["Publicity"],"<h5>Biography (print)</h5>");
@@ -617,7 +573,7 @@
    * @param string header header of the block on the IMDB site
    * @brief helper to pubmovies() and portrayedmovies()
    */
-  function parsepubmovies(&$res,$page,$header) {
+  private function parsepubmovies(&$res,$page,$header) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
     $pos_s = strpos($this->page[$page],"<h5>$header</h5>");
     $pos_e = strpos($this->page[$page],"<h5",$pos_s+5);
@@ -638,7 +594,7 @@
    * @return array pubmovies array[0..n] of array[imdb,name,year]
    * @see IMDB person page /publicity
    */
-  function pubmovies() {
+  public function pubmovies() {
     if (empty($this->pub_movies)) $this->parsepubmovies($this->pub_movies,"Publicity","Biographical movies");
     return $this->pub_movies;
   }
@@ -649,7 +605,7 @@
    * @return array pubmovies array[0..n] of array[imdb,name,year]
    * @see IMDB person page /publicity
    */
-  function pubportraits() {
+  public function pubportraits() {
     if (empty($this->pub_portraits)) $this->parsepubmovies($this->pub_portraits,"Publicity","Portrayed in");
     return $this->pub_portraits;
   }
@@ -663,7 +619,7 @@
    * @brief used by interviews(), articles()
    * @see IMDB person page /publicity
    */
-  function parsearticles(&$res,$page,$title) {
+  private function parsearticles(&$res,$page,$title) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
     $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
     $pos_e = strpos($this->page[$page],"</table",$pos_s);
@@ -687,7 +643,7 @@
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
-  function interviews() {
+  public function interviews() {
     if (empty($this->pub_interviews)) $this->parsearticles($this->pub_interviews,"Publicity","Interview");
     return $this->pub_interviews;
   }
@@ -700,7 +656,7 @@
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
-  function articles() {
+  public function articles() {
     if (empty($this->pub_articles)) $this->parsearticles($this->pub_articles,"Publicity","Article");
     return $this->pub_articles;
   }
@@ -713,7 +669,7 @@
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
-  function pictorials() {
+  public function pictorials() {
     if (empty($this->pub_pictorials)) $this->parsearticles($this->pub_pictorials,"Publicity","Pictorial");
     return $this->pub_pictorials;
   }
@@ -726,7 +682,7 @@
    *         (full: as displayed on the IMDB site)
    * @see IMDB person page /publicity
    */
-  function magcovers() {
+  public function magcovers() {
     if (empty($this->pub_magcovers)) $this->parsearticles($this->pub_magcovers,"Publicity","Magazine cover photo");
     return $this->pub_magcovers;
   }
@@ -768,8 +724,8 @@
   /** Initialize class (read config etc.)
    * @constructor imdbpsearch
    */
-   function imdbpsearch() {
-     $this->imdbsearch();
+   function __construct() {
+     parent::__construct();
    }
 
  #-------------------------------------------------------[ private helpers ]---
@@ -777,7 +733,7 @@
    * @method private mkurl
    * @return string url
    */
-  function mkurl () {
+  private function mkurl() {
    if ($this->url !== NULL) {
     $url = $this->url;
    } else {
@@ -795,10 +751,10 @@
    * @param optional string URL Replace search URL by your own
    * @return array results array of objects (instances of the imdb_person class)
    */
-  function results ($url="") {
+  public function results($url="") {
    if ($this->page == "") {
      if (empty($url)) $url = $this->mkurl();
-     $be = new IMDB_Request($url);
+     $be = new MDB_Request($url);
      $be->sendrequest();
      $fp = $be->getResponseBody();
      if ( !$fp ){
