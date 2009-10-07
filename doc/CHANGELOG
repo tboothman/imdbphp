@@ -12,6 +12,7 @@ v1.2.1
   complementary data from IMDB - i.e. information which is generally not
   provided by MoviePilot can be automatically retrieved from there.
 * Updates for the APIDoc to reflect the bunch of changes
+! imdb: minor fix for releaseInfo()
 
 v1.2.0 (04.10.2009)
 -------------------
