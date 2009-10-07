@@ -62,7 +62,7 @@ foreach ($results as $res) {
     default   :
       echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().")</a></TD>"
          . "<TD><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
-         . "<TD><a href='http://".$search->pilotsite."/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
+         . "<TD><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
       break;
   }
 }
