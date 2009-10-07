@@ -17,7 +17,7 @@
 require_once("XML/Serializer.php");
 
 /** XML Generation
- * @package Api
+ * @package IMDB
  * @class imdbXML
  * @extends XML_Serializer
  * @author Pablo Castorino (pablo AT castorinop DOT com DOT ar)

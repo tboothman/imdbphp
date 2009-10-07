@@ -20,7 +20,6 @@
  /** Obtain the Now Playing Movies in theaters of USA, from IMDB
   * @package IMDB
   * @class imdb_nowplaying
-  * @extends imdb_base
   * @author Ricardo Silva (banzap) <banzap@gmail.com>
   * @version $Revision$ $Date$
   */

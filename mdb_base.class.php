@@ -17,18 +17,22 @@
 
  #===============================================[ Definition of Constants ]===
  /** No access at all
+  * @package MDBApi
   * @constant integer NO_ACCESS
   */
  define('NO_ACCESS',0);
  /** Minimum access - only the most basic stuff
+  * @package MDBApi
   * @constant integer BASIC_ACCESS
   */
  define('BASIC_ACCESS',1);
  /** Moderate access - some more than just the minimum
+  * @package MDBApi
   * @constant integer MEDIUM_ACCESS
   */
  define('MEDIUM_ACCESS',2);
  /** Full access - all that's possible
+  * @package MDBApi
   * @constant integer FULL_ACCESS
   */
  define('FULL_ACCESS',9);
@@ -54,7 +58,7 @@
    *  e.g. IMDB site down, or networking problems. If it is completely empty, you
    *  did not run any request yet ;) Consider this attribute read-only - you can
    *  use it to figure out why no information is returned in some cases.
-   * @class imdb_base
+   * @class mdb_base
    * @attribute string lastServerResponse
    */
 
@@ -222,7 +226,7 @@
    * @method imdbid
    * @return string id IMDBID currently used
    */
-  function imdbid () {
+  function imdbid() {
    return $this->imdbID;
   }
 
@@ -246,7 +250,7 @@
 
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor imdb_base
+   * @constructor mdb_base
    * @param string id IMDBID to use for data retrieval
    */
   function __construct($id) {

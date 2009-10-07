@@ -16,7 +16,7 @@
 #===================================================[ The Movie Base class ]===
 /** Accessing Movie information
  * @package MDBApi
- * @class movie_base
+ * @class person_base
  * @extends mdb_base
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2009 by Itzchak Rehberg and IzzySoft
@@ -26,7 +26,7 @@ class person_base extends mdb_base {
 
 #------------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor pilot_base
+   * @constructor person_base
    * @param string id IMDBID to use for data retrieval
    */
   function __construct ($id) {

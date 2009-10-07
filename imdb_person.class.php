@@ -18,7 +18,7 @@
  /** Accessing IMDB staff information
   * @package IMDB
   * @class imdb_person
-  * @extends imdb_base
+  * @extends mdb_base
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright 2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
@@ -713,7 +713,7 @@
 
  #==========================================[ The IMDB Person search class ]===
  /** Searching IMDB staff information
-  * @package Api
+  * @package IMDB
   * @class imdbpsearch
   * @extends imdbsearch
   * @author Izzy (izzysoft AT qumran DOT org)

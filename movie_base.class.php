@@ -27,7 +27,7 @@ class movie_base extends mdb_base {
 
 #------------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor pilot_base
+   * @constructor movie_base
    * @param string id IMDBID to use for data retrieval
    */
   function __construct ($id) {
