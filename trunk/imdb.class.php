@@ -19,7 +19,7 @@
  /** Accessing IMDB information
   * @package IMDB
   * @class imdb
-  * @extends imdb_base
+  * @extends movie_base
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
@@ -28,6 +28,17 @@
  class imdb extends movie_base {
 
  #======================================================[ Common functions ]===
+ #-----------------------------------------------------------[ Constructor ]---
+  /** Initialize the class
+   * @constructor imdb
+   * @param string id IMDBID to use for data retrieval
+   */
+  function __construct($id) {
+    parent::__construct($id);
+    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+    $this->setid($id);
+  }
+
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
    * @method protected set_pagename
@@ -60,17 +71,6 @@
       return false;
    }
    return $urlname;
-  }
-
- #-----------------------------------------------------------[ Constructor ]---
-  /** Initialize class
-   * @constructor imdb
-   * @param string id IMDBID to use for data retrieval
-   */
-  function __construct($id) {
-    parent::__construct($id);
-    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    $this->setid($id);
   }
 
  #-----------------------------------------------[ URL to movies main page ]---

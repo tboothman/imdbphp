@@ -19,7 +19,7 @@
  /** Accessing MoviePilot information
   * @package MoviePilot
   * @class pilot
-  * @extends pilot_base
+  * @extends movie_base
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright (c) 2009 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
@@ -29,7 +29,7 @@
  #======================================================[ Common functions ]===
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor imdb
+   * @constructor pilot
    * @param string id IMDBID to use for data retrieval
    */
   function __construct($id) {

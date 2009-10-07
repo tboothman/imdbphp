@@ -11,7 +11,7 @@ v1.2.1
 + added the pilot_imdbfill class constant to define IMDB access level for
   complementary data from IMDB - i.e. information which is generally not
   provided by MoviePilot can be automatically retrieved from there.
-
+* Updates for the APIDoc to reflect the bunch of changes
 
 v1.2.0 (04.10.2009)
 -------------------
