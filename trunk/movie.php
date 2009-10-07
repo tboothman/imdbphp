@@ -20,6 +20,7 @@ if (isset ($_GET["mid"])) {
   	$movie = new pilot($_GET["mid"]);
   	$charset = "utf8";
   	$source  = "<A HREF='?engine=imdb&mid=$movieid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
+        if ($movie->pilot_imdbfill) $source .= '<SUP>+i</SUP>';
         break;
     default:
         require("imdb.class.php");

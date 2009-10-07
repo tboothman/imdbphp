@@ -15,6 +15,24 @@
  else require_once (dirname(__FILE__)."/mdb_config.class.php");
  require_once (dirname(__FILE__)."/mdb_request.class.php");
 
+ #===============================================[ Definition of Constants ]===
+ /** No access at all
+  * @constant integer NO_ACCESS
+  */
+ define('NO_ACCESS',0);
+ /** Minimum access - only the most basic stuff
+  * @constant integer BASIC_ACCESS
+  */
+ define('BASIC_ACCESS',1);
+ /** Moderate access - some more than just the minimum
+  * @constant integer MEDIUM_ACCESS
+  */
+ define('MEDIUM_ACCESS',2);
+ /** Full access - all that's possible
+  * @constant integer FULL_ACCESS
+  */
+ define('FULL_ACCESS',9);
+
  #===================================================[ The IMDB Base class ]===
  /** Accessing Movie information
   * @package MDBApi
@@ -26,7 +44,7 @@
   * @version $Revision$ $Date$
   */
  class mdb_base extends mdb_config {
-  var $version = '1.2.0';
+  var $version = '1.1.6';
 
   /** Last response from the IMDB server
    *  This is a 3-digit code according to RFC2616. This is e.g. a "200" for "OK",
@@ -232,10 +250,9 @@
    * @param string id IMDBID to use for data retrieval
    */
   function __construct($id) {
-   parent::__construct();
-   $this->setid($id);
-   $this->lastServerResponse = "";
-   if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
+    parent::__construct();
+    $this->lastServerResponse = "";
+    if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
   }
 
  #---------------------------------------------------------[ Cache Purging ]---
