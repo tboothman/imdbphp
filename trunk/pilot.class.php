@@ -942,7 +942,16 @@
     if (empty($this->official_sites)) {
       if (empty($this->page["Title"])) $this->openpage("Title");
       if ($this->page["Title"] == "cannot open page") return array(); // no such page
-      $this->official_sites[0] = array("url"=>$this->page["Title"]->{'homepage'},"name"=>"Homepage");
+      $this->official_sites = array();
+      if (!empty($this->page["Title"]->homepage))
+        $this->official_sites[] = array("url"=>$this->page["Title"]->homepage,"name"=>"Homepage");
+      if (!empty($this->page["Title"]->alternative_identifiers->imdb))
+        $this->official_sites[] = array("url"=>"http://www.imdb.com/title/tt".str_pad($this->page["Title"]->alternative_identifiers->imdb,7,"0",STR_PAD_LEFT)."/","name"=>"IMDB");
+      if (!empty($this->page["Title"]->alternative_identifiers->omdb))
+        $this->official_sites[] = array("url"=>"http://www.omdb.org/movie/".$this->page["Title"]->alternative_identifiers->omdb,"name"=>"OMDB");
+      if (!empty($this->page["Title"]->alternative_identifiers->zelluloid))
+        $this->official_sites[] = array("url"=>"http://www.zelluloid.de/filme/index.php3?id=".$this->page["Title"]->alternative_identifiers->zelluloid,"name"=>"Zelluloid");
+      if (!empty($this->page["Title"]->alternative_identifiers->amazon)) $this->official_sites[] = array("url"=>"http://www.amazon.com/dp/".$this->page["Title"]->alternative_identifiers->amazon."/","name"=>"Amazon");
     }
     return $this->official_sites;
   }

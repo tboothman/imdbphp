@@ -13,6 +13,8 @@ v1.2.1
   provided by MoviePilot can be automatically retrieved from there.
 * Updates for the APIDoc to reflect the bunch of changes
 ! imdb: minor fix for releaseInfo()
++ pilot::officialSites now contains links to the corresponding pages on Amazon,
+  IMDB, OMDB, and Zelluloid - if available
 
 v1.2.0 (04.10.2009)
 -------------------
