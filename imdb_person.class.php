@@ -51,8 +51,9 @@
    * @param string id IMDBID to use for data retrieval
    */
   function __construct($id) {
-   parent::__construct($id);
-   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+    parent::__construct($id);
+    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+    $this->setid($id);
   }
 
  #-----------------------------------------------[ URL to person main page ]---

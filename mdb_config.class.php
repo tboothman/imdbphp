@@ -36,6 +36,19 @@ class mdb_config {
   var $cache_expire;
   var $photodir;
   var $photoroot;
+  /** If MoviePilot misses certain data (i.e. it does not provide that datatype
+   *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
+   *  via the IMDB class? To define this, you should use the following constants:
+   *  <UL><LI>NO_ACCESS - don't access IMDB.COM at all</LI>
+   *      <LI>BASIC_ACCESS - access it only for very basic data. This means very
+   *          non-descriptive stuff, like e.g. MPAA/FSK.</LI>
+   *      <LI>MEDIUM_ACCESS - something more than BASIC, but ommit "traceable"
+   *          stuff like full descriptions, IMDB ratings, and the like</LI>
+   *      <LI>FULL_ACCESS - get all we can get</LI></UL>
+   * @class mdb_config
+   * @constant integer pilot_imdbfill
+   */
+  const pilot_imdbfill = NO_ACCESS;
 
   /** Constructor and only method of this base class.
    *  There's no need to call this yourself - you should just place your
@@ -43,7 +56,7 @@ class mdb_config {
    * @constructor mdb_config
    */
   function __construct() {
-    /** IMDB server to use.
+    /** MoviePilot server to use.
      *  choices are us.imdb.com, uk.imdb.com, akas.imdb.com, german.imdb.com and
      *  italian.imdb.com - the localized ones (i.e. italian and german) are only
      *  qualified to find the movies IMDB ID (with the imdbsearch class) -- but
@@ -52,14 +65,13 @@ class mdb_config {
      * @attribute string imdbsite
      */
     $this->imdbsite = "akas.imdb.com";
-    /** MoviePilot server to use.
+    /** IMDB server to use.
      *  choices are &lt;lang&gt;.api.moviepilot.com - where &lt;lang&gt; is one
-     *  of de|en|es|fr|pl currently (more may be added in the future), where the
-     *  prefix also reflects the language of the content
+     *  of de|pl|...
      * @class mdb_config
      * @attribute string pilotsite
      */
-    $this->pilotsite = "de.api.moviepilot.com";
+    $this->pilotsite = "www.moviepilot.de";
     /** The MoviePilot API requires an API key. We initialize it empty here, so
      *  it is left to you to set it from your own script files (or in your own
      *  configuration defined by the constant IMDBPHP_CONFIG)
