@@ -263,8 +263,8 @@
    */
   public function language() {
    if ($this->main_language == "") {
-    if (empty($this->langs)) $langs = $this->languages();
-    $this->main_language = $this->langs[0];
+     if (empty($this->langs)) $this->langs = $this->languages();
+     $this->main_language = $this->langs[0];
    }
    return $this->main_language;
   }
