@@ -17,6 +17,7 @@ v1.2.1
   IMDB, OMDB, and Zelluloid - if available
 ! imdb::language() was broken
 + movie classes: added method creator() to retrieve the creator of series
+! fixing a minor issue (array index) in imdbsearch::results()
 
 v1.2.0 (04.10.2009)
 -------------------

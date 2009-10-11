@@ -141,7 +141,7 @@
       $te = strpos($this->page,")",$ts);
       $tmpres->main_year=substr($this->page,$ts,$te-$ts);
       $i++;
-      $this->resu[$i] = $tmpres;
+      $this->resu[] = $tmpres;
     }
    }
    return $this->resu;
