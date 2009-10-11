@@ -16,7 +16,7 @@ v1.2.1
 + pilot::officialSites now contains links to the corresponding pages on Amazon,
   IMDB, OMDB, and Zelluloid - if available
 ! imdb::language() was broken
-
++ movie classes: added method creator() to retrieve the creator of series
 
 v1.2.0 (04.10.2009)
 -------------------
