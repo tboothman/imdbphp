@@ -1,0 +1,347 @@
+$Id$
+
+History for IMDBPHP
+===================
+
+v1.2.0 (04.10.2009)
+-------------------
++ the test pages now support a "cron-mode" passing "cron=1" at the URL, i.e.
+  plain text output, and only on failures (intended for automated tests)
+! movie: fixed a small initialization issue (wrong type for keywords)
+! movie: episodes() returned bool false (instead of empty array) if no episodes
+
+v1.1.6 (29.09.2009)
+-------------------
++ movie: added method to retrieve keywords (thanx to Balamir for the code!)
++ movie: method cast() now also has the headshots included (thumbs and big)
+* test/ directory has been missing in Makefile, and "make uninstall" left some
+  files on the system
++ added version and revision info to the classes (to be shown with the test page
+  results)
++ let the test page prepend "." and ".." to PHPs include_path so it runs out of
+  the box
+
+v1.1.5 (24.09.2009)
+-------------------
+! hopefully fixed "invalid stream resource" on some network timeouts
++ movie: added method to retrieve movie types (if specified)
+! person: fixed a property missing in initialization
+! movie: some methods were broken due to site changes. Fixed goofs(), trailers(),
+  and trivia()
+* some minor updates and changes
+
+v1.1.4 (26.04.2009)
+-------------------
++ movie: added method mpaa_hist() to include multiple ratings per country (if set)
++ methods returning a data array now have the additional element "mon" holding
+  the months number (while "month" still keeps the name as it was before)
++ movie: added method prodNotes() method to get information about production in progress
+
+v1.1.3 (26.03.2009)
+-------------------
+* updated ApiDoc: the methods for retrieving details now use the "see also" tag
+  to show which IMDB page the information is taken from
++ movie: added method officialSites to retrieve the "official" URLs
+! person: movies_archive() was broken due to site changes
+! movie: releaseInfo() was messed up if one entry contained an incomplete date
+! movie: director() returned nothing on series main page (thanx for the fix, moonface!)
++ movie: added method mainPictures() to retrieve information on the pictures
+  displayed on the main page (thanx to moonface for the initial code!)
+
+v1.1.2 (26.02.2009)
+-------------------
++ movie: added methods to retrieve company credits (production companies,
+  distributors, special effects, other companies)
++ movie: added method to retrieve the synopsis
++ movie: added method to retrieve detailed parental guide info
+
+v1.1.1 (26.01.2009)
+-------------------
+! names::died() and names::born() did not return complete information
+  (or even returned garbage in some cases) due to site changes
+! names::spouse() and names::salary() returned garbage if the corresponding
+  items were not available on the corresponding page
+! trailer::getFlashCodeAllTrailers() was broken due to site changes on alltrailers.net
++ collecting more details from the filmografie - all the remarks in parenthesis
+  are now collected into the $addons array
+
+v1.1.0 (12.01.2009)
+-------------------
++ added the imdb_topcharts and imdb_nowplaying classes provided by banzap
++ added imdb_trailers class (rewrite of code provided by banzap)
++ added showtimes images locally (since they are somehow protected at the IMDB site)
++ added name (imdb person) search
+
+v1.0.8 (17.09.2008)
+-------------------
+! fixing strange problem with filmographies sometimes missing some years in the
+  middle (just fixed by an ugly work-around - still not sure what is broken)
++ added the imdbXML class provided by Pablo Castorino (thanx Pablo!)
+! fixed rating (due to IMDB site changes). Tnx to sourcer for the patch!
++ allowing to define a different config file defined by the constant IMDBPHP_CONFIG
+! episodes() have been broken due to site changes - fixed.
+
+v1.0.7 (02.09.2008)
+-------------------
++ imdb (movie) : added method releaseInfo()
+* changed the way to get the big image - should now match better
+! thumbnail was not returned when big image was missing, and big image did not
+  always work correctly (image names changed?)
++ tests can now be restricted to either movie only, name only, or all (default)
++ imdb_person: added method to retrieve complete filmography (ignoring categories)
++ imdb_person: added method for category "actress"
+
+v1.0.6 (11.06.2008)
+-------------------
+! preventing endless loops on connection problems (i.e. IMDB site offline)
+! failed pages are no longer cached
++ added the attribute lastServerResponse (3-digit codes according to RFC2616)
+  to the imdb_base class. You can check this to find out why there have been
+  no results - e.g. "404" means the page was not found. "000" usually means
+  the server could not be contacted (site down, network problems, ...)
++ test pages now allow to turn the cache on/off via the URL, applying
+  "?cache=on" or "?cache=off" to it
+
+v1.0.5 (03.06.2008)
+-------------------
++ imdb_person: added methods to retrieve printed publications (pubprints()),
+  biographical movies (pubmovies()), and "portrayed in" (pubportraits())
++ imdb_person: added method to retrieve interview list (interviews())
++ added overall results to the API test page
++ imdb_person: added methods for articles, pictorials and magazine covers
+* class tests updated - results should be more precise now
+! fixed a problem with redirected pages (e.g. movie 0068709)
+! fixed a problem with movies having no year set (but "????" instead)
+
+v1.0.4 (26.05.2008)
+-------------------
+! imdb_search: if maxresults was set to 0, no results have been returned
+  (instead of unlimited)
+! imdb: colors(), sounds() and episodes() have been broken due to IMDB site changes
++ added set of test pages (for verification of all methods)
+* default cache expiry increased from 600 (10min) to 3600 (1h)
+
+v1.0.3 (20.05.2008)
+-------------------
++ imdb_person: methods to retrieve birthname, nicknames, body height and spouses
+! imdb: languages() method was broken due to IMDB site changes
++ imdb_person: added method to retrieve mini bio
++ imdb_person: added trivia(), quotes(), trademark() and salary()
+! fixed a flaw in imdb::photo() (you could not retrieve the thumbnail and the
+  bigger photo in the same run)
+
+v1.0.2 (14.05.2008)
+-------------------
++ new method mpaa_reason() reports why the movie was rated PG-* in the USA
++ introduced new class imdb_person with methods to retrieve name, picture
+  and filmographies of staff members
++ imdb_person: New method born() to retrieve birthdate and place
++ imdb_person: New method died() does the same for day of death (including
+  cause, if available)
+* links to staff members on the demo imdb.php page now pointing to the new
+  imdb_person.php instead of the IMDB site to give insight into the new classes
+  capabilities
+! imdb: staff methods (director, cast, writing, producer, composer) did not
+  return the persons IMDBID correctly (fixed: the "nm" prefix is now removed)
+
+v1.0.1 (07.05.2008)
+-------------------
+* code reorganization: Split up the imdb class to create class imdb_base
++ the photo methods now support an optional parameter to retrieve a bigger
+  (400x600) image instead of the thumbnail (100x140)
+* rewrote alsoknow() to give even better/more matches
+! in quotes(), references pointed to the local server instead of imdb site
+* replaced hardcoded imdb sites in the demo page by the imdb site configured
+! plotoutline() and tagline() were broken due to IMDB site changes
+* some optimization of tagline() and plotoutline()
+! rating() and votes() returned -1 when movie was not yet rated
+
+v1.0.0 (04.05.2008)
+-------------------
+! little fix for the MPAA retrieval (thanx to aaron pointing this out and
+  providing the fix)
++ added some more checks on valid image and cache directories to prevent
+  PHP warnings/errors
++ adding some more comments to the API documentation
+! alsoknow() sometimes messed up some AKAs - hopefully fixed.
+* some style changes to the demo pages
+! method country() was broken (site changes?) - fixed.
+
+v0.9.5 (03.04.2008)
+-------------------
+* renamed imdb_config.php to imdb_config.class.php
+* updated cache page layout
+* changed Makefile: the classfiles now go to /usr/share/php which is the PHP
+  include_path in the distributions php.ini - this means you no longer need
+  to include these files with your apps RPM/DEB packages, but simply add the
+  appropriate dependency (and include them directly via the include_path)
+! imdb::alsoknow() messed things up on akas.imdb.com if AKA string contained
+  only one term in parenthesis
+* some W3C fixups to the demo pages
+* cleanup of private class properties in class imdb (removing unreferenced
+  ones, fixing initialization types, renaming some for clearer conventions)
++ imdb::comment_split() added - returns the same comment as imdb::comment, but
+  structured into an array so you can access the elements more easily
++ imdb::plot_split() added similarly as pendant to imdb::plot()
+* some more corrections/updates to the API reference
+
+v0.9.4 (31.03.2008)
+-------------------
+* getting rid of most (all?) of the PHP warnings/notices thrown
+! tagline() method missed to exactly extract the tagline from the main page when
+  the movie only contained one tagline
+! fixed the season display in the demo page which sometimes was caught in an
+  endless loop (the API itself was not affected)
++ added a drop-down box to the demo search page to select whether to search for
+  a movie or an episode by the given name
+* updated some API references to give a better description
+* moved the IMDB_Request class to its own file (separate from the imdb_config)
+! searching akas.imdb.com did not reveal localized akas; if we find them, they
+  are now listed along with their language
+* improved duplicate check on movie search (thanx to Alex)
+
+v0.9.3 (25.03.2008)
+-------------------
+! fixed some incorrect calls to strrpos causing PHP error messages
+* changing default imdb site from us.imdb.com to akas.imdb.com to also find
+  localized AKAs
++ new method movieconnection() returns connected movies (mid, name, year and
+  maybe comment)
++ new method extReviews() returns external reviews for this movie (url,desc)
+* some code cleanup, optimization and comments
+* minor optical enhancements to the demo pages
++ imdbsearch class: added method search_episodes to restrict the search to
+  either movies or episodes (before it was always restricted to movies)
+
+v0.9.2 (13.03.2008)
+-------------------
+* replacing strpos..substr loops in several functions by preg_match_all constructs
+! runtime was broken for some movies (errors on the IMDB pages?)
++ added soundtrack() method for guess what...
+! setid() forgot to reset some credits - fixed.
+* no more duplicate IMDB IDs are displayed anymore (thanx to Josh for pointing this out!)
+! the result set limit ($maxresults) was not honored (again Josh - thanx!)
+
+v0.9.1 (20.01.2008)
+-------------------
+! year was screwed up when movie title contained "()"
+! method rating() did not return any value on subsequent calls (only on the first)
++ added support for retrieving trailer urls (method trailers())
++ added retrieval of 'Crazy Credits' (try with 'The Blues Brothers', they have some)
++ added goof retrieval (again, you can see some with 'The Blues Brothers')
+* some cleanup
+* moved error message output into debug methods so they can be turned off
+  (do so in imdb_config.php with the $this->debug setting)
++ added method trivia() to retrieve the trivias
+
+v0.9.0 (06.01.2008)
+-------------------
+! link to SearchPlotWriters was pointing to wrong server
++ added gzip support to cache (Jörg Eitemüller)
++ added support for tv series (Jörg Eitemüller) - new methods:
+  episodes() and seasons()
+! fixed bug concerning genre parsing
++ added support for retrieving the movie quotes - method: quotes()
+
+v0.8.9 (07.10.2007)
+-------------------
+* genre and country often contained a stupid additional field pointing to some
+  "Imdb sections". Changed the code so they are no longer there.
+! Link in "user comments" now points to the correct *site* (site info was missing
+  so this always pointed to the local host)
+* taglines() no longer returns the "update form" as latest tagline
+! if the IMDB page contained no genre or country info, the concerning function
+  caused an php error (strpos(): Offset not contained in string)
+! cache purge caused errors when cache directory contained subdirs - fixed.
+
+v0.8.8 (05.08.2007)
+-------------------
+* applied patch sent by eremini to also support BMP images
+* IMDB site changes again
+* moved documentation files to doc/ dir and added APIDOC there
+
+v0.8.7 (10.03.2007)
+-------------------
++ made the maxresults (max movies to return on query) configurable
++ made the search variants configurable
++ added some more info for the APIDOC
+* made the sample scripts proof for register_globals=off
+
+v0.8.6 (23.02.2007)
+-------------------
++ plot outline and selected user comment added (wtf)
+* next changes on IMDB site: Fixed rating and cast (Izzy)
+! alsoknow() sometimes throw an error (and ate some AKAs). Fixed (Izzy)
++ sample page now gives some more details (Izzy)
+! fixed the link to ratings generated in the votes() function (eremini)
+
+v0.8.5 (22.01.2007)
+-------------------
+* some adjustments due to changes on the IMDB sites
+* a little re-structuring of the class files due to easier maintenance
+  together with the code of phpVideoPro
+
+v0.8.4 (13.08.2006)
+-------------------
++ added automatical global cache purging
+* IMDB site changes caused image retrieval to fail
+* IMDB site changes caused actors retrieval to fail
+
+v0.8.3 (08.04.2005)
+-------------------
+* due to internal changes on the IMDB site the searches returned empty.
+  Now it works again
+* extended the results for some details, e.g. the also-known-as
+* lots of detail changes I do not remember anymore (see history of
+  phpVideoPro at http://www.qumran.org/homes/izzy/software/)
+
+v0.8.2 (01.12.2004)
+-------------------
+* Izzy took over project maintenance from sevec
+* syntax on *.imdb.com changed - which made the entire class(es) unusable.
+  Fixed that, so now it works again.
+
+v0.8.1 (24.10.2003)
+-------------------
++ added support for old browseremulator again. choose in imdb_config.php if
+  you use PEAR.
+
+v0.8 (22.10.2003)
+-----------------
+* many things that i forgot writing and don't remember now...
+* imdbsearch class method setsearch($name) was renamed to
+  setsearchname($name).
++ a imdbsearchurl($url) was added that can be used to find the imdb links on
+  a url. (ie. to get the top 250 movies.)
+* many functions that returned an empty string now return NULL. this will
+  propably not affect many programs but it is cleaner for databases.
+  haven't fixed all of them yet.
+* PEARs HTTP_Request class is now used (see pear.php.net you need it now for
+  the program to run.)
+* the default is not to use or store cache now.
+
+v0.7 (29.09.2003)
+-----------------
+! some minor bug fixes.
+! fixed the links in the test scripts.
+* search can be multiple words
+* search results now return an array of imdb objects.
+* when there is only one result (imdb redirects to it) the right thing is
+  happening.
+* fixed it for the changes in imdb site.
+* added a patch by Brian Ruth for ratings.
+
+v0.6 (01.08.2003)
+-----------------
++ taglines() function that returns all taglines.
+! fixed a bug that made photo() to return the wrong url sometimes.
++ added producers.
+* changed runtime handling. now runtimes() returns a table with runtimes
+  and runtime() returns just the first runtime and only the number.
++ added photo_localurl() which returns a local url for the movie image (after
+  saving it there first if it doesn't exist.
+* alsoknow() splits the info more...
+
+v0.5 (29.07.2003)
+-----------------
+* Initial Release.
