@@ -3,6 +3,12 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.2.0a
+-------------------
+! version info was not updated in the base class
+! imdb: minor fix for releaseInfo()
+! imdb::language() was broken
+
 v1.2.0 (04.10.2009)
 -------------------
 + the test pages now support a "cron-mode" passing "cron=1" at the URL, i.e.
