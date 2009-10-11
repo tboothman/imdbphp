@@ -299,6 +299,19 @@
     return $this->moviecolors;
   }
 
+ #---------------------------------------------------------------[ Creator ]---
+  /** Get the creator of a movie (most likely for seasons only)
+   * @method creator
+   * @return array creator (array[0..n] of array[name,imdb])
+   * @see MoviePilot page / (TitlePage)
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   */
+  public function creator() {
+    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_creator = $this->imdb->creator();
+    return $this->main_creator;
+  }
+
  #---------------------------------------------------------------[ Tagline ]---
   /** Get the main tagline for the movie
    * @method tagline
