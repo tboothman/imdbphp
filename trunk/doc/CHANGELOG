@@ -18,6 +18,7 @@ v1.2.1
 ! imdb::language() was broken
 + movie classes: added method creator() to retrieve the creator of series
 ! fixing a minor issue (array index) in imdbsearch::results()
++ imdbsearch: added method reset() to clean up the search results array
 
 v1.2.0 (04.10.2009)
 -------------------
