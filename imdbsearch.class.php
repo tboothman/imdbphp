@@ -90,6 +90,15 @@
    return $url;
   }
 
+  /** Reset search results
+   *  This empties the collected search results. Without calling this, every
+   *  new search appends its results to the ones collected by the previous search.
+   * @method reset
+   */
+  function reset() {
+    $this->resu = array();
+  }
+
   /** Setup search results
    * @method results
    * @param optional string URL Replace search URL by your own
