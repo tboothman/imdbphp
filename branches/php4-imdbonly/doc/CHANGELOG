@@ -10,6 +10,8 @@ v1.2.0a
 ! imdb::language() was broken
 + imdb::creator() method backported from trunk
 ! minor fix to imdbsearch class backported
++ imdbsearch: added method reset() to clean up the search results array
+  (backported from trunk@r257)
 
 v1.2.0 (04.10.2009)
 -------------------
