@@ -12,11 +12,15 @@
  #############################################################################
  # $Id$
 
+# Security check
+$engine = $_GET["engine"];
+if ( !in_array($engine,array("imdb","pilot")) ) $engine = "imdb";
+
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"])) {
   switch($_GET["searchtype"]) {
     case "nm" : header("Location: imdb_person.php?mid=".$_GET["mid"]); break;
-    default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=".$_GET["engine"]); break;
+    default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=$engine"); break;
   }
   exit;
 }
@@ -28,14 +32,24 @@ if (empty($_GET["name"])) {
 }
 
 # Still here? Then we need to search for the movie:
-require("imdbsearch.class.php");
 switch($_GET["searchtype"]) {
-  case "nm" : require ("imdb_person.class.php");
+  case "nm" : require_once("imdbsearch.class.php");
+              require_once("imdb_person.class.php");
               $search = new imdbpsearch();
               $headname = "Person";
               break;
-  default   : require ("imdb.class.php");
-              $search = new imdbsearch ();
+  default   : switch($engine) {
+                case "pilot":
+                  require_once("pilotsearch.class.php");
+                  require_once("pilot.class.php");
+                  $search = new pilotsearch();
+		  break;
+		default:
+                  require_once("imdbsearch.class.php");
+                  require_once("imdb.class.php");
+                  $search = new imdbsearch();
+		  break;
+	      }
               if ($_GET["searchtype"]=="episode") $search->search_episodes(TRUE);
               else $search->search_episodes(FALSE);
               $headname = "Movie";

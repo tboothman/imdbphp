@@ -19,6 +19,7 @@ v1.2.1
 + movie classes: added method creator() to retrieve the creator of series
 ! fixing a minor issue (array index) in imdbsearch::results()
 + imdbsearch: added method reset() to clean up the search results array
++ Pilot API: added pilotsearch class to search moviepilot for movies
 
 v1.2.0 (04.10.2009)
 -------------------
