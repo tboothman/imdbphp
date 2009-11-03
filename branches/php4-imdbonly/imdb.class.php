@@ -1395,9 +1395,10 @@
     if (empty($this->official_sites)) {
       if (empty($this->page["OfficialSites"])) $this->openpage("OfficialSites");
       if ($this->page["OfficialSites"] == "cannot open page") return array(); // no such page
-      if (preg_match_all('|<li><a href="(.*?)">(.*?)</a></li>|ims',$this->page["OfficialSites"],$matches)) {
+      preg_match('|official sites for(.*?)related links|ims',$this->page["OfficialSites"],$match);
+      if (preg_match_all('|<li><a href="(.*?)">(.*?)</a></li>|ims',$match[1],$matches)) {
         $mc = count($matches[0]);
-	for ($i=0;$i<$mc;++$i) {
+        for ($i=0;$i<$mc;++$i) {
           $this->official_sites[] = array("url"=>$matches[1][$i],"name"=>$matches[2][$i]);
         }
       }
