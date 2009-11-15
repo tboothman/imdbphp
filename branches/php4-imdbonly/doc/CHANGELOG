@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.2.0a
+v1.2.1 (15.11.2009)
 -------------------
 ! version info was not updated in the base class
 ! imdb: minor fix for releaseInfo()
