@@ -141,7 +141,7 @@
   private function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Runtime:\<\/h5\>\n(.*?)\n/m",$this->page["Title"],$match))
+      if (@preg_match("/Runtime:\<\/h5\>\s*<p>\s*(.*?)\n/m",$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
@@ -1068,11 +1068,13 @@
    if (empty($this->soundtracks)) {
     if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
     if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
-    if (preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$this->page["Soundtrack"]),$matches)) {
-      $mc = count($matches[0]);
-      for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
-                                                           str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
-                                                           str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
+    if (preg_match('|<p class="disclaimer">(.*?)</script|ims',$this->page["Soundtrack"],$match)) {
+      if (preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$match[1]),$matches)) {
+        $mc = count($matches[0]);
+        for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
+                                                             str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
+                                                             str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
+      }
     }
    }
    return $this->soundtracks;
