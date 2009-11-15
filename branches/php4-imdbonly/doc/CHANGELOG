@@ -12,6 +12,9 @@ v1.2.0a
 ! minor fix to imdbsearch class backported
 + imdbsearch: added method reset() to clean up the search results array
   (backported from trunk@r257)
+! imdb::officialSites() returned a bunch of internal links not belonging here
+  (backported fix from trunk@r260)
+! imdb::runtimes() and imdb::sountrack() was broken (backported fix from trunk@r262)
 
 v1.2.0 (04.10.2009)
 -------------------
