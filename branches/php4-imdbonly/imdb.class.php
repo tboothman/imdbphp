@@ -420,7 +420,7 @@
    * @return array creator (array[0..n] of array[name,imdb])
    * @see IMDB page / (TitlePage)
    */
-  public function creator() {
+  function creator() {
     if (empty($this->main_creator)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/Creator:\<\/h5\>\s*\n(.*?)(<\/div|<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
