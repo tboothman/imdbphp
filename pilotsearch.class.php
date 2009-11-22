@@ -107,7 +107,7 @@
 
    // parse results
    $i = 0;
-   foreach ($this->page->movies as $movie) {
+   if (!empty($this->page->movies)) foreach ($this->page->movies as $movie) {
      if ( $this->maxresults && $i > $this->maxresults ) break;
      ++$i;
      // if (cache) store json_encode($movie)
