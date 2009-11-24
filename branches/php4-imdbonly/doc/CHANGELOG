@@ -6,6 +6,7 @@ History for IMDBPHP
 v1.2.2
 -------------------
 ! fixed an backport error (PHP5 style declaration)
+! fixed runtimes() again (the IMDB guys are playing with us), and fixed mpaa_reason (both backports from trunk)
 
 v1.2.1 (15.11.2009)
 -------------------
