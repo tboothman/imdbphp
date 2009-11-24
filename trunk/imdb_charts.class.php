@@ -14,7 +14,7 @@
  #############################################################################
  /* $Id$ */
 
- include_once (dirname(__FILE__)."/imdb_base.class.php");
+ include_once (dirname(__FILE__)."/mdb_base.class.php");
 
  #=================================================[ The IMDB Charts class ]===
  /** Obtaining the information about Moviemeter Top 10 and Weekend box office of IMDB
@@ -31,7 +31,7 @@
 	 * @constructor imdb_topcharts
 	 */
 	function imdb_topcharts(){
-	   $req = new IMDB_Request($this->chartspage);
+	   $req = new MDB_Request($this->chartspage);
 	   $req->sendRequest();
 	   $this->page=$req->getResponseBody();
 	   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
