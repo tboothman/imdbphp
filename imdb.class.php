@@ -141,7 +141,7 @@
   private function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Runtime:\<\/h5\>\s*<p>\s*(.*?)\n/m",$this->page["Title"],$match))
+      if (@preg_match("/Runtime:\<\/h5\>\s*<[^>]*>\s*(.*?)\n/m",$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
@@ -628,7 +628,7 @@
   public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match("/href=\"\/mpaa\"\>.*<\/h5\>\s*(.*?)\s*<\/div/",$this->page["Title"],$match))
+    if (preg_match("/href=\"\/mpaa\"\>.*<\/h5\>\s*<[^>]*>\s*(.*?)\s*<\/div/",$this->page["Title"],$match))
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
