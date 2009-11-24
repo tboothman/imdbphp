@@ -22,6 +22,7 @@ v1.2.1
 + Pilot API: added pilotsearch class to search moviepilot for movies
 ! imdb::officialSites() returned a bunch of internal links not belonging here
 ! imdb::runtimes(), imdb::sountrack(), and mpaa_reason() was broken
+! imdb_person::filmograf was broken due to an inserted onClick() on IMDB.COM
 
 v1.2.0 (04.10.2009)
 -------------------

@@ -168,7 +168,7 @@
     if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match) || empty($type)) {
       if (empty($type)) $match[1] = $this->page["Name"];
       else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-      if (preg_match_all('!<a(.*?)href="/title/tt(\d{7})/">(.*?)</a>(.*?)<(/li|br)>!ims',$match[1],$matches)) {
+      if (preg_match_all('!<a(.*?)href="/title/tt(\d{7})/"[^>]*>(.*?)</a>(.*?)<(/li|br)>!ims',$match[1],$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
           preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
