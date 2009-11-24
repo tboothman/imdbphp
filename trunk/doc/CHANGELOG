@@ -21,7 +21,7 @@ v1.2.1
 + imdbsearch: added method reset() to clean up the search results array
 + Pilot API: added pilotsearch class to search moviepilot for movies
 ! imdb::officialSites() returned a bunch of internal links not belonging here
-! imdb::runtimes() and imdb::sountrack() was broken
+! imdb::runtimes(), imdb::sountrack(), and mpaa_reason() was broken
 
 v1.2.0 (04.10.2009)
 -------------------
