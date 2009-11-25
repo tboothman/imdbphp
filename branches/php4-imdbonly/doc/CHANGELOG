@@ -10,6 +10,9 @@ v1.2.2
 ! imdb_person::filmograf was broken due to an inserted onClick() on IMDB.COM (backport from trunk)
 ! fixed the imdb::trailers() method. Note that IMDB now only lists their own
   videos, so the imdb_trailers class is (currently) useless.
+- removed the imdb_trailers class from checks. As IMDB seems to no longer
+  list external trailers, they will either fail. The code for the class will
+  remain in the repository for now - one never knows...
 
 v1.2.1 (15.11.2009)
 -------------------
