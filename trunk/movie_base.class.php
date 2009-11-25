@@ -62,6 +62,7 @@ class movie_base extends mdb_base {
    $this->page["CompanyCredits"] = "";
    $this->page["ParentalGuide"] = "";
    $this->page["OfficialSites"] = "";
+   $this->page["Keywords"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -78,6 +79,7 @@ class movie_base extends mdb_base {
    $this->main_comment = "";
    $this->main_genre = "";
    $this->main_keywords = array();
+   $this->all_keywords = array();
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_thumb = "";
@@ -121,5 +123,5 @@ class movie_base extends mdb_base {
   }
 
 
-} // end class pilot_base
+} // end class movie_base
 ?>

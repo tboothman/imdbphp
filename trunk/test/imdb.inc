@@ -53,6 +53,8 @@ page("Title");
  method($imdb,"mpaa");
  method($imdb,"mpaa_hist");
  method($imdb,"mpaa_reason");
+ method($imdb,"keywords");
+ method($imdb,"keywords_all");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
  setid($imdb,"1212428"); // The Lost City of Z - 2010

@@ -226,6 +226,17 @@
     return $this->main_keywords;
   }
 
+  /** Get the full keywords for the movie
+   *  Just for compatibility with the IMDB class - result here is identical
+   *  with pilot::keywords
+   * @method keywords_all
+   * @return array keywords
+   * @see MoviePilot page / (TitlePage)
+   */
+  public function keywords_all() {
+    return $this->keywords();
+  }
+
  #--------------------------------------------------------[ Language Stuff ]---
   /** Get movies original language
    * @method language

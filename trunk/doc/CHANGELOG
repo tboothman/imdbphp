@@ -29,6 +29,8 @@ v1.2.1
 - removed the imdb_trailers class from checks. As IMDB seems to no longer
   list external trailers, they will either fail. The code for the class will
   remain in the repository for now - one never knows...
++ added new method imdb::keywords_all() (to retrieve the full list). For
+  compatibility, pilot:keywords_all() has been added (aliases pilot::keywords())
 
 v1.2.0 (04.10.2009)
 -------------------
