@@ -26,6 +26,9 @@ v1.2.1
 * imdb_person::movies_actress() was causing false alert in tests
 ! fixed the imdb::trailers() method. Note that IMDB now only lists their own
   videos, so the imdb_trailers class is (currently) useless.
+- removed the imdb_trailers class from checks. As IMDB seems to no longer
+  list external trailers, they will either fail. The code for the class will
+  remain in the repository for now - one never knows...
 
 v1.2.0 (04.10.2009)
 -------------------
