@@ -54,6 +54,7 @@
     case "CompanyCredits" : $urlname="/companycredits"; break;
     case "ParentalGuide"  : $urlname="/parentalguide"; break;
     case "OfficialSites"  : $urlname="/officialsites"; break;
+    case "Keywords"       : $urlname="/keywords"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -90,6 +91,7 @@
    $this->page["CompanyCredits"] = "";
    $this->page["ParentalGuide"] = "";
    $this->page["OfficialSites"] = "";
+   $this->page["Keywords"] = "";
 
    $this->akas = array();
    $this->countries = array();
@@ -105,6 +107,7 @@
    $this->main_comment = "";
    $this->main_genre = "";
    $this->main_keywords = array();
+   $this->all_keywords = array();
    $this->main_language = "";
    $this->main_photo = "";
    $this->main_thumb = "";
@@ -329,8 +332,8 @@
    * @see IMDB page / (TitlePage)
    */
   function keywords () {
-    if (empty($this->moviekeywords)) {
-      if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (empty($this->main_keywords)) {
+      if ($this->page["Title"] == "") $this->openpage("Title");
       if (preg_match_all("/\<a href\=\"\/keyword\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
@@ -1409,6 +1412,22 @@
       }
     }
     return $this->official_sites;
+  }
+
+ #========================================================[ /keywords page ]===
+ #--------------------------------------------------------------[ Keywords ]---
+  /** Get the complete keywords for the movie
+   * @method keywords_all
+   * @return array keywords
+   * @see IMDB page /keywords
+   */
+  function keywords_all() {
+    if (empty($this->all_keywords)) {
+      if ($this->page["Keywords"] == "") $this->openpage("Keywords");
+      if (preg_match_all('|<li><b class="keyword">\s*<a href\="/keyword\/[\w\-]+/">(.*?)</a>|',$this->page["Keywords"],$matches))
+        $this->all_keywords = $matches[1];
+    }
+    return $this->all_keywords;
   }
 
  } // end class imdb
