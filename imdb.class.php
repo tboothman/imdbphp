@@ -1024,8 +1024,11 @@
       if (!empty($tag_s)) { // trailers on the IMDB site itself
         $tag_e = strpos($this->page["Trailers"],"</ol>",$tag_s);
         $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        if (preg_match_all('|<a href="(/rg/video-search.*?)"\s*>|ims',$trail,$matches))
-          for ($i=0;$i<count($matches[0]);++$i) $this->trailers[] = "http://".$this->imdbsite.$matches[1][$i];
+        if (preg_match_all('|<a href="{0,1}(/video/screenplay/vi\d*/)|ims',$trail,$matches))
+          for ($i=0;$i<count($matches[0]);++$i) {
+	    $trailer = "http://".$this->imdbsite.$matches[1][$i];
+	    if ( !in_array($trailer,$this->trailers) ) $this->trailers[] = $trailer;
+	  }
       }
     }
     return $this->trailers;
