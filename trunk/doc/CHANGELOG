@@ -23,6 +23,7 @@ v1.2.1
 ! imdb::officialSites() returned a bunch of internal links not belonging here
 ! imdb::runtimes(), imdb::sountrack(), and mpaa_reason() was broken
 ! imdb_person::filmograf was broken due to an inserted onClick() on IMDB.COM
+* imdb_person::movies_actress() was causing false alert in tests
 
 v1.2.0 (04.10.2009)
 -------------------

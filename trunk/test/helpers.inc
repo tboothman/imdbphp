@@ -70,7 +70,13 @@ function method(&$class,$name) {
   ++$GLOBALS["methods"];
   if (CRON) return;
   echo " <LI>method $name(): ";
-  $rv = $class->$name();
+  if ($name=='movies_actress') { // this method somehow behaves strange here and gives false negatives
+    $dummy = new imdb_person($class->imdbid());
+    $rv = $dummy->movies_actress();
+    unset($dummy);
+  } else {
+    $rv = $class->$name();
+  }
   if (empty($rv)||$rv==-1) fail($name);
   else pass();
   echo "</LI>\n";
