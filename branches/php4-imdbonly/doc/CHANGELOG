@@ -3,11 +3,11 @@ $Id$
 History for IMDBPHP
 ===================
 
-v1.2.2
+v1.2.2 (26.11.2009)
 -------------------
 ! fixed an backport error (PHP5 style declaration)
 ! fixed runtimes() again (the IMDB guys are playing with us), and fixed mpaa_reason (both backports from trunk)
-! imdb_person::filmograf was broken due to an inserted onClick() on IMDB.COM (backport from trunk)
+! imdb_person::filmograf() was broken due to an inserted onClick() on IMDB.COM (backport from trunk)
 ! fixed the imdb::trailers() method. Note that IMDB now only lists their own
   videos, so the imdb_trailers class is (currently) useless.
 - removed the imdb_trailers class from checks. As IMDB seems to no longer
