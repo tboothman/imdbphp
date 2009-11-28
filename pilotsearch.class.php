@@ -34,6 +34,8 @@
    */
   function __construct() {
     parent::__construct();
+    if ( empty($this->pilot_apikey) )
+      trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->search_episodes(FALSE);
   }
 
@@ -96,6 +98,10 @@
    *   if the cache is enabled
    */
   public function results($url="") {
+   if ( empty($this->pilot_apikey) ) {
+     trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
+     return array();
+   }
    // get the result list
    if ($this->page == "") {
      if (empty($url)) $url = $this->mkurl();
