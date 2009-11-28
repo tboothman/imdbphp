@@ -34,6 +34,8 @@
    */
   function __construct($id) {
     parent::__construct($id);
+    if ( empty($this->pilot_apikey) )
+      trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     if (mdb_config::pilot_imdbfill) $this->imdb = new imdb($id);
     $this->setid($id);
