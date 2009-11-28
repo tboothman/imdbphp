@@ -31,6 +31,7 @@ v1.2.1
   remain in the repository for now - one never knows...
 + added new method imdb::keywords_all() (to retrieve the full list). For
   compatibility, pilot:keywords_all() has been added (aliases pilot::keywords())
++ added new class to retrieve images from movieposterdb.com
 
 v1.2.0 (04.10.2009)
 -------------------
