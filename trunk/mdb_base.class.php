@@ -127,6 +127,13 @@
       default: $this->debug_scalar("HTTP response code not handled explicitly: '".$head[0]."'"); break;
     }
     $this->page[$wt]=$req->getResponseBody();
+    if (strpos(get_class($this),'imdb')!==FALSE && $this->imdb_utf8recode && function_exists('mb_detect_encoding')) {
+      $cur = mb_detect_encoding($this->page[$wt]);
+echo get_class($this)."<br>";
+echo "Current encoding: '$cur'<br>\n";
+      if ( !($cur_encoding == "UTF-8" && mb_check_encoding($in_str,"UTF-8")) )
+        $this->page[$wt] = utf8_encode($this->page[$wt]);
+    }
   }
 
   /** Load an IMDB page into the corresponding property (variable)
