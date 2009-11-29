@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.2.3
+-------------------
+! imdb::plotoutline() did not cut surrounding DIV (backport from trunk)
+
 v1.2.2 (26.11.2009)
 -------------------
 ! fixed an backport error (PHP5 style declaration)
