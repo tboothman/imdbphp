@@ -393,7 +393,7 @@
   public function plotoutline() {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Plot:\<\/h5\>\s*\n(.*?)(<\/div|\||<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
+      if (@preg_match("/Plot:\<\/h5\>\s*<div[^>]*>(.*?)(<\/div|\||<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
         $this->main_plotoutline = trim($match[1]);
       }
     }
