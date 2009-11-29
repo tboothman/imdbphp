@@ -49,6 +49,7 @@ class movieposterdb extends mdb_base {
       'custom'   => 'cid=6',
       'unset'    => 'cid=9'
     );
+    $this->reset_lang();
   }
 
 #----------------------------------------------------------------[ Helpers ]---
@@ -68,7 +69,7 @@ class movieposterdb extends mdb_base {
    * @method protected parse_list
    * @param optional string type (what image URLs to retrieve: 'poster' (default),
    *        'cover', 'textless', 'logo', 'other', 'unset')
-   * @return array of image URLs
+   * @return array of arrays[lang,url]
    */
   protected function parse_list($type='poster',$page_url='') {
     if ( empty($this->baseurls) ) $this->get_baseurls();
@@ -90,7 +91,17 @@ class movieposterdb extends mdb_base {
       if ( preg_match('|'.$this->urlparams[$type].'$|',$url) ) { // multiple variants
         if ($this->recurse) $urls = array_merge($urls,$this->parse_list($type,$url));
       } else {
-        $urls[] = $this->get_img($url);
+        $lnode = $node->parentNode->nextSibling;
+        while (strtolower($lnode->tagName)!='p') $lnode = $lnode->nextSibling;
+        $lnode = $lnode->firstChild;
+        while (strtolower($lnode->tagName)!='img') $lnode = $lnode->nextSibling;
+        $lang = strtolower($lnode->getAttribute('alt'));
+        if (!empty($this->langs)) {
+	  if ( !in_array($lang,$this->langs) ) continue;
+	}
+	$img['lang'] = $lang;
+        $img['url']  = $this->get_img($url);
+	$urls[] = $img;
       }
       if (count($urls)>=$this->limit) return $urls;
     }
@@ -130,7 +141,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the cover images
    * @method public covers
-   * @return array of URLs
+   * @return array of arrays[lang,url]
    */
   public function covers() {
     return $this->parse_list('cover');
@@ -138,7 +149,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the logos
    * @method public logos
-   * @return array of URLs
+   * @return array of arrays[lang,url]
    */
   public function logos() {
     return $this->parse_list('logo');
@@ -146,7 +157,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the textless images
    * @method public posters
-   * @return array of URLs
+   * @return array of arrays[lang,url]
    */
   public function textless() {
     return $this->parse_list('textless');
@@ -154,7 +165,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the images having no category set
    * @method public unsets
-   * @return array of URLs
+   * @return array of arrays[lang,url]
    */
   public function unsets() {
     return $this->parse_list('unset');
@@ -162,7 +173,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the "other" images
    * @method public others
-   * @return array of URLs
+   * @return array of arrays[lang,url]
    */
   public function others() {
     return $this->parse_list('other');
@@ -190,6 +201,23 @@ class movieposterdb extends mdb_base {
    */
   public function set_recurse($recurse=TRUE) {
     $this->recurse = $recurse;
+  }
+
+  /** Restrict images to given languages. By default, no restriction is active;
+   *  you may call this method multiple times to add multiple languages (e.g.
+   *  your native plus EN plus US), and use the reset_lang method to clean.
+   * @method public add_lang
+   * @param string lang two-letter ISO language code
+   */
+  public function add_lang($lang) {
+    $this->langs[] = strtolower($lang);
+  }
+
+  /** Reset the language filter built by the add_lang method to its default (i.e. empty)
+   * @method public reset_lang
+   */
+  public function reset_lang() {
+    $this->langs = array();
   }
 
 }
