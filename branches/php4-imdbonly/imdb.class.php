@@ -628,7 +628,7 @@
    if (empty($this->akas)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>");
-    if ($ak_s>0) $ak_s += 19;
+    if ($ak_s>0) $ak_s += 45;
     if ($ak_s == 0) $ak_s = strpos ($this->page["Title"], "Alternativ:");
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
