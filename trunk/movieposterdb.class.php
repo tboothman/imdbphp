@@ -29,11 +29,17 @@ class movieposterdb extends mdb_base {
   /** Initialize class
    * @constructor movie_base
    * @param string id IMDBID to use for data retrieval
+   * @param optional integer limit maximum amount of images to retrieve
+   *        (default: 20). Can be changed via set_limit()
+   * @param optional boolean recurse whether to recurse if multiple versions
+   *        are available (default: TRUE). Can be changed via set_recurse()
    */
-  function __construct($id) {
+  function __construct($id,$limit=20,$recurse=TRUE) {
     parent::__construct($id);
     $this->setid($id);
     $this->reset();
+    $this->set_limit($limit);
+    $this->set_recurse($recurse);
     $this->urlparams = array(
       'poster'   => 'cid=1',
       'cover'    => 'cid=2',
@@ -43,14 +49,6 @@ class movieposterdb extends mdb_base {
       'custom'   => 'cid=6',
       'unset'    => 'cid=9'
     );
-  }
-
-  /** Reset everything to start a new search
-   * @method public reset
-   */
-  function reset() {
-    $this->page = array();
-    $this->baseurls = array(); // URLs of the base page(s) for this IMDBID. Should usually be only one.
   }
 
 #----------------------------------------------------------------[ Helpers ]---
@@ -74,6 +72,7 @@ class movieposterdb extends mdb_base {
    */
   protected function parse_list($type='poster',$page_url='') {
     if ( empty($this->baseurls) ) $this->get_baseurls();
+    if ( empty($this->baseurls) ) return array();
     $http = array(
       'method' => 'GET',
       'header'  => "Accept-Language: en-en;q=0.8,en-us;q=0.5,en;q=0.3\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nReferer: ".$this->baseurls[0]."\r\n",
@@ -89,10 +88,11 @@ class movieposterdb extends mdb_base {
     foreach ($nodes as $node) {
       $url = $node->getAttribute('href');
       if ( preg_match('|'.$this->urlparams[$type].'$|',$url) ) { // multiple variants
-        $urls = array_merge($urls,$this->parse_list($type,$url));
+        if ($this->recurse) $urls = array_merge($urls,$this->parse_list($type,$url));
       } else {
         $urls[] = $this->get_img($url);
       }
+      if (count($urls)>=$this->limit) return $urls;
     }
     return $urls;
   }
@@ -166,6 +166,30 @@ class movieposterdb extends mdb_base {
    */
   public function others() {
     return $this->parse_list('other');
+  }
+
+  /** Reset everything to start a new search
+   * @method public reset
+   */
+  public function reset() {
+    $this->page = array();
+    $this->baseurls = array(); // URLs of the base page(s) for this IMDBID. Should usually be only one.
+  }
+
+  /** Set a limit (maximum images to retrieve)
+   * @method public set_limit
+   * @param optional limit (default: 20)
+   */
+  public function set_limit($limit=20) {
+    $this->limit = $limit;
+  }
+
+  /** Shall we recurse if multiple versions are offered?
+   * @method public set_recurse
+   * @param optional recurse (default: TRUE)
+   */
+  public function set_recurse($recurse=TRUE) {
+    $this->recurse = $recurse;
   }
 
 }
