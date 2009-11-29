@@ -37,7 +37,7 @@ class movieposterdb extends mdb_base {
   function __construct($id,$limit=20,$recurse=TRUE) {
     parent::__construct($id);
     $this->setid($id);
-    $this->reset();
+    $this->reset_vars();
     $this->set_limit($limit);
     $this->set_recurse($recurse);
     $this->urlparams = array(
@@ -69,7 +69,7 @@ class movieposterdb extends mdb_base {
    * @method protected parse_list
    * @param optional string type (what image URLs to retrieve: 'poster' (default),
    *        'cover', 'textless', 'logo', 'other', 'unset')
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   protected function parse_list($type='poster',$page_url='') {
     if ( empty($this->baseurls) ) $this->get_baseurls();
@@ -133,7 +133,7 @@ class movieposterdb extends mdb_base {
 #---------------------------------------------------------[ public methods ]---
   /** Get the posters
    * @method public posters
-   * @return array of URLs
+   * @return array array of arrays[lang,url]
    */
   public function posters() {
     return $this->parse_list('poster');
@@ -141,7 +141,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the cover images
    * @method public covers
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   public function covers() {
     return $this->parse_list('cover');
@@ -149,7 +149,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the logos
    * @method public logos
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   public function logos() {
     return $this->parse_list('logo');
@@ -157,7 +157,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the textless images
    * @method public textless
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   public function textless() {
     return $this->parse_list('textless');
@@ -165,7 +165,7 @@ class movieposterdb extends mdb_base {
 
   /** Get the images having no category set
    * @method public unsets
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   public function unsets() {
     return $this->parse_list('unset');
@@ -173,16 +173,16 @@ class movieposterdb extends mdb_base {
 
   /** Get the "other" images
    * @method public others
-   * @return array of arrays[lang,url]
+   * @return array array of arrays[lang,url]
    */
   public function others() {
     return $this->parse_list('other');
   }
 
   /** Reset everything to start a new search
-   * @method public reset
+   * @method public reset_vars
    */
-  public function reset() {
+  public function reset_vars() {
     $this->page = array();
     $this->baseurls = array(); // URLs of the base page(s) for this IMDBID. Should usually be only one.
   }
