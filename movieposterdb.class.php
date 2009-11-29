@@ -27,7 +27,7 @@ class movieposterdb extends mdb_base {
 
 #------------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor movie_base
+   * @constructor movieposterdb
    * @param string id IMDBID to use for data retrieval
    * @param optional integer limit maximum amount of images to retrieve
    *        (default: 20). Can be changed via set_limit()
@@ -111,7 +111,7 @@ class movieposterdb extends mdb_base {
   /** Get image source URL
    *  (Helper to parse_list)
    * @method protected get_img
-   * @param url url of the page where the image is embedded into
+   * @param string url of the page where the image is embedded into
    * @return string imgurl
    */
   protected function get_img($url) {
@@ -156,7 +156,7 @@ class movieposterdb extends mdb_base {
   }
 
   /** Get the textless images
-   * @method public posters
+   * @method public textless
    * @return array of arrays[lang,url]
    */
   public function textless() {
@@ -189,7 +189,7 @@ class movieposterdb extends mdb_base {
 
   /** Set a limit (maximum images to retrieve)
    * @method public set_limit
-   * @param optional limit (default: 20)
+   * @param optional integer limit (default: 20)
    */
   public function set_limit($limit=20) {
     $this->limit = $limit;
@@ -197,7 +197,7 @@ class movieposterdb extends mdb_base {
 
   /** Shall we recurse if multiple versions are offered?
    * @method public set_recurse
-   * @param optional recurse (default: TRUE)
+   * @param optional boolean recurse (default: TRUE)
    */
   public function set_recurse($recurse=TRUE) {
     $this->recurse = $recurse;
