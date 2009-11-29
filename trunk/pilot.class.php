@@ -59,8 +59,9 @@
   function openpage ($wt,$type="pilot") {
     parent::openpage($wt,$type);
     if ($this->page[$wt] == "cannot open page") return;
-    if ($this->page[$wt] == '{"error":"please provide a valid api key. "}') {
+    if ($this->page[$wt] == '{"error":"please provide a valid api key or contact api@moviepilot.de"}') {
       $this->debug_scalar('ERROR: invalid API key');
+      trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
       return;
     }
     $this->page[$wt] = json_decode($this->page[$wt]);

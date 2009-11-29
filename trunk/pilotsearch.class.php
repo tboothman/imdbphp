@@ -108,6 +108,11 @@
      $be = new MDB_Request($url);
      $be->sendrequest();
      $fp = $be->getResponseBody();
+     if ($fp == '{"error":"please provide a valid api key or contact api@moviepilot.de"}') {
+       $this->debug_scalar('ERROR: invalid API key');
+       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
+       return array();
+     }
      $this->page = json_decode($fp);
    } // end (page="")
 
