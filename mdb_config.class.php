@@ -120,6 +120,11 @@ class mdb_config {
      * @attribute string imdb_img_url
      */
     $this->imdb_img_url = './imgs/';
+    /** Try to recode all non-UTF-8 content to UTF-8?
+     *  As the name suggests, this only should concern IMDB classes.
+     * @attribute boolean imdb_utf8recode
+     */
+    $this->imdb_utf8recode = FALSE;
     /** Enable debug mode?
      * @attribute boolean debug
      */
