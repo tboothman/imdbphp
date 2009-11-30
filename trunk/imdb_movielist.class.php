@@ -47,6 +47,10 @@ class imdb_movielist extends movie_base {
        $urlname="/List?year=%year&&countries=%countries&&tv=%tv";
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
+     case "LanguageYear" :
+       $urlname="/List?year=%year&&language=%language&&tv=%tv";
+       foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
+       break;
      default            :
        $this->page[$wt] = "unknown page identifier";
        $this->debug_scalar("Unknown page identifier: $wt");
@@ -63,6 +67,7 @@ class imdb_movielist extends movie_base {
    $this->page["CountryYear"] = "";
    $this->enable_serials();
    $this->countryYear = array();
+   $this->languageYear = array();
  }
 
  /** Define whether lists shall include TV serials. Off by default.
@@ -75,17 +80,14 @@ class imdb_movielist extends movie_base {
    $this->tv = $switch;
  }
 
- /** Retrieve a list of movies by year and origin
-  * @method public by_country_year
-  * @param string country
-  * @param integer year
-  * @return array [0..n] of array[imdbid,title,year]
+ /** Parse movie list. Helper to by_x_year methods.
+  * @method protected parse_x_year
+  * @param string pagename name of page
+  * @param ref array result where to store the results
   */
- public function by_country_year($country,$year) {
-   $url = 'http://'.$this->imdbsite.$this->set_pagename('CountryYear',array("year"=>$year,"countries"=>$country,"tv"=>$this->tv));
-   $this->getWebPage('CountryYear',$url);
+ protected function parse_x_year($pagename,&$ret) {
    $doc = new DOMDocument();
-   @$doc->loadHTML($this->page['CountryYear']);
+   @$doc->loadHTML($this->page[$pagename]);
    $xp = new DOMXPath($doc);
    $nodes = $xp->query("//td/ol/li");
    $titles = $xp->query("//td/ol/li/a");
@@ -96,9 +98,34 @@ class imdb_movielist extends movie_base {
      preg_match('|(.*)\((\d{4})\)|',trim($titles->item($i)->nodeValue),$match);
      $title = trim($match[1]);
      $year = $match[2];
-     $this->countryYear[] = array('imdbid'=>$id,'title'=>$title,'year'=>year);
+     $ret[] = array('imdbid'=>$id,'title'=>$title,'year'=>year);
    }
+ }
+
+ /** Retrieve a list of movies by year and origin
+  * @method public by_country_year
+  * @param string country
+  * @param integer year
+  * @return array [0..n] of array[imdbid,title,year]
+  */
+ public function by_country_year($country,$year) {
+   $url = 'http://'.$this->imdbsite.$this->set_pagename('CountryYear',array("year"=>$year,"countries"=>$country,"tv"=>$this->tv));
+   $this->getWebPage('CountryYear',$url);
+   $this->parse_x_year('CountryYear',$this->countryYear);
    return $this->countryYear;
+ }
+
+ /** Retrieve a list of movies by year and language
+  * @method public by_language_year
+  * @param string language
+  * @param integer year
+  * @return array [0..n] of array[imdbid,title,year]
+  */
+ public function by_language_year($lang,$year) {
+   $url = 'http://'.$this->imdbsite.$this->set_pagename('LanguageYear',array("year"=>$year,"language"=>$lang,"tv"=>$this->tv));
+   $this->getWebPage('LanguageYear',$url);
+   $this->parse_x_year('LanguageYear',$this->languageYear);
+   return $this->languageYear;
  }
 
 }
