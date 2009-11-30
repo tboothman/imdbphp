@@ -51,6 +51,10 @@ class imdb_movielist extends movie_base {
        $urlname="/List?year=%year&&language=%language&&tv=%tv";
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
+     case "MostpopYear" :
+       $urlname="/Sections/Years/%year/total-votes";
+       foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
+       break;
      default            :
        $this->page[$wt] = "unknown page identifier";
        $this->debug_scalar("Unknown page identifier: $wt");
@@ -68,6 +72,7 @@ class imdb_movielist extends movie_base {
    $this->enable_serials();
    $this->countryYear = array();
    $this->languageYear = array();
+   $this->mostpopYear = array();
  }
 
  /** Define whether lists shall include TV serials. Off by default.
@@ -89,9 +94,8 @@ class imdb_movielist extends movie_base {
    $doc = new DOMDocument();
    @$doc->loadHTML($this->page[$pagename]);
    $xp = new DOMXPath($doc);
-   $nodes = $xp->query("//td/ol/li");
    $titles = $xp->query("//td/ol/li/a");
-   $nodecount = $nodes->length;
+   $nodecount = $titles->length;
    for ($i=0;$i<$nodecount;++$i) {
      preg_match('|(\d{7})/$|',$titles->item($i)->getAttribute('href'),$match);
      $id = $match[1];
@@ -126,6 +130,34 @@ class imdb_movielist extends movie_base {
    $this->getWebPage('LanguageYear',$url);
    $this->parse_x_year('LanguageYear',$this->languageYear);
    return $this->languageYear;
+ }
+
+ /** Most popular movies by year ("Top 10")
+  * @method public mostpop_by_year
+  * @param integer year
+  * @return array [0..n] of array[imdbid,title,year,votes,rating]
+  */
+ public function mostpop_by_year($year) {
+   $url = 'http://'.$this->imdbsite.$this->set_pagename('MostpopYear',array("year"=>$year));
+   $this->getWebPage('MostpopYear',$url);
+   $doc = new DOMDocument();
+   @$doc->loadHTML($this->page['MostpopYear']);
+   $xp = new DOMXPath($doc);
+   $votes  = $xp->query("//table[@cellspacing='4']/tr/td[1]");
+   $rating = $xp->query("//table[@cellspacing='4']/tr/td[2]");
+   $titles = $xp->query("//table[@cellspacing='4']/tr/td[3]/a");
+   $nodecount = $titles->length;
+   for ($i=0;$i<$nodecount;++$i) {
+     preg_match('|(\d{7})/$|',$titles->item($i)->getAttribute('href'),$match);
+     $id = $match[1];
+     preg_match('|(.*)\((\d{4})\)|',trim($titles->item($i)->nodeValue),$match);
+     $title = trim($match[1]);
+     $year = $match[2];
+     $rate = trim($rating->item($i)->nodeValue);
+     $vote = trim($votes->item($i)->nodeValue);
+     $this->mostpopYear[] = array('imdbid'=>$id,'title'=>$title,'year'=>$year,'votes'=>$vote,'rating'=>$rate);
+   }
+   return $this->mostpopYear;
  }
 
 }
