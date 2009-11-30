@@ -35,8 +35,8 @@ v1.2.1
 ! imdb::plotoutline() did not cut surrounding DIV
 + added config setting to optionally convert imdb movie information to UTF8
 ! imdb::alsoknow() fixed (IMDB site changes)
-+ new class imdb_movielist added. First method allows to retrieve a list of
-  movies for a given year and country.
++ new class imdb_movielist added. First methods allow to retrieve a list of
+  movies for a given year and country / year and language.
 
 v1.2.0 (04.10.2009)
 -------------------
