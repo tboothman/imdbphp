@@ -1,9 +1,9 @@
 $Id$
 
-History for IMDBPHP
-===================
+History for IMDBPHP2
+====================
 
-v1.2.1
+v1.9.8 (02.12.2009)
 -------------------
 * started restructuring the classes and files to provide a core API for extensions
 + first extension added: basic functionality for MoviePilot
