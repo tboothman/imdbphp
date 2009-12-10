@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v1.9.9
+-------------------
+* imdb::movieconnection() - fixed FollowedBy and added Follows (tnx 2 Qvist)
+
 v1.9.8 (02.12.2009)
 -------------------
 * started restructuring the classes and files to provide a core API for extensions
