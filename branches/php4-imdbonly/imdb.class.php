@@ -1267,6 +1267,9 @@
         } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
           if ( empty($match[5]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>"");
           else $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>$match[5]);
+	} elseif ( preg_match('|.*?">(.*?)</a>\s*</b></td>\s*<td align="right">\s(\d{4})</td>\s*(<td>\s*(.*))|ims',$matches[1][$i],$match) ) { // unlinked data, year only plus comment
+	  if ( empty($match[3]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","year"=>$match[2],"comment"=>"");
+	  $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","year"=>$match[2],"comment"=>$match[4]);
         } else {
           $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[1][$i])."</pre>");
         }

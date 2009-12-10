@@ -8,6 +8,7 @@ v1.2.3
 ! imdb::plotoutline() did not cut surrounding DIV (backport from trunk)
 ! imdb::alsoknow() fixed (IMDB site changes - backport from trunk)
 * imdb::movieconnection() - fixed FollowedBy and added Follows (tnx 2 Qvist)
+* imdb::releaseInfo() now catches a few more cases (missing links)
 
 v1.2.2 (26.11.2009)
 -------------------
