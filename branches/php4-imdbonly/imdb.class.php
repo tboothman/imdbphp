@@ -1208,7 +1208,8 @@
       if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
       $this->movieconnections["versionOf"]  = $this->parseConnection("Version of");
       $this->movieconnections["editedInto"] = $this->parseConnection("Edited into");
-      $this->movieconnections["followedBy"] = $this->parseConnection("Followed By");
+      $this->movieconnections["followedBy"] = $this->parseConnection("Followed by");
+      $this->movieconnections["follows"] = $this->parseConnection("Follows");
       $this->movieconnections["spinOffFrom"] = $this->parseConnection("Spin off from");
       $this->movieconnections["spinOff"] = $this->parseConnection("Spin off");
       $this->movieconnections["references"] = $this->parseConnection("References");
