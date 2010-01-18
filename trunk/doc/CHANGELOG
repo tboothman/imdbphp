@@ -7,6 +7,7 @@ v1.9.9
 -------------------
 * imdb::movieconnection() - fixed FollowedBy and added Follows (tnx 2 Qvist)
 * imdb::releaseInfo() now catches a few more cases (missing links)
+* imdbXML class updated with a patch from the author
 
 v1.9.8 (02.12.2009)
 -------------------

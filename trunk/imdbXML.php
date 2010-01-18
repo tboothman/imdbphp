@@ -65,7 +65,7 @@ class imdbXML extends XML_Serializer {
 	function parse ($obj) {
 		// create array to be serialized
 		$class_vars = get_object_vars($obj);
-		$base_tags = array_keys(get_class_vars("imdb_base"));
+		$base_tags = array_keys(get_class_vars(get_parent_class($obj)));
 		$other_tags = array ('debug', 'maxresults', 'searchvariant','page');
 		$banned_tags = array_merge($base_tags, $other_tags);		
 
