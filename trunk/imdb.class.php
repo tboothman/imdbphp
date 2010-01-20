@@ -1120,18 +1120,21 @@
     if (empty($this->movieconnections)) {
       if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
       if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
-      $this->movieconnections["versionOf"]  = $this->parseConnection("Version of");
+      $this->movieconnections["editedFrom"] = $this->parseConnection("Edited from");
       $this->movieconnections["editedInto"] = $this->parseConnection("Edited into");
+      $this->movieconnections["featured"]   = $this->parseConnection("Featured in");
+      $this->movieconnections["features"]   = $this->parseConnection("Features");
       $this->movieconnections["followedBy"] = $this->parseConnection("Followed by");
-      $this->movieconnections["follows"] = $this->parseConnection("Follows");
-      $this->movieconnections["spinOffFrom"] = $this->parseConnection("Spin off from");
-      $this->movieconnections["spinOff"] = $this->parseConnection("Spin off");
+      $this->movieconnections["follows"]    = $this->parseConnection("Follows");
       $this->movieconnections["references"] = $this->parseConnection("References");
       $this->movieconnections["referenced"] = $this->parseConnection("Referenced in");
-      $this->movieconnections["features"] = $this->parseConnection("Features");
-      $this->movieconnections["featured"] = $this->parseConnection("Featured in");
-      $this->movieconnections["spoofs"] = $this->parseConnection("Spoofs");
-      $this->movieconnections["spoofed"] = $this->parseConnection("Spoofed in");
+      $this->movieconnections["remadeAs"]   = $this->parseConnection("Remade as");
+      $this->movieconnections["remakeOf"]   = $this->parseConnection("Remake of");
+      $this->movieconnections["spinOff"]    = $this->parseConnection("Spin off");
+      $this->movieconnections["spinOffFrom"] = $this->parseConnection("Spin off from");
+      $this->movieconnections["spoofed"]    = $this->parseConnection("Spoofed in");
+      $this->movieconnections["spoofs"]     = $this->parseConnection("Spoofs");
+      $this->movieconnections["versionOf"]  = $this->parseConnection("Version of");
     }
     return $this->movieconnections;
   }
