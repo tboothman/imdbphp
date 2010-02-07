@@ -172,10 +172,22 @@
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
           preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
-          $str = preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
-          preg_match_all('/(\(.*\))/U',$str,$addons);
-          preg_match('|<a href=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char);
-          $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$char[1],"chname"=>$char[2],"addons"=>$addons[1]);
+          $str = $matches[4][$i]; //preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
+	  if ( preg_match('|<a .*href\=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char) ) {
+	    $chid   = $char[1];
+	    $chname = $char[2];
+	  } else {
+	    $chid   = '';
+	    if ( preg_match('|\.\.\.\. ([^>]+)|',$str,$char) ) $chname = $char[1];
+	    else $chname = '';
+	  }
+	  if ( empty($chname) ) {
+	    switch($type) {
+	      case 'director' : $chname = 'Director'; break;
+	      case 'producer' : $chname = 'Producer'; break;
+	    }
+	  }
+          $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$chid,"chname"=>$chname,"addons"=>$addons[1]);
         }
       }
     }
