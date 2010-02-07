@@ -554,18 +554,18 @@
       if (strpos('class="tn15more"',$aka)>0) break; // end of list
       if (empty($aka)) continue;
       if (!preg_match("/\(/",$aka)) $this->akas[] = array("title"=>$aka,"year"=>"","country"=>"","comment"=>"");
-      elseif (preg_match("/<i class=\"transl\">([^\[\(]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i>/",$aka,$match)) { // localized variants on akas.imdb.com
+      elseif (preg_match("/<i class=\"transl\">([^\[]+?) (\(\d{4}\) |)(\([^\[]+)\s*\[(.*?)\]<\/i>/",$aka,$match)) { // localized variants on akas.imdb.com
         if (preg_match_all("/\((.*?)\)/",$match[3],$countries)) {
           $country = $countries[1][0]; $comment = "";
           for ($i=1;$i<count($countries[0]);++$i) $comment .= ", ".$countries[1][$i];
         } else $country = $comment = "";
-        $this->akas[] = array("title"=>$match[1],"year"=>$match[2],"country"=>$country,"comment"=>substr($comment,2),"lang"=>$match[4]);
+        $this->akas[] = array("title"=>preg_replace('|(\<.*?\>)|','',$match[1]),"year"=>$match[2],"country"=>$country,"comment"=>substr($comment,2),"lang"=>$match[4]);
       } elseif (preg_match("/(.*?) (\(\d{4}\) |)\((.*?)\)(.*?(\(.*\))|)/",$aka,$match)) {
         if (!empty($match[5]) && preg_match_all("/\((.*?)\)/",$match[5],$comments)) {
           $comm = $comments[1][0];
           for ($i=1;$i<count($comments[0]);++$i) $comm .= ", ".$comments[1][$i];
         } else $comm = "";
-        $this->akas[] = array("title"=>$match[1],"year"=>$match[2],"country"=>$match[3],"comment"=>$comm);
+        $this->akas[] = array("title"=>preg_replace('|(\<.*?\>)|','',$match[1]),"year"=>$match[2],"country"=>$match[3],"comment"=>$comm);
       }
     }
    }
