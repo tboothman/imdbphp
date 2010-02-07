@@ -39,7 +39,7 @@
    * @class imdb_base
    * @attribute string lastServerResponse
    */
-  var $version = '1.2.2';
+  var $version = '1.2.3';
 
  #---------------------------------------------------------[ Debug helpers ]---
   function debug_scalar($scalar) {
@@ -354,17 +354,17 @@
      $be->sendrequest();
      $fp = $be->getResponseBody();
      if ( !$fp ){
-       if ($header = $be->getResponseHeader("Location")){
-        if (strpos($header,$this->imdbsite."/find?")) {
-          return $this->results($header);
-          break(4);
-        }
-        $url = explode("/",$header);
-        $id  = substr($url[count($url)-2],2);
-        $this->resu[0] = new imdb($id);
-        return $this->resu;
-       }else{
-        return NULL;
+       if ($header = $be->getResponseHeader("Location")) {
+	 if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) ) {
+           return $this->results($header);
+           break(4);
+         }
+         $url = explode("/",$header);
+         $id  = substr($url[count($url)-2],2);
+         $this->resu[0] = new imdb($id);
+         return $this->resu;
+       } else {
+         return NULL;
        }
      }
      $this->page = $fp;
