@@ -10,6 +10,8 @@ v1.2.3
 * imdb::movieconnection() - fixed FollowedBy and added Follows (tnx 2 Qvist)
 * imdb::releaseInfo() now catches a few more cases (missing links)
 ! IMDB Search did not work with the localized sites due to new domains used
+! imdb_person::filmograf did not catch characters if they had no link. Due
+  to changes on the IMDB sites, it in fact did no longer catch any character...
 
 v1.2.2 (26.11.2009)
 -------------------
