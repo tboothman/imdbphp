@@ -642,7 +642,18 @@
       }
     }
   }
- 
+
+ #------------------------------------------[ Check IMDB ID ]---
+  /** Create a valid IMDBID
+   * @method private mid
+   * @param string input value to check
+   * @return string imdbid either valid IMDBID (7 digit), or empty string
+   */
+  private function mid($str) {
+    if ( empty($str) ) return $str;
+    return str_pad($str,7,'0',STR_PAD_LEFT);
+  }
+
  #-------------------------------------------------------------[ Directors ]---
   /** Get the director(s) of the movie
    * @method director
@@ -654,7 +665,7 @@
     if (empty($this->credits_director)) $this->castlist();
     $this->credits_director = array();
     foreach ($this->castlist["director"] as $person) {
-      $this->credits_director[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+      $this->credits_director[] = array("imdb"=>$this->mid($person->alternative_identifiers->imdb),"name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
     }
     return $this->credits_director;
   }
@@ -670,7 +681,7 @@
     if (empty($this->credits_cast)) $this->castlist();
     $this->credits_cast = array();
     foreach ($this->castlist["actor"] as $person) {
-      $this->credits_cast[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+      $this->credits_cast[] = array("imdb"=>$this->mid($person->alternative_identifiers->imdb),"name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
     }
     return $this->credits_cast;
   }
@@ -686,7 +697,7 @@
     if (empty($this->credits_writing)) $this->castlist();
     $this->credits_writing = array();
     foreach ($this->castlist["screenplay"] as $person) {
-      $this->credits_writing[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+      $this->credits_writing[] = array("imdb"=>$this->mid($person->alternative_identifiers->imdb),"name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
     }
     return $this->credits_writing;
   }
@@ -702,7 +713,7 @@
     if (empty($this->credits_producer)) $this->castlist();
     $this->credits_producer = array();
     foreach ($this->castlist["production"] as $person) {
-      $this->credits_producer[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+      $this->credits_producer[] = array("imdb"=>$this->mid($person->alternative_identifiers->imdb),"name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
     }
     return $this->credits_producer;
   }
@@ -718,7 +729,7 @@
     if (empty($this->credits_composer)) $this->castlist();
     $this->credits_composer = array();
     foreach ($this->castlist["soundtrack"] as $person) {
-      $this->credits_composer[] = array("imdb"=>"","name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
+      $this->credits_composer[] = array("imdb"=>$this->mid($person->alternative_identifiers->imdb),"name"=>$person->first_name." ".$person->last_name,"role"=>$person->character);
     }
     return $this->credits_composer;
   }
