@@ -107,21 +107,24 @@
   public function results($url="") {
    if ($this->page == "") {
      if (empty($url)) $url = $this->mkurl();
+     mdb_base::debug_scalar("imdbsearch::results() called. Using URL $url");
      $be = new MDB_Request($url);
      $be->sendrequest();
      $fp = $be->getResponseBody();
-     if ( !$fp ){
-       if ($header = $be->getResponseHeader("Location")){
-        if (strpos($header,$this->imdbsite."/find?")) {
-          return $this->results($header);
-          break(4);
-        }
-        $url = explode("/",$header);
-        $id  = substr($url[count($url)-2],2);
-        $this->resu[0] = new imdb($id);
-        return $this->resu;
-       }else{
-        return NULL;
+     if ( !$fp ) {
+       if ($header = $be->getResponseHeader("Location")) {
+         mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
+	 if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) ) {
+            return $this->results($header);
+            break(4);
+         }
+         $url = explode("/",$header);
+         $id  = substr($url[count($url)-2],2);
+         $this->resu[0] = new imdb($id);
+         return $this->resu;
+       } else {
+         mdb_base::debug_scalar('No response body, no redirect - going to Nirwana');
+         return NULL;
        }
      }
      $this->page = $fp;
