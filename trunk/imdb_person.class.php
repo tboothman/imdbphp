@@ -355,8 +355,8 @@
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if ( preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match) ) {
         preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
-	preg_match('/BornInYear\?(\d{4})/ims',$match[1],$dyear);
-	preg_match('|/BornWhere\?.*?">(.*)<|ims',$match[1],$dloc);
+	preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
+	preg_match('|/search/name\?birth_place=.*?">(.*)<|ims',$match[1],$dloc);
         $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[4],"mon"=>$this->monthNo($daymon[4]),"year"=>$dyear[1],"place"=>$dloc[1]);
       }
     }
@@ -375,7 +375,7 @@
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if (preg_match('|Date of Death</h5>(.*)<br|iUms',$this->page["Bio"],$match)) {
         preg_match('/OnThisDay\?(day=(\d{1,2})|)(.{0,1}month=(.*?)"|)/ims',$match[1],$daymon);
-	preg_match('/DiedInYear\?(\d{4})/ims',$match[1],$dyear);
+	preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
 	preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
 	preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
         $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[4],"mon"=>$this->monthNo($daymon[4]),"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
