@@ -462,9 +462,12 @@
     if ( $this->seasoncount == -1 ) {
       if ( $this->page["Title"] == "" ) $this->openpage("Title");
       if ( preg_match_all('|<a href="episodes#season-\d+">(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
-        $this->seasoncount = count($matches[0]);
+        $this->seasoncount = $matches[1][count($matches[0])-1];
       } else {
         $this->seasoncount = 0;
+      }
+      if ( preg_match_all('|<a href="episodes#season-unknown">unknown</a>|Ui',$this->page["Title"],$matches) ) {
+        $this->seasoncount += count($matches[0]);
       }
     }
     return $this->seasoncount;
@@ -1047,7 +1050,7 @@
     if ( empty($this->season_episodes) ) {
       if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
       if ( $this->page["Episodes"] == "cannot open page" ) return array(); // no such page
-      if ( preg_match_all('|<h3>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h3><span.*>Original Air Date.*<strong>(.*)</strong></span><br>\s*(.*)</td>|Ui',$this->page["Episodes"],$matches) ) {
+      if ( preg_match_all('!<h3>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h3><span.*>Original Air Date.*<strong>(.*)</strong></span><br>\s*(.*)(<h5>|</td>)!Ui',$this->page["Episodes"],$matches) ) {
 	for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
           $this->season_episodes[$matches[1][$i]][$matches[2][$i]] = array("imdbid" => $matches[3][$i],"title" => $matches[4][$i], "airdate" => $matches[5][$i], "plot" => $matches[6][$i]);
         }
