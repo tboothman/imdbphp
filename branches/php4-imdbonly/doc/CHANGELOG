@@ -12,6 +12,7 @@ v1.2.3
 ! IMDB Search did not work with the localized sites due to new domains used
 ! imdb_person::filmograf did not catch characters if they had no link. Due
   to changes on the IMDB sites, it in fact did no longer catch any character...
+! imdb_person: born() and died() missed to return the year due to IMDB site changes
 
 v1.2.2 (26.11.2009)
 -------------------
