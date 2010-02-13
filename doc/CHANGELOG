@@ -14,6 +14,7 @@ v1.9.9
   to changes on the IMDB sites, it in fact did no longer catch any character...
 + pilot movie class now correctly assigns the persons IMDBID
 ! imdb_person: born() and died() missed to return the year due to IMDB site changes
+! imdb::seasons() returned wrong season count, and imdb::episodes() got messed up on airing dates
 
 v1.9.8 (02.12.2009)
 -------------------
