@@ -970,7 +970,6 @@
         }
       }
     }
-    //print_r( $this->season_episodes );
     return $this->season_episodes;
   }
 
