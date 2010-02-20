@@ -19,7 +19,7 @@ if ( !in_array($engine,array("imdb","pilot")) ) $engine = "imdb";
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"])) {
   switch($_GET["searchtype"]) {
-    case "nm" : header("Location: imdb_person.php?mid=".$_GET["mid"]); break;
+    case "nm" : header("Location: person.php?mid=".$_GET["mid"]); break;
     default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=$engine"); break;
   }
   exit;
@@ -70,7 +70,7 @@ foreach ($results as $res) {
       if (!empty($details)) {
         $hint = " (".$details["role"]." in <a href='imdb.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
       }
-      echo " <TR><TD><a href='imdb_person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
+      echo " <TR><TD><a href='person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
          . "<TD><a href='http://".$search->imdbsite."/title/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
       break;
     default   :
