@@ -11,12 +11,25 @@
 
  /* $Id$ */
 
-require ("imdb_person.class.php");
-
-$person = new imdb_person ($_GET["mid"]);
-
 if (isset ($_GET["mid"])) {
   $pid = $_GET["mid"];
+
+  switch($_GET["engine"]) {
+    case "pilot":
+        require("pilot_person.class.php");
+  	$person = new pilot_person($_GET["mid"]);
+  	$charset = "utf8";
+  	$source  = "<A HREF='?engine=imdb&mid=$pid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
+        if ($person->pilot_imdbfill) $source .= '<SUP>+i</SUP>';
+        break;
+    default:
+        require("imdb_person.class.php");
+        $person = new imdb_person($_GET["mid"]);
+        $charset = "iso-8859-1";
+        $source  = "<B CLASS='active'>IMDB</B> | <A HREF='?engine=pilot&mid=$pid'>MoviePilot</A>";
+        break;
+  }
+
   $person->setid ($pid);
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
@@ -26,7 +39,9 @@ if (isset ($_GET["mid"])) {
 
   # Name
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo $person->name()."</TH></tr>\n";
+  echo $person->name();
+  echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
+  echo "</TH></tr>\n";
   flush();
 
   # Photo
@@ -83,7 +98,7 @@ if (isset ($_GET["mid"])) {
     echo "<TR><TD><B>Spouse(s):</B></TD><TD>";
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Spouse</th><th style='background-color:#07f;'>Period</th><th style='background-color:#07f;'>Comment</th></tr>";
     foreach ($sp as $spouse) {
-      echo "<tr><td><a href='?mid=".$spouse["imdb"]."'>".$spouse["name"]."</a></td>";
+      echo "<tr><td><a href='?mid=".$spouse["imdb"]."&engine=".$_GET['engine']."'>".$spouse["name"]."</a></td>";
       if (empty($spouse["from"])) echo "<td>&nbsp;</td>";
       else {
         echo "<td>".$spouse["from"]["day"].".".$spouse["from"]["month"]." ".$spouse["from"]["year"];
@@ -104,7 +119,8 @@ if (isset ($_GET["mid"])) {
   # MiniBio
   $bio = $person->bio();
   if (!empty($bio)) {
-    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1',$bio[1]["desc"])."</TD></TR>\n";
+    if ($_GET['engine']=='pilot') $idx = 0; else $idx = 1;
+    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1&engine='.$_GET['engine'],$bio[$idx]["desc"])."</TD></TR>\n";
   }
 
   # Some Trivia (Personal Quotes work the same)
@@ -135,7 +151,7 @@ if (isset ($_GET["mid"])) {
     $tc = count($sal);
     for ($i=0;$i<$tc;++$i) {
       echo "<tr><td>";
-      if (!empty($sal[$i]["movie"]["imdb"])) echo "<a href='imdb.php?mid=".$sal[$i]["movie"]["imdb"]."'>".$sal[$i]["movie"]["name"]."</a>";
+      if (!empty($sal[$i]["movie"]["imdb"])) echo "<a href='imdb.php?mid=".$sal[$i]["movie"]["imdb"]."&engine=".$_GET['engine']."'>".$sal[$i]["movie"]["name"]."</a>";
       else echo $sal[$i]["movie"]["name"];
       if (!empty($sal[$i]["movie"]["year"])) echo " (".$sal[$i]["movie"]["year"].")";
       echo "</td><td>".$sal[$i]["salary"]."</td></tr>";
@@ -153,7 +169,7 @@ if (isset ($_GET["mid"])) {
       echo "<TR><TD><b>$flname:</b> </td><td>\n";
       echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Character</th></tr>";
       foreach ($filmo as $film) {
-        echo "<tr><td><a href='imdb.php?mid=".$film["mid"]."'>".$film["name"]."</a>";
+        echo "<tr><td><a href='imdb.php?mid=".$film["mid"]."&engine=".$_GET['engine']."'>".$film["name"]."</a>";
         if (!empty($film["year"])) echo " (".$film["year"].")";
         echo "</td><td>";
         if (empty($film["chname"])) echo "&nbsp;";
@@ -189,7 +205,7 @@ if (isset ($_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Year</th></tr>";
     $tc = count($pm);
     for ($i=0;$i<$tc;++$i) {
-      echo "<tr><td><a href='imdb.php?mid=".$pm[$i]["imdb"]."'>".$pm[$i]["name"]."</a></td><td>";
+      echo "<tr><td><a href='imdb.php?mid=".$pm[$i]["imdb"]."&engine=".$_GET['engine']."'>".$pm[$i]["name"]."</a></td><td>";
       if (empty($pm[$i]["year"])) echo "&nbsp;</td></tr>";
       else echo $pm[$i]["year"]."</td></tr>";
     }

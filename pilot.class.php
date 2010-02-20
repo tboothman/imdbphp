@@ -11,7 +11,7 @@
  /* $Id$ */
 
  require_once(dirname(__FILE__)."/movie_base.class.php");
- if (mdb_config::pilot_imdbfill) require_once(dirname(__FILE__)."/imdb.class.php");
+ if (mdb_config::pilot_imdbfill) require_once(dirname(__FILE__)."/imdb_person.class.php");
 
  #=============================================================================
  #================================================[ The Pilot class itself ]===
@@ -37,7 +37,7 @@
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    if (mdb_config::pilot_imdbfill) $this->imdb = new imdb($id);
+    if (mdb_config::pilot_imdbfill) $this->imdb = new imdb_person($id);
     $this->setid($id);
   }
 
@@ -51,7 +51,7 @@
   }
 
  #-------------------------------------------------------------[ Open Page ]---
-  /** Load an IMDB page into the corresponding property (variable)
+  /** Load an Pilot page into the corresponding property (variable)
    * @method private openpage
    * @param string wt internal name of the page
    * @param optional string type whether its a "movie" (default) or a "person"
