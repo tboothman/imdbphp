@@ -1185,16 +1185,19 @@
         if ( preg_match('/.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|)$/ims',$matches[1][$i],$match) ) {
           $this->release_info[] = array("country"=>$match[1],"day"=>$match[2],"month"=>$match[3],"mon"=>$this->monthNo($match[3]),"year"=>$match[4],"comment"=>$match[6]);
         } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
-          if ( empty($match[5]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>"");
-          else $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"year"=>$match[3],"comment"=>$match[5]);
+          if ( empty($match[5]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3],"comment"=>"");
+          else $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3],"comment"=>$match[5]);
 	} elseif ( preg_match('|.*?">(.*?)</a>\s*</b></td>\s*<td align="right">\s(\d{4})</td>\s*(<td>\s*(.*))|ims',$matches[1][$i],$match) ) { // unlinked data, year only plus comment
-	  if ( empty($match[3]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","year"=>$match[2],"comment"=>"");
-	  $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","year"=>$match[2],"comment"=>$match[4]);
+	  if ( empty($match[3]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","mon"=>'',"year"=>$match[2],"comment"=>"");
+	  $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>"","mon"=>'',"year"=>$match[2],"comment"=>$match[4]);
+	} elseif ( preg_match('|">(.*?)<.*?">\s*(\D*)\s*(\d+)<.*<td>(.*)|ims',$matches[1][$i],$match) ) {
+	  $this->release_info[] = array("country"=>$match[1],"day"=>'',"month"=>trim($match[2]),"mon"=>$this->monthNo(trim($match[2])),"year"=>$match[3],"comment"=>$match[4]);
         } else {
           $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[1][$i])."</pre>");
         }
       }
     }
+    echo "ReleaseInfo:<pre>"; print_r($this->release_info); echo "</pre>";
     return $this->release_info;
   }
 
