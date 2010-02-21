@@ -11,7 +11,7 @@
 
  /* $Id$ */
 
- require_once (dirname(__FILE__)."/mdb_base.class.php");
+ require_once (dirname(__FILE__)."/person_base.class.php");
  require_once (dirname(__FILE__)."/imdbsearch.class.php");
 
  #=================================================[ The IMDB Person class ]===
@@ -23,7 +23,7 @@
   * @copyright 2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class imdb_person extends mdb_base {
+ class imdb_person extends person_base {
 
  #========================================================[ Common methods ]===
  #-------------------------------------------------------------[ Open Page ]---
@@ -294,6 +294,17 @@
   public function movies_self() {
     if (empty($this->selffilms)) $this->filmograf($this->selffilms,"self");
     return $this->selffilms;
+  }
+
+  /** Get writers filmography
+   * @method movies_writer
+   * @return array array[0..n][mid,name,year,chid,chname], where chid is the
+   *         character IMDB ID, and chname the character name
+   * @see IMDB person page / (Main page)
+   */
+  public function movies_writer() {
+    if (empty($this->writerfilms)) $this->filmograf($this->writerfilms,"writer");
+    return $this->writerfilms;
   }
 
   /** Get "Archive Footage" filmography

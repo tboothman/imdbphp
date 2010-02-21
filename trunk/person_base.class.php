@@ -54,6 +54,7 @@ class person_base extends mdb_base {
    $this->directorsfilms  = array();
    $this->crewsfilms      = array();
    $this->thanxfilms      = array();
+   $this->writerfilms     = array();
    $this->selffilms       = array();
    $this->archivefilms    = array();
 

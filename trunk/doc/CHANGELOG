@@ -19,6 +19,7 @@ v1.9.9
 ! imdb::releaseInfo() did not recognize entries without day - fixed.
 + caching functionality added to the imdbsearch class
 + pilotsearch class now stores found movies to cache
++ *_person::movies_writer() added to get writers filmography
 
 v1.9.8 (02.12.2009)
 -------------------

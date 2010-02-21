@@ -150,7 +150,7 @@ class mdb_base extends mdb_config {
 
    if ($this->usecache) { // Try to read from cache
      $fname = "$this->imdbID.$wt";
-     if ( get_class($this)=="pilot" ) $fname .= ".pilot";
+     if ( substr(get_class($this),0,5)=="pilot" ) $fname .= ".pilot";
      $this->cache_read($fname,$this->page[$wt]);
      if ($this->page[$wt] != '') return;
    } // end cache
@@ -177,7 +177,7 @@ class mdb_base extends mdb_config {
    if( $this->page[$wt] ) { //storecache
      if ($this->storecache) {
        $fname = "$this->imdbID.$wt";
-       if ( get_class($this)=="pilot" ) $fname .= ".pilot";
+       if ( substr(get_class($this),0,5)=="pilot" ) $fname .= ".pilot";
        $this->cache_write($fname,$this->page[$wt]);
      }
     return;
