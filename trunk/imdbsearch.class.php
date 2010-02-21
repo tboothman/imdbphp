@@ -107,7 +107,7 @@
   public function results($url="") {
     if ($this->page == "") {
       if ($this->usecache && empty($url)) { // Try to read from cache
-        $fname = $this->cachedir.'/'.urlencode($this->name).'.search';
+        $fname = $this->cachedir.'/'.urlencode(strtolower($this->name)).'.search';
         if ( $this->usezip ) {
           if ( ($this->page = @join("",@gzfile($fname))) ) {
             if ( $this->converttozip ) {
@@ -165,7 +165,7 @@
         } elseif (!is_writable($this->cachedir)) {
           $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
         } else {
-          $fname = $this->cachedir.'/'.urlencode($this->name).'.search';
+          $fname = $this->cachedir.'/'.urlencode(strtolower($this->name)).'.search';
           if ( $this->usezip ) {
             $fp = gzopen ($fname, "w");
             gzputs ($fp, $this->page);
