@@ -11,8 +11,7 @@
 
  /* $Id$ */
 
- if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
- else require_once (dirname(__FILE__)."/mdb_config.class.php");
+ require_once (dirname(__FILE__)."/mdb_base.class.php");
 
  #====================================================[ IMDB Search class ]===
  /** Search the IMDB for a title and obtain the movies IMDB ID
@@ -23,7 +22,7 @@
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class pilotsearch extends mdb_config {
+ class pilotsearch extends mdb_base {
   var $page = "";
   var $name = NULL;
   var $resu = array();
@@ -33,7 +32,7 @@
    * @constructor pilotsearch
    */
   function __construct() {
-    parent::__construct();
+    parent::__construct('');
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->search_episodes(FALSE);
@@ -93,9 +92,6 @@
    * @method results
    * @param optional string URL Replace search URL by your own
    * @return array results array of objects (instances of the imdb class)
-   * @todo Since the returned JSON file is a collection of complete movie
-   *   records, these records should be placed into the cache dir for later use,
-   *   if the cache is enabled
    */
   public function results($url="") {
    if ( empty($this->pilot_apikey) ) {
@@ -121,11 +117,12 @@
    if (!empty($this->page->movies)) foreach ($this->page->movies as $movie) {
      if ( $this->maxresults && $i > $this->maxresults ) break;
      ++$i;
-     // if (cache) store json_encode($movie)
-     $item = new pilot('0000000');
+     $mid = str_pad($movie->alternative_identifiers->imdb,7,0,STR_PAD_LEFT);
+     $item = new pilot($mid);
      $item->page['Title'] = $movie;
-     $item->setid(str_pad($movie->alternative_identifiers->imdb,7,0,STR_PAD_LEFT));
+     $item->setid($mid);
      $this->resu[] = $item;
+     if ($this->storecache) $this->cache_write($mid.'.'.'Title.pilot',json_encode($movie));
    }
 
    return $this->resu;
