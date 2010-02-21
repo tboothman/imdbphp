@@ -18,6 +18,7 @@ v1.9.9
 + pilot_person: class added
 ! imdb::releaseInfo() did not recognize entries without day - fixed.
 + caching functionality added to the imdbsearch class
++ pilotsearch class now stores found movies to cache
 
 v1.9.8 (02.12.2009)
 -------------------
