@@ -97,7 +97,7 @@
    */
   public function name() {
     if (empty($this->fullname)) {
-      if ($this->page["Name"] == "") $this->openpage ("Name","pilot");
+      if ($this->page["Name"] == "") $this->openpage ("Name");
       $this->fullname = $this->page["Name"]->first_name . ' ' . $this->page["Name"]->last_name;
     }
     return $this->fullname;
@@ -326,6 +326,19 @@
   public function movies_self() {
     if (empty($this->selffilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->selffilms = $this->imdb->movies_self();
     return $this->selffilms;
+  }
+
+ /** Get writers filmography
+  * @method movies_writer
+  * @return array array[0..n][mid,name,year,chid,chname], where chid is the
+  *         character IMDB ID, and chname the character name
+  * @see IMDB person page / (Main page)
+  * @brief No data available at MoviePilot. If <code>pilot_imdbfill</code> is
+  *        set to FULL_ACCESS, it will be retrieved from IMDB.
+  */
+  public function movies_writer() {
+    if (empty($this->writerfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->writerfilms = $this->imdb->movies_writer();
+    return $this->writerfilms;
   }
 
  /** Get "Archive Footage" filmography
