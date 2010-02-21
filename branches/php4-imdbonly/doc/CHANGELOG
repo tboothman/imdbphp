@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.2.4
+-------------------
+! imdb::releaseInfo() did not recognize entries without day - fixed.
+
 v1.2.3 (14.02.2010)
 -------------------
 ! imdb::plotoutline() did not cut surrounding DIV (backport from trunk)
