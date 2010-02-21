@@ -26,7 +26,7 @@
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class imdbsearch extends mdb_config {
+ class imdbsearch extends mdb_base {
   var $page = "";
   var $name = NULL;
   var $resu = array();
@@ -36,7 +36,7 @@
    * @constructor imdbsearch
    */
   function __construct() {
-    parent::__construct();
+    parent::__construct('');
     $this->search_episodes(FALSE);
   }
 
@@ -107,31 +107,7 @@
   public function results($url="") {
     if ($this->page == "") {
       if ($this->usecache && empty($url)) { // Try to read from cache
-        $fname = $this->cachedir.'/'.urlencode(strtolower($this->name)).'.search';
-        if ( $this->usezip ) {
-          if ( ($this->page = @join("",@gzfile($fname))) ) {
-            if ( $this->converttozip ) {
-              @$fp = fopen ($fname,"r");
-              $zipchk = fread($fp,2);
-              fclose($fp);
-              if ( !($zipchk[0] == chr(31) && $zipchk[1] == chr(139)) ) { //checking for zip header
-                /* converting on access */
-                $fp = @gzopen ($fname, "w");
-                @gzputs ($fp, $this->page);
-                @gzclose ($fp);
-              }
-            }
-          }
-        } else { // no zip
-          @$fp = fopen ($fname, "r");
-          if ($fp) {
-            $temp="";
-            while (!feof ($fp)) {
-              $temp .= fread ($fp, 1024);
-              $this->page = $temp;
-            }
-          }
-        }
+        $this->cache_read(urlencode(strtolower($this->name)).'.search',$this->page);
       } // end cache read
 
       if ($this->page=="") { // not found in cache - go and get it!
@@ -159,23 +135,8 @@
       $this->page = $fp;
       }
 
-      if ($this->storecache && $this->page != "cannot open page" && $this->page != "") { //storecache
-        if (!is_dir($this->cachedir)) {
-          $this->debug_scalar("<BR>***ERROR*** Configured cache directory does not exist!<BR>");
-        } elseif (!is_writable($this->cachedir)) {
-          $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
-        } else {
-          $fname = $this->cachedir.'/'.urlencode(strtolower($this->name)).'.search';
-          if ( $this->usezip ) {
-            $fp = gzopen ($fname, "w");
-            gzputs ($fp, $this->page);
-            gzclose ($fp);
-          } else { // no zip
-            $fp = fopen ($fname, "w");
-            fputs ($fp, $this->page);
-            fclose ($fp);
-          }
-        }
+      if ($this->storecache && $this->page != "cannot open page" && $this->page != "") { //store cache
+        $this->cache_write(urlencode(strtolower($this->name)).'.search',$this->page);
       }
 
     } // end (page="")

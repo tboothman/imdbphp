@@ -10,44 +10,44 @@
 
  /* $Id$ */
 
- require_once (dirname(__FILE__)."/browseremulator.class.php");
- if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
- else require_once (dirname(__FILE__)."/mdb_config.class.php");
- require_once (dirname(__FILE__)."/mdb_request.class.php");
+require_once (dirname(__FILE__)."/browseremulator.class.php");
+if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
+else require_once (dirname(__FILE__)."/mdb_config.class.php");
+require_once (dirname(__FILE__)."/mdb_request.class.php");
 
- #===============================================[ Definition of Constants ]===
- /** No access at all
-  * @package MDBApi
-  * @constant integer NO_ACCESS
-  */
- define('NO_ACCESS',0);
- /** Minimum access - only the most basic stuff
-  * @package MDBApi
-  * @constant integer BASIC_ACCESS
-  */
- define('BASIC_ACCESS',1);
- /** Moderate access - some more than just the minimum
-  * @package MDBApi
-  * @constant integer MEDIUM_ACCESS
-  */
- define('MEDIUM_ACCESS',2);
- /** Full access - all that's possible
-  * @package MDBApi
-  * @constant integer FULL_ACCESS
-  */
- define('FULL_ACCESS',9);
+#===============================================[ Definition of Constants ]===
+/** No access at all
+ * @package MDBApi
+ * @constant integer NO_ACCESS
+ */
+define('NO_ACCESS',0);
+/** Minimum access - only the most basic stuff
+ * @package MDBApi
+ * @constant integer BASIC_ACCESS
+ */
+define('BASIC_ACCESS',1);
+/** Moderate access - some more than just the minimum
+ * @package MDBApi
+ * @constant integer MEDIUM_ACCESS
+ */
+define('MEDIUM_ACCESS',2);
+/** Full access - all that's possible
+ * @package MDBApi
+ * @constant integer FULL_ACCESS
+ */
+define('FULL_ACCESS',9);
 
- #===================================================[ The IMDB Base class ]===
- /** Accessing Movie information
-  * @package MDBApi
-  * @class mdb_base
-  * @extends mdb_config
-  * @author Georgos Giagas
-  * @author Izzy (izzysoft AT qumran DOT org)
-  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
-  * @version $Revision$ $Date$
-  */
- class mdb_base extends mdb_config {
+#===================================================[ The IMDB Base class ]===
+/** Accessing Movie information
+ * @package MDBApi
+ * @class mdb_base
+ * @extends mdb_config
+ * @author Georgos Giagas
+ * @author Izzy (izzysoft AT qumran DOT org)
+ * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
+ * @version $Revision$ $Date$
+ */
+class mdb_base extends mdb_config {
   var $version = '1.9.8';
 
   /** Last response from the IMDB server
@@ -149,34 +149,10 @@
    if ($urlname===false) return;
 
    if ($this->usecache) { // Try to read from cache
-    $fname = "$this->cachedir/$this->imdbID.$wt";
-    if ( get_class($this)=="pilot" ) $fname .= ".pilot";
-    if ( $this->usezip ) {
-     if ( ($this->page[$wt] = @join("",@gzfile($fname))) ) {
-      if ( $this->converttozip ) {
-       @$fp = fopen ($fname,"r");
-       $zipchk = fread($fp,2);
-       fclose($fp);
-       if ( !($zipchk[0] == chr(31) && $zipchk[1] == chr(139)) ) { //checking for zip header
-         /* converting on access */
-         $fp = @gzopen ($fname, "w");
-         @gzputs ($fp, $this->page[$wt]);
-         @gzclose ($fp);
-       }
-      }
-      return;
-     }
-    } else { // no zip
-     @$fp = fopen ($fname, "r");
-     if ($fp) {
-      $temp="";
-      while (!feof ($fp)) {
-	 $temp .= fread ($fp, 1024);
-	 $this->page[$wt] = $temp;
-      }
-      return;
-     }
-    }
+     $fname = "$this->imdbID.$wt";
+     if ( get_class($this)=="pilot" ) $fname .= ".pilot";
+     $this->cache_read($fname,$this->page[$wt]);
+     if ($this->page[$wt] != '') return;
    } // end cache
 
    switch ($type) {
@@ -198,28 +174,12 @@
    }
 
    if ($this->page[$wt] == "cannot open page") return; // this should not go to the cache!
-   if( $this->page[$wt] ){ //storecache
-    if ($this->storecache) {
-     if (!is_dir($this->cachedir)) {
-       $this->debug_scalar("<BR>***ERROR*** Configured cache directory does not exist!<BR>");
-       return;
+   if( $this->page[$wt] ) { //storecache
+     if ($this->storecache) {
+       $fname = "$this->imdbID.$wt";
+       if ( get_class($this)=="pilot" ) $fname .= ".pilot";
+       $this->cache_write($fname,$this->page[$wt]);
      }
-     if (!is_writable($this->cachedir)) {
-       $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
-       return;
-     }
-     $fname = "$this->cachedir/$this->imdbID.$wt";
-     if ( get_class($this)=="pilot" ) $fname .= ".pilot";
-     if ( $this->usezip ) {
-      $fp = gzopen ($fname, "w");
-      gzputs ($fp, $this->page[$wt]);
-      gzclose ($fp);
-     } else { // no zip
-      $fp = fopen ($fname, "w");
-      fputs ($fp, $this->page[$wt]);
-      fclose ($fp);
-     }
-    }
     return;
    }
    $this->page[$wt] = "cannot open page";
@@ -231,7 +191,7 @@
    * @method imdbid
    * @return string id IMDBID currently used
    */
-  function imdbid() {
+  public function imdbid() {
    return $this->imdbID;
   }
 
@@ -270,7 +230,7 @@
    *  mdb_config and removes them
    * @method purge
    */
-  function purge() {
+  public function purge() {
     if (is_dir($this->cachedir))  {
       if (is_writable($this->cachedir)) {
         $thisdir = dir($this->cachedir);
@@ -291,6 +251,67 @@
     }
   }
 
- } // end class movie_base
+ /** Read content from cache
+  * @method cache_read
+  * @param string filename file name relative to the cache dir to read from
+  * @param ref string content variable to store the retrieved content in
+  */
+  public function cache_read($file,&$content) {
+    $fname = $this->cachedir . '/' . $file;
+    if (!file_exists($fname)) {
+      $this->debug_scalar("cache_read: requested file '$file' not found in cache dir '".$this->cachedir."'");
+      $content = '';
+      return;
+    }
+    if ( $this->usezip ) {
+      if ( ($content = @join("",@gzfile($fname))) ) {
+        if ( $this->converttozip ) {
+          @$fp = fopen ($fname,"r");
+          $zipchk = fread($fp,2);
+          fclose($fp);
+          if ( !($zipchk[0] == chr(31) && $zipchk[1] == chr(139)) ) { //checking for zip header
+            /* converting on access */
+            $fp = @gzopen ($fname, "w");
+            @gzputs ($fp, $content);
+            @gzclose ($fp);
+          }
+        }
+      }
+    } else { // no zip
+      @$fp = fopen ($fname, "r");
+      if ($fp) {
+        $content="";
+        while (!feof ($fp)) {
+          $content .= fread ($fp, 1024);
+        }
+      }
+    }
+  } // end cache_read
+
+ /** Writing content to cache
+  * @method cache_write
+  * @param string filename file name relative to cache dir to store the content into
+  * @param ref string content content to store
+  */
+  public function cache_write($file,&$content) {
+    if (!is_dir($this->cachedir)) {
+      $this->debug_scalar("<BR>***ERROR*** Configured cache directory does not exist!<BR>");
+    } elseif (!is_writable($this->cachedir)) {
+      $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
+    } else {
+      $fname = $this->cachedir . '/' . $file;
+      if ( $this->usezip ) {
+        $fp = gzopen ($fname, "w");
+        gzputs ($fp, $content);
+        gzclose ($fp);
+      } else { // no zip
+        $fp = fopen ($fname, "w");
+        fputs ($fp, $content);
+        fclose ($fp);
+      }
+    }
+  }
+
+} // end class movie_base
 
 ?>
