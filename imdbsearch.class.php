@@ -105,59 +105,111 @@
    * @return array results array of objects (instances of the imdb class)
    */
   public function results($url="") {
-   if ($this->page == "") {
-     if (empty($url)) $url = $this->mkurl();
-     mdb_base::debug_scalar("imdbsearch::results() called. Using URL $url");
-     $be = new MDB_Request($url);
-     $be->sendrequest();
-     $fp = $be->getResponseBody();
-     if ( !$fp ) {
-       if ($header = $be->getResponseHeader("Location")) {
-         mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
-	 if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) ) {
-            return $this->results($header);
-            break(4);
-         }
-         $url = explode("/",$header);
-         $id  = substr($url[count($url)-2],2);
-         $this->resu[0] = new imdb($id);
-         return $this->resu;
-       } else {
-         mdb_base::debug_scalar('No response body, no redirect - going to Nirwana');
-         return NULL;
-       }
-     }
-     $this->page = $fp;
-   } // end (page="")
+    if ($this->page == "") {
+      if ($this->usecache && empty($url)) { // Try to read from cache
+        $fname = $this->cachedir.'/'.urlencode($this->name).'.search';
+        if ( $this->usezip ) {
+          if ( ($this->page = @join("",@gzfile($fname))) ) {
+            if ( $this->converttozip ) {
+              @$fp = fopen ($fname,"r");
+              $zipchk = fread($fp,2);
+              fclose($fp);
+              if ( !($zipchk[0] == chr(31) && $zipchk[1] == chr(139)) ) { //checking for zip header
+                /* converting on access */
+                $fp = @gzopen ($fname, "w");
+                @gzputs ($fp, $this->page);
+                @gzclose ($fp);
+              }
+            }
+          }
+        } else { // no zip
+          @$fp = fopen ($fname, "r");
+          if ($fp) {
+            $temp="";
+            while (!feof ($fp)) {
+              $temp .= fread ($fp, 1024);
+              $this->page = $temp;
+            }
+          }
+        }
+      } // end cache read
 
-   $searchstring = array( '<A HREF="/title/tt', '<A href="/title/tt', '<a href="/Title?', '<a href="/title/tt');
-   $i = 0;
-   if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
-   foreach($searchstring as $srch){
-    $res_e = 0;
-    $res_s = 0;
-    $mids_checked = array();
-    $len = strlen($srch);
-    while ((($res_s = strpos ($this->page, $srch, $res_e)) > 10)) {
-      if ($i == $maxresults) break(2); // limit result count
-      $res_e = strpos ($this->page, "(", $res_s);
-      $imdb_id = substr($this->page, $res_s + $len, 7);
-      $ts = strpos($this->page, ">",$res_s) +1; // >movie title</a>
-      $te = strpos($this->page,"<",$ts);
-      $title = substr($this->page,$ts,$te-$ts);
-      if (($title == "") || (in_array($imdb_id,$mids_checked))) continue; // empty titles just come from the images
-      $mids_checked[] = $imdb_id;
-      $tmpres = new imdb ($imdb_id); // make a new imdb object by id
-      $tmpres->main_title = $title;
-      $ts = strpos($this->page,"(",$te) +1;
-      $te = strpos($this->page,")",$ts);
-      $tmpres->main_year=substr($this->page,$ts,$te-$ts);
-      $i++;
-      $this->resu[] = $tmpres;
+      if ($this->page=="") { // not found in cache - go and get it!
+        if (empty($url)) $url = $this->mkurl();
+        mdb_base::debug_scalar("imdbsearch::results() called. Using URL $url");
+        $be = new MDB_Request($url);
+        $be->sendrequest();
+        $fp = $be->getResponseBody();
+        if ( !$fp ) {
+          if ($header = $be->getResponseHeader("Location")) {
+            mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
+            if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) ) {
+              return $this->results($header);
+              break(4);
+            }
+            $url = explode("/",$header);
+            $id  = substr($url[count($url)-2],2);
+            $this->resu[0] = new imdb($id);
+            return $this->resu;
+          } else {
+            mdb_base::debug_scalar('No response body, no redirect - going to Nirwana');
+            return NULL;
+          }
+        }
+      $this->page = $fp;
+      }
+
+      if ($this->storecache && $this->page != "cannot open page" && $this->page != "") { //storecache
+        if (!is_dir($this->cachedir)) {
+          $this->debug_scalar("<BR>***ERROR*** Configured cache directory does not exist!<BR>");
+        } elseif (!is_writable($this->cachedir)) {
+          $this->debug_scalar("<BR>***ERROR*** Configured cache directory lacks write permission!<BR>");
+        } else {
+          $fname = $this->cachedir.'/'.urlencode($this->name).'.search';
+          if ( $this->usezip ) {
+            $fp = gzopen ($fname, "w");
+            gzputs ($fp, $this->page);
+            gzclose ($fp);
+          } else { // no zip
+            $fp = fopen ($fname, "w");
+            fputs ($fp, $this->page);
+            fclose ($fp);
+          }
+        }
+      }
+
+    } // end (page="")
+
+    // now we have the search content - go and parse it!
+    $searchstring = array( '<A HREF="/title/tt', '<A href="/title/tt', '<a href="/Title?', '<a href="/title/tt');
+    $i = 0;
+    if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
+    foreach($searchstring as $srch){
+      $res_e = 0;
+      $res_s = 0;
+      $mids_checked = array();
+      $len = strlen($srch);
+      while ((($res_s = strpos ($this->page, $srch, $res_e)) > 10)) {
+        if ($i == $maxresults) break(2); // limit result count
+        $res_e = strpos ($this->page, "(", $res_s);
+        $imdb_id = substr($this->page, $res_s + $len, 7);
+        $ts = strpos($this->page, ">",$res_s) +1; // >movie title</a>
+        $te = strpos($this->page,"<",$ts);
+        $title = substr($this->page,$ts,$te-$ts);
+        if (($title == "") || (in_array($imdb_id,$mids_checked))) continue; // empty titles just come from the images
+        $mids_checked[] = $imdb_id;
+        $tmpres = new imdb ($imdb_id); // make a new imdb object by id
+        $tmpres->main_title = $title;
+        $ts = strpos($this->page,"(",$te) +1;
+        $te = strpos($this->page,")",$ts);
+        $tmpres->main_year=substr($this->page,$ts,$te-$ts);
+        $i++;
+        $this->resu[] = $tmpres;
+      }
     }
-   }
-   return $this->resu;
-  }
+    return $this->resu;
+  } // end results()
+
 } // end class imdbsearch
 
 ?>
