@@ -584,7 +584,7 @@
   public function sound() {
    if (empty($this->sound)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/List\?sound.*?>\s*(.*?)</",$this->page["Title"],$matches))
+    if (preg_match_all("|/search/title\?sound_mixes=.*?>\s*(.*?)<|",$this->page["Title"],$matches))
       $this->sound = $matches[1];
    }
    return $this->sound;
@@ -599,7 +599,7 @@
   public function mpaa() {
    if (empty($this->mpaas)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
+    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["Title"],$matches)) {
       $cc = count($matches[0]);
       for ($i=0;$i<$cc;++$i) $this->mpaas[$matches[1][$i]] = $matches[2][$i];
     }
@@ -615,7 +615,7 @@
   public function mpaa_hist() {
    if (empty($this->mpaas_hist)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("/\/List\?certificates.*?>\s*(.*?):(.*?)</",$this->page["Title"],$matches)) {
+    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["Title"],$matches)) {
       $cc = count($matches[0]);
       for ($i=0;$i<$cc;++$i) $this->mpaas_hist[$matches[1][$i]][] = $matches[2][$i];
     }
@@ -1197,7 +1197,6 @@
         }
       }
     }
-    echo "ReleaseInfo:<pre>"; print_r($this->release_info); echo "</pre>";
     return $this->release_info;
   }
 

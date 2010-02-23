@@ -21,7 +21,8 @@ v1.9.9
 + pilotsearch class now stores found movies to cache
 + *_person::movies_writer() added to get writers filmography
 ! imdb_person::born() and died() have been broken by IMDB changes again - fixed.
-! imdb::color() has been broken by IMDB changes - also fixed.
+! imdb::color() has been broken by IMDB changes - also fixed. Same for
+  imdb::sound(), mpaa() and mpaa_hist()
 
 v1.9.8 (02.12.2009)
 -------------------
