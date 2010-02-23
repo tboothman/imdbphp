@@ -325,7 +325,7 @@
   public function colors() {
     if (empty($this->moviecolors)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("/\/List\?color-info.*?>\s*(.*?)</",$this->page["Title"],$matches))
+      if (preg_match_all("|/search/title\?colors=.*?>\s*(.*?)<|",$this->page["Title"],$matches))
         $this->moviecolors = $matches[1];
     }
     return $this->moviecolors;
