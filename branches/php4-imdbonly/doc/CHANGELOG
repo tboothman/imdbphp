@@ -7,6 +7,7 @@ v1.2.4
 -------------------
 ! imdb::releaseInfo() did not recognize entries without day - fixed.
 ! imdb_person::born() and died() have been broken by IMDB changes again - fixed
+! imdb::color() has been broken by IMDB changes - also fixed.
 
 v1.2.3 (14.02.2010)
 -------------------
