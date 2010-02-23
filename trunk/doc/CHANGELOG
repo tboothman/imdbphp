@@ -20,6 +20,7 @@ v1.9.9
 + caching functionality added to the imdbsearch class
 + pilotsearch class now stores found movies to cache
 + *_person::movies_writer() added to get writers filmography
+! imdb_person::born() and died() have been broken by IMDB changes again - fixed.
 
 v1.9.8 (02.12.2009)
 -------------------
