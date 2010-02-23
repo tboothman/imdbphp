@@ -6,7 +6,8 @@ History for IMDBPHP
 v1.2.4
 -------------------
 ! imdb::releaseInfo() did not recognize entries without day - fixed.
-! imdb_person::born() and died() have been broken by IMDB changes again - fixed
+! imdb_person::born() and died() have been broken by IMDB changes again - fixed.
+  Same for interviews(), articles(), pictorials() and magcovers()
 ! imdb::color() has been broken by IMDB changes - also fixed. Same for
   imdb:sound(), mpaa() and mpaa_hist()
 
