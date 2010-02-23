@@ -6,6 +6,7 @@ History for IMDBPHP
 v1.2.4
 -------------------
 ! imdb::releaseInfo() did not recognize entries without day - fixed.
+! imdb_person::born() and died() have been broken by IMDB changes again - fixed
 
 v1.2.3 (14.02.2010)
 -------------------
