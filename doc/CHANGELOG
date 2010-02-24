@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v1.9.9
+v1.9.9 (24.02.2010)
 -------------------
 * imdb::movieconnection() - fixed FollowedBy and added Follows (tnx 2 Qvist)
 * imdb::releaseInfo() now catches a few more cases (missing links)
