@@ -1265,8 +1265,8 @@
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
         $date = '!!';
-        if ( preg_match('/.*?">(.*?)<.*?<td.*?href=.*?day=(\d+).*?month=(.*?)">.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|)$/ims',$matches[1][$i],$match) ) {
-          $this->release_info[] = array("country"=>$match[1],"day"=>$match[2],"month"=>$match[3],"mon"=>$this->monthNo($match[3]),"year"=>$match[4],"comment"=>$match[6]);
+        if ( preg_match('/.*?">(.*?)<.*?<td.*?href=.*\/date\/(\d+)-(\d+).*">\d+\s*(.*?)<.*?>(\d{4})<.*?<td>\s*(\((.*?)\)\s*|)$/ims',$matches[1][$i],$match) ) {
+          $this->release_info[] = array("country"=>$match[1],"day"=>$match[3],"month"=>$match[4],"mon"=>$match[2],"year"=>$match[5],"comment"=>$match[7]);
         } elseif ( preg_match('!>(.*?)</a>\s*</b></td>\s*<td align="right">\s*([A-Za-z]+)\s*(\d{4})\s*</td>\s*<td>(\((.*?)\)|\s*)$!ims',$matches[1][$i],$match) ) {
           if ( empty($match[5]) ) $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3],"comment"=>"");
           else $this->release_info[] = array("country"=>$match[1],"day"=>"","month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3],"comment"=>$match[5]);
