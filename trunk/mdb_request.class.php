@@ -45,6 +45,7 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
     function __construct($url){
       $this->BrowserEmulator();
       $this->urltoopen = $url;
+      if ( substr(get_class($this),0,4)=="imdb" ) $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
     }
     /** Send a request to the IMDB site
      * @method sendRequest

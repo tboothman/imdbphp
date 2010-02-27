@@ -6,6 +6,7 @@ History for IMDBPHP2
 v1.9.10
 -------------------
 ! imdb::releaseInfo() was also partly affected by the last IMDB site changes
+! another IMDB site change broke imdb::alsoknow()
 
 v1.9.9 (24.02.2010)
 -------------------
