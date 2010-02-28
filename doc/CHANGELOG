@@ -8,6 +8,10 @@ v1.9.10
 ! imdb::releaseInfo() was also partly affected by the last IMDB site changes
 ! another IMDB site change broke imdb::alsoknow()
 + imdb::top250() added as provided by abe (tnx!)
+* due to a request, the constant mdbconfig::pilot_imdbfill was turned into a
+  protected property (to be accessed via mdb_config::get_pilot_imdbfill and
+  mdb_config::set_imdbfill). To enable the use of this, the new constant
+  mdb_config::pilot_imdbfallback_enabled needs to be set to TRUE
 
 v1.9.9 (24.02.2010)
 -------------------
