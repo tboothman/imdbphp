@@ -641,7 +641,7 @@
  #------------------------------------------------------[ Production Notes ]---
   /** For not-yet completed movies, we can get the production state
    * @method prodNotes
-   * @returns array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
+   * @return array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
    * @see IMDB page / (TitlePage)
    */
   public function prodNotes() {
@@ -660,6 +660,26 @@
    }
    return $this->main_prodnotes;
   }
+
+ #----------------------------------------------[ Position in the "Top250" ]---
+  /** Find the position of a movie in the top 250 ranked movies
+   * @method top250
+   * @return int position a number between 1..250 if the movie is listed, 0 otherwise
+   * @author abe
+   * @see http://projects.izzysoft.de/trac/imdbphp/ticket/117
+   */
+  public function top250() {
+    if ($this->main_top250 == -1) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if (@preg_match("/\<a href\=\"\/chart\/top\?tt(.*?)\"\>Top 250: #(.*?)\<\/a\>/",$this->page["Title"],$match)) {
+        $this->main_top250 = $match[2];
+      } else {
+        $this->main_top250 = 0;
+      }
+    }
+    return $this->main_top250;
+  }
+
 
  #=====================================================[ /plotsummary page ]===
  #--------------------------------------------------[ Full Plot (combined) ]---
