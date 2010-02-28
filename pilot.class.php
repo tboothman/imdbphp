@@ -563,6 +563,19 @@
     return $this->main_prodnotes;
   }
 
+ #----------------------------------------------[ Position in the "Top250" ]---
+  /** Find the position of a movie in the top 250 ranked movies
+   * @method top250
+   * @return int position a number between 1..250 if the movie is listed, 0 otherwise
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   */
+  public function top250() {
+    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_top250 = $this->imdb->top250();
+    return $this->main_top250;
+  }
+
+
  #--------------------------------------------------[ Full Plot (combined) ]---
   /** Get the movies plot(s)
    * @method plot
