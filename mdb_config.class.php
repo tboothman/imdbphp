@@ -168,26 +168,5 @@ class mdb_config {
     # error_reporting(E_ALL ^ E_NOTICE);
   }
 
-  /** Setting the pilot IMDB fallback mode
-   * @method set_pilot_imdbfill
-   * @param int level
-   * @see imdb_config::pilot_imdbfill attribute for details
-   */
-  public function set_pilot_imdbfill($level) {
-    if ( !mdb_config::pilot_imdbfallback_enabled ) return;
-    if ( !is_integer($level) ) return;
-    $this->pilot_imdbfill = $level;
-  }
-
-  /** Check the IMDB fallback level for the pilot classes.
-   *  As <code>pilot_imdbfill</code> is a protected variable, this is the only
-   *  way to read its current value.
-   * @method get_pilot_imdbfill()
-   * @return int pilot_imdbfill
-   */
-  function get_pilot_imdbfill() {
-    return $this->pilot_imdbfill;
-  }
-
 }
 ?>
