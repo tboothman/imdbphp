@@ -11,7 +11,7 @@
  /* $Id$ */
 
  require_once(dirname(__FILE__)."/movie_base.class.php");
- if (mdb_config::pilot_imdbfill) require_once(dirname(__FILE__)."/imdb_person.class.php");
+ if (mdb_config::pilot_imdbfallback_enabled) require_once(dirname(__FILE__)."/imdb.class.php");
 
  #=============================================================================
  #================================================[ The Pilot class itself ]===
@@ -37,7 +37,7 @@
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    if (mdb_config::pilot_imdbfill) $this->imdb = new imdb_person($id);
+    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb = new imdb($id);
     $this->setid($id);
   }
 
@@ -47,7 +47,7 @@
    */
   function setid($id) {
     parent::setid($id);
-    if (mdb_config::pilot_imdbfill) $this->imdb->setid($id);
+    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb->setid($id);
   }
 
  #-------------------------------------------------------------[ Open Page ]---
@@ -130,7 +130,7 @@
    *        set at least to BASIC_ACCESS, it will be retrieved from IMDB.
    */
   public function movieTypes() {
-    if (mdb_config::pilot_imdbfill) $this->main_movietypes = $this->imdb->movieTypes();
+    if ($this->pilot_imdbfill) $this->main_movietypes = $this->imdb->movieTypes();
     return $this->main_movietypes;
   }
 
@@ -248,10 +248,10 @@
    *  simply returns the first one
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; BASIC_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
    */
   public function language() {
-    if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->main_language = $this->imdb->language();
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->main_language = $this->imdb->language();
     return $this->main_language;
   }
 
@@ -260,10 +260,10 @@
    * @return array languages (array[0..n] of strings)
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; BASIC_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
    */
   public function languages() {
-    if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->langs = $this->imdb->languages();
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->langs = $this->imdb->languages();
     return $this->langs;
   }
 
@@ -306,10 +306,10 @@
    * @return array colors (array[0..1] of strings)
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; BASIC_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
    */
   public function colors() {
-    if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->moviecolors = $this->imdb->colors();
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->moviecolors = $this->imdb->colors();
     return $this->moviecolors;
   }
 
@@ -319,10 +319,10 @@
    * @return array creator (array[0..n] of array[name,imdb])
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function creator() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_creator = $this->imdb->creator();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->main_creator = $this->imdb->creator();
     return $this->main_creator;
   }
 
@@ -333,10 +333,10 @@
    * @see MoviePilot page / (TitlePage)
    * @version no data available
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function tagline() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_tagline = $this->imdb->tagline();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->main_tagline = $this->imdb->tagline();
     return $this->main_tagline;
   }
 
@@ -346,10 +346,10 @@
    * @return int seasons number of seasons
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function seasons() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->seasoncount = $this->imdb->seasons();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->seasoncount = $this->imdb->seasons();
     else return 0;
     return $this->seasoncount;
   }
@@ -492,10 +492,10 @@
    * @see MoviePilot page / (TitlePage)
    * @version no data available
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; BASIC_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
    */
   public function alsoknow() {
-    if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->akas = $this->imdb->alsoknow();
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->akas = $this->imdb->alsoknow();
     return $this->akas;
   }
 
@@ -505,10 +505,10 @@
    * @return array sound (array[0..n] of strings)
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; BASIC_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
    */
   public function sound() {
-    if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->sound = $this->imdb->sound();
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->sound = $this->imdb->sound();
     return $this->sound;
   }
 
@@ -518,10 +518,10 @@
    * @return array mpaa (array[country]=rating)
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> &gt; NO_ACCESS
+   *        <code>pilot_imdbfill</code> &gt; NO_ACCESS
    */
   public function mpaa() {
-    if (mdb_config::pilot_imdbfill) $this->mpaas = $this->imdb->mpaa();
+    if ($this->pilot_imdbfill) $this->mpaas = $this->imdb->mpaa();
     return $this->mpaas;
   }
 
@@ -530,10 +530,10 @@
    * @return array mpaa (array[country][0..n]=rating)
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function mpaa_hist() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->mpaas_hist = $this->imdb->mpaa_hist();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->mpaas_hist = $this->imdb->mpaa_hist();
     return $this->mpaas_hist;
   }
 
@@ -543,10 +543,10 @@
    * @return string reason why the movie was rated such
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function mpaa_reason() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->mpaa_justification = $this->imdb->mpaa_reason();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->mpaa_justification = $this->imdb->mpaa_reason();
     return $this->mpaa_justification;
   }
 
@@ -556,10 +556,10 @@
    * @returns array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
    * @see MoviePilot page / (TitlePage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function prodNotes() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_prodnotes = $this->imdb->prodNotes();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->main_prodnotes = $this->imdb->prodNotes();
     return $this->main_prodnotes;
   }
 
@@ -568,10 +568,10 @@
    * @method top250
    * @return int position a number between 1..250 if the movie is listed, 0 otherwise
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function top250() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->main_top250 = $this->imdb->top250();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->main_top250 = $this->imdb->top250();
     return $this->main_top250;
   }
 
@@ -582,14 +582,14 @@
    * @return array plot (array[0..n] of strings)
    * @see MoviePilot page (Titlepage)
    * @brief No data available at MoviePilot. If
-   *        <code>mdb_config::pilot_imdbfill</code> is set to FULL_ACCESS, we
+   *        <code>pilot_imdbfill</code> is set to FULL_ACCESS, we
    *        will automatically retrieve this data from the IMDB site configured.
    *        Otherwise we fake some data using <code>pilot::plotoutline()</code>,
    *        resulting in a single record (if any) available there.
    */
   public function plot() {
     if (empty($this->plot_plot)) {
-      if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->plot_plot = $this->imdb->plot();
+      if ($this->pilot_imdbfill==FULL_ACCESS) $this->plot_plot = $this->imdb->plot();
       else $this->plot_plot[0] = $this->plotoutline();
     }
     return $this->plot_plot;
@@ -601,10 +601,10 @@
    * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
    * @see MoviePilot page (Titlepage)
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function plot_split() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->split_plot = $this->imdb->plot_split();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->split_plot = $this->imdb->plot_split();
     return $this->split_plot;
   }
 
@@ -615,10 +615,10 @@
    * @return string synopsis
    * @see MoviePilot page /synopsis
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function synopsis() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->synopsis_wiki = $this->imdb->synopsis();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->synopsis_wiki = $this->imdb->synopsis();
     return $this->synopsis_wiki;
   }
 
@@ -629,10 +629,10 @@
    * @return array taglines (array[0..n] of strings)
    * @see MoviePilot page /taglines
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function taglines() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->taglines = $this->imdb->taglines();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->taglines = $this->imdb->taglines();
     return $this->taglines;
   }
 
@@ -754,10 +754,10 @@
    * @return array crazy_credits (array[0..n] of string)
    * @see MoviePilot page /crazycredits
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function crazy_credits() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->crazy_credits = $this->imdb->crazy_credits();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->crazy_credits = $this->imdb->crazy_credits();
     return $this->crazy_credits;
   }
 
@@ -768,10 +768,10 @@
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot])
    * @see MoviePilot page /episodes
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function episodes() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->season_episodes = $this->imdb->episodes();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->season_episodes = $this->imdb->episodes();
     return $this->season_episodes;
   }
 
@@ -782,10 +782,10 @@
    * @return array goofs (array[0..n] of array[type,content]
    * @see MoviePilot page /goofs
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function goofs() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->goofs = $this->imdb->goofs();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->goofs = $this->imdb->goofs();
     return $this->goofs;
   }
 
@@ -796,10 +796,10 @@
    * @return array quotes (array[0..n] of string)
    * @see MoviePilot page /quotes
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function quotes() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->moviequotes = $this->imdb->quotes();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->moviequotes = $this->imdb->quotes();
     return $this->moviequotes;
   }
 
@@ -822,10 +822,10 @@
    * @return array trivia (array[0..n] string
    * @see MoviePilot page /trivia
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function trivia() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->trivia = $this->imdb->trivia();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->trivia = $this->imdb->trivia();
     return $this->trivia;
   }
 
@@ -838,11 +838,11 @@
    *  But IMDB does not always stick to that - so in many cases it holds
    *  [0] performed by, [1] courtesy of<BR>
    *        No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    * @see MoviePilot page /soundtrack
    */
   public function soundtrack() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->soundtracks = $this->imdb->soundtrack();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->soundtracks = $this->imdb->soundtrack();
     return $this->soundtracks;
   }
 
@@ -856,10 +856,10 @@
    *         array if no connections of that type)
    * @see MoviePilot page /movieconnection
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function movieconnection() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->movieconnections = $this->imdb->movieconnection();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->movieconnections = $this->imdb->movieconnection();
     elseif (empty($this->movieconnections)) {
 #      if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
 #      if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
@@ -885,10 +885,10 @@
    * @return array [0..n] of array [url, desc] (or empty array if no data)
    * @see MoviePilot page /externalreviews
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function extReviews() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->extreviews = $this->imdb->extReviews();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->extreviews = $this->imdb->extReviews();
     return $this->extreviews;
   }
 
@@ -920,10 +920,10 @@
    * @return array [0..n] of array (name,url,notes)
    * @see MoviePilot page /companycredits
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function prodCompany() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->compcred_prod = $this->imdb->prodCompany();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->compcred_prod = $this->imdb->prodCompany();
     return $this->compcred_prod;
   }
 
@@ -933,10 +933,10 @@
    * @return array [0..n] of array (name,url,notes)
    * @see MoviePilot page /companycredits
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function distCompany() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->compcred_dist = $this->imdb->distCompany();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->compcred_dist = $this->imdb->distCompany();
     return $this->compcred_dist;
   }
 
@@ -946,10 +946,10 @@
    * @return array [0..n] of array (name,url,notes)
    * @see MoviePilot page /companycredits
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function specialCompany() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->compcred_special = $this->imdb->specialCompany();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->compcred_special = $this->imdb->specialCompany();
     return $this->compcred_special;
   }
 
@@ -959,10 +959,10 @@
    * @return array [0..n] of array (name,url,notes)
    * @see MoviePilot page /companycredits
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function otherCompany() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->compcred_other = $this->imdb->otherCompany();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->compcred_other = $this->imdb->otherCompany();
     return $this->compcred_other;
   }
 
@@ -974,10 +974,10 @@
    *         Frightening - and maybe more; values: arguments for the rating
    * @see MoviePilot page /parentalguide
    * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
-   *        <code>mdb_config::pilot_imdbfill</code> set to FULL_ACCESS
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
    */
   public function parentalGuide() {
-    if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->parental_guide = $this->imdb->parentalGuide();
+    if ($this->pilot_imdbfill==FULL_ACCESS) $this->parental_guide = $this->imdb->parentalGuide();
     return $this->parental_guide;
   }
 

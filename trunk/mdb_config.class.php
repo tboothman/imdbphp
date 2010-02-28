@@ -28,6 +28,9 @@ $PEAR = false;
  */
 class mdb_config {
   var $imdbsite;
+  var $pilotsite;
+  var $pilot_apikey;
+  protected $pilot_imdbfill;
   var $cachedir;
   var $usecache;
   var $storecache;
@@ -36,19 +39,20 @@ class mdb_config {
   var $cache_expire;
   var $photodir;
   var $photoroot;
-  /* If MoviePilot misses certain data (i.e. it does not provide that datatype
-   *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
-   *  via the IMDB class? To define this, you should use the following constants:
-   *  <UL><LI>NO_ACCESS - don't access IMDB.COM at all</LI>
-   *      <LI>BASIC_ACCESS - access it only for very basic data. This means very
-   *          non-descriptive stuff, like e.g. MPAA/FSK.</LI>
-   *      <LI>MEDIUM_ACCESS - something more than BASIC, but ommit "traceable"
-   *          stuff like full descriptions, IMDB ratings, and the like</LI>
-   *      <LI>FULL_ACCESS - get all we can get</LI></UL>
-   * @class mdb_config
-   * @constant integer pilot_imdbfill
+  var $imdb_img_url;
+  var $imdb_utf8recode;
+  var $debug;
+  var $maxresults;
+  var $searchvariant;
+  /** Enable IMDB-Fallback for the Pilot classes?
+   *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
+   *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
+   *  The imdb classes will be included based on this setting.
+   * @package MDBApi
+   * @constant boolean pilot_imdbfallback_enabled
+   * @see mdb_config::pilot_imdbfill
    */
-  const pilot_imdbfill = NO_ACCESS;
+  const pilot_imdbfallback_enabled = FALSE;
 
   /** Constructor and only method of this base class.
    *  There's no need to call this yourself - you should just place your
@@ -78,6 +82,19 @@ class mdb_config {
      * @attribute string pilot_apikey
      */
     $this->pilot_apikey = "";
+    /* If the Pilot classes miss certain data (i.e. it does not provide that datatype
+     *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
+     *  via the IMDB class? To define this, you should use the following constants:
+     *  <UL><LI>NO_ACCESS - don't access IMDB.COM at all</LI>
+     *      <LI>BASIC_ACCESS - access it only for very basic data. This means very
+     *          non-descriptive stuff, like e.g. MPAA/FSK.</LI>
+     *      <LI>MEDIUM_ACCESS - something more than BASIC, but ommit "traceable"
+     *          stuff like full descriptions, IMDB ratings, and the like</LI>
+     *      <LI>FULL_ACCESS - get all we can get</LI></UL>
+     * @class mdb_config
+     * @attribute integer pilot_imdbfill
+     */
+    $this->pilot_imdbfill = NO_ACCESS;
     /** Directory to store the cache files. This must be writable by the web
      *  server. It doesn't need to be under documentroot.
      * @attribute string cachedir
@@ -149,6 +166,27 @@ class mdb_config {
     // see PHP documentation for details)
     # error_reporting(E_ALL);
     # error_reporting(E_ALL ^ E_NOTICE);
+  }
+
+  /** Setting the pilot IMDB fallback mode
+   * @method set_pilot_imdbfill
+   * @param int level
+   * @see imdb_config::pilot_imdbfill attribute for details
+   */
+  public function set_pilot_imdbfill($level) {
+    if ( !mdb_config::pilot_imdbfallback_enabled ) return;
+    if ( !is_integer($level) ) return;
+    $this->pilot_imdbfill = $level;
+  }
+
+  /** Check the IMDB fallback level for the pilot classes.
+   *  As <code>pilot_imdbfill</code> is a protected variable, this is the only
+   *  way to read its current value.
+   * @method get_pilot_imdbfill()
+   * @return int pilot_imdbfill
+   */
+  function get_pilot_imdbfill() {
+    return $this->pilot_imdbfill;
   }
 
 }

@@ -13,12 +13,12 @@
 
  require_once (dirname(__FILE__)."/person_base.class.php");
  require_once (dirname(__FILE__)."/imdbsearch.class.php");
- if (mdb_config::pilot_imdbfill) require_once (dirname(__FILE__)."/imdb_person.class.php");
+ if (mdb_config::pilot_imdbfallback_enabled) require_once (dirname(__FILE__)."/imdb_person.class.php");
 
  #=================================================[ The IMDB Person class ]===
  /** Accessing IMDB staff information
   * @package IMDB
-  * @class imdb_person
+  * @class pilot_person
   * @extends mdb_base
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright 2008 by Itzchak Rehberg and IzzySoft
@@ -50,7 +50,7 @@
 
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor imdb_person
+   * @constructor pilot_person
    * @param string id IMDBID to use for data retrieval
    */
   function __construct($id) {
@@ -58,7 +58,7 @@
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    if (mdb_config::pilot_imdbfill) $this->imdb = new imdb_person($id);
+    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb = new imdb_person($id);
     $this->setid($id);
   }
 
@@ -221,7 +221,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_all() {
-    if (empty($this->allfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->allfilms = $this->imdb->movies_all();
+    if (empty($this->allfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->allfilms = $this->imdb->movies_all();
     return $this->allfilms;
   }
 
@@ -235,7 +235,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_actress() {
-     if (empty($this->actressfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->actressfilms = $this->imdb->movies_acress();
+     if (empty($this->actressfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->actressfilms = $this->imdb->movies_acress();
      return $this->actressfilms;
    }
 
@@ -249,7 +249,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_actor() {
-    if (empty($this->actorsfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->actorsfilms = $this->imdb->movies_actor();
+    if (empty($this->actorsfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->actorsfilms = $this->imdb->movies_actor();
     return $this->actorsfilms;
   }
 
@@ -263,7 +263,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_producer() {
-    if (empty($this->producersfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->producersfilms = $this->imdb->movies_producer();
+    if (empty($this->producersfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->producersfilms = $this->imdb->movies_producer();
     return $this->producersfilms;
   }
 
@@ -275,7 +275,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_director() {
-    if (empty($this->directorsfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->directorsfilms = $this->imdb->movies_director();
+    if (empty($this->directorsfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->directorsfilms = $this->imdb->movies_director();
     return $this->directorsfilms;
   }
 
@@ -287,7 +287,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_soundtrack() {
-    if (empty($this->soundtrackfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->soundtrackfilms = $this->imdb->movies_soundtrack();
+    if (empty($this->soundtrackfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->soundtrackfilms = $this->imdb->movies_soundtrack();
     return $this->soundtrackfilms;
   }
 
@@ -299,7 +299,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_crew() {
-    if (empty($this->crewsfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->crewsfilms = $this->imdb->movies_crew();
+    if (empty($this->crewsfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->crewsfilms = $this->imdb->movies_crew();
     return $this->crewsfilms;
   }
 
@@ -311,7 +311,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_thanx() {
-    if (empty($this->thanxfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->thanxfilms = $this->imdb->movies_thanx();
+    if (empty($this->thanxfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->thanxfilms = $this->imdb->movies_thanx();
     return $this->thanxfilms;
   }
 
@@ -324,7 +324,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_self() {
-    if (empty($this->selffilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->selffilms = $this->imdb->movies_self();
+    if (empty($this->selffilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->selffilms = $this->imdb->movies_self();
     return $this->selffilms;
   }
 
@@ -337,7 +337,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_writer() {
-    if (empty($this->writerfilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->writerfilms = $this->imdb->movies_writer();
+    if (empty($this->writerfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->writerfilms = $this->imdb->movies_writer();
     return $this->writerfilms;
   }
 
@@ -350,7 +350,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_archive() {
-    if (empty($this->archivefilms) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->archivefilms = $this->imdb->movies_archive();
+    if (empty($this->archivefilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->archivefilms = $this->imdb->movies_archive();
     return $this->archivefilms;
   }
 
@@ -364,9 +364,7 @@
   *        set at least to MEDIUM_ACCESS, it will be retrieved from IMDB.
   */
  public function birthname() {
-   if (empty($this->birth_name)) {
-     if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->birth_name = $this->imdb->birthname();
-   }
+   if (empty($this->birth_name) && $this->pilot_imdbfill > BASIC_ACCESS) $this->birth_name = $this->imdb->birthname();
    return $this->birth_name;
  }
 
@@ -379,9 +377,7 @@
   *        set at least to MEDIUM_ACCESS, it will be retrieved from IMDB.
   */
  public function nickname() {
-   if (empty($this->nick_name)) {
-     if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->nick_name = $this->imdb->nickname();
-   }
+   if (empty($this->nick_name) && $this->pilot_imdbfill > BASIC_ACCESS) $this->nick_name = $this->imdb->nickname();
    return $this->nick_name;
  }
 
@@ -428,9 +424,7 @@
   *        set at least to MEDIUM_ACCESS, it will be retrieved from IMDB.
   */
  public function height() {
-   if (empty($this->bodyheight)) {
-     if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->bodyheight = $this->imdb->height();
-   }
+   if (empty($this->bodyheight) && $this->pilot_imdbfill > BASIC_ACCESS) $this->bodyheight = $this->imdb->height();
    return $this->bodyheight;
  }
 
@@ -446,9 +440,7 @@
   *        set at least to MEDIUM_ACCESS, it will be retrieved from IMDB.
   */
  public function spouse() {
-   if (empty($this->spouses)) {
-     if (mdb_config::pilot_imdbfill > BASIC_ACCESS) $this->spouses = $this->imdb->spouse();
-   }
+   if (empty($this->spouses) && $this->pilot_imdbfill > BASIC_ACCESS) $this->spouses = $this->imdb->spouse();
    return $this->spouses;
  }
 
@@ -463,7 +455,7 @@
   */
   public function bio() {
    if (empty($this->bio_bio)) {
-     if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->bio_bio = $this->imdb->bio();
+     if ($this->pilot_imdbfill==FULL_ACCESS) $this->bio_bio = $this->imdb->bio();
      else {
        if ($this->page["Name"] == "") $this->openpage("Name");
        if (!empty($this->page["Name"]->short_description))
@@ -482,7 +474,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function trivia() {
-    if (empty($this->bio_trivia) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->bio_trivia = $this->imdb->trivia();
+    if (empty($this->bio_trivia) && $this->pilot_imdbfill==FULL_ACCESS) $this->bio_trivia = $this->imdb->trivia();
     return $this->bio_trivia;
   }
 
@@ -495,7 +487,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function quotes() {
-    if (empty($this->bio_quotes) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->bio_quotes = $this->imdb->quotes();
+    if (empty($this->bio_quotes) && $this->pilot_imdbfill==FULL_ACCESS) $this->bio_quotes = $this->imdb->quotes();
     return $this->bio_quotes;
   }
 
@@ -508,7 +500,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function trademark() {
-    if (empty($this->bio_tm) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->bio_tm = $this->imdb->trademark();
+    if (empty($this->bio_tm) && $this->pilot_imdbfill==FULL_ACCESS) $this->bio_tm = $this->imdb->trademark();
     return $this->bio_tm;
   }
 
@@ -521,9 +513,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function salary() {
-    if (empty($this->bio_salary)) {
-      if (mdb_config::pilot_imdbfill==FULL_ACCESS) $this->bio_salary = $this->imdb->salary();
-    }
+    if (empty($this->bio_salary) && $this->pilot_imdbfill==FULL_ACCESS) $this->bio_salary = $this->imdb->salary();
     return $this->bio_salary;
   }
 
@@ -538,7 +528,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function pubprints() {
-    if (empty($this->pub_prints) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_prints = $this->imdb->pubprints();
+    if (empty($this->pub_prints) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_prints = $this->imdb->pubprints();
     return $this->pub_prints;
   }
 
@@ -551,7 +541,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function pubmovies() {
-    if (empty($this->pub_movies) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_movies = $this->imdb->pubmovies();
+    if (empty($this->pub_movies) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_movies = $this->imdb->pubmovies();
     return $this->pub_movies;
   }
 
@@ -564,7 +554,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function pubportraits() {
-    if (empty($this->pub_portraits) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_portraits = $this->imdb->pubportraits();
+    if (empty($this->pub_portraits) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_portraits = $this->imdb->pubportraits();
     return $this->pub_portraits;
   }
 
@@ -579,7 +569,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function interviews() {
-    if (empty($this->pub_interviews) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_interviews = $this->imdb->interviews();
+    if (empty($this->pub_interviews) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_interviews = $this->imdb->interviews();
     return $this->pub_interviews;
   }
 
@@ -594,7 +584,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function articles() {
-    if (empty($this->pub_articles) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_articles = $this->imdb->articles();
+    if (empty($this->pub_articles) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_articles = $this->imdb->articles();
     return $this->pub_articles;
   }
 
@@ -609,7 +599,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function pictorials() {
-    if (empty($this->pub_pictorials) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_pictorials = $this->imdb->pictorials();
+    if (empty($this->pub_pictorials) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_pictorials = $this->imdb->pictorials();
     return $this->pub_pictorials;
   }
 
@@ -624,7 +614,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function magcovers() {
-    if (empty($this->pub_magcovers) && mdb_config::pilot_imdbfill==FULL_ACCESS) $this->pub_magcovers = $this->imdb->magcovers();
+    if (empty($this->pub_magcovers) && $this->pilot_imdbfill==FULL_ACCESS) $this->pub_magcovers = $this->imdb->magcovers();
     return $this->pub_magcovers;
   }
 
