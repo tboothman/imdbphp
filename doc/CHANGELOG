@@ -12,6 +12,7 @@ v1.9.10
   protected property (to be accessed via mdb_config::get_pilot_imdbfill and
   mdb_config::set_imdbfill). To enable the use of this, the new constant
   mdb_config::pilot_imdbfallback_enabled needs to be set to TRUE
++ pilotsearch now honors the maxresults setting
 
 v1.9.9 (24.02.2010)
 -------------------
