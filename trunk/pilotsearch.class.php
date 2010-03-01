@@ -74,7 +74,10 @@
    if ($this->url !== NULL){
     $url = $this->url;
    }else{
-     $url = "http://".$this->pilotsite."/searches/movies.json?q=".urlencode($this->name)."&api_key=".$this->pilot_apikey;
+     if (!isset($this->maxresults)) $this->maxresults = 20;
+     if ($this->maxresults > 0) $query = "&per_page=".$this->maxresults;
+     else $query = "";
+     $url = "http://".$this->pilotsite."/searches/movies.json?q=".urlencode($this->name)."&api_key=".$this->pilot_apikey.$query;
    }
    return $url;
   }
