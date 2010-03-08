@@ -1093,7 +1093,7 @@
     if ( empty($this->moviequotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
-      if (preg_match_all("/<a name=\"qt.*?<\/a>\s*(.*?)<hr/",str_replace("\n"," ",$this->page["Quotes"]),$matches))
+      if (preg_match_all('|<a name="qt.*?</a>\s*(.*?)<p class="linksoda"|ims',str_replace("\n"," ",$this->page["Quotes"]),$matches))
         foreach ($matches[1] as $match) $this->moviequotes[] = str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',$match);
     }
     return $this->moviequotes;
