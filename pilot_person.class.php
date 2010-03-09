@@ -235,7 +235,7 @@
   *        set to FULL_ACCESS, it will be retrieved from IMDB.
   */
   public function movies_actress() {
-     if (empty($this->actressfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->actressfilms = $this->imdb->movies_acress();
+     if (empty($this->actressfilms) && $this->pilot_imdbfill==FULL_ACCESS) $this->actressfilms = $this->imdb->movies_actress();
      return $this->actressfilms;
    }
 
