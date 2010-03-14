@@ -815,6 +815,18 @@
     return $this->trailers;
   }
 
+ #===========================================================[ /videosites ]===
+ #------------------------------------------[ Off-site trailers and videos ]---
+  /** Get the off-site videos and trailer URLs
+   * @method videosites
+   * @see IMDB page /videosites
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
+   */
+  public function videosites() {
+    if ($this->pilot_imdbfill==FULL_ACCESS) return $this->imdb->videosites();
+  }
+
  #==========================================================[ /trivia page ]===
  #----------------------------------------------------------[ Trivia Array ]---
   /** Get the trivia info

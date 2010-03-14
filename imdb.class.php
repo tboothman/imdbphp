@@ -56,6 +56,7 @@
     case "Episodes"    : $urlname="/episodes"; break;
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
+    case "VideoSites"  : $urlname="/videosites"; break;
     case "Goofs"       : $urlname="/goofs"; break;
     case "Trivia"      : $urlname="/trivia"; break;
     case "Soundtrack"  : $urlname="/soundtrack"; break;
@@ -1057,6 +1058,28 @@
     }
     return $this->trailers;
   }
+
+ #===========================================================[ /videosites ]===
+ #------------------------------------------[ Off-site trailers and videos ]---
+  /** Get the off-site videos and trailer URLs
+   * @method videosites
+   * @return array videosites array[0..n] of array(site,url,type,desc)
+   * @see IMDB page /videosites
+   */
+  public function videosites() {
+    if ( empty($this->video_sites) ) {
+      if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
+      if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
+      if ( preg_match('|<h3[^>]*>\s*Trailers on Other Sites\s*</h3>(.*?)<hr|ims',$this->page["VideoSites"],$match) ) {
+        preg_match_all('!<p[^>]*>(.*?)\s*\((.*?)\)\s*\(<a href="(.*?)">(.*?)</a>\)\s*</p!ims',$match[1],$matches);
+        for ($i=0;$i<count($matches[0]);++$i) {
+          $this->video_sites[] = array("site"=>$matches[4][$i],"url"=>$matches[3][$i],"type"=>$matches[2][$i],"desc"=>$matches[1][$i]);
+        }
+      }
+    }
+    return $this->video_sites;
+  }
+
 
  #==========================================================[ /trivia page ]===
  #----------------------------------------------------------[ Trivia Array ]---
