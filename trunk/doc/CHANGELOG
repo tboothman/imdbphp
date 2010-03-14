@@ -14,6 +14,7 @@ v1.9.10
   mdb_config::pilot_imdbfallback_enabled needs to be set to TRUE
 + pilotsearch now honors the maxresults setting
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
++ added imdb::videosites() to retrieve the external trailer links again
 
 v1.9.9 (24.02.2010)
 -------------------

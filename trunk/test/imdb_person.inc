@@ -46,6 +46,7 @@ page("Name");
  method($imdbp,"movies_crew");
  method($imdbp,"movies_soundtrack");
  method($imdbp,"movies_thanx");
+ method($imdbp,"movies_writer");
  method($imdbp,"movies_self");
  method($imdbp,"movies_archive");
 endpage();
