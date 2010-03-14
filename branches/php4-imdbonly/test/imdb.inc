@@ -55,7 +55,7 @@ page("Title");
  method($imdb,"mpaa_reason");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
- setid($imdb,"1212428"); // The Lost City of Z - 2010
+ setid($imdb,"1334515"); // Bad Company
  method($imdb,"prodNotes");
  setid($imdb,"0094592"); // 14 going 30 (TV)
  method($imdb,"movieTypes");
