@@ -15,6 +15,7 @@ v1.9.10
 + pilotsearch now honors the maxresults setting
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
 + added imdb::videosites() to retrieve the external trailer links again
+! fixed the imdb_trailer class again (at least basically)
 
 v1.9.9 (24.02.2010)
 -------------------
