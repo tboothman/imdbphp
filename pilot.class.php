@@ -86,6 +86,7 @@
    switch ($wt){
     case "Title"       : $urlname="/movies/imdb-id-".(int)$this->imdbid().".json"; break;
     case "Credits"     : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/casts.json"; break;
+    case "Trailers"    : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/trailers.json"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -672,7 +673,6 @@
    * @method director
    * @return array director (array[0..n] of arrays[imdb,name,role])
    * @see MoviePilot page /fullcredits
-   * @version imdbid is missing here!!!
    */
   public function director() {
     if (empty($this->credits_director)) $this->castlist();
@@ -688,7 +688,6 @@
    * @method cast
    * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
    * @see MoviePilot page /fullcredits
-   * @version imdbid is missing here!!!
    */
   public function cast() {
     if (empty($this->credits_cast)) $this->castlist();
@@ -704,7 +703,6 @@
    * @method writing
    * @return array writers (array[0..n] of arrays[imdb,name,role])
    * @see MoviePilot page /fullcredits
-   * @version imdbid is missing here!!!
    */
   public function writing() {
     if (empty($this->credits_writing)) $this->castlist();
@@ -720,7 +718,6 @@
    * @method producer
    * @return array producer (array[0..n] of arrays[imdb,name,role])
    * @see MoviePilot page /fullcredits
-   * @version imdbid is missing here!!!
    */
   public function producer() {
     if (empty($this->credits_producer)) $this->castlist();
@@ -736,7 +733,6 @@
    * @method composer
    * @return array composer (array[0..n] of arrays[imdb,name,role])
    * @see MoviePilot page /fullcredits
-   * @version imdbid is missing here!!!
    */
   public function composer() {
     if (empty($this->credits_composer)) $this->castlist();
@@ -807,11 +803,21 @@
  #--------------------------------------------------------[ Trailers Array ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
-   * @return array trailers (array[0..n] of string)
+   * @param opt boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDB versions (FALSE, Default)
+   * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url ($full=TRUE)
    * @see MoviePilot page /trailers
-   * @version not yet available (hopefully coming soon)
    */
-  public function trailers() {
+  public function trailers($full=FALSE) {
+    if ( empty($this->trailers) ) {
+      if (empty($this->page["Trailers"])) $this->openpage("Trailers");
+      foreach ($this->page["Trailers"] as $trailer) {
+        if ($full) {
+          $this->trailers[] = array("lang"=>$trailer->language,"title"=>$trailer->title,"url"=>$trailer->url,"restful_url"=>$trailer->restful_url);
+        } else {
+          $this->trailers[] = $trailer->url;
+        }
+      }
+    }
     return $this->trailers;
   }
 
