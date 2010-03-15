@@ -16,7 +16,7 @@ v1.9.10
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
 + added imdb::videosites() to retrieve the external trailer links again
 ! fixed the imdb_trailer class again (at least basically)
-+ pilot::trailers() now delivers content from MoviePilot
++ pilot::trailers() and pilot::mainPictures() now deliver content from MoviePilot
 + imdb::trailers() now also supports the "extended data" introduced by pilot::trailers():
   Passing TRUE as parameter, instead of simply the URLs you get some additional data
 

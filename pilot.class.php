@@ -87,6 +87,7 @@
     case "Title"       : $urlname="/movies/imdb-id-".(int)$this->imdbid().".json"; break;
     case "Credits"     : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/casts.json"; break;
     case "Trailers"    : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/trailers.json"; break;
+    case "Images"      : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/images.json"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -459,13 +460,19 @@
    * @method mainPictures
    * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
    *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
-   *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
+   *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image" (empty here - just for compatibility with the imdb class)</LI>
    *    <LI>bigsrc is the URL of the "big size" image itself</LI>
-   * @author moonface
-   * @author izzy
-   * @version not yet available
    */
   public function mainPictures() {
+    if ( empty($this->main_pictures) ) {
+      if ( $this->page['Images'] == '' ) $this->openpage('Images');
+      if ( $this->page['Images']->total_entries < 1 ) return array(); // no pics available
+      for ($i=0;$i<$this->page['Images']->total_entries;++$i) {
+        $baseurl = $this->page['Images']->images[$i]->base_url.$this->page['Images']->images[$i]->photo_id."/"
+             . $this->page['Images']->images[$i]->file_name_base;
+        $this->main_pictures[] = array('imgsrc'=>$baseurl."_poster.".$this->page['Images']->images[$i]->extension,'bigsrc'=>$baseurl.".".$this->page['Images']->images[$i]->extension,'imglink'=>'');
+      }
+    }
     return $this->main_pictures;
   }
 
