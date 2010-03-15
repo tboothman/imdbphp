@@ -78,6 +78,7 @@ if (isset ($_GET["mid"])) {
   # Keywords
   $keywords = $movie->keywords();
   if ( !empty($keywords) ) {
+    ++$rows;
     echo '<TR><TD><B>Keywords:</B></TD><TD>'.implode(' ',$keywords)."</TD></TR>\n";
   }
 
@@ -323,12 +324,12 @@ if (isset ($_GET["mid"])) {
   }
 
   # Trailer
-  $trailers = $movie->trailers();
+  $trailers = $movie->trailers(TRUE);
   if (!empty($trailers)) {
     ++$rows;
     echo '<tr><td valign=top><b>Trailers:</b></td><td>';
     for ($i=0;$i<count($trailers);++$i) {
-      echo "<a href='".$trailers[$i]."'>".$trailers[$i]."</a><br>\n";
+      echo "<a href='".$trailers[$i]['url']."'>".$trailers[$i]['title']."</a><br>\n";
     }
     echo "</td></tr>\n";
   }
@@ -386,7 +387,7 @@ if (isset ($_GET["mid"])) {
   echo "</TABLE><BR>\n";
   echo "<SCRIPT TYPE='text/javascript'>// <!--\n";
   echo "  function fix_colspan() {\n";
-  echo "    document.getElementById('photocol').rowspan = '$rows';\n";
+  echo "    document.getElementById('photocol').rowSpan = '$rows';\n";
   echo "  }\n//-->\n</SCRIPT>\n";
   echo "</BODY></HTML>";
 }
