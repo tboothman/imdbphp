@@ -803,7 +803,7 @@
  #--------------------------------------------------------[ Trailers Array ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
-   * @param opt boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDB versions (FALSE, Default)
+   * @param opt boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
    * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url ($full=TRUE)
    * @see MoviePilot page /trailers
    */
