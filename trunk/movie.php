@@ -75,7 +75,6 @@ if (isset ($_GET["mid"])) {
     flush();
   }
 
-$movie->videosites();
   # Keywords
   $keywords = $movie->keywords();
   if ( !empty($keywords) ) {
