@@ -1038,10 +1038,11 @@
  #--------------------------------------------------------[ Trailers Array ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
-   * @return array trailers (array[0..n] of string)
+   * @param opt boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
+   * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url ($full=TRUE)
    * @see IMDB page /trailers
    */
-  public function trailers() {
+  public function trailers($full=FALSE) {
     if ( empty($this->trailers) ) {
       if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
       if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
@@ -1049,11 +1050,12 @@
       if (!empty($tag_s)) { // trailers on the IMDB site itself
         $tag_e = strpos($this->page["Trailers"],"</ol>",$tag_s);
         $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        if (preg_match_all('|<a href="{0,1}(/video/screenplay/vi\d*/)|ims',$trail,$matches))
+        if (preg_match_all('|<a href="{0,1}(/video/screenplay/vi\d*/).*?title="(.*?)"|ims',$trail,$matches))
           for ($i=0;$i<count($matches[0]);++$i) {
-	    $trailer = "http://".$this->imdbsite.$matches[1][$i];
-	    if ( !in_array($trailer,$this->trailers) ) $this->trailers[] = $trailer;
-	  }
+            $trailer = "http://".$this->imdbsite.$matches[1][$i];
+            if ( $full ) $this->trailers[] = array("lang"=>'',"title"=>$matches[2][$i],"url"=>$trailer,"restful_url"=>'');
+            else $this->trailers[] = $trailer;
+        }
       }
     }
     return $this->trailers;
