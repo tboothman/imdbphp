@@ -19,6 +19,7 @@ v1.9.10
 + pilot::trailers() and pilot::mainPictures() now deliver content from MoviePilot
 + imdb::trailers() now also supports the "extended data" introduced by pilot::trailers():
   Passing TRUE as parameter, instead of simply the URLs you get some additional data
++ imdb_trailers: added support for Youtube URLs
 
 v1.9.9 (24.02.2010)
 -------------------

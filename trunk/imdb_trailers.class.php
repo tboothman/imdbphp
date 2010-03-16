@@ -43,7 +43,7 @@
 		
    /** Retrieve trailer URLs from moviemaze.de
     * @method getFlashCodeMovieMaze
-    * @param string url trailer url as retrieved with imdb::trailers
+    * @param string url trailer url as retrieved with imdb::videosites
     * @brief the URL of the trailer in http://www.moviemaze.de, this URL its obtained from the IMDB class, using the trailer function.
     * @return array [0..n] of array[url,format] of movie trailers (Flash or Quicktime)
     */
@@ -63,7 +63,7 @@
 
    /** Retrieve trailers from alltrailers.net
     * @method getFlashCodeAllTrailers
-    * @param string url page url as retrieved with imdb::trailers
+    * @param string url page url as retrieved with imdb::videosites
     * @brief the URL of the trailer in http://www.alltrailers.net, this URL its obtained from the IMDB class, using the trailer function.
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
@@ -85,7 +85,7 @@
 
    /** Retrieve trailers from IMDB site
     * @method getImdbTrailers
-    * @param string url page url as retrieved with imdb::trailers
+    * @param string url page url as retrieved with imdb::videosites
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getImdbTrailers($url) {
@@ -102,7 +102,7 @@
 
    /** Retrieve trailers from movieplayer.it (Italian)
     * @method getMoviePlayerTrailers
-    * @param string url page url as retrieved with imdb::trailers
+    * @param string url page url as retrieved with imdb::videosites
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getMoviePlayerTrailers($url) {
@@ -117,7 +117,7 @@
 
    /** Retrieve trailers from azmovietrailers.com
     * @method getAZMovieTrailers
-    * @param string url page url as retrieved with imdb::trailers
+    * @param string url page url as retrieved with imdb::videosites
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getAZMovieTrailers($url) {
@@ -128,6 +128,38 @@
      preg_match('|flashvars\="file\=(http.*)\&|iUms',$this->page,$match);
      preg_match('|\.(.{3})$|i',$match[1],$format);
      if (!empty($match[1])) return array( array("url"=>$match[1],"format"=>$format[1]) );
+   }
+
+   /** Retrieve trailers from youtube
+    * @method getYoutubeTrailers
+    * @param string url
+    * @return array [0..n] of array[url,format] of movie trailers
+    */
+   function getYoutubeTrailers($url) {
+     $videoid = preg_replace('|.*v=(.*)|','\\1',$url);
+     parse_str(file_get_contents("http://youtube.com/get_video_info?video_id={$videoid}"),$i);
+     if($i['status'] == 'fail' && $i['errorcode'] == '150') {
+        $content = file_get_contents("http://www.youtube.com/watch?v={$videoid}");
+        preg_match_all ("/(\\{.*?\\})/is", $content, $matches);
+        $obj = json_decode($matches[0][1]);
+        $token = $obj->{'t'};
+        $fmt_url_map = $obj->{'fmt_url_map'};
+     } elseif ($i['status'] == 'fail' && $i['errorcode'] != '150') {
+        return false;
+     } else {
+        $token = $i['token'];
+        $fmt_url_map = $i['fmt_url_map'];
+     }
+     $url = "http://www.youtube.com/get_video.php?video_id={$videoid}&vq=2&fmt={$fmt}&t={$token}";
+     $headers = get_headers($url,1);
+     $video = $headers['Location'];
+     if(!isset($video)) {
+        preg_match ("/((?:http|https)(?::\\/{2}[\\w]+)(?:[\\/|\\.]?)(?:[^\\s\"]*))/is", $fmt_url_map, $matches);
+        $video = explode(',', $matches[0]); $video = $video[0];
+     }
+     #some times array?
+     if (is_array($video)) return array("url"=>$video[0],"format"=>"flv");
+     else return array("url"=>$video,"format"=>"flv");
    }
 
    /** Get all possible trailers
@@ -152,6 +184,8 @@
          $tl = $this->getMoviePlayerTrailers($trail['url']);
        elseif ( strpos($tmp,"azmovietrailers.com")!==FALSE)
          $tl = $this->getAZMovieTrailers($trail['url']);
+       elseif ( strpos($tmp,"youtube.com")!==FALSE)
+         $tl = $this->getYoutubeTrailers($trail['url']);
        if ( isset($tl) ) $list = array_merge($list,$tl);
      }
    	 return $list;
