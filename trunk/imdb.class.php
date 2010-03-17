@@ -67,6 +67,7 @@
     case "ParentalGuide"  : $urlname="/parentalguide"; break;
     case "OfficialSites"  : $urlname="/officialsites"; break;
     case "Keywords"       : $urlname="/keywords"; break;
+    case "Awards"      : $urlname="/awards"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -790,6 +791,27 @@
    return array();
   }
 
+ #------------------------------------------------[ Helper: Awards TableRows ]---
+  /** Get rows for the awards table on the page
+   * @method private get_table_rows_awards
+   * @param string html
+   * @param string table_start
+   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
+   * @see used by the method awards
+   * @author Qvist
+   */
+  private function get_table_rows_awards( $html ) {
+   $row_s = strpos ( $html, '<table style="margin-top:' );
+   $row_e = $row_s;
+   if ( $row_s == 0 )  return FALSE;
+   $endtable = strpos($html, "</table>", $row_s);
+   $table_string = substr($html,$row_s,$endtable - $row_s);
+   if (preg_match_all("/<tr>(.*?)<\/tr>/ims",$table_string,$matches)) {
+	 return $matches[1];
+   }
+   return $rows;
+  }
+
  #------------------------------------------------------[ Helper: RowCells ]---
   /** Get content of table row cells
    * @method private get_row_cels
@@ -798,7 +820,7 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   private function get_row_cels( $row ) {
-   if (preg_match_all("/<td.*?>(.*?)<\/td>/",$row,$matches)) return $matches[1];
+   if (preg_match_all("/<td.*?>(.*?)<\/td>/ims",$row,$matches)) return $matches[1];
    return array();
   }
 
@@ -1399,6 +1421,58 @@
         $this->all_keywords = $matches[1];
     }
     return $this->all_keywords;
+  }
+
+  #========================================================[ /awards page ]===
+  #--------------------------------------------------------------[ Awards ]---
+  /** Get the complete awards for the movie
+   * @method awards
+   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people]
+   * @see IMDB page /awards
+   * @author Qvist
+   * @brief array[festivalName] is array[name,entries] - where name is a string,
+   *        and entries is above described array
+   */
+  public function awards() {
+    if (empty($this->awards)) {
+      if ($this->page["Awards"] == "") $this->openpage("Awards");
+      $award_rows = $this->get_table_rows_awards($this->page["Awards"]);
+      $rowcount = count ($award_rows);
+      $festival = ""; $year = 0; $won = false; $award = ""; $people = array(); $nr = 0;
+      for ( $i = 0; $i < $rowcount; $i++){
+    	$cels = $this->get_row_cels ($award_rows[$i]);
+    	if( count ($cels) == 0 ){ continue; }
+    	if( count ($cels) == 1 && preg_match( '|<big><a href\="/Sections/Awards/([^\/]+)/">(.*?)</a></big>|', $cels[0], $matches ) ){ 
+          $festival = $matches[1];
+          $this->awards[$festival]['name'] = $matches[2];
+          $nr = 0;
+        }
+        if( count ($cels) == 4 && preg_match( '|<a href\="/Sections/Awards/'.$festival.'/\d{4}">(\d{4}) </a>|', $cels[0], $matches ) ){ 
+          $year = $matches[1]; 
+          array_shift( $cels );
+        }
+        if( count ($cels) == 3 && preg_match( '|<b>(.*?)</b>|', $cels[0], $matches ) ){ 
+          $won = ($matches[1]=="Won")?true:false;
+          array_shift( $cels );
+        }
+        if( count ($cels) == 2 && strpos( $cels[0], "<" ) === false ){ 
+          $award = $cels[0];
+          array_shift( $cels );
+        }
+        if( count ($cels) == 1 && preg_match( '|([^<]*)<br>(.*)|s', $cels[0], $matches ) ){ 
+          $category = trim( $matches[1] );
+          preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|', $matches[2], $matches );
+          $people = isset( $matches[1] )?@array_combine( $matches[1], $matches[2] ):array();
+          array_shift( $cels );
+          $nr++;
+        }
+        if( count ($cels) == 0 ){
+          $this->awards[$festival]['entries'][$nr] = array(
+            'year' => $year, 'won' => $won, 'category' => $category, 'award' => $award, 'people' => $people );
+        }
+      }
+    }
+    return $this->awards;
   }
 
  } // end class imdb

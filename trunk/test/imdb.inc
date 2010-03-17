@@ -129,5 +129,8 @@ endpage();
 page("OfficialSites");
  method($imdb,"officialSites");
 endpage();
+page("Awards");
+ method($imdb,"awards");
+endpage();
 
 ?>

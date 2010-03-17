@@ -1032,6 +1032,20 @@
     return $this->official_sites;
   }
 
+  #========================================================[ /awards page ]===
+  #--------------------------------------------------------------[ Awards ]---
+  /** Get the complete awards for the movie
+   * @method awards
+   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people]
+   * @see IMDB page /awards
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
+   */
+  public function awards() {
+    if ($this->pilot_imdbfill==FULL_ACCESS) return $this->imdb->awards();
+  }
+
+
  } // end class pilot
 
 ?>
