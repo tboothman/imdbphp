@@ -13,7 +13,7 @@
 
  require_once (dirname(__FILE__)."/person_base.class.php");
  require_once (dirname(__FILE__)."/imdbsearch.class.php");
- if (mdb_config::pilot_imdbfallback_enabled) require_once (dirname(__FILE__)."/imdb_person.class.php");
+ if (PILOT_IMDBFALLBACK) require_once (dirname(__FILE__)."/imdb_person.class.php");
 
  #=================================================[ The IMDB Person class ]===
  /** Accessing IMDB staff information
@@ -58,7 +58,7 @@
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb = new imdb_person($id);
+    if (PILOT_IMDBFALLBACK) $this->imdb = new imdb_person($id);
     $this->setid($id);
   }
 

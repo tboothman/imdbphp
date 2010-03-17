@@ -19,6 +19,16 @@ define ('PROXY_PORT', "");
 // set to false to use the old browseremulator.
 $PEAR = false;
 
+/** Enable IMDB-Fallback for the Pilot classes?
+ *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
+ *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
+ *  The imdb classes will be included based on this setting.
+ * @package MDBApi
+ * @constant boolean PILOT_IMDBFALLBACK
+ * @see mdb_config::pilot_imdbfill
+ */
+if ( !defined(PILOT_IMDBFALLBACK) ) define('PILOT_IMDBFALLBACK',FALSE);
+
 /** Configuration part of the IMDB classes
  * @package MDBApi
  * @class mdb_config
@@ -44,15 +54,6 @@ class mdb_config {
   var $debug;
   var $maxresults;
   var $searchvariant;
-  /** Enable IMDB-Fallback for the Pilot classes?
-   *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
-   *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
-   *  The imdb classes will be included based on this setting.
-   * @package MDBApi
-   * @constant boolean pilot_imdbfallback_enabled
-   * @see mdb_config::pilot_imdbfill
-   */
-  const pilot_imdbfallback_enabled = FALSE;
 
   /** Constructor and only method of this base class.
    *  There's no need to call this yourself - you should just place your
