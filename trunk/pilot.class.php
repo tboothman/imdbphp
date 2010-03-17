@@ -11,7 +11,7 @@
  /* $Id$ */
 
  require_once(dirname(__FILE__)."/movie_base.class.php");
- if (mdb_config::pilot_imdbfallback_enabled) require_once(dirname(__FILE__)."/imdb.class.php");
+ if (PILOT_IMDBFALLBACK) require_once(dirname(__FILE__)."/imdb.class.php");
 
  #=============================================================================
  #================================================[ The Pilot class itself ]===
@@ -37,7 +37,7 @@
     if ( empty($this->pilot_apikey) )
       trigger_error('Please provide a valid api key or contact api@moviepilot.de.',E_USER_WARNING);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb = new imdb($id);
+    if (PILOT_IMDBFALLBACK) $this->imdb = new imdb($id);
     $this->setid($id);
   }
 
@@ -47,7 +47,7 @@
    */
   function setid($id) {
     parent::setid($id);
-    if (mdb_config::pilot_imdbfallback_enabled) $this->imdb->setid($id);
+    if (PILOT_IMDBFALLBACK) $this->imdb->setid($id);
   }
 
  #-------------------------------------------------------------[ Open Page ]---

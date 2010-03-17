@@ -22,6 +22,10 @@ v1.9.10
 + imdb_trailers: added support for Youtube URLs
 + imdb::awards() has been added by Qvist (Tnx!) and tweaked by Izzy - the latter
   then also added pilot::awards() as wrapper to it (requires FULL_ACCESS)
+* replaced mdb_config::pilot_imdbfallback_enabled by the global constant
+  PILOT_IMDBFILL - which is defined in the default mdb_config.class.php only
+  if it was not defined before
+
 
 v1.9.9 (24.02.2010)
 -------------------

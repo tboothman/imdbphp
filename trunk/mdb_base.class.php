@@ -68,7 +68,7 @@ class mdb_base extends mdb_config {
    * @see imdb_config::pilot_imdbfill attribute for details
    */
   public function set_pilot_imdbfill($level) {
-    if ( !mdb_config::pilot_imdbfallback_enabled ) return;
+    if ( !PILOT_IMDBFALLBACK ) return;
     if ( !is_integer($level) ) return;
     $this->pilot_imdbfill = $level;
   }
