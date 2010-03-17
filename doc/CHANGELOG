@@ -20,6 +20,8 @@ v1.9.10
 + imdb::trailers() now also supports the "extended data" introduced by pilot::trailers():
   Passing TRUE as parameter, instead of simply the URLs you get some additional data
 + imdb_trailers: added support for Youtube URLs
++ imdb::awards() has been added by Qvist (Tnx!) and tweaked by Izzy - the latter
+  then also added pilot::awards() as wrapper to it (requires FULL_ACCESS)
 
 v1.9.9 (24.02.2010)
 -------------------

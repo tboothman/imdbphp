@@ -63,8 +63,10 @@ class movie_base extends mdb_base {
    $this->page["ParentalGuide"] = "";
    $this->page["OfficialSites"] = "";
    $this->page["Keywords"] = "";
+   $this->page["Awards"] = "";
 
    $this->akas = array();
+   $this->awards = array();
    $this->countries = array();
    $this->castlist = array(); // pilot only
    $this->crazy_credits = array();
