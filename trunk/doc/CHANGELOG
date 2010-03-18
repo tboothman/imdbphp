@@ -25,6 +25,7 @@ v1.9.10
 * replaced mdb_config::pilot_imdbfallback_enabled by the global constant
   PILOT_IMDBFILL - which is defined in the default mdb_config.class.php only
   if it was not defined before
+! IMDB changed the format of the AKAs today - so imdb::alsoknow() had to be fixed
 
 
 v1.9.9 (24.02.2010)
