@@ -79,7 +79,7 @@ if (isset ($_GET["mid"])) {
   $keywords = $movie->keywords();
   if ( !empty($keywords) ) {
     ++$rows;
-    echo '<TR><TD><B>Keywords:</B></TD><TD>'.implode(' ',$keywords)."</TD></TR>\n";
+    echo '<TR><TD><B>Keywords:</B></TD><TD>'.implode(', ',$keywords)."</TD></TR>\n";
   }
 
   # Seasons
