@@ -34,12 +34,16 @@ $imdb = new imdb_nowplaying();
 
 headline("Class imdb_nowplaying (Revision ".$imdb->revision.")","imdb_nowplaying");
 
+echo "<UL>\n";
+
 raw(" <LI>method getNowPlayingMovies(): ");
 $res  = $imdb->getNowPlayingMovies();
 if (empty($res)||empty($res[0])) fail("getNowPlayingMovies");
 else pass();
 raw("</LI>\n");
 ++$GLOBALS["methods"];
+
+echo "</UL>\n";
 
 raw("<hr>\n");
 flush();
