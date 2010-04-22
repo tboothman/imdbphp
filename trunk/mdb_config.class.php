@@ -62,18 +62,20 @@ class mdb_config {
    */
   function __construct() {
     /** IMDB server to use.
-     *  choices are us.imdb.com, uk.imdb.com, akas.imdb.com, german.imdb.com and
-     *  italian.imdb.com - the localized ones (i.e. italian and german) are only
-     *  qualified to find the movies IMDB ID (with the imdbsearch class) -- but
-     *  parsing (with the imdb class) for most of the details will fail at the moment.
+     *  choices are www.imdb.&lt;lang&gt; with &lt;lang&gt; being one of
+     *  de|es|fr|it|pt, uk.imdb.com, and akas.imdb.com - the localized ones are
+     *  only qualified to find the movies IMDB ID (with the imdbsearch class;
+     *  akas.imdb.com will be the best place to search as it has all AKAs) -- but
+     *  parsing (with the imdb class) for most of the details will fail for
+     *  most of the details.
      * @attribute string imdbsite
      */
     $this->imdbsite = "akas.imdb.com";
     /** MoviePilot server to use.
-     *  choices are &lt;lang&gt;.api.moviepilot.com - where &lt;lang&gt; is one
-     *  of de|en|es|fr|pl - more may follow sometimes in the future. Other than
-     *  with the IMDB servers, here the prefix tells the language of the
-     *  <B>content</B>! So it is really intended for chosing the desired language.
+     *  choices are &lt;lang&gt;.moviepilot.com - where &lt;lang&gt; is one
+     *  of es|fr|pl|uk - , and www.moviepilot.de for German. More may follow
+     *  sometimes in the future. So it is really intended for chosing the
+     *  language of the desired content.
      * @attribute string pilotsite
      */
     $this->pilotsite = "www.moviepilot.de";
@@ -82,7 +84,7 @@ class mdb_config {
      *  configuration defined by the constant IMDBPHP_CONFIG)
      * @attribute string pilot_apikey
      */
-    $this->pilot_apikey = "";
+    $this->pilot_apikey = "50714a0681af531bc7cbb7355521b2";
     /* If the Pilot classes miss certain data (i.e. it does not provide that datatype
      *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
      *  via the IMDB class? To define this, you should use the following constants:

@@ -26,7 +26,7 @@ v1.9.10
   PILOT_IMDBFILL - which is defined in the default mdb_config.class.php only
   if it was not defined before
 ! IMDB changed the format of the AKAs today - so imdb::alsoknow() had to be fixed
-
+! imdb::trivia() was broken due to site changes
 
 v1.9.9 (24.02.2010)
 -------------------
