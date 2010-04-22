@@ -33,6 +33,8 @@ switch ($_REQUEST["cache"]) {
                 break;
 }
 
+echo "<UL>\n";
+
 raw(" <LI>method getChartsTop10(): ");
 $res = $imdb->getChartsTop10();
 if (count($res)<10||empty($res[0])) fail("getChartsTop10");
@@ -46,6 +48,8 @@ if (count($res)<10||empty($res[0][0])) fail("getChartsBoxOffice");
 else pass();
 raw("</LI>\n");
 ++$GLOBALS["methods"];
+
+echo "</UL>\n";
 
 raw("<hr>\n");
 flush();

@@ -42,7 +42,7 @@ function raw($text) {
 
 function page($title) {
   if (CRON) return;
-  echo "<B>Checking $title page:</B><UL>\n";
+  echo "<H4 STYLE='margin-top:0;'>Checking $title page:</H4><UL>\n";
   flush();
 }
 
