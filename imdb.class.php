@@ -1123,11 +1123,7 @@
     if (empty($this->trivia)) {
       if (empty($this->page["Trivia"])) $this->openpage("Trivia");
       if ($this->page["Trivia"] == "cannot open page") return array(); // no such page
-      $tag_s = strpos($this->page["Trivia"],'<ul class="trivia">');
-      $tag_e = strrpos($this->page["Trivia"],'<ul class="trivia">'); // maybe more than one
-      $tag_e = strrpos($this->page["Trivia"],"</ul>");
-      $goofs = substr($this->page["Trivia"],$tag_s,$tag_e - $tag_s);
-      if (preg_match_all("|<li><a name.+?</a>(.*?)<br>\s*<br></li>|is",$goofs,$matches)) {
+      if ( preg_match_all('!<div class="sodatext">\s*(.*?)\s<br>!ims',$this->page["Trivia"],$matches) ) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
       }
