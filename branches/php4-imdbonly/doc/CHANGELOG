@@ -8,6 +8,7 @@ v1.2.5
 ! imdb::releaseInfo() was also partly affected by the last IMDB site changes
 ! another IMDB site change broke imdb::alsoknow()
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
+! more fixes due to IMDB site changes
 
 v1.2.4 (24.10.2010)
 -------------------
