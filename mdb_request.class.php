@@ -43,11 +43,13 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
      * @constructor MDB_Request
      */
     function __construct($url){
-      $this->BrowserEmulator();
+      if ($GLOBALS['PEAR']) parent::__construct();
+      else $this->BrowserEmulator();
       $this->urltoopen = $url;
       if ( substr(get_class($this),0,4)=="imdb" ) $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
+      else $this->addHeaderLine('Referer',$_SERVER['HTTP_REFERER']);
     }
-    /** Send a request to the IMDB site
+    /** Send a request to the movie site
      * @method sendRequest
      * @return boolean success
      */
@@ -90,6 +92,6 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
       }
     }
   }
-}		
+}
 
 ?>
