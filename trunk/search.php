@@ -43,13 +43,13 @@ switch($_GET["searchtype"]) {
                   require_once("pilotsearch.class.php");
                   require_once("pilot.class.php");
                   $search = new pilotsearch();
-		  break;
-		default:
+                  break;
+                default:
                   require_once("imdbsearch.class.php");
                   require_once("imdb.class.php");
                   $search = new imdbsearch();
-		  break;
-	      }
+                  break;
+              }
               if ($_GET["searchtype"]=="episode") $search->search_episodes(TRUE);
               else $search->search_episodes(FALSE);
               $headname = "Movie";
@@ -58,8 +58,11 @@ switch($_GET["searchtype"]) {
 
 $search->setsearchname($_GET["name"]);
 echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-echo "<HTML><HEAD>\n <TITLE>Performing IMDB search for '".$_GET["name"]."'...</TITLE>\n";
-echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; }</STYLE>\n</HEAD><BODY>\n";
+echo "<HTML><HEAD>\n";
+echo " <TITLE>Performing search for '".$_GET["name"]."' [IMDBPHP2 v".$search->version."]</TITLE>\n";
+echo " <STYLE TYPE='text/css'>body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</STYLE>\n";
+echo "</HEAD><BODY>\n";
+echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '".$_GET['name']."':</H2>\n";
 $results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
    . " <TR><TH>$headname Details</TH><TH>IMDB page</TH><TH>Pilot page</TH></TR>";

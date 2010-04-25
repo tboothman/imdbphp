@@ -17,9 +17,9 @@ if (isset ($_GET["mid"])) {
   switch($_GET["engine"]) {
     case "pilot":
         require("pilot_person.class.php");
-  	$person = new pilot_person($_GET["mid"]);
-  	$charset = "utf8";
-  	$source  = "<A HREF='?engine=imdb&mid=$pid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
+        $person = new pilot_person($_GET["mid"]);
+        $charset = "utf8";
+        $source  = "<A HREF='?engine=imdb&mid=$pid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
         if ($person->get_pilot_imdbfill()) $source .= '<SUP>+i</SUP>';
         break;
     default:
@@ -33,13 +33,14 @@ if (isset ($_GET["mid"])) {
   $person->setid ($pid);
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-  echo "<HTML><HEAD>\n <TITLE>".$person->name()."</TITLE>\n";
+  echo "<HTML><HEAD>\n";
+  echo " <TITLE>".$person->name()." [IMDBPHP2 v".$person->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
   echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Name
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo $person->name();
+  echo "[IMDBPHP2 v".$person->version." Demo] Details for " . $person->name();
   echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
   echo "</TH></tr>\n";
   flush();
