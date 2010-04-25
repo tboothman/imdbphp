@@ -67,6 +67,18 @@
     $this->page[$wt] = json_decode($this->page[$wt]);
   }
 
+ #------------------------------------------[ Check for valid page content ]---
+  /** Check if we have valid page content
+   * @method private invalidPage
+   * @param string wt internal name of the page
+   * @return boolean invalid
+   */
+  function invalidPage($wt) {
+    if ($this->page[$wt] == "cannot open page") return TRUE;
+    if ($this->page[$wt] == '{"error":"please provide a valid api key or contact api@moviepilot.de"}') return TRUE;
+    return FALSE;
+  }
+
  #-----------------------------------------------[ URL to person main page ]---
   /** Set up the URL to the movie title page
    * @method main_url
@@ -419,10 +431,10 @@
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-	$fp = $req->getResponseBody();
+      $fp = $req->getResponseBody();
     }else{
-	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
-	return false;
+      $this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
+      return false;
     }
     $fp2 = fopen ($path, "w");
     if ((!$fp) || (!$fp2)){
@@ -653,13 +665,12 @@
     if (empty($this->castlist)) {
       if (empty($this->page["Credits"])) $this->openpage("Credits");
       foreach(array("actor","soundtrack","director","screenplay","production") as $function) $this->castlist[$function] = array(); // fill the important ones
-      if ($this->page["Credits"] == "cannot open page") return $this->castlist; // no such page
+      if ( $this->invalidPage("Credits") ) return $this->castlist; // no such page
       //$this->page["Credits"]->{'total_entries'} equals count($this->page["Credits"]->{'movies_people'})
       if (is_array($this->page["Credits"]->{'movies_people'})) foreach($this->page["Credits"]->{'movies_people'} as $person) {
         $function = preg_replace('|.*/(.*?)$|','$1',$person->{'function_restful_url'});
-	$person->person->character = $person->character;
-	$this->castlist[$function][] = $person->person;
-#	echo "$function\n";
+        $person->person->character = $person->character;
+        $this->castlist[$function][] = $person->person;
       }
     }
   }
@@ -817,6 +828,7 @@
   public function trailers($full=FALSE) {
     if ( empty($this->trailers) ) {
       if (empty($this->page["Trailers"])) $this->openpage("Trailers");
+      if ( $this->invalidPage("Trailers") ) return $this->trailers;
       foreach ($this->page["Trailers"] as $trailer) {
         if ($full) {
           $this->trailers[] = array("lang"=>$trailer->language,"title"=>$trailer->title,"url"=>$trailer->url,"restful_url"=>$trailer->restful_url);
@@ -887,7 +899,7 @@
     if ($this->pilot_imdbfill==FULL_ACCESS) $this->movieconnections = $this->imdb->movieconnection();
     elseif (empty($this->movieconnections)) {
 #      if (empty($this->page["MovieConnections"])) $this->openpage("MovieConnections");
-#      if ($this->page["MovieConnections"] == "cannot open page") return array(); // no such page
+#      if ( $this->invalidPage("MovieConnections") ) return array(); // no such page
       $this->movieconnections["versionOf"]   = array();
       $this->movieconnections["editedInto"]  = array();
       $this->movieconnections["followedBy"]  = array();
@@ -929,7 +941,7 @@
   public function releaseInfo() {
     if (empty($this->release_info)) {
       if (empty($this->page["Title"])) $this->openpage("Title");
-      if ($this->page["Title"] == "cannot open page") return array(); // no such page
+      if ( $this->invalidPage("Title") ) return array(); // no such page
       $country = $this->country();
       preg_match('|^(\d+).(\d+).(\d+)$|',$this->page["Title"]->{'premiere_date'},$match);
       $m = array_flip($this->months);
@@ -1017,7 +1029,7 @@
   public function officialSites() {
     if (empty($this->official_sites)) {
       if (empty($this->page["Title"])) $this->openpage("Title");
-      if ($this->page["Title"] == "cannot open page") return array(); // no such page
+      if ( $this->invalidPage("Title") ) return array(); // no such page
       $this->official_sites = array();
       if (!empty($this->page["Title"]->homepage))
         $this->official_sites[] = array("url"=>$this->page["Title"]->homepage,"name"=>"Homepage");

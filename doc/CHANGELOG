@@ -28,6 +28,7 @@ v1.9.10
 ! IMDB changed the format of the AKAs today - so imdb::alsoknow() had to be fixed
 ! imdb::trivia() was broken due to site changes
 ! Makefile forgot to install index.html - and to uninstall pilot_person.class.php
+! pilot: some minor adjustments concerning not-available pages
 
 v1.9.9 (24.02.2010)
 -------------------
