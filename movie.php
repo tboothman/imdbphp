@@ -18,9 +18,9 @@ if (isset ($_GET["mid"])) {
   switch($engine) {
     case "pilot":
         require("pilot.class.php");
-  	$movie = new pilot($_GET["mid"]);
-  	$charset = "utf8";
-  	$source  = "<A HREF='?engine=imdb&mid=$movieid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
+        $movie = new pilot($_GET["mid"]);
+        $charset = "utf8";
+        $source  = "<A HREF='?engine=imdb&mid=$movieid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
         if ($movie->get_pilot_imdbfill()) $source .= '<SUP>+i</SUP>';
         break;
     default:
@@ -35,14 +35,15 @@ if (isset ($_GET["mid"])) {
   $rows = 2; // count for the rowspan; init with photo + year
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-  echo "<HTML><HEAD>\n <TITLE>".$movie->title().' ('.$movie->year().")</TITLE>\n";
+  echo "<HTML><HEAD>\n";
+  echo " <TITLE>".$movie->title().' ('.$movie->year().") [IMDBPHP2 v".$movie->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } b.active { color:#b00;background-color:#fff;text-decoration:underline;}</STYLE>\n";
   echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo $movie->title().' ('.$movie->year().")";
+  echo "[IMDBPHP2 v".$movie->version." Demo] Movie Details for '" . $movie->title()."' (".$movie->year().")";
   echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
   echo "</TH></TR>\n";
   flush();
