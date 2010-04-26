@@ -129,7 +129,7 @@
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/\<title\>(.*)\<\/title\>/",$this->page["Title"],$match)) {
         if (preg_match_all('|\(([^\)]*)\)|',$match[1],$matches)) {
-	  for ($i=0;$i<count($matches[0]);++$i) if (!preg_match('|^\d{4}$|',$matches[1][$i])) $this->main_movietypes[] = $matches[1][$i];
+      for ($i=0;$i<count($matches[0]);++$i) if (!preg_match('|^\d{4}$|',$matches[1][$i])) $this->main_movietypes[] = $matches[1][$i];
         }
       }
     }
@@ -453,10 +453,10 @@
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-	$fp = $req->getResponseBody();
+    $fp = $req->getResponseBody();
     }else{
-	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
-	return false;
+    $this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
+    return false;
     }
     $fp2 = fopen ($path, "w");
     if ((!$fp) || (!$fp2)){
@@ -504,13 +504,13 @@
     if (empty($this->main_pictures)) {
       if (@preg_match_all("/\<div class=\"media_strip_thumb\">\<a href=\"(.*?)\">\<img height=\"90\" width=\"90\" src\=\"(.*?)\"/",$this->page["Title"],$matches)) {
         for ($i=0;$i<count($matches[0]);++$i) {
-	  $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
+      $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
           if (substr($matches[1][$i],0,4)!="http") $matches[1][$i] = "http://".$this->imdbsite.$matches[1][$i];
           $this->main_pictures[$i]["imglink"] = $matches[1][$i];
           preg_match('|(.*\._V1).*|iUs',$matches[2][$i],$big);
           $ext = substr($matches[2][$i],-3);
           $this->main_pictures[$i]["bigsrc"] = $big[1].".${ext}";
-	}
+    }
       }
     }
     return $this->main_pictures;
@@ -553,7 +553,6 @@
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
     $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-
     $aka_arr = explode("<br>",str_replace("\n","",$alsoknow_all));
     foreach ($aka_arr as $aka) {
       $aka = trim($aka);
@@ -562,23 +561,22 @@
       if ( strpos($aka,'tn15more')!==FALSE ) break;
       preg_match('!"(.*?)"\s*-\s*(.*)!ims',$aka,$match);
       $title = $match[1];
-      if ( preg_match('!(.*?)\s*(<em>.*</em>)!ims',$match[2],$match2) ) {
-        $country = $match2[1];
-        preg_match_all('!<em>\((.*?)\)</em>!ims',$match2[2],$matches);
+      $countries = explode( ', ', $match[2] );
+      foreach( $countries as $country ){
         $comment = '';
-        for ($i=0;$i<count($matches[0]);++$i) $comment .= ', '.$matches[1][$i];
-        $comment = substr($comment,2);
-      } else {
-        $country = $match[2];
-        $comment = '';
+        if ( preg_match('!(.*?)\s*(<em>.*</em>)!ims',$country,$match2) ) {
+            $country = $match2[1];
+            preg_match_all('!<em>\((.*?)\)</em>!ims',$match2[2],$matches);
+            $comment = implode( ', ', $matches[1] );
+        }
+        $this->akas[] = array(
+            "title"=>preg_replace('|(\<.*?\>)|','',$title),
+            "year"=>'',
+            "country"=>preg_replace('|(\<.*?\>)|','',$country),
+            "comment"=>preg_replace('|(\<.*?\>)|','',$comment),
+            "lang"=>''
+        );
       }
-      $this->akas[] = array(
-        "title"=>preg_replace('|(\<.*?\>)|','',$title),
-        "year"=>'',
-        "country"=>preg_replace('|(\<.*?\>)|','',$country),
-        "comment"=>preg_replace('|(\<.*?\>)|','',$comment),
-        "lang"=>''
-      );
     }
    }
    return $this->akas;
@@ -814,7 +812,7 @@
    $endtable = strpos($html, "</table>", $row_s);
    $table_string = substr($html,$row_s,$endtable - $row_s);
    if (preg_match_all("/<tr>(.*?)<\/tr>/ims",$table_string,$matches)) {
-	 return $matches[1];
+     return $matches[1];
    }
    return $rows;
   }
@@ -860,14 +858,14 @@
    $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
    if($director_rows==null) $director_rows = $this->get_table_rows($this->page["Credits"], "Series Directed by");
    for ( $i = 0; $i < count ($director_rows); $i++){
-	$cels = $this->get_row_cels ($director_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[0]);
-	$dir["name"] = strip_tags($cels[0]);
-	$role = trim(strip_tags($cels[2]));
-	if ( $role == "") $dir["role"] = NULL;
-	else $dir["role"] = $role;
-	$this->credits_director[$i] = $dir;
+    $cels = $this->get_row_cels ($director_rows[$i]);
+    if (!isset ($cels[0])) return array();
+    $dir["imdb"] = $this->get_imdbname($cels[0]);
+    $dir["name"] = strip_tags($cels[0]);
+    $role = trim(strip_tags($cels[2]));
+    if ( $role == "") $dir["role"] = NULL;
+    else $dir["role"] = $role;
+    $this->credits_director[$i] = $dir;
    }
    return $this->credits_director;
   }
@@ -885,17 +883,17 @@
    }
    $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "hs");
    for ( $i = 0; $i < count ($cast_rows); $i++){
-	$cels = $this->get_row_cels ($cast_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[1]);
-	$dir["name"] = strip_tags($cels[1]);
-	$role = strip_tags($cels[3]);
-	if ( $role == "") $dir["role"] = NULL;
-	else $dir["role"] = $role;
-	$dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
-	if (strpos($dir["thumb"],'@@._V1'))
-	  $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
-	$this->credits_cast[$i] = $dir;
+    $cels = $this->get_row_cels ($cast_rows[$i]);
+    if (!isset ($cels[0])) return array();
+    $dir["imdb"] = $this->get_imdbname($cels[1]);
+    $dir["name"] = strip_tags($cels[1]);
+    $role = strip_tags($cels[3]);
+    if ( $role == "") $dir["role"] = NULL;
+    else $dir["role"] = $role;
+    $dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
+    if (strpos($dir["thumb"],'@@._V1'))
+      $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
+    $this->credits_cast[$i] = $dir;
    }
    return $this->credits_cast;
   }
