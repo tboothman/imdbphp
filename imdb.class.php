@@ -1430,7 +1430,7 @@
   #--------------------------------------------------------------[ Awards ]---
   /** Get the complete awards for the movie
    * @method awards
-   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people]
+   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people,comment]
    * @see IMDB page /awards
    * @author Qvist
    * @brief array[festivalName] is array[name,entries] - where name is a string,
@@ -1441,42 +1441,45 @@
       if ($this->page["Awards"] == "") $this->openpage("Awards");
       $award_rows = $this->get_table_rows_awards($this->page["Awards"]);
       $rowcount = count ($award_rows);
-      $festival = ""; $year = 0; $won = false; $award = ""; $people = array(); $nr = 0;
+      $festival = ""; $year = 0; $won = false; $award = ""; $comment = ""; $people = array(); $nr = 0;
       for ( $i = 0; $i < $rowcount; $i++){
-    	$cels = $this->get_row_cels ($award_rows[$i]);
-    	if( count ($cels) == 0 ){ continue; }
-    	if( count ($cels) == 1 && preg_match( '|<big><a href\="/Sections/Awards/([^\/]+)/">(.*?)</a></big>|', $cels[0], $matches ) ){ 
-          $festival = $matches[1];
-          $this->awards[$festival]['name'] = $matches[2];
-          $nr = 0;
+        $cels = $this->get_row_cels ($award_rows[$i]);
+        if( count ($cels) == 0 ){ continue; }
+        if( count ($cels) == 1 && preg_match( '|<big><a href\="/Sections/Awards/([^\/]+)/">(.*?)</a></big>|s', $cels[0], $matches ) ){
+            $festival = $matches[1];
+            $this->awards[$festival]['name'] = $matches[2];
+            $nr = 0;
         }
-        if( count ($cels) == 4 && preg_match( '|<a href\="/Sections/Awards/'.$festival.'/\d{4}">(\d{4}) </a>|', $cels[0], $matches ) ){ 
-          $year = $matches[1]; 
-          array_shift( $cels );
+        if( count ($cels) == 4 && preg_match( '|<a href\="/Sections/Awards/'.quotemeta( $festival ).'/[\d-]+">(\d{4}) </a>|s', $cels[0], $matches ) ){
+            $year = $matches[1];
+            array_shift( $cels );
         }
-        if( count ($cels) == 3 && preg_match( '|<b>(.*?)</b>|', $cels[0], $matches ) ){ 
-          $won = ($matches[1]=="Won")?true:false;
-          array_shift( $cels );
+        if( count ($cels) == 3 && preg_match( '|<b>(.*?)</b>|s', $cels[0], $matches ) ){
+            $won = ($matches[1]=="Won")?true:false;
+            array_shift( $cels );
         }
-        if( count ($cels) == 2 && strpos( $cels[0], "<" ) === false ){ 
-          $award = $cels[0];
-          array_shift( $cels );
+        if( count ($cels) == 2 && strpos( $cels[0], "<" ) === false ){
+            $award = $cels[0];
+            array_shift( $cels );
         }
-        if( count ($cels) == 1 && preg_match( '|([^<]*)<br>(.*)|s', $cels[0], $matches ) ){ 
-          $category = trim( $matches[1] );
-          preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|', $matches[2], $matches );
-          $people = isset( $matches[1] )?@array_combine( $matches[1], $matches[2] ):array();
-          array_shift( $cels );
-          $nr++;
+        if( count ($cels) == 1 && preg_match( '|([^<]*)<br>(.*)<small>|s', $cels[0], $matches ) ){
+            $category = trim( $matches[1] );
+            preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|s', $matches[2], $matches );
+            $people = isset( $matches[0][0] )?array_combine( $matches[1], $matches[2] ):array();
+            preg_match( '|<small>(.*?)</small>|s', $cels[0], $matches );
+            $comment = isset( $matches[1] )?strip_tags( $matches[1] ):'';
+            array_shift( $cels );
+            $nr++;
         }
         if( count ($cels) == 0 ){
-          $this->awards[$festival]['entries'][$nr] = array(
-            'year' => $year, 'won' => $won, 'category' => $category, 'award' => $award, 'people' => $people );
+            $this->awards[$festival]['entries'][$nr] = array(
+                'year' => $year, 'won' => $won, 'category' => $category, 'award' => $award, 'people' => $people, 'comment' => $comment );
         }
       }
     }
     return $this->awards;
   }
+
 
  } // end class imdb
 
