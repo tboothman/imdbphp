@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v1.9.10
+v2.0.0 (26.04.2010)
 -------------------
 ! imdb::releaseInfo() was also partly affected by the last IMDB site changes
 ! another IMDB site change broke imdb::alsoknow()
