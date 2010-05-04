@@ -9,6 +9,7 @@ v1.2.5 (26.04.2010)
 ! another IMDB site change broke imdb::alsoknow()
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
 ! more fixes due to IMDB site changes
+! imdb::tagline() and imdb::prodNotes() have been affected by some site changes
 
 v1.2.4 (24.10.2010)
 -------------------
