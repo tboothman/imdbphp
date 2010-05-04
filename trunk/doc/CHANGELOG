@@ -7,6 +7,7 @@ v2.0.1
 -------------------
 * imdb::awards() updated with code from its author (tnx, Qvist!)
 * imdb::alsoknow() updated with patch from Qvist (tnx again!)
+! imdb::tagline() and imdb::prodNotes() have been affected by some site changes
 
 v2.0.0 (26.04.2010)
 -------------------
