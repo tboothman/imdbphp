@@ -3,13 +3,16 @@ $Id$
 History for IMDBPHP
 ===================
 
+v1.2.6
+-------------------
+! imdb::tagline() and imdb::prodNotes() have been affected by some site changes (backport from trunk)
+
 v1.2.5 (26.04.2010)
 -------------------
 ! imdb::releaseInfo() was also partly affected by the last IMDB site changes
 ! another IMDB site change broke imdb::alsoknow()
 ! imdb::quotes() had some annoying "share this quote" added due to IMDB site changes
 ! more fixes due to IMDB site changes
-! imdb::tagline() and imdb::prodNotes() have been affected by some site changes
 
 v1.2.4 (24.10.2010)
 -------------------
