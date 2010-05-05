@@ -27,7 +27,7 @@ $PEAR = false;
  * @constant boolean PILOT_IMDBFALLBACK
  * @see mdb_config::pilot_imdbfill
  */
-if ( !defined(PILOT_IMDBFALLBACK) ) define('PILOT_IMDBFALLBACK',FALSE);
+if ( !defined('PILOT_IMDBFALLBACK') ) define('PILOT_IMDBFALLBACK',FALSE);
 
 /** Configuration part of the IMDB classes
  * @package MDBApi
