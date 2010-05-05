@@ -366,9 +366,9 @@
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if ( preg_match('|Date of Birth</h5>\s*(.*)<br|iUms',$this->page["Bio"],$match) ) {
         preg_match('|/date/(\d+)-(\d+)/.*?>\d+\s+(.*?)<|',$match[1],$daymon);
-	preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
-	preg_match('|/search/name\?birth_place=.*?">(.*)<|ims',$match[1],$dloc);
-        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[3],"mon"=>$$daymon[1],"year"=>$dyear[1],"place"=>$dloc[1]);
+        preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
+        preg_match('|/search/name\?birth_place=.*?">(.*)<|ims',$match[1],$dloc);
+        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[3],"mon"=>$daymon[1],"year"=>$dyear[1],"place"=>$dloc[1]);
       }
     }
     return $this->birthday;
