@@ -6,6 +6,7 @@ History for IMDBPHP
 v1.2.6
 -------------------
 ! imdb::tagline() and imdb::prodNotes() have been affected by some site changes (backport from trunk)
+! imdb site changes broke imdb::releaseInfo() again
 
 v1.2.5 (26.04.2010)
 -------------------
