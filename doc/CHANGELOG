@@ -9,6 +9,7 @@ v2.0.1
 * imdb::alsoknow() updated with patch from Qvist (tnx again!)
 ! imdb::tagline() and imdb::prodNotes() have been affected by some site changes
 ! fixing some minor typos
+! imdb site changes broke imdb::releaseInfo() again
 
 v2.0.0 (26.04.2010)
 -------------------
