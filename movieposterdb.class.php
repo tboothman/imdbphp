@@ -50,6 +50,9 @@ class movieposterdb extends mdb_base {
       'unset'    => 'cid=9'
     );
     $this->reset_lang();
+    if ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $this->user_agent = $_SERVER['HTTP_USER_AGENT'];
+    else $this->user_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
+    $this->image_exts = array('jpg','png','gif','bmp');
   }
 
 #----------------------------------------------------------------[ Helpers ]---
@@ -77,7 +80,7 @@ class movieposterdb extends mdb_base {
     $http = array(
       'method' => 'GET',
       'header'  => "Accept-Language: en-en;q=0.8,en-us;q=0.5,en;q=0.3\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nReferer: ".$this->baseurls[0]."\r\n",
-      'user_agent' => 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.0.8) Gecko/2009032711 Ubuntu/8.04 (hardy) Firefox/3.0.8'
+      'user_agent' => $this->user_agent
     );
     if ( empty($page_url) ) $page_url = $this->baseurls[0].'?'.$this->urlparams[$type];
     $page = file_get_contents($page_url,false,stream_context_create(array('http'=>$http)));
@@ -97,11 +100,11 @@ class movieposterdb extends mdb_base {
         while (strtolower($lnode->tagName)!='img') $lnode = $lnode->nextSibling;
         $lang = strtolower($lnode->getAttribute('alt'));
         if (!empty($this->langs)) {
-	  if ( !in_array($lang,$this->langs) ) continue;
-	}
-	$img['lang'] = $lang;
+          if ( !in_array($lang,$this->langs) ) continue;
+        }
+        $img['lang'] = $lang;
         $img['url']  = $this->get_img($url);
-	$urls[] = $img;
+        $urls[] = $img;
       }
       if (count($urls)>=$this->limit) return $urls;
     }
@@ -118,7 +121,7 @@ class movieposterdb extends mdb_base {
     $http = array(
       'method' => 'GET',
       'header'  => "Accept-Language: en-en;q=0.8,en-us;q=0.5,en;q=0.3\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nReferer: ".$this->baseurls[0]."\r\n",
-      'user_agent' => 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.0.8) Gecko/2009032711 Ubuntu/8.04 (hardy) Firefox/3.0.8'
+      'user_agent' => $this->user_agent
     );
     $page = file_get_contents($url,false,stream_context_create(array('http'=>$http)));
     $doc = new DOMDocument();
@@ -218,6 +221,25 @@ class movieposterdb extends mdb_base {
    */
   public function reset_lang() {
     $this->langs = array();
+  }
+
+  /** Save an image to the image dir
+   *  The image will be retrieved from the passed URL and stored in the configured
+   *  mdb::photodir, using the filename part of the URL specified.
+   * @function save_image
+   * @param string url full URL to the image
+   * @return boolean success
+   */
+  function save_image($url) {
+    if ( empty($this->photodir) ) return FALSE;
+    $furl  = explode('/',$url);
+    $fname = $furl[count($furl)-1];
+    $ext   = explode('.',$fname);
+    $fext  = $ext[count($ext)-1];
+    if ( !in_array(strtolower($fext),$this->image_exts) ) return FALSE;
+    echo "File: $fname<br>Ext: $fext<br>";
+    if ( file_put_contents($this->photodir.$fname, file_get_contents($url)) ) return TRUE;
+    return FALSE;
   }
 
 }

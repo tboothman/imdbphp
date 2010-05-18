@@ -10,6 +10,8 @@ v2.0.1
 ! imdb::tagline() and imdb::prodNotes() have been affected by some site changes
 ! fixing some minor typos
 ! imdb site changes broke imdb::releaseInfo() again
++ movieposterdb: added method save_image to save an image to the configured photodir
+* user_agent string now taken from browser (if possible)
 
 v2.0.0 (26.04.2010)
 -------------------
