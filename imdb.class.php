@@ -1249,7 +1249,7 @@
       preg_match_all('!<tr><td><b>(.*?)</b></td>\s*<td[^>]*>(.*?)</td>\s*<td>(.*?)</td>!ims',$block,$matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
-        $country = $matches[1][$i];
+        $country = strip_tags($matches[1][$i]);
         if ( preg_match('!href="/date/(\d{2})-(\d{2})/">\d+ (.*?)</a>\s*<a href="/year/(\d{4})/">!is',$matches[2][$i],$match) ) { // full info
           $this->release_info[] = array('country'=>$country,'day'=>$match[2],'month'=>$match[3],'mon'=>$match[1],'year'=>$match[4],'comment'=>$matches[3][$i]);
         } elseif ( !preg_match('|a href=|i',$matches[2][$i],$match) ) { // no links within
