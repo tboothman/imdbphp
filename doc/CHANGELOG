@@ -13,6 +13,8 @@ v2.0.1
 + movieposterdb: added method save_image to save an image to the configured photodir
 * user_agent string now taken from browser (if possible)
 * imdb::releaseInfo - country was suddenly including anchor tags due to site changes
++ imdbsearch::results now has an additional optional parameter "series" (boolean,
+  default TRUE) to indicate whether you want TV series included with the results
 
 v2.0.0 (26.04.2010)
 -------------------
