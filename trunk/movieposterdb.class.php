@@ -226,11 +226,11 @@ class movieposterdb extends mdb_base {
   /** Save an image to the image dir
    *  The image will be retrieved from the passed URL and stored in the configured
    *  mdb::photodir, using the filename part of the URL specified.
-   * @function save_image
+   * @method public save_image
    * @param string url full URL to the image
    * @return boolean success
    */
-  function save_image($url) {
+  public function save_image($url) {
     if ( empty($this->photodir) ) return FALSE;
     $furl  = explode('/',$url);
     $fname = $furl[count($furl)-1];

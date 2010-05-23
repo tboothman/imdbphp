@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.0.1
+v2.0.1 (23.05.2010)
 -------------------
 * imdb::awards() updated with code from its author (tnx, Qvist!)
 * imdb::alsoknow() updated with patch from Qvist (tnx again!)
