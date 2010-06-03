@@ -5,8 +5,9 @@ History for IMDBPHP2
 
 v2.0.2
 -------------------
-! some search results missed the year (if it was consisting of more than a plain
+! imdbsearch: some search results missed the year (if it was consisting of more than a plain
   year, e.g. something like "2001/II")
+! imdb::prodNotes: lastUpdate was broken due to a site change
 
 v2.0.1 (23.05.2010)
 -------------------
