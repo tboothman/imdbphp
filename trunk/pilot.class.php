@@ -950,6 +950,21 @@
     return $this->release_info;
   }
 
+ #=======================================================[ /locations page ]===
+  /** Obtain filming locations
+   * @method locations
+   * @return array locations array[0..n] of array[name,url] with name being the
+   *               name of the location, and url a relative URL to list other
+   *               movies sharing this location
+   * @see IMDB page /locations
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>pilot_imdbfill</code> set to FULL_ACCESS
+   */
+  public function locations() {
+    if ($this->pilot_imdbfill==FULL_ACCESS) return $this->imdb->locations();
+    else return array();
+  }
+
  #==================================================[ /companycredits page ]===
  #---------------------------------------------------[ Producing Companies ]---
   /** Info about Production Companies

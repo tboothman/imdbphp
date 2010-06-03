@@ -64,6 +64,7 @@ class movie_base extends mdb_base {
    $this->page["OfficialSites"] = "";
    $this->page["Keywords"] = "";
    $this->page["Awards"] = "";
+   $this->page["Locations"] = "";
 
    $this->akas = array();
    $this->awards = array();
@@ -124,6 +125,7 @@ class movie_base extends mdb_base {
    $this->compcred_other = array();
    $this->parental_guide = array();
    $this->official_sites = array();
+   $this->locations = array();
   }
 
 

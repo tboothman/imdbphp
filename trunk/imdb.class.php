@@ -68,6 +68,7 @@
     case "OfficialSites"  : $urlname="/officialsites"; break;
     case "Keywords"       : $urlname="/keywords"; break;
     case "Awards"      : $urlname="/awards"; break;
+    case "Locations"   : $urlname="/locations"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
       $this->debug_scalar("Unknown page identifier: $wt");
@@ -1264,6 +1265,30 @@
       }
     }
     return $this->release_info;
+  }
+
+ #=======================================================[ /locations page ]===
+  /** Obtain filming locations
+   * @method locations
+   * @return array locations array[0..n] of array[name,url] with name being the
+   *               name of the location, and url a relative URL to list other
+   *               movies sharing this location
+   * @see IMDB page /locations
+   */
+  public function locations() {
+    if ( empty($this->locations) ) {
+      if ( empty($this->page['Locations']) ) $this->openpage("Locations");
+      if ( $this->page['Locations'] == "cannot open page" ) return array(); // no such page
+      $tag_s = strpos($this->page['Locations'],'<div id="tn15adrhs">');
+      $tag_e = strpos($this->page['Locations'],'</dl>');
+      $block = substr($this->page['Locations'],$tag_s,$tag_e-$tag_s);
+      $block = substr($block,strpos($block,'<dl>'));
+      if ( preg_match_all('!<dt>(<a href="(.*?)">|)(.*?)(</a>|</dt>)!ims',$block,$matches) ) {
+        for ($i=0;$i<count($matches[0]);++$i)
+          $this->locations[] = array('name'=>$matches[3][$i], 'url'=>$matches[2][$i]);
+      }
+    }
+    return $this->locations;
   }
 
  #==================================================[ /companycredits page ]===
