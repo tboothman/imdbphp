@@ -145,13 +145,14 @@
 
     // now we have the search content - go and parse it!
     if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
-    if ( preg_match_all('!href="/title/tt(\d{7})/"[^>]*>(.*?)</a>\s*(\((\d{4})\)|)[^<]*(<small>(.*?)</small>|)!ims',$this->page,$matches) ) {
+    if ( preg_match_all('!href="/title/tt(\d{7})/"[^>]*>(.*?)</a>\s*(\((\d{4})(/.+?|)\)|)[^<]*(<small>(.*?)</small>|)!ims',$this->page,$matches) ) {
       $this->last_results = count($matches[0]);
       $mids_checked = array();
       for ($i=0;$i<$this->last_results;++$i) {
         if (count($this->resu) == $maxresults) break; // limit result count
         if ( empty($matches[2][$i]) || substr(trim($matches[2][$i]),0,4)=='<img' || in_array($matches[1][$i],$mids_checked) ) continue; // empty titles just come from the images
-        if ( !$series && (preg_match('!&#x22;.+&#x22;!',($matches[2][$i])) || strpos(strtoupper($matches[6][$i]),'TV SERIES')!==FALSE) ) continue; // skip series if commanded so
+        if ( !$series && (preg_match('!&#x22;.+&#x22;!',($matches[2][$i])) || strpos(strtoupper($matches[7][$i]),'TV SERIES')!==FALSE) ) continue; // skip series if commanded so
+        if ( !preg_match('!onclick!i',$matches[0][$i]) ) continue; // just mentioned something in the AKAs listing
         $mids_checked[] = $matches[1][$i];
         $tmpres = new imdb($matches[1][$i]); // make a new imdb object by id
         $tmpres->main_title = $matches[2][$i];

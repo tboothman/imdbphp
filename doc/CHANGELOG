@@ -3,6 +3,11 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.0.2
+-------------------
+! some search results missed the year (if it was consisting of more than a plain
+  year, e.g. something like "2001/II")
+
 v2.0.1 (23.05.2010)
 -------------------
 * imdb::awards() updated with code from its author (tnx, Qvist!)
