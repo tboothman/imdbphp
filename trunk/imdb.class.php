@@ -657,7 +657,7 @@
     if (!preg_match('!(<h3>Production Notes.*?)<h3!ims',$this->page["Title"],$match)) return $this->main_prodnotes; // no info available
     preg_match('!<h5>Status:</h5>\s*<div class="info-content">\s*(.*?)\|(.*?)</div>!ims',$match[1],$tmp);
     $status = trim($tmp[1]); $statnote = trim($tmp[2]);
-    preg_match('!<h5>Status Updated:</h5>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp);
+    preg_match('!<h5>Status Updated:</h5>\s*<div.+?>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp);
     $update = array("day"=>$tmp[1],"month"=>$tmp[2],"mon"=>$this->monthNo($tmp[2]),"year"=>$tmp[3]);
     preg_match('!<h5>More Info:</h5>\s*<div class="info-content">\s*(.*?)</div!ims',$match[1],$tmp);
     $more = trim($tmp[1]);
