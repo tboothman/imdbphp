@@ -11,7 +11,7 @@
 
  /* $Id$ */
 
-if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
+if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR project.
   require_once("HTTP/Request.php");
   class MDB_Request extends HTTP_Request{
     function __construct($url){
@@ -45,7 +45,7 @@ if ( $PEAR ) { // Use the HTTP_Request class from the PEAR project.
      * @constructor MDB_Request
      */
     function __construct($url){
-      if ($GLOBALS['PEAR']) parent::__construct();
+      if (isset($GLOBALS['PEAR']) && $GLOBALS['PEAR']) parent::__construct();
       else $this->BrowserEmulator();
       $this->urltoopen = $url;
       if ( substr(get_class($this),0,4)=="imdb" ) $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
