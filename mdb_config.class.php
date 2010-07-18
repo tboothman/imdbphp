@@ -16,7 +16,8 @@
 define ('PROXY', "");
 define ('PROXY_PORT', "");
 
-// set to false to use the old browseremulator.
+// set this to TRUE if you want to play with the PEAR stuff instead of
+// browseremulator. Be warned that there's no support for problems ;)
 $PEAR = false;
 
 /** Enable IMDB-Fallback for the Pilot classes?
