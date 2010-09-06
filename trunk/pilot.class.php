@@ -368,6 +368,16 @@
     return $this->seasoncount;
   }
 
+ #-----------------------------------------------[ Is it part of a serial? ]---
+  /** Try to figure out if this is a movie or part of a serie
+   * @method is_serial
+   * @return boolean
+   * @see IMDB page / (TitlePage)
+   */
+  public function is_serial() {
+    if ( $this->pilot_imdbfill > NO_ACCESS ) return $this->imdb->is_serial();
+  }
+
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
    * @method plotoutline
