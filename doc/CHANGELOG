@@ -10,6 +10,7 @@ v2.0.2
 ! imdb::prodNotes: lastUpdate was broken due to a site change
 + movies: added imdb::locations() to retrieve details on the filming locations.
   pilot::locations() is just a wrapper to this requiring full fallback configured.
+! mpaa_reason returned wrong text (tnx to dblume for report and fix!)
 
 v2.0.1 (23.05.2010)
 -------------------
