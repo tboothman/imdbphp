@@ -8,6 +8,7 @@ v1.2.6
 ! imdb::tagline() and imdb::prodNotes() have been affected by some site changes (backport from trunk)
 ! imdb site changes broke imdb::releaseInfo() again
 ! mpaa_reason returned wrong text (backport from trunk)
+! more site changes - fixes backported from trunk (photos, countries, languages)
 
 v1.2.5 (26.04.2010)
 -------------------

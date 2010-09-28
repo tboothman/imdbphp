@@ -15,7 +15,7 @@ v2.0.2
   entry is part of a TV series
 ! again site changes at IMDB - fixed imdb::title_year(), imdb::thumbphoto(), and
   imdb::country() with code sent by moonface (tnx!)
-
+! imdb::languages() (and thus imdb::language() as well) had been broken - fixed.
 
 v2.0.1 (23.05.2010)
 -------------------
