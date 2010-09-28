@@ -93,12 +93,13 @@
    */
   private function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match("/\<title\>(.*) \((\d{4}|\?{4}).*\)\<\/title\>/",$this->page["Title"],$match)) {
+    if (@preg_match("/\<title\>(.*) \((.*)(\d{4}|\?{4}).*\)(.*)\<\/title\>/",$this->page["Title"],$match)) {
       $this->main_title = $match[1];
       if ($match[2]=="????") $this->main_year = "";
-      else $this->main_year  = $match[2];
+      else $this->main_year  = $match[3];
     }
   }
+
 
   /** Get movie title
    * @method title
@@ -319,6 +320,7 @@
     return $this->moviegenres;
   }
 
+
  #----------------------------------------------------------[ Color format ]---
   /** Get colors
    * @method colors
@@ -425,13 +427,14 @@
    */
   private function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match("/\<a name=\"poster\"(.*?)\<img (.*?) src\=\"(.*?)\"/",$this->page["Title"],$match);
+    preg_match('!<a name="poster"(.*?)<img(.*) src="(.*?)"!',$this->page["Title"],$match);
     if (empty($match[3])) return FALSE;
     $this->main_thumb = $match[3];
     preg_match('|(.*\._V1).*|iUs',$match[3],$mo);
     $this->main_photo = $mo[1];
     return true;
   }
+
 
   /** Get cover photo
    * @method photo
@@ -538,11 +541,12 @@
    if (empty($this->countries)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->countries = array();
-    if (preg_match_all("/\/Sections\/Countries\/\w+\/\"\>\s*(.*?)<\/a/m",$this->page["Title"],$matches))
+    if (preg_match_all("/\/country\/\w+\"\>(.*?)<\/a/m",$this->page["Title"],$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
    }
    return $this->countries;
   }
+
 
  #------------------------------------------------------------[ Movie AKAs ]---
   /** Get movies alternative names
