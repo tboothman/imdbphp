@@ -50,6 +50,7 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
       $this->urltoopen = $url;
       if ( substr(get_class($this),0,4)=="imdb" ) $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
       elseif ( in_array('HTTP_REFERER',array_keys($_SERVER)) ) $this->addHeaderLine('Referer',$_SERVER['HTTP_REFERER']);
+      if ($this->force_agent) $this->addHeaderLine('User-Agent', $this->force_agent);
     }
     /** Send a request to the movie site
      * @method sendRequest

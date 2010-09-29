@@ -16,6 +16,7 @@ v2.0.2
 ! again site changes at IMDB - fixed imdb::title_year(), imdb::thumbphoto(), and
   imdb::country() with code sent by moonface (tnx!)
 ! imdb::languages() (and thus imdb::language() as well) had been broken - fixed.
++ added config option to set up the user agent "manually"
 
 v2.0.1 (23.05.2010)
 -------------------

@@ -50,8 +50,9 @@ class movieposterdb extends mdb_base {
       'unset'    => 'cid=9'
     );
     $this->reset_lang();
-    if ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $this->user_agent = $_SERVER['HTTP_USER_AGENT'];
-    else $this->user_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
+    if ($this->force_agent) $this->user_agent = $this->force_agent;
+    elseif ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $this->user_agent = $_SERVER['HTTP_USER_AGENT'];
+    else $this->user_agent = $this->default_agent;
     $this->image_exts = array('jpg','png','gif','bmp');
   }
 
