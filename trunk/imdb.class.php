@@ -576,6 +576,7 @@
       if (strpos('class="tn15more"',$aka)>0) break; // end of list
       if (empty($aka)) continue;
       if ( strpos($aka,'tn15more')!==FALSE ) break;
+      $aka = str_replace("&nbsp;", " ", $aka);
       preg_match('!"(.*?)"\s*-\s*(.*)!ims',$aka,$match);
       $title = $match[1];
       $countries = explode( ', ', $match[2] );
