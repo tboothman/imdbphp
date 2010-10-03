@@ -9,6 +9,7 @@ v1.2.6
 ! imdb site changes broke imdb::releaseInfo() again
 ! mpaa_reason returned wrong text (backport from trunk)
 ! more site changes - fixes backported from trunk (photos, countries, languages)
+! if an actor had a too long movie list, no results where shown (there seems to be a limitation in preg_match) - backport
 
 v1.2.5 (26.04.2010)
 -------------------

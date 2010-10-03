@@ -208,30 +208,36 @@
    */
   function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
-    if (preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match) || empty($type)) {
-      if (empty($type)) $match[1] = $this->page["Name"];
-      else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-      if (preg_match_all('!<a(.*?)href="/title/tt(\d{7})/"[^>]*>(.*?)</a>(.*?)<(/li|br)>!ims',$match[1],$matches)) {
-        $mc = count($matches[0]);
-        for ($i=0;$i<$mc;++$i) {
-          preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
-          $str = $matches[4][$i]; //preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
-	  if ( preg_match('|<a .*href\=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char) ) {
-	    $chid   = $char[1];
-	    $chname = $char[2];
-	  } else {
-	    $chid   = '';
-	    if ( preg_match('|\.\.\.\. ([^>]+)|',$str,$char) ) $chname = $char[1];
-	    else $chname = '';
-	  }
-	  if ( empty($chname) ) {
-	    switch($type) {
-	      case 'director' : $chname = 'Director'; break;
-	      case 'producer' : $chname = 'Producer'; break;
-	    }
-	  }
-          $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$chid,"chname"=>$chname,"addons"=>$addons[1]);
+    preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match);
+    if (empty($type)) $match[1] = $this->page["Name"];
+    elseif (empty($match[1])) {
+      $pos   = strpos($this->page['Name'],"<a name=\"$type\"");
+      if ($pos) {
+        $epos  = strpos($this->page['Name'],"</div>",$pos);
+        $match[1] = substr($this->page['Name'],$pos,$epos-$pos);
+      }
+    }
+    else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
+    if (preg_match_all('!<a(.*?)href="/title/tt(\d{7})/"[^>]*>(.*?)</a>(.*?)<(/li|br)>!ims',$match[1],$matches)) {
+      $mc = count($matches[0]);
+      for ($i=0;$i<$mc;++$i) {
+        preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
+        $str = $matches[4][$i]; //preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
+        if ( preg_match('|<a .*href\=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char) ) {
+          $chid   = $char[1];
+          $chname = $char[2];
+        } else {
+          $chid   = '';
+          if ( preg_match('|\.\.\.\. ([^>]+)|',$str,$char) ) $chname = $char[1];
+          else $chname = '';
         }
+        if ( empty($chname) ) {
+          switch($type) {
+            case 'director' : $chname = 'Director'; break;
+            case 'producer' : $chname = 'Producer'; break;
+          }
+        }
+        $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$chid,"chname"=>$chname,"addons"=>$addons[1]);
       }
     }
   }
