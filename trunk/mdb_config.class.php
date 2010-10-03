@@ -165,13 +165,18 @@ class mdb_config {
      */
     $this->searchvariant = "";
     /** Set the default user agent (if none is detected)
-     * @attribute user_agent
+     * @attribute string user_agent
      */
     $this->default_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
     /** Enforce the use of a special user agent
-     * @attribute force_agent
+     * @attribute string force_agent
      */
     $this->force_agent = '';
+    /** Trigger the HTTP referer
+     *  This is required in some places. However, if you think you need to disable
+     *  this behaviour, do it here.
+     */
+    $this->trigger_referer = TRUE;
     // let PHP report any script errors (useful for code debugging). Comment out
     // to use the default level defined in php.ini, or set to an appropriate
     // level (E_ALL = all errors/warning/notices, E_ALL ^ E_NOTICE = PHP default;
