@@ -901,14 +901,15 @@
    $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
    if($director_rows==null) $director_rows = $this->get_table_rows($this->page["Credits"], "Series Directed by");
    for ( $i = 0; $i < count ($director_rows); $i++){
-	$cels = $this->get_row_cels ($director_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[0]);
-	$dir["name"] = strip_tags($cels[0]);
-	$role = trim(strip_tags($cels[2]));
-	if ( $role == "") $dir["role"] = NULL;
-	else $dir["role"] = $role;
-	$this->credits_director[$i] = $dir;
+    $cels = $this->get_row_cels ($director_rows[$i]);
+    if (!isset ($cels[0])) return array();
+    $dir = array();
+    $dir["imdb"] = $this->get_imdbname($cels[0]);
+    $dir["name"] = strip_tags($cels[0]);
+    $role = trim(strip_tags($cels[2]));
+    if ( $role == "") $dir["role"] = NULL;
+    else $dir["role"] = $role;
+    $this->credits_director[$i] = $dir;
    }
    return $this->credits_director;
   }
@@ -926,17 +927,18 @@
    }
    $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "hs");
    for ( $i = 0; $i < count ($cast_rows); $i++){
-	$cels = $this->get_row_cels ($cast_rows[$i]);
-	if (!isset ($cels[0])) return array();
-	$dir["imdb"] = $this->get_imdbname($cels[1]);
-	$dir["name"] = strip_tags($cels[1]);
-	$role = strip_tags($cels[3]);
-	if ( $role == "") $dir["role"] = NULL;
-	else $dir["role"] = $role;
-	$dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
-	if (strpos($dir["thumb"],'@@._V1'))
-	  $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
-	$this->credits_cast[$i] = $dir;
+    $cels = $this->get_row_cels ($cast_rows[$i]);
+    if (!isset ($cels[0])) return array();
+    $dir = array();
+    $dir["imdb"] = $this->get_imdbname($cels[1]);
+    $dir["name"] = strip_tags($cels[1]);
+    $role = strip_tags($cels[3]);
+    if ( $role == "") $dir["role"] = NULL;
+    else $dir["role"] = $role;
+    $dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
+    if (strpos($dir["thumb"],'@@._V1'))
+      $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
+      $this->credits_cast[$i] = $dir;
    }
    return $this->credits_cast;
   }
@@ -957,6 +959,7 @@
    for ( $i = 0; $i < count ($writing_rows); $i++){
      $cels = $this->get_row_cels ($writing_rows[$i]);
      if ( count ( $cels) > 2){
+       $wrt = array();
        $wrt["imdb"] = $this->get_imdbname($cels[0]);
        $wrt["name"] = strip_tags($cels[0]);
        $role = strip_tags($cels[2]);
@@ -984,6 +987,7 @@
    for ( $i = 0; $i < count ($producer_rows); $i++){
     $cels = $this->get_row_cels ($producer_rows[$i]);
     if ( count ( $cels) > 2){
+     $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
      $wrt["name"] = strip_tags($cels[0]);
      $role = strip_tags($cels[2]);
@@ -1011,6 +1015,7 @@
    for ( $i = 0; $i < count ($composer_rows); $i++){
     $cels = $this->get_row_cels ($composer_rows[$i]);
     if ( count ( $cels) > 2){
+     $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
      $wrt["name"] = strip_tags($cels[0]);
      $role = strip_tags($cels[2]);
