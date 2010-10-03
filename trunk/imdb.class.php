@@ -877,6 +877,7 @@
    for ( $i = 0; $i < count ($director_rows); $i++){
     $cels = $this->get_row_cels ($director_rows[$i]);
     if (!isset ($cels[0])) return array();
+    $dir = array();
     $dir["imdb"] = $this->get_imdbname($cels[0]);
     $dir["name"] = strip_tags($cels[0]);
     $role = trim(strip_tags($cels[2]));
@@ -902,6 +903,7 @@
    for ( $i = 0; $i < count ($cast_rows); $i++){
     $cels = $this->get_row_cels ($cast_rows[$i]);
     if (!isset ($cels[0])) return array();
+    $dir = array();
     $dir["imdb"] = $this->get_imdbname($cels[1]);
     $dir["name"] = strip_tags($cels[1]);
     $role = strip_tags($cels[3]);
@@ -931,6 +933,7 @@
    for ( $i = 0; $i < count ($writing_rows); $i++){
      $cels = $this->get_row_cels ($writing_rows[$i]);
      if ( count ( $cels) > 2){
+       $wrt = array();
        $wrt["imdb"] = $this->get_imdbname($cels[0]);
        $wrt["name"] = strip_tags($cels[0]);
        $role = strip_tags($cels[2]);
@@ -958,6 +961,7 @@
    for ( $i = 0; $i < count ($producer_rows); $i++){
     $cels = $this->get_row_cels ($producer_rows[$i]);
     if ( count ( $cels) > 2){
+     $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
      $wrt["name"] = strip_tags($cels[0]);
      $role = strip_tags($cels[2]);
@@ -985,6 +989,7 @@
    for ( $i = 0; $i < count ($composer_rows); $i++){
     $cels = $this->get_row_cels ($composer_rows[$i]);
     if ( count ( $cels) > 2){
+     $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
      $wrt["name"] = strip_tags($cels[0]);
      $role = strip_tags($cels[2]);
