@@ -17,6 +17,8 @@ v2.0.2
   imdb::country() with code sent by moonface (tnx!)
 ! imdb::languages() (and thus imdb::language() as well) had been broken - fixed.
 + added config option to set up the user agent "manually"
+! if an actor had a too long movie list, no results where shown (there seems to be
+  a limitation in preg_match)
 
 v2.0.1 (23.05.2010)
 -------------------
