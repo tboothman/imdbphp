@@ -146,7 +146,7 @@
   private function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Runtime:\<\/h5\>\s*<[^>]*>\s*(.*?)\n/m",$this->page["Title"],$match))
+      if (@preg_match('!Runtime:</h4>\s*(.*)\s*</div!m',$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
@@ -225,8 +225,8 @@
   public function comment() {
     if ($this->main_comment == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/\<div class\=\"comment\"(.*?)(\<b\>.*?)\<div class\=\"yn\"/ms",$this->page["Title"],$match))
-        $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[2]);
+      if (@preg_match('!<div class\="user-comments">(.*?)<div class\="yn"!ms',$this->page["Title"],$match))
+        $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[1]);
         $this->main_comment = str_replace("http://i.media-imdb.com/images/showtimes",$this->imdb_img_url."/showtimes",$this->main_comment);
     }
     return $this->main_comment;
@@ -240,8 +240,10 @@
   public function comment_split() {
     if (empty($this->split_comment)) {
       if ($this->main_comment == "") $comm = $this->comment();
-      if (@preg_match("/<b>(.*?)<\/b>, (.*)<br>.*?<a href=\"(.*)\">(.*?)<\/a>.*<p>(.*?)<\/p>/ms",$this->main_comment,$match))
-        $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$match[3],"name"=>$match[4]),"comment"=>trim($match[5]));
+      if (@preg_match('!<strong>(.*?)</strong>.*<div class="comment-meta">\s*(.*?)\s*\|\s*by\s*(.*?)\s*&ndash;.*?<p>(.*?)</div!ims',$this->main_comment,$match)) {
+        @preg_match('!href="(.*?)">(.*)</a!i',$match[3],$author);
+        $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$author[1],"name"=>$author[2]),"comment"=>trim($match[4]));
+      }
     }
     return $this->split_comment;
   }

@@ -20,7 +20,8 @@ v2.0.2
 ! if an actor had a too long movie list, no results where shown (there seems to be
   a limitation in preg_match)
 ! HUGE SITE CHANGES ON IMDB! Thanks to your contributions, we got many stuff fixed
-  in the imdb class: thumbphoto, ratevote, genres, cast, alsoknown
+  in the imdb class: thumbphoto, ratevote, genres, cast, alsoknown, runtime_all,
+  comment, comment_split
 
 
 v2.0.1 (23.05.2010)
