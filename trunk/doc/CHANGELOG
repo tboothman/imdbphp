@@ -19,6 +19,9 @@ v2.0.2
 + added config option to set up the user agent "manually"
 ! if an actor had a too long movie list, no results where shown (there seems to be
   a limitation in preg_match)
+! HUGE SITE CHANGES ON IMDB! Thanks to your contributions, we got many stuff fixed
+  in the imdb class: thumbphoto, ratevote, genres, cast, alsoknown
+
 
 v2.0.1 (23.05.2010)
 -------------------
