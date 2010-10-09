@@ -676,13 +676,14 @@
   public function prodNotes() {
    if (empty($this->main_prodnotes)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (!preg_match('!(<h3>Production Notes.*?)<h3!ims',$this->page["Title"],$match)) return $this->main_prodnotes; // no info available
-    if ( preg_match('!<h5>Status:</h5>\s*<div class="info-content">\s*(.*?)\|(.*?)</div>!ims',$match[1],$tmp) )
+    if (!preg_match('!(<h2>Production Notes.*?)\s*</div!ims',$this->page["Title"],$match)) return $this->main_prodnotes; // no info available
+    if ( preg_match('!<b>Status:\s*</b>\s*(.*?)\s*\|!ims',$match[1],$tmp) )
         $status = trim($tmp[1]); $statnote = trim($tmp[2]);
-    if ( preg_match('!<h5>Status Updated:</h5>\s*<div.+?>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp) )
+    if ( preg_match('!<b>Updated:\s*</b>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp) )
         $update = array("day"=>$tmp[1],"month"=>$tmp[2],"mon"=>$this->monthNo($tmp[2]),"year"=>$tmp[3]);
-    if ( preg_match('!<h5>More Info:</h5>\s*<div class="info-content">\s*(.*?)</div!ims',$match[1],$tmp) )
-        $more = trim($tmp[1]);
+    if ( preg_match('!<b>More Info:\s*</b>\s*(.*)!ims',$match[1],$tmp) )
+        $more = preg_replace('!\s*onclick=".*?"!ims','',trim($tmp[1]));
+        $more = preg_replace('!href="/!ims','href="http://'.$this->imdbsite.'/',$more);
     if ( preg_match('!<h5>Note:</h5>\s*<span class="note">\s*(.*?)</span!ims',$match[1],$tmp) )
         $note = trim($tmp[1]);
     $this->main_prodnotes = array("status"=>$status,"statnote"=>$statnote,"lastUpdate"=>$update,"more"=>$more,"note"=>$note);
