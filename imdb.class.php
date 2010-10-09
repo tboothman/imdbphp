@@ -184,12 +184,15 @@
    */
   private function rate_vote() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match("/\<b\>(.*?)\/(.*?)\<\/b\>\s*\n\s*&nbsp;&nbsp;\<a href\=\"ratings\" class=\"tn15more\"\>([\d\,]+)/m",$this->page["Title"],$match)) {
+    if (preg_match("@class\=\"rating\-rating\">(\d{1,2}\.\d)@i",$this->page["Title"],$match)){
       $this->main_rating = $match[1];
-      $this->main_votes  = $match[3];
     } else {
       $this->main_rating = 0;
-      $this->main_votes  = 0;
+    }
+    if (preg_match("@href\=\"ratings\"\s*>([\d\,]+)@i",$this->page["Title"],$match)){
+        $this->main_votes = $match[1];
+    }else{
+        $this->main_votes = 0;
     }
   }
 
@@ -315,7 +318,8 @@
   public function genres() {
     if (empty($this->moviegenres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
+#      if (preg_match_all("/\<a href\=\"\/Sections\/Genres\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
+      if (preg_match_all("@<a href\=\"/genre/[\w\-]+\"\>(.*?)\</a>@",$this->page["Title"],$matches))
         $this->moviegenres = $matches[1];
     }
     return $this->moviegenres;
@@ -428,10 +432,10 @@
    */
   private function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match('!<a name="poster"(.*?)<img(.*) src="(.*?)"!',$this->page["Title"],$match);
-    if (empty($match[3])) return FALSE;
-    $this->main_thumb = $match[3];
-    preg_match('|(.*\._V1).*|iUs',$match[3],$mo);
+    preg_match("!id\=\"img_primary\">[^<]*<a[\w\d\=/ >\"]+<img src\=\"(.+?)\"!i",$this->page["Title"],$match);
+    if (empty($match[1])) return FALSE;
+    $this->main_thumb = $match[1];
+    preg_match('|(.*\._V1).*|iUs',$match[1],$mo);
     $this->main_photo = $mo[1];
     return true;
   }
@@ -556,49 +560,47 @@
    *         on akas.imdb.com will add "lang" (2-char language code) to the array
    *         for localized names, "country" may hold multiple countries separated
    *         by commas
-   * @see IMDB page / (TitlePage)
+   * @see IMDB page ReleaseInfo
    * @version Due to changes on the IMDB sites, neither the languages nor the year
    *          seems to be available anymore - so those array properties will always
    *          be empty, and kept for compatibility only (for a while, at least).
+   *          Moreover, content has been moved from the title page to ReleaseInfo page.
    */
   public function alsoknow() {
    if (empty($this->akas)) {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    $ak_s = strpos ($this->page["Title"], "Also Known As:</h5>");
-    if ($ak_s>0) $ak_s += 45;
-    if ($ak_s == 0) $ak_s = strpos ($this->page["Title"], "Alternativ:");
+    if ($this->page["ReleaseInfo"] == "") $this->openpage ("ReleaseInfo");
+    $ak_s = strpos ($this->page["ReleaseInfo"], "<a name=\"akas\">");
+    //if ($ak_s == 0) $ak_s = strpos ($this->page["ReleaseInfo"], "Alternativ:");
     if ($ak_s == 0) return array();
-    $alsoknow_end = strpos ($this->page["Title"], "</div>", $ak_s);
-    $alsoknow_all = substr($this->page["Title"], $ak_s, $alsoknow_end - $ak_s);
-    $aka_arr = explode("<br>",str_replace("\n","",$alsoknow_all));
-    foreach ($aka_arr as $aka) {
-      $aka = trim($aka);
-      if (strpos('class="tn15more"',$aka)>0) break; // end of list
-      if (empty($aka)) continue;
-      if ( strpos($aka,'tn15more')!==FALSE ) break;
-      $aka = str_replace("&nbsp;", " ", $aka);
-      preg_match('!"(.*?)"\s*-\s*(.*)!ims',$aka,$match);
-      $title = $match[1];
-      $countries = explode( ', ', $match[2] );
-      foreach( $countries as $country ){
-        $comment = '';
-        if ( preg_match('!(.*?)\s*(<em>.*</em>)!ims',$country,$match2) ) {
-            $country = $match2[1];
-            preg_match_all('!<em>\((.*?)\)</em>!ims',$match2[2],$matches);
-            $comment = implode( ', ', $matches[1] );
+    $alsoknow_end = strpos ($this->page["ReleaseInfo"], "</table>", $ak_s);
+    $alsoknow_all = substr($this->page["ReleaseInfo"], $ak_s, $alsoknow_end - $ak_s);
+    preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
+    for($i=0;$i<count($matches[1]);$i+=2){
+        $title = trim($matches[1][$i]);
+        $countries = explode('/',$matches[1][$i+1]);
+        foreach($countries as $country){
+            $firstbracket = strpos($country, '(');
+            if($firstbracket === false){
+                $_country = trim($country);
+                $comment = '';
+            }else{
+                $_country = trim(substr($country, 0, $firstbracket));
+                preg_match_all("@\((.+?)\)@", $country, $matches3);
+                $comment = implode(', ', $matches3[1]);
+            }
+            $this->akas[] = array(
+                "title"=>$title,
+                "year"=>'',
+                "country"=>$_country,
+                "comment"=>$comment,
+                "lang"=>''
+            );
         }
-        $this->akas[] = array(
-            "title"=>preg_replace('|(\<.*?\>)|','',$title),
-            "year"=>'',
-            "country"=>preg_replace('|(\<.*?\>)|','',$country),
-            "comment"=>preg_replace('|(\<.*?\>)|','',$comment),
-            "lang"=>''
-        );
-      }
     }
    }
    return $this->akas;
   }
+
 
  #---------------------------------------------------------[ Sound formats ]---
   /** Get sound formats
@@ -911,12 +913,13 @@
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
     $dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
-    if (strpos($dir["thumb"],'@@._V1'))
-      $dir["photo"] = preg_replace('|(.*\@\@._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
+    if (strpos($dir["thumb"],'._V1'))
+      $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
     $this->credits_cast[$i] = $dir;
    }
    return $this->credits_cast;
   }
+
 
  #---------------------------------------------------------------[ Writers ]---
   /** Get the writer(s)
