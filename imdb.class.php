@@ -257,7 +257,7 @@
   public function keywords() {
     if (empty($this->main_keywords)) {
       if ($this->page["Title"] == "") $this->openpage("Title");
-      if (preg_match_all("/\<a href\=\"\/keyword\/[\w\-]+\/\"\>(.*?)\<\/a\>/",$this->page["Title"],$matches))
+      if (preg_match_all('!<a href\="/keyword/[\w\-]+">(.*?)</a>!',$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
     return $this->main_keywords;
@@ -371,7 +371,7 @@
   public function tagline() {
     if ($this->main_tagline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('/Tagline:\<\/h5\>\s*<div class="info-content">\s*(.*?)(<\/div|<a class="tn15more)/ms',$this->page["Title"],$match)) {
+      if (@preg_match('!Taglines:</h4>\s*(.*?)\s*<!ims',$this->page["Title"],$match)) {
         $this->main_tagline = trim($match[1]);
       }
     }
@@ -419,7 +419,7 @@
   public function plotoutline() {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Plot:\<\/h5\>\s*<div[^>]*>(.*?)(<\/div|\||<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
+      if (@preg_match('!Storyline</h2>\s*(.*?)<em class="nobr">Written by!ims',$this->page["Title"],$match)) {
         $this->main_plotoutline = trim($match[1]);
       }
     }
