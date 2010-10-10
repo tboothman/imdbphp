@@ -627,8 +627,8 @@
    */
   public function mpaa() {
    if (empty($this->mpaas)) {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["Title"],$matches)) {
+    if ($this->page["ParentalGuide"] == "") $this->openpage("ParentalGuide");
+    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["ParentalGuide"],$matches)) {
       $cc = count($matches[0]);
       for ($i=0;$i<$cc;++$i) $this->mpaas[$matches[1][$i]] = $matches[2][$i];
     }
@@ -643,8 +643,8 @@
    */
   public function mpaa_hist() {
    if (empty($this->mpaas_hist)) {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["Title"],$matches)) {
+    if ($this->page["ParentalGuide"] == "") $this->openpage("ParentalGuide");
+    if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|",$this->page["ParentalGuide"],$matches)) {
       $cc = count($matches[0]);
       for ($i=0;$i<$cc;++$i) $this->mpaas_hist[$matches[1][$i]][] = $matches[2][$i];
     }
@@ -684,7 +684,7 @@
     if ( preg_match('!<b>More Info:\s*</b>\s*(.*)!ims',$match[1],$tmp) )
         $more = preg_replace('!\s*onclick=".*?"!ims','',trim($tmp[1]));
         $more = preg_replace('!href="/!ims','href="http://'.$this->imdbsite.'/',$more);
-    if ( preg_match('!<h5>Note:</h5>\s*<span class="note">\s*(.*?)</span!ims',$match[1],$tmp) )
+    if ( preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims',$match[1],$tmp) )
         $note = trim($tmp[1]);
     $this->main_prodnotes = array("status"=>$status,"statnote"=>$statnote,"lastUpdate"=>$update,"more"=>$more,"note"=>$note);
    }
