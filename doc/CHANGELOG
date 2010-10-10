@@ -22,6 +22,7 @@ v2.0.2
 ! HUGE SITE CHANGES ON IMDB! Thanks to your contributions, we got many stuff fixed
   in the imdb class: thumbphoto, ratevote, genres, cast, alsoknown, runtime_all,
   comment, comment_split, tagline, plotoutline, keywords, mpaa, mpaa_hist, mpaa_reason, prodNotes
+! Same reason broke the imdb_person class almost completely. Mostly fixed for now.
 
 
 v2.0.1 (23.05.2010)
