@@ -175,6 +175,7 @@ class mdb_config {
     /** Trigger the HTTP referer
      *  This is required in some places. However, if you think you need to disable
      *  this behaviour, do it here.
+     * @attribute boolean trigger_referer
      */
     $this->trigger_referer = TRUE;
     // let PHP report any script errors (useful for code debugging). Comment out
