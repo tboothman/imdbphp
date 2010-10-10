@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.0.2
+v2.0.2 (10.10.2010)
 -------------------
 ! imdbsearch: some search results missed the year (if it was consisting of more than a plain
   year, e.g. something like "2001/II")
