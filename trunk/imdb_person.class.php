@@ -93,7 +93,7 @@
   public function photo($thumb=true) {
     if (empty($this->main_photo)) {
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
-      if (preg_match('/\<a name="headshot".+"(http:\/\/.+\.jpg)".+<\/a>/',$this->page["Name"],$match)) {
+      if (preg_match('!<td id="img_primary".*?>\s*.*?<img.*?src="(.*?)"!ims',$this->page["Name"],$match)) {
         if ($thumb) $this->main_photo = $match[1];
         else        $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[1]);
       } else {
@@ -102,6 +102,7 @@
     }
     return $this->main_photo;
   }
+
 
   /** Save the photo to disk
    * @method savephoto
@@ -120,10 +121,10 @@
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-	$fp = $req->getResponseBody();
+    $fp = $req->getResponseBody();
     }else{
-	$this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
-	return false;
+    $this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
+    return false;
     }
     $fp2 = fopen ($path, "w");
     if ((!$fp) || (!$fp2)){
@@ -165,22 +166,25 @@
    */
   private function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
-    preg_match("/<a name=\"$type\"(.*?)<\/div>/msi",$this->page["Name"],$match);
+    preg_match("!<a name=\"$type\"(.*?)<div class=\"clear\">!msi",$this->page["Name"],$match);
     if (empty($type)) $match[1] = $this->page["Name"];
     elseif (empty($match[1])) {
-      $pos   = strpos($this->page['Name'],"<a name=\"$type\"");
+      $pos   = strpos($this->page['Name'],'<a name="'.ucfirst($type).'"');
       if ($pos) {
-        $epos  = strpos($this->page['Name'],"</div>",$pos);
+        $epos  = strpos($this->page['Name'],'<div id=',$pos);
         $match[1] = substr($this->page['Name'],$pos,$epos-$pos);
       }
     }
     else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-    if (preg_match_all('!<a(.*?)href="/title/tt(\d{7})/"[^>]*>(.*?)</a>(.*?)<(/li|br)>!ims',$match[1],$matches)) {
+    if (preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*<div!ims',$match[1],$matches)) {
       $mc = count($matches[0]);
+      $year = '';
       for ($i=0;$i<$mc;++$i) {
-        preg_match('|^\s*\((\d{4})\)|',$matches[4][$i],$year);
+        $char = array();
+        if (preg_match('!<span class="year_column">(\d{4})</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
+        preg_match('!href="/title/tt(\d{7})/">(.*?)</a>!ims',$matches[1][$i],$mov);
         $str = $matches[4][$i]; //preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
-        if ( preg_match('|<a .*href\=\"/character/ch(\d{7})\/\">(.*?)<\/a>|i',$str,$char) ) {
+        if ( preg_match('!href="/character/ch(\d{7})">(.*?)</a>!ims',$matches[1][$i],$char) ) {
           $chid   = $char[1];
           $chname = $char[2];
         } else {
@@ -194,7 +198,7 @@
             case 'producer' : $chname = 'Producer'; break;
           }
         }
-        $res[] = array("mid"=>$matches[2][$i],"name"=>$matches[3][$i],"year"=>$year[1],"chid"=>$chid,"chname"=>$chname,"addons"=>$addons[1]);
+        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>$chname,"addons"=>'');
       }
     }
   }
