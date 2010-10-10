@@ -281,7 +281,7 @@
    * @see IMDB person page / (Main page)
    */
   public function movies_crew() {
-    if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"miscellaneousX20crew");
+    if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"MiscellaneousCrew");
     return $this->crewsfilms;
   }
 
@@ -324,7 +324,7 @@
    * @see IMDB person page / (Main page)
    */
   public function movies_archive() {
-    if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"archive");
+    if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"ArchiveFootage");
     return $this->archivefilms;
   }
 
