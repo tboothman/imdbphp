@@ -75,7 +75,7 @@
   public function name() {
     if (empty($this->fullname)) {
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
-      if (preg_match("/<title>(.*?)<\/title>/i",$this->page["Name"],$match)) {
+      if (preg_match("/<title>(.*?) - IMDb<\/title>/i",$this->page["Name"],$match)) {
         $this->fullname = trim($match[1]);
       }
     }
