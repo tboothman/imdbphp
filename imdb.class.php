@@ -146,7 +146,7 @@
   private function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('!Runtime:</h4>\s*(.*)\s*</div!m',$this->page["Title"],$match))
+      if (@preg_match('!Runtime:</h4>\s*(.*)\s*</div!ms',$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
