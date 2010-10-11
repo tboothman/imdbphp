@@ -419,8 +419,14 @@
   public function plotoutline() {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('!Storyline</h2>\s*(.*?)<em class="nobr">Written by!ims',$this->page["Title"],$match)) {
-        $this->main_plotoutline = trim($match[1]);
+      if (@preg_match('!Storyline</h2>\s*(.*?)<h4!ims',$this->page["Title"],$match)) {
+        if (preg_match('!(.*?)<em class="nobr">Written by!ims',$match[1],$det))
+          $this->main_plotoutline = $det[1];
+        elseif (preg_match('!(.*)\s<span class="see-more inline">!ims',$match[1],$det))
+          $this->main_plotoutline = $det[1];
+        elseif (preg_match('!(.*)\s\|!ims',$match[1],$det))
+          $this->main_plotoutline = $det[1];
+        else $this->main_plotoutline = trim($match[1]);
       }
     }
     return $this->main_plotoutline;
