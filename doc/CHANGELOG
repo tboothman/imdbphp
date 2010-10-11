@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.0.3
+-------------------
+! some after-fixes for the last "big run" include imdb::plotoutline()
+
 v2.0.2 (10.10.2010)
 -------------------
 ! imdbsearch: some search results missed the year (if it was consisting of more than a plain
