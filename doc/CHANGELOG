@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.0.3
 -------------------
 ! some after-fixes for the last "big run" include imdb::plotoutline()
+! same for imdb_person::name()
 
 v2.0.2 (10.10.2010)
 -------------------
