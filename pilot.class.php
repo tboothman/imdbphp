@@ -392,6 +392,15 @@
     return $this->main_plotoutline;
   }
 
+  /** Get the Storyline for the movie
+   * @method storyline
+   * @return string storyline
+   * @see IMDB page / (TitlePage)
+   */
+  public function storyline () {
+    if ($this->pilot_imdbfill==FULL_ACCESS) return $this->imdb->storyline();
+  }
+
  #--------------------------------------------------------[ Photo specific ]---
   /** Setup cover photo (thumbnail and big variant)
    * @method private thumbphoto

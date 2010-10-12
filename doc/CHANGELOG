@@ -8,6 +8,8 @@ v2.0.3
 ! some after-fixes for the last "big run" include imdb methods plotoutline(),
   runtime_all()
 ! same for imdb_person::name()
+* imdb::plotoutline() was taken from storyline with the recent changes - fixed it up
++ but since we had a working storyline, that method was added as storyline()
 
 v2.0.2 (10.10.2010)
 -------------------
