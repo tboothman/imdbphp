@@ -384,10 +384,11 @@
    * @return string plotoutline
    * @see MoviePilot page / (TitlePage)
    */
-  public function plotoutline () {
+  public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       $this->main_plotoutline = $this->page["Title"]->{'short_description'};
+      if ( empty($this->main_plotoutline) && $fallback ) $this->main_plotoutline = $this->storyline();
     }
     return $this->main_plotoutline;
   }
