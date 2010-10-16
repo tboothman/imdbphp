@@ -11,6 +11,8 @@ v2.0.3
 * imdb::plotoutline() was taken from storyline with the recent changes - fixed it up
 + but since we had a working storyline, that method was added as storyline()
 ! imdb::mainPictures() was also broken by the last site changes - fixed
+! mdb_request class did not inherit force_agent and trigger_referer values from
+  mdb_config and thus issued PHP notices
 
 v2.0.2 (10.10.2010)
 -------------------
