@@ -547,15 +547,16 @@
   public function mainPictures() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (empty($this->main_pictures)) {
-      if (@preg_match_all("/\<div class=\"media_strip_thumb\">\<a href=\"(.*?)\">\<img height=\"90\" width=\"90\" src\=\"(.*?)\"/",$this->page["Title"],$matches)) {
+      preg_match('!<div class="mediastrip">\s*(.*?)\s*</div>!ims',$this->page["Title"],$match);
+      if (@preg_match_all('!<a .*?href="(.*?)".*?<img.*?src="(.*?)"!ims',$match[1],$matches)) {
         for ($i=0;$i<count($matches[0]);++$i) {
-      $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
+          $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
           if (substr($matches[1][$i],0,4)!="http") $matches[1][$i] = "http://".$this->imdbsite.$matches[1][$i];
           $this->main_pictures[$i]["imglink"] = $matches[1][$i];
           preg_match('|(.*\._V1).*|iUs',$matches[2][$i],$big);
           $ext = substr($matches[2][$i],-3);
           $this->main_pictures[$i]["bigsrc"] = $big[1].".${ext}";
-    }
+        }
       }
     }
     return $this->main_pictures;
