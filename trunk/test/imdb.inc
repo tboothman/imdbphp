@@ -47,6 +47,7 @@ page("Title");
  method($imdb,"tagline");
  method($imdb,"plotoutline");
  method($imdb,"photo");
+ method($imdb,"mainPictures");
  method($imdb,"country");
  method($imdb,"alsoknow");
  method($imdb,"sound");

@@ -10,6 +10,7 @@ v2.0.3
 ! same for imdb_person::name()
 * imdb::plotoutline() was taken from storyline with the recent changes - fixed it up
 + but since we had a working storyline, that method was added as storyline()
+! imdb::mainPictures() was also broken by the last site changes - fixed
 
 v2.0.2 (10.10.2010)
 -------------------
