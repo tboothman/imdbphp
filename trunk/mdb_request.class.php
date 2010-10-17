@@ -31,7 +31,8 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
   }
 } else { // Use the browseremu class
   require_once (dirname(__FILE__)."/browseremulator.class.php");
-  require_once (dirname(__FILE__)."/mdb_config.class.php");
+  if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
+  else require_once (dirname(__FILE__)."/mdb_config.class.php");
 
   /** The request class
    *  Here we emulate a browser accessing the IMDB site. You don't need to
