@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.0.4
+-------------------
+! mdb_request.class.php ignored the IMDBPHP_CONFIG constant - fixed
+
 v2.0.3 (17.10.2010)
 -------------------
 ! some after-fixes for the last "big run" include imdb methods plotoutline(),
