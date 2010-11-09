@@ -171,9 +171,11 @@
    */
   public function runtimes(){
     if (empty($this->movieruntimes)) {
-      if ($this->runtime_all() == "") return array();
-      if (preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches))
+      if (preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches)) {
         for ($i=0;$i<count($matches[0]);++$i) $this->movieruntimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
+      } elseif (preg_match('!<div class="infobar">.*?(\d+)\s*min!ims',$this->page['Title'],$match)) {
+        $this->movieruntimes[] = array('time'=>$match[1],'country'=>'','comment'=>'');
+      }
     }
     return $this->movieruntimes;
   }
@@ -323,8 +325,13 @@
   public function genres() {
     if (empty($this->moviegenres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("@<a href\=\"/genre/[\w\-]+\"\>(.*?)\</a>@",$this->page["Title"],$matches))
+      if (preg_match_all("@<a href\=\"/genre/[\w\-]+\"\>(.*?)\</a>@",$this->page["Title"],$matches)) {
         $this->moviegenres = $matches[1];
+      } elseif (preg_match('!<div class="infobar">(.*?)</div>!ims',$this->page['Title'],$match)) {
+        if (preg_match_all('!href="/genre/.*?"\s*>(.*?)<!ims',$match[1],$matches)) {
+          $this->moviegenres = $matches[1];
+        }
+      }
     }
     return $this->moviegenres;
   }
