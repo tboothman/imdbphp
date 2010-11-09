@@ -8,6 +8,7 @@ v2.0.4
 ! mdb_request.class.php ignored the IMDBPHP_CONFIG constant - fixed
 ! they did it again - so imdb::comment_split() was broken
 ! imdb photo stuff was broken
++ runtimes and genres know have an additional source as fallback
 
 v2.0.3 (17.10.2010)
 -------------------
