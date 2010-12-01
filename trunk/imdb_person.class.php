@@ -112,8 +112,12 @@
    * @return boolean success
    * @see IMDB person page / (Main page)
    */
-  public function savephoto($path,$thumb=true) {
-    $req = new MDB_Request("");
+  public function savephoto($path,$thumb=TRUE,$rerun=FALSE) {
+    if ($rerun) {
+        $req = new MDB_Request('','',!$this->trigger_referer);
+    } else {
+        $req = new MDB_Request('','',$this->trigger_referer);
+    }
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
     $req->setURL($photo_url);
@@ -122,9 +126,15 @@
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
     $fp = $req->getResponseBody();
-    }else{
-    $this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
-    return false;
+    } else {
+        if ($rerun) {
+            $this->debug_scalar("<BR>*photoerror* at ".__FILE__." line ".__LINE__. ": ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
+            return FALSE;
+        } else {
+            echo "Second run<br>";
+            $this->debug_scalar("<BR>Initiate second run for photo '$path'<BR>");
+            return $this->savephoto($path,$thumb,TRUE);
+        }
     }
     $fp2 = fopen ($path, "w");
     if ((!$fp) || (!$fp2)){

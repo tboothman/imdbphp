@@ -500,8 +500,12 @@
    * @return boolean success
    * @see IMDB page / (TitlePage)
    */
-  public function savephoto($path,$thumb=true) {
-    $req = new MDB_Request("");
+  public function savephoto($path,$thumb=true,$rerun=0) {
+    switch ($rerun) {
+      case 2:  $req = new MDB_Request(''); break;
+      case 1:  $req = new MDB_Request('','',!$this->trigger_referer); break;
+      default: $req = new MDB_Request('','',$this->trigger_referer); break;
+    }
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
     $req->setURL($photo_url);
@@ -509,14 +513,30 @@
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-    $fp = $req->getResponseBody();
-    }else{
-    $this->debug_scalar("<BR>*photoerror* ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
-    return false;
+        $fp = $req->getResponseBody();
+    } else {
+        switch ($rerun) {
+          case 2 :
+            $ctype = $req->getResponseHeader("Content-Type");
+            $this->debug_scalar("<BR>*photoerror* at ".__FILE__." line ".__LINE__. ": ".$photo_url.": Content Type is '$ctype'<BR>");
+            if (substr($ctype,0,4)=='text') $this->debug_scalar("Details: <PRE>". $req->getResponseBody() ."</PRE>\n");
+            return FALSE;
+            break;
+          case 1 :
+            $this->debug_scalar("<BR>Initiate third run for savephoto($path) on IMDBID ".$this->imdbID."<BR>");
+            unset($req);
+            return $this->savephoto($path,$thumb,2);
+            break;
+          default:
+            $this->debug_scalar("<BR>Initiate second run for savephoto($path) on IMDBID ".$this->imdbID."<BR>");
+            unset($req);
+            return $this->savephoto($path,$thumb,1);
+            break;
+        }
     }
     $fp2 = fopen ($path, "w");
     if ((!$fp) || (!$fp2)){
-      $this->debug_scalar("image error...<BR>");
+      $this->debug_scalar("image error at ".__FILE__." line ".__LINE__."...<BR>");
       return false;
     }
     fputs ($fp2, $fp);
