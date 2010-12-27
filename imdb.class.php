@@ -435,6 +435,7 @@
       } elseif($fallback) {
         $this->main_plotoutline = $this->storyline();
       }
+      if ( preg_match('!<p>\s*(<p>.*</p>)\s*$!ims',$this->main_plotoutline,$tmp) ) $this->main_plotoutline = $tmp[1];
     }
     return $this->main_plotoutline;
   }
