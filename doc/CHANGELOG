@@ -10,6 +10,7 @@ v2.0.4
 ! imdb photo stuff was broken
 + runtimes and genres know have an additional source as fallback
 ! imdb::votes() was broken due to site changes
+! imdb::seasons() always returned 1 (if there were seasons) for IMDB switched order
 
 v2.0.3 (17.10.2010)
 -------------------
