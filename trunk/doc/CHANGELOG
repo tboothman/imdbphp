@@ -12,6 +12,7 @@ v2.0.4
 ! imdb::votes() was broken due to site changes
 ! imdb::seasons() always returned 1 (if there were seasons) for IMDB switched order
 * cleaned up imdb::prodNotes() result
+* cleaning up double-paragraphs in imdb::plotoutline()
 
 v2.0.3 (17.10.2010)
 -------------------
