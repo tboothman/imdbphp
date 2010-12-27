@@ -398,7 +398,7 @@
     if ( $this->seasoncount == -1 ) {
       if ( $this->page["Title"] == "" ) $this->openpage("Title");
       if ( preg_match_all('|<a href="episodes#season-\d+">(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
-        $this->seasoncount = $matches[1][count($matches[0])-1];
+        $this->seasoncount = $matches[1][0];
       } else {
         $this->seasoncount = 0;
       }
