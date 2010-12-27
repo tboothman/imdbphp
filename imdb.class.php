@@ -192,7 +192,7 @@
     } else {
       $this->main_rating = 0;
     }
-    if (preg_match("@href\=\"ratings\"\s*>([\d\,]+)@i",$this->page["Title"],$match)){
+    if (preg_match("@href\=\"ratings\"[^>]*>([\d\,]+)@i",$this->page["Title"],$match)){
         $this->main_votes = $match[1];
     }else{
         $this->main_votes = 0;
