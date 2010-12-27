@@ -9,6 +9,7 @@ v2.0.4
 ! they did it again - so imdb::comment_split() was broken
 ! imdb photo stuff was broken
 + runtimes and genres know have an additional source as fallback
+! imdb::votes() was broken due to site changes
 
 v2.0.3 (17.10.2010)
 -------------------
