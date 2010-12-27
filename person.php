@@ -152,7 +152,7 @@ if (isset ($_GET["mid"])) {
     $tc = count($sal);
     for ($i=0;$i<$tc;++$i) {
       echo "<tr><td>";
-      if (!empty($sal[$i]["movie"]["imdb"])) echo "<a href='imdb.php?mid=".$sal[$i]["movie"]["imdb"]."&engine=".$_GET['engine']."'>".$sal[$i]["movie"]["name"]."</a>";
+      if (!empty($sal[$i]["movie"]["imdb"])) echo "<a href='movie.php?mid=".$sal[$i]["movie"]["imdb"]."&engine=".$_GET['engine']."'>".$sal[$i]["movie"]["name"]."</a>";
       else echo $sal[$i]["movie"]["name"];
       if (!empty($sal[$i]["movie"]["year"])) echo " (".$sal[$i]["movie"]["year"].")";
       echo "</td><td>".$sal[$i]["salary"]."</td></tr>";
@@ -170,7 +170,7 @@ if (isset ($_GET["mid"])) {
       echo "<TR><TD><b>$flname:</b> </td><td>\n";
       echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Character</th></tr>";
       foreach ($filmo as $film) {
-        echo "<tr><td><a href='imdb.php?mid=".$film["mid"]."&engine=".$_GET['engine']."'>".$film["name"]."</a>";
+        echo "<tr><td><a href='movie.php?mid=".$film["mid"]."&engine=".$_GET['engine']."'>".$film["name"]."</a>";
         if (!empty($film["year"])) echo " (".$film["year"].")";
         echo "</td><td>";
         if (empty($film["chname"])) echo "&nbsp;";
@@ -206,7 +206,7 @@ if (isset ($_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Movie</th><th style='background-color:#07f;'>Year</th></tr>";
     $tc = count($pm);
     for ($i=0;$i<$tc;++$i) {
-      echo "<tr><td><a href='imdb.php?mid=".$pm[$i]["imdb"]."&engine=".$_GET['engine']."'>".$pm[$i]["name"]."</a></td><td>";
+      echo "<tr><td><a href='movie.php?mid=".$pm[$i]["imdb"]."&engine=".$_GET['engine']."'>".$pm[$i]["name"]."</a></td><td>";
       if (empty($pm[$i]["year"])) echo "&nbsp;</td></tr>";
       else echo $pm[$i]["year"]."</td></tr>";
     }

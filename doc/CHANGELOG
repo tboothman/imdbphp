@@ -13,6 +13,7 @@ v2.0.4
 ! imdb::seasons() always returned 1 (if there were seasons) for IMDB switched order
 * cleaned up imdb::prodNotes() result
 * cleaning up double-paragraphs in imdb::plotoutline()
+! person.php linked back to imdb.php instead of movie.php
 
 v2.0.3 (17.10.2010)
 -------------------
