@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.0.4
+v2.0.4 (28.12.2010)
 -------------------
 ! mdb_request.class.php ignored the IMDBPHP_CONFIG constant - fixed
 ! they did it again - so imdb::comment_split() was broken
