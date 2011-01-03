@@ -125,13 +125,12 @@
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
       || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-    $fp = $req->getResponseBody();
+      $fp = $req->getResponseBody();
     } else {
         if ($rerun) {
             $this->debug_scalar("<BR>*photoerror* at ".__FILE__." line ".__LINE__. ": ".$photo_url.": Content Type is '".$req->getResponseHeader("Content-Type")."'<BR>");
             return FALSE;
         } else {
-            echo "Second run<br>";
             $this->debug_scalar("<BR>Initiate second run for photo '$path'<BR>");
             return $this->savephoto($path,$thumb,TRUE);
         }
