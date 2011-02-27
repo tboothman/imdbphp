@@ -175,7 +175,7 @@
    */
   private function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
-    preg_match("!<a name=\"$type\"(.*?)<div class=\"clear\">!msi",$this->page["Name"],$match);
+    preg_match("!<a name=\"$type\"(.*?)<div (id|class)=\">!msi",$this->page["Name"],$match);
     if (empty($type)) $match[1] = $this->page["Name"];
     elseif (empty($match[1])) {
       $pos   = strpos($this->page['Name'],'<a name="'.ucfirst($type).'"');
