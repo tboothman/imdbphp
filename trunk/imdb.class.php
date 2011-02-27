@@ -121,6 +121,23 @@
     return $this->main_year;
   }
 
+  /** Get range of years for e.g. series spanning multiple years
+   * @method yearspan
+   * @return array yearspan [start,end] (if there was no range, start==end)
+   * @see IMDB page / (TitlePage)
+   */
+  function yearspan() {
+    if ( empty($this->main_yearspan) ) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
+        $this->main_yearspan = array('start'=>$match[1],'end'=>$match[3]);
+      } else {
+        $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->year());
+      }
+    }
+    return $this->main_yearspan;
+  }
+
   /** Get movie types (if any specified)
    * @method movieTypes
    * @return array [0..n] of strings (or empty array if no movie types specified)
@@ -131,7 +148,7 @@
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match("/\<title\>(.*)\<\/title\>/",$this->page["Title"],$match)) {
         if (preg_match_all('|\(([^\)]*)\)|',$match[1],$matches)) {
-      for ($i=0;$i<count($matches[0]);++$i) if (!preg_match('|^\d{4}$|',$matches[1][$i])) $this->main_movietypes[] = $matches[1][$i];
+          for ($i=0;$i<count($matches[0]);++$i) if (!preg_match('|^\d{4}$|',$matches[1][$i])) $this->main_movietypes[] = $matches[1][$i];
         }
       }
     }

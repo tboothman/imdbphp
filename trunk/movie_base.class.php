@@ -93,6 +93,7 @@ class movie_base extends mdb_base {
    $this->main_title = "";
    $this->main_votes = -1;
    $this->main_year = -1;
+   $this->main_yearspan = array();
    $this->main_creator = array();
    $this->main_tagline = "";
    $this->main_storyline = "";
