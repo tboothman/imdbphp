@@ -220,9 +220,19 @@ if (isset ($_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Interview</th><th style='background-color:#07f;'>Details</th><th style='background-color:#07f;'>Year</th><th style='background-color:#07f;'>Author</th></tr>";
     $tc = count($iv);
     for ($i=0;$i<$tc;++$i) {
-      echo "<tr><td><a href='http://".$person->imdbsite.$iv[$i]["inturl"]."'>".$iv[$i]["name"]."</a></td><td>".$iv[$i]["details"]."</td><td>".$iv[$i]["date"]["full"]."</td><td>";
+      echo "<tr><td>";
+      if ( empty($iv[$i]['inturl']) ) {
+        echo $iv[$i]["name"];
+      } else {
+        echo "<a href='http://".$person->imdbsite.$iv[$i]["inturl"]."'>".$iv[$i]["name"]."</a>";
+      }
+      echo "</td><td>".$iv[$i]["details"]."</td><td>".$iv[$i]["date"]["full"]."</td><td>";
       if (empty($iv[$i]["author"])) echo "&nbsp;</td></tr>";
-      else echo "<a href='http://".$person->imdbsite.$iv[$i]["auturl"]."'>".$iv[$i]["author"]."</a></td></tr>";
+      else {
+        if ( empty($iv[$i]['auturl']) ) echo $iv[$i]["author"];
+        else echo "<a href='http://".$person->imdbsite.$iv[$i]["auturl"]."'>".$iv[$i]["author"]."</a>";
+      echo "</td></tr>";
+      }
     }
     echo "</table></TD></TR>\n";
   }
