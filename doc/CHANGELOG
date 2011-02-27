@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.0.5
 -------------------
 ! IMDB-Link for person search in demo was wrong
++ movie class: new method yearspan() for e.g. serials spanning multiple production years
 
 v2.0.4 (28.12.2010)
 -------------------

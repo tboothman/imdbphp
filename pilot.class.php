@@ -136,6 +136,19 @@
     return $this->main_year;
   }
 
+  /** Get range of years for e.g. series spanning multiple years
+   *  This is just here for compatibility with the IMDB class - so for now start==end
+   * @method yearspan
+   * @return array yearspan [start,end] (if there was no range, start==end)
+   * @see MoviePilot page / (TitlePage)
+   */
+  function yearspan() {
+    if ( empty($this->main_yearspan) ) {
+      $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->year());
+    }
+    return $this->main_yearspan;
+  }
+
   /** Get movie types (if any specified)
    * @method movieTypes
    * @return array [0..n] of strings (or empty array if no movie types specified)
