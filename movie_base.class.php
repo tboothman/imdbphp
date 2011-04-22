@@ -40,6 +40,7 @@ class movie_base extends mdb_base {
    */
   protected function reset_vars() {
    $this->page["Title"] = "";
+   $this->page["TitleFoot"] = ""; // IMDB only, as part of info was outsourced
    $this->page["Credits"] = "";
    $this->page["CrazyCredits"] = "";
    $this->page["Amazon"] = "";
