@@ -48,6 +48,7 @@
   protected function set_pagename($wt) {
    switch ($wt){
     case "Title"       : $urlname="/"; break;
+    case "TitleFoot"   : $urlname="/_ajax/iframe?component=footer"; break;
     case "Credits"     : $urlname="/fullcredits"; break;
     case "CrazyCredits": $urlname="/crazycredits"; break;
     case "Plot"        : $urlname="/plotsummary"; break;
@@ -243,9 +244,10 @@
    * @see IMDB page / (TitlePage)
    */
   public function comment() {
+    // this stuff whent into a frame in 2011! _ajax/iframe?component=footer
     if ($this->main_comment == "") {
-      if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('!<div class\="user-comments">(.*?)<div class\="yn"!ms',$this->page["Title"],$match))
+      if ($this->page["TitleFoot"]=="") $this->openpage ("TitleFoot");
+      if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<div class\="yn"!ms',$this->page["TitleFoot"],$match))
         $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[1]);
         $this->main_comment = str_replace("http://i.media-imdb.com/images/showtimes",$this->imdb_img_url."/showtimes",$this->main_comment);
     }
@@ -1161,6 +1163,7 @@
     if ( empty($this->moviequotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
+      // with this, we could even turn it into an array: url,name,quote
       if (preg_match_all('|<b><a href="(/name/.*?)">(.*?)</a>.*?:\s*?(.*?)<br|ims',str_replace("\n"," ",$this->page["Quotes"]),$matches))
         foreach ($matches[0] as $match) {
           $this->moviequotes[] = str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match));
