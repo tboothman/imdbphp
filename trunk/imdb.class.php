@@ -467,8 +467,10 @@
   public function storyline() {
     if ($this->main_storyline == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('!Storyline</h2>\s*(.*?)<h4!ims',$this->page["Title"],$match)) {
+      if (@preg_match('!Storyline</h2>\s*\n*<?p?>?(.*?)<?/?p?<h4!ims',$this->page["Title"],$match)) {
         if (preg_match('!(.*?)<em class="nobr">Written by!ims',$match[1],$det))
+          $this->main_storyline = $det[1];
+        elseif (preg_match('!(.*)\s</p>!ims',$match[1],$det))
           $this->main_storyline = $det[1];
         elseif (preg_match('!(.*)\s<span class="see-more inline">!ims',$match[1],$det))
           $this->main_storyline = $det[1];
