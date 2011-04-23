@@ -405,7 +405,6 @@ if (isset ($_GET["mid"])) {
   echo "<SCRIPT TYPE='text/javascript'>// <!--\n";
   echo "  function fix_colspan() {\n";
   echo "    document.getElementById('photocol').rowSpan = '$rows';\n";
-echo "    alert('$rows');\n";
   echo "  }\n//-->\n</SCRIPT>\n";
   echo "</BODY></HTML>";
 }
