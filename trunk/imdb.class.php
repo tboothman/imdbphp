@@ -782,7 +782,7 @@
   public function top250() {
     if ($this->main_top250 == -1) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/\<a href\=\"\/chart\/top\?tt(.*?)\"\>Top 250: #(.*?)\<\/a\>/",$this->page["Title"],$match)) {
+      if (@preg_match('!<a href="[^"]*/chart/top\?tt(.*?)"><strong>Top 250 #(.*?)</a>!i',$this->page["Title"],$match)) {
         $this->main_top250 = $match[2];
       } else {
         $this->main_top250 = 0;
