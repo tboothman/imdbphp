@@ -798,9 +798,10 @@
   /** Setup search results
    * @method results
    * @param optional string URL Replace search URL by your own
+   * @param optional boolean series not used, just for inheritance compatibility issues with PHP5.3+
    * @return array results array of objects (instances of the imdb_person class)
    */
-  public function results($url="") {
+  public function results($url="",$series=TRUE) {
    if ($this->page == "") {
      if (empty($url)) $url = $this->mkurl();
      $be = new MDB_Request($url);
