@@ -11,6 +11,7 @@ v2.0.5 (25.05.2011)
 * adaption to imdb::storyline() as suggested by an anonymous user
 ! next IMDB site changes: ratings
 ! imdb_person filmographies: quarters in years, e.g. 1924/II, lead to empty year
+* imdb::awards(): minor adjustments by Qvist
 
 v2.0.4 (28.12.2010)
 -------------------

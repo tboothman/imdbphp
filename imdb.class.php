@@ -1595,9 +1595,9 @@
             $award = $cels[0];
             array_shift( $cels );
         }
-        if( count ($cels) == 1 && preg_match( '|([^<]*)<br>(.*)<small>|s', $cels[0], $matches ) ){
+        if( count ($cels) == 1 && preg_match( '|([^<>]*)<br>(.*)<small>|s', $cels[0], $matches ) ){
             $category = trim( $matches[1] );
-            preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|s', $matches[2], $matches );
+            preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|s', $cels[0], $matches );
             $people = isset( $matches[0][0] )?array_combine( $matches[1], $matches[2] ):array();
             preg_match( '|<small>(.*?)</small>|s', $cels[0], $matches );
             $comment = isset( $matches[1] )?strip_tags( $matches[1] ):'';
