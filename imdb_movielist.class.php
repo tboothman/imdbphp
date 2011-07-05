@@ -45,10 +45,11 @@ class imdb_movielist extends movie_base {
    switch ($wt){
      case "CountryYear" :
        $urlname="/List?year=%year&&countries=%countries&&tv=%tv";
+       $urlname="/search/title?year=%year&&countries=%countries&&tv=%tv";
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
      case "LanguageYear" :
-       $urlname="/List?year=%year&&language=%language&&tv=%tv";
+       $urlname="/search/title?year=%year&&language=%countries&&tv=%tv";
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
      case "MostpopYear" :
@@ -96,15 +97,31 @@ class imdb_movielist extends movie_base {
    $doc = new DOMDocument();
    @$doc->loadHTML($this->page[$pagename]);
    $xp = new DOMXPath($doc);
-   $titles = $xp->query("//td/ol/li/a");
+   $titles  = $xp->query("//div[@id='main']/table/tr/td[3]/a");
+   $details = $xp->query("//div[@id='main']/table/tr/td[3]/span[1]");
+   $serdet  = $xp->query("//div[@id='main']/table/tr/td[3]/span[2]");
+   $serref  = $xp->query("//div[@id='main']/table/tr/td[3]/span[2]/a");
    $nodecount = $titles->length;
    for ($i=0;$i<$nodecount;++$i) {
      preg_match('|(\d{7})/$|',$titles->item($i)->getAttribute('href'),$match);
      $id = $match[1];
-     preg_match('|(.*)\((\d{4})\)|',trim($titles->item($i)->nodeValue),$match);
-     $title = trim($match[1]);
-     $year = $match[2];
-     $ret[] = array('imdbid'=>$id,'title'=>$title,'year'=>year);
+     $title = trim($titles->item($i)->nodeValue);
+     preg_match('!\((\d+).*?\s+(.*?)\)!',$details->item($i)->nodeValue,$match);
+     $year  = $match[1];
+     $mtype = $match[2];
+     if ( strpos(strtolower($mtype),'series')!==FALSE ) $is_serial = 1;
+     else $is_serial = 0;
+     if ( $this->tv=='off' && $is_serial ) continue;
+     if ($is_serial) {
+       preg_match('!\((\d{4})\)!',$serdet->item($i)->nodeValue,$match);
+       $ep_year = $match[1];
+       preg_match('!(\d{7})!',$serref->item($i)->getAttribute('href'),$match);
+       $ep_id   = $match[1];
+       $ep_name = trim($serref->item($i)->nodeValue);
+     } else {
+       $ep_year = ''; $ep_id = 0; $ep_name = '';
+     }
+     $ret[] = array('imdbid'=>$id,'title'=>$title,'year'=>$year,'type'=>$mtype,'serial'=>$is_serial,'episode_imdbid'=>$ep_id,'episode_title'=>$ep_name,'episode_year'=>$ep_year);
    }
  }
 
@@ -141,7 +158,6 @@ class imdb_movielist extends movie_base {
   */
  public function mostpop_by_year($year) {
    $url = 'http://'.$this->imdbsite.$this->set_pagename('MostpopYear',array("year"=>$year));
-#echo "URL: $url<br>\n";
    $this->getWebPage('MostpopYear',$url);
 
    $doc = new DOMDocument();
