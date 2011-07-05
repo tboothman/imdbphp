@@ -9,6 +9,7 @@ v2.0.5 (25.05.2011)
 + movie class: new method yearspan() for e.g. serials spanning multiple production years
 ! IMDB site changes broke actors filmographies, quotes, user comments, trivia, top250
 * adaption to imdb::storyline() as suggested by an anonymous user
+! next IMDB site changes: ratings
 
 v2.0.4 (28.12.2010)
 -------------------
