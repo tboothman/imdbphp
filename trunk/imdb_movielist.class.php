@@ -52,7 +52,7 @@ class imdb_movielist extends movie_base {
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
      case "MostpopYear" :
-       $urlname="/Sections/Years/%year/total-votes";
+       $urlname="/year/%year";
        foreach ($replace as $var=>$val) $urlname = str_replace("%$var",$val,$urlname);
        break;
      default            :
@@ -69,6 +69,8 @@ class imdb_movielist extends movie_base {
   */
  public function reset_vars() {
    $this->page["CountryYear"] = "";
+   $this->page["LanguageYear"] = "";
+   $this->page["MostpopYear"] = "";
    $this->enable_serials();
    $this->countryYear = array();
    $this->languageYear = array();
@@ -139,22 +141,26 @@ class imdb_movielist extends movie_base {
   */
  public function mostpop_by_year($year) {
    $url = 'http://'.$this->imdbsite.$this->set_pagename('MostpopYear',array("year"=>$year));
+#echo "URL: $url<br>\n";
    $this->getWebPage('MostpopYear',$url);
+
    $doc = new DOMDocument();
    @$doc->loadHTML($this->page['MostpopYear']);
    $xp = new DOMXPath($doc);
-   $votes  = $xp->query("//table[@cellspacing='4']/tr/td[1]");
-   $rating = $xp->query("//table[@cellspacing='4']/tr/td[2]");
-   $titles = $xp->query("//table[@cellspacing='4']/tr/td[3]/a");
+   $rating = $xp->query("//table[@class='results']/tr/td[3]/div[@class='user_rating']/div");
+   $titles = $xp->query("//table[@class='results']/tr/td[3]/a");
+   $years  = $xp->query("//table[@class='results']/tr/td[3]/span[@class='year_type']");
    $nodecount = $titles->length;
+
    for ($i=0;$i<$nodecount;++$i) {
      preg_match('|(\d{7})/$|',$titles->item($i)->getAttribute('href'),$match);
      $id = $match[1];
-     preg_match('|(.*)\((\d{4})\)|',trim($titles->item($i)->nodeValue),$match);
-     $title = trim($match[1]);
-     $year = $match[2];
-     $rate = trim($rating->item($i)->nodeValue);
-     $vote = trim($votes->item($i)->nodeValue);
+     $title = trim($titles->item($i)->nodeValue);
+     $year = trim($years->item($i)->nodeValue);
+     if (!empty($year)) $year = substr($year,1,4);
+     preg_match('!Users rated this\s+(.+)/.+\((.+)\s+vote!',$rating->item($i)->getAttribute('title'),$match);
+     $rate = $match[1];
+     $vote = $match[2];
      $this->mostpopYear[] = array('imdbid'=>$id,'title'=>$title,'year'=>$year,'votes'=>$vote,'rating'=>$rate);
    }
    return $this->mostpopYear;
