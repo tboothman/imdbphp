@@ -199,6 +199,21 @@
     return $this->movieruntimes;
   }
 
+  #----------------------------------------------------------[ Aspect Ratio ]---
+  /** Aspect Ratio of movie screen
+   * @method aspect_ratio
+   * @return string ratio
+   * @see IMDB page / (TitlePage)
+   */
+  public function aspect_ratio() {
+    if (empty($this->aspectratio)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s</div>!ims',$this->page["Title"],$match);
+      $this->aspectratio = $match[1];
+    }
+    return $this->aspectratio;
+  }
+
  #----------------------------------------------------------[ Movie Rating ]---
   /** Setup votes
    * @method private rate_vote

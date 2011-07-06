@@ -11,6 +11,7 @@ v2.0.6
 ! imdb_movielist: fixed the listing methods (were all broken by IMDB site changes some time ago)
 + movies (imdb+pilot): Added new method languages_detailed() to get detailed lang info (name, code and comment of languages used)
 + imdb::episodes(): Result array now also includes season and episode (numbers)
++ movie classes: Added new method aspect_ratio to obtain the screen aspect ratio
 
 v2.0.5 (25.05.2011)
 -------------------
