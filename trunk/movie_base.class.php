@@ -80,6 +80,7 @@ class movie_base extends mdb_base {
    $this->extreviews = array();
    $this->goofs = array();
    $this->langs = array();
+   $this->langs_full = array();
    $this->main_comment = "";
    $this->main_genre = "";
    $this->main_keywords = array();

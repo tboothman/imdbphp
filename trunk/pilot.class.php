@@ -294,6 +294,18 @@
     return $this->langs;
   }
 
+  /** Get all languages this movie is available in, including details
+   * @method languages_detailed
+   * @return array languages (array[0..n] of array[string name, string code, string comment], code being the ISO-Code)
+   * @see IMDB page / (TitlePage)
+   * @brief No data available at MoviePilot. AutoRetrieval from IMDB with
+   *        <code>pilot_imdbfill</code> &gt; BASIC_ACCESS
+   */
+  public function languages_detailed() {
+    if ($this->pilot_imdbfill > BASIC_ACCESS) $this->lang_fulls = $this->imdb->languages_detailed();
+    return $this->langs_full;
+  }
+
  #--------------------------------------------------------------[ Genre(s) ]---
   /** Get the movies main genre
    *  Since IMDB.COM does not really now a "Main Genre", this simply means the

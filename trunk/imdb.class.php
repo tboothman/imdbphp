@@ -304,7 +304,7 @@
    return $this->main_language;
   }
 
-  /** Get all langauges this movie is available in
+  /** Get all languages this movie is available in
    * @method languages
    * @return array languages (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
@@ -312,10 +312,24 @@
   public function languages() {
    if (empty($this->langs)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all('!<a href="/language/.*?">\s*(.*?)\s*<!m',$this->page["Title"],$matches))
-      $this->langs = $matches[1];
+    if (preg_match_all('!<a href="/language/(.*?)">\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m',$this->page["Title"],$matches))
+      $this->langs = $matches[2];
+      $mc = count($matches[2]);
+      for ($i=0;$i<$mc;$i++) {
+        $this->langs_full[] = array('name'=>$matches[2][$i],'code'=>$matches[1][$i],'comment'=>$matches[4][$i]);
+      }
    }
    return $this->langs;
+  }
+
+  /** Get all languages this movie is available in, including details
+   * @method languages_detailed
+   * @return array languages (array[0..n] of array[string name, string code, string comment], code being the ISO-Code)
+   * @see IMDB page / (TitlePage)
+   */
+  public function languages_detailed() {
+    if (empty($this->langs_full)) $foo = $this->languages();
+    return $this->langs_full;
   }
 
 
