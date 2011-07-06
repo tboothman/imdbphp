@@ -192,6 +192,20 @@
     return $this->movieruntimes;
   }
 
+  #----------------------------------------------------------[ Aspect Ratio ]---
+  /** Aspect Ratio of movie screen
+   * @method aspect_ratio
+   * @return string ratio
+   * @see IMDB page / (TitlePage)
+   * @brief If <code>pilot_imdbfill</code> is
+   *        set at least to BASIC_ACCESS, it will be retrieved from IMDB.
+   * @todo Check if this is available from pilot directly
+   */
+  public function aspect_ratio() {
+    if ($this->pilot_imdbfill) $this->aspectratio = $this->imdb->aspect_ratio();
+    return $this->aspectratio;
+  }
+
  #----------------------------------------------------------[ Movie Rating ]---
   /** Get movie rating
    * @method rating
