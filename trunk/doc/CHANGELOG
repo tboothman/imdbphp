@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.0.6
+v2.0.6 (08.07.2011)
 -------------------
 ! next IMDB site changes: ratings
 ! imdb_person filmographies: quarters in years, e.g. 1924/II, lead to empty year
