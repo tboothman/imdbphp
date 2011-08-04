@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.0.7
 -------------------
 ! site changes again: fixed imdb_person:name (tnx to GeorgeFive and Qvist)
+! same reason: imdb::votes(), imdb::country() and imdb::mpaa_reason()
 
 v2.0.6 (08.07.2011)
 -------------------
