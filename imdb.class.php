@@ -225,7 +225,7 @@
     } else {
       $this->main_rating = 0;
     }
-    if (preg_match("@href\=\"ratings\"[^>]*>([\d\,]+)@i",$this->page["Title"],$match)){
+    if (preg_match('!href="ratings"\s+title="([\d\,]+)!i',$this->page["Title"],$match)){
         $this->main_votes = $match[1];
     }else{
         $this->main_votes = 0;
@@ -654,7 +654,8 @@
    if (empty($this->countries)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->countries = array();
-    if (preg_match_all("/\/country\/\w+\"\>(.*?)<\/a/m",$this->page["Title"],$matches))
+#    if (preg_match_all("/\/country\/\w+\"\>(.*?)<\/a/m",$this->page["Title"],$matches))
+    if (preg_match_all('!/country/\w+"\s*>(.*?)<\/a!m',$this->page["Title"],$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
    }
    return $this->countries;
@@ -767,11 +768,12 @@
   public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match('!href="/mpaa">.*?</h4>\s*(.*?)\s*<span!ims',$this->page["Title"],$match))
+    if (preg_match('!href="/mpaa">.*?</h4>\s*<span itemprop="contentRating">(.*?)</span!ims',$this->page["Title"],$match))
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
   }
+
 
  #------------------------------------------------------[ Production Notes ]---
   /** For not-yet completed movies, we can get the production state
