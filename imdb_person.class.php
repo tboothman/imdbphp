@@ -77,6 +77,8 @@
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
       if (preg_match("/<title>(.*?) - IMDb<\/title>/i",$this->page["Name"],$match)) {
         $this->fullname = trim($match[1]);
+      } elseif (preg_match("/<title>IMDb - (.*?)<\/title>/i",$this->page["Name"],$match)) {
+        $this->fullname = trim($match[1]);
       }
     }
     return $this->fullname;
