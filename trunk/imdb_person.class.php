@@ -193,7 +193,7 @@
       for ($i=0;$i<$mc;++$i) {
         $char = array();
         if (preg_match('!<span class="year_column">(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
-        preg_match('!href="/title/tt(\d{7})/">(.*?)</a>!ims',$matches[1][$i],$mov);
+        preg_match('!href="/title/tt(\d{7})/"\s*>(.*?)</a>!ims',$matches[1][$i],$mov);
         $str = $matches[4][$i]; //preg_replace('|\(\d{4}\)|','',substr($matches[4][$i],0,strpos($matches[4][$i],"<br>")));
         if ( preg_match('!href="/character/ch(\d{7})">(.*?)</a>!ims',$matches[1][$i],$char) ) {
           $chid   = $char[1];
@@ -201,6 +201,7 @@
         } else {
           $chid   = '';
           if ( preg_match('|\.\.\.\. ([^>]+)|',$str,$char) ) $chname = $char[1];
+          elseif ( preg_match('!<br/>\s*([^>]+)\s*<div!',$matches[0][$i],$char) ) $chname = $char[1];
           else $chname = '';
         }
         if ( empty($chname) ) {
