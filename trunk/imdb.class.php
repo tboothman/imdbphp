@@ -94,10 +94,10 @@
    */
   private function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match("/\<title\>(.*) \((.*)(\d{4}|\?{4}).*\)(.*)\<\/title\>/",$this->page["Title"],$match)) {
-      $this->main_title = $match[1];
-      if ($match[2]=="????") $this->main_year = "";
-      else $this->main_year  = $match[3];
+    if (@preg_match('!<title>(IMDb\s*-\s*)?(.*) \((.*)(\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
+      $this->main_title = $match[2];
+      if ($match[3]=="????") $this->main_year = "";
+      else $this->main_year  = $match[4];
     }
   }
 
