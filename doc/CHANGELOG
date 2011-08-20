@@ -11,6 +11,7 @@ v2.0.7
 ! imdb_person class: filmografies no longer listed movie names due to site changes
 * imdb_person class: character names w/o id are listed again in filmografies
 ! IMDB started to sometimes pre- or postfix movie titles with "IMDb", becoming part of the title then
+* imdb movie: plotoutline() did not work for unrated movies
 
 v2.0.6 (08.07.2011)
 -------------------
