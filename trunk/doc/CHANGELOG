@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.0.7
+v2.0.7 (21.08.2011)
 -------------------
 ! site changes again: fixed imdb_person:name (tnx to GeorgeFive and Qvist)
 ! same reason: imdb::votes(), imdb::country() and imdb::mpaa_reason()
