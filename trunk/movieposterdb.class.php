@@ -37,18 +37,6 @@ class movieposterdb extends mdb_base {
   function __construct($id,$limit=20,$recurse=TRUE) {
     parent::__construct($id);
     $this->setid($id);
-    $this->reset_vars();
-    $this->set_limit($limit);
-    $this->set_recurse($recurse);
-    $this->urlparams = array(
-      'poster'   => 'cid=1',
-      'cover'    => 'cid=2',
-      'textless' => 'cid=3',
-      'logo'     => 'cid=4',
-      'other'    => 'cid=5',
-      'custom'   => 'cid=6',
-      'unset'    => 'cid=9'
-    );
     $this->reset_lang();
     if ($this->force_agent) $this->user_agent = $this->force_agent;
     elseif ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $this->user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -57,18 +45,6 @@ class movieposterdb extends mdb_base {
   }
 
 #----------------------------------------------------------------[ Helpers ]---
-  /** Find the base pages URL
-   * @method protected get_baseurl
-   */
-  protected function get_baseurls() {
-    $this->getWebPage('base','http://www.movieposterdb.com/browse/search?type=movies&query='.$this->imdbid());
-    $doc = new DOMDocument();
-    @$doc->loadHTML($this->page['base']);
-    $xp = new DOMXPath($doc);
-    $nodes = $xp->query("//a[contains(@href,".$this->imdbid().")]");
-    foreach ($nodes as $node) $this->baseurls[] = $node->getAttribute('href');
-  }
-
   /** Parse page for images
    * @method protected parse_list
    * @param optional string type (what image URLs to retrieve: 'poster' (default),
@@ -76,62 +52,41 @@ class movieposterdb extends mdb_base {
    * @return array array of arrays[lang,url]
    */
   protected function parse_list($type='poster',$page_url='') {
-    if ( empty($this->baseurls) ) $this->get_baseurls();
-    if ( empty($this->baseurls) ) return array();
-    $http = array(
-      'method' => 'GET',
-      'header'  => "Accept-Language: en-en;q=0.8,en-us;q=0.5,en;q=0.3\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nReferer: ".$this->baseurls[0]."\r\n",
-      'user_agent' => $this->user_agent
-    );
-    if ( empty($page_url) ) $page_url = $this->baseurls[0].'?'.$this->urlparams[$type];
-    $page = file_get_contents($page_url,false,stream_context_create(array('http'=>$http)));
+    $url  = 'http://www.movieposterdb.com/movie/'.$this->imdbid().'/';
+    $page = file_get_contents($url);
     $doc = new DOMDocument();
     @$doc->loadHTML($page);
     $xp = new DOMXPath($doc);
-    $nodes = $xp->query("//td[starts-with(@id,'poster')]/div/a");
-    $urls = array();
+    $nodes = $xp->query("//a[contains(@href,\"/poster/\")]");
+    $nodes2 = $xp->query("//img[@class=\"flag\"]");
+    $nodes3 = $xp->query("//img[starts-with(@alt,\"Category\")]");
     foreach ($nodes as $node) {
-      $url = $node->getAttribute('href');
-      if ( preg_match('|'.$this->urlparams[$type].'$|',$url) ) { // multiple variants
-        if ($this->recurse) $urls = array_merge($urls,$this->parse_list($type,$url));
-      } else {
-        $lnode = $node->parentNode->nextSibling;
-        while (strtolower($lnode->tagName)!='p') $lnode = $lnode->nextSibling;
-        $lnode = $lnode->firstChild;
-        while (strtolower($lnode->tagName)!='img') $lnode = $lnode->nextSibling;
-        $lang = strtolower($lnode->getAttribute('alt'));
-        if (!empty($this->langs)) {
-          if ( !in_array($lang,$this->langs) ) continue;
-        }
-        $img['lang'] = $lang;
-        $img['url']  = $this->get_img($url);
-        $urls[] = $img;
+      $img = $node->firstChild;
+      $att = $img->tagName;
+      $xx=0;
+      while (strtolower($att)!='img') {
+        $img = $img->nextSibling;
+        $att = $img->tagName;
+        $xx++; if ($xx>5) break; // prevent endless loops
       }
-      if (count($urls)>=$this->limit) return $urls;
+      $baseimgs[] = $img->getAttribute('src');
+    }
+    foreach ($nodes2 as $node) $baselangs[] = $node->getAttribute('alt');
+    foreach ($nodes3 as $node) {
+      $l = explode(': ',$node->getAttribute('alt'));
+      $basecats[]  = $l[1];
+    }
+    $urls = array();
+    for ($i=0;$i<count($baselangs);++$i) {
+      if (!empty($this->langs)) {
+        if ( !in_array(strtolower($baselangs[$i]),$this->langs) ) continue;
+      }
+      if ( strtolower($basecats[$i]) != $type ) continue;
+      $im['lang'] = $baselangs[$i];
+      $im['url']  = $baseimgs[$i];
+      $urls[] = $im;
     }
     return $urls;
-  }
-
-  /** Get image source URL
-   *  (Helper to parse_list)
-   * @method protected get_img
-   * @param string url of the page where the image is embedded into
-   * @return string imgurl
-   */
-  protected function get_img($url) {
-    $http = array(
-      'method' => 'GET',
-      'header'  => "Accept-Language: en-en;q=0.8,en-us;q=0.5,en;q=0.3\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nReferer: ".$this->baseurls[0]."\r\n",
-      'user_agent' => $this->user_agent
-    );
-    $page = file_get_contents($url,false,stream_context_create(array('http'=>$http)));
-    $doc = new DOMDocument();
-    @$doc->loadHTML($page);
-    $xp = new DOMXPath($doc);
-    $nodes = $xp->query("//div[@class='mainwindow']/div/img");
-    foreach ($nodes as $node) {
-      return $node->getAttribute('src');
-    }
   }
 
 #---------------------------------------------------------[ public methods ]---
@@ -185,26 +140,28 @@ class movieposterdb extends mdb_base {
 
   /** Reset everything to start a new search
    * @method public reset_vars
+   * @see just a dummy to keep it compatible with previous versions.
    */
   public function reset_vars() {
-    $this->page = array();
-    $this->baseurls = array(); // URLs of the base page(s) for this IMDBID. Should usually be only one.
+    return;
   }
 
   /** Set a limit (maximum images to retrieve)
    * @method public set_limit
    * @param optional integer limit (default: 20)
+   * @see just a dummy to keep it compatible with previous versions.
    */
   public function set_limit($limit=20) {
-    $this->limit = $limit;
+    return;
   }
 
   /** Shall we recurse if multiple versions are offered?
    * @method public set_recurse
    * @param optional boolean recurse (default: TRUE)
+   * @see just a dummy to keep it compatible with previous versions.
    */
   public function set_recurse($recurse=TRUE) {
-    $this->recurse = $recurse;
+    return;
   }
 
   /** Restrict images to given languages. By default, no restriction is active;
