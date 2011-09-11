@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.0.8
+-------------------
+! movieposterdb class was broken due to site changes at movieposterdb.com; applied a quick-hack to fix it
+
 v2.0.7 (21.08.2011)
 -------------------
 ! site changes again: fixed imdb_person:name (tnx to GeorgeFive and Qvist)
