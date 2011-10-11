@@ -8,6 +8,7 @@ v2.0.8
 ! movieposterdb class was broken due to site changes at movieposterdb.com; applied a quick-hack to fix it
 ! fixes due to site changes: imdb::rating, imdb::goofs
 * complete rewrite of imdb_nowplaying class (location and structure of page had changed)
++ some improvements to episode data (see http://projects.izzysoft.de/trac/imdbphp/ticket/255 for details)
 
 v2.0.7 (21.08.2011)
 -------------------
