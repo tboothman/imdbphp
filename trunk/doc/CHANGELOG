@@ -10,6 +10,7 @@ v2.0.8
 * complete rewrite of imdb_nowplaying class (location and structure of page had changed)
 + some improvements to episode data (see http://projects.izzysoft.de/trac/imdbphp/ticket/255 for details)
 ! trailers on Moviepilot were broken due to changed URL
+! pilot: fixed mainPictures() due to API changes
 
 v2.0.7 (21.08.2011)
 -------------------

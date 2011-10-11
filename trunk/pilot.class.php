@@ -537,11 +537,12 @@
   public function mainPictures() {
     if ( empty($this->main_pictures) ) {
       if ( $this->page['Images'] == '' ) $this->openpage('Images');
-      if ( $this->page['Images']->total_entries < 1 ) return array(); // no pics available
-      for ($i=0;$i<$this->page['Images']->total_entries;++$i) {
-        $baseurl = $this->page['Images']->images[$i]->base_url.$this->page['Images']->images[$i]->photo_id."/"
-             . $this->page['Images']->images[$i]->file_name_base;
-        $this->main_pictures[] = array('imgsrc'=>$baseurl."_poster.".$this->page['Images']->images[$i]->extension,'bigsrc'=>$baseurl.".".$this->page['Images']->images[$i]->extension,'imglink'=>'');
+      $total_entries = count($this->page['Images']);
+      if ( $total_entries < 1 ) return array(); // no pics available
+      for ($i=0;$i<$total_entries;++$i) {
+        $baseurl = $this->page['Images'][$i]->base_url.$this->page['Images'][$i]->photo_id."/"
+             . $this->page['Images'][$i]->file_name_base;
+        $this->main_pictures[] = array('imgsrc'=>$baseurl."_poster.".$this->page['Images'][$i]->extension,'bigsrc'=>$baseurl.".".$this->page['Images'][$i]->extension,'imglink'=>'');
       }
     }
     return $this->main_pictures;
