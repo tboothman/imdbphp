@@ -346,7 +346,7 @@ if (isset ($_GET["mid"])) {
     ++$rows;
     echo '<tr><td valign=top><b>Trailers:</b></td><td>';
     for ($i=0;$i<count($trailers);++$i) {
-      echo "<a href='".$trailers[$i]['url']."'>".$trailers[$i]['title']."</a><br>\n";
+      if (!empty($trailers[$i]['url'])) echo "<a href='".$trailers[$i]['url']."'>".$trailers[$i]['title']."</a><br>\n";
     }
     echo "</td></tr>\n";
   }
