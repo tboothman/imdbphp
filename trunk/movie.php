@@ -303,11 +303,11 @@ if (isset ($_GET["mid"])) {
     ++$rows;
     $episodes = $movie->episodes();
     echo '<tr><td valign=top><b>Episodes:</b></td><td>';
-    for ( $season = 1; $season <= $seasons; ++$season ) {
+    for ( $season = 0; $season <= $seasons; ++$season ) {
       $eps = @count($episodes[$season]);
-      for ( $episode = 1; $episode <= $eps; ++$episode ) {
+      for ( $episode = 0; $episode < $eps; ++$episode ) {
         $episodedata = &$episodes[$season][$episode];
-        echo '<b>Season '.$season.', Episode '.$episode.': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
+        echo '<b>Season '.$episodedata['season'].', Episode '.$episodedata['episode'].': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
       }
     }
     echo "</td></tr>\n";

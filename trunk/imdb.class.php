@@ -1157,9 +1157,16 @@
       if ( $this->page["Episodes"] == "cannot open page" ) return array(); // no such page
       if ( preg_match_all('!<h3>Season (\d+), Episode (\d+): <a href="/title/tt(\d{7})/">(.*)</a></h3><span.*>Original Air Date.*<strong>(.*)</strong></span><br>\s*(.*)(<h5>|</td>)!Ui',$this->page["Episodes"],$matches) ) {
         for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
-          $this->season_episodes[$matches[1][$i]][$matches[2][$i]] = array(
+          $this->season_episodes[$matches[1][$i]][] = array(
               "imdbid" => $matches[3][$i],"title" => $matches[4][$i], "airdate" => $matches[5][$i],
               "plot" => $matches[6][$i], "season" => $matches[1][$i],"episode" => $matches[2][$i]);
+        }
+      }
+      if ( preg_match_all('!<h3><a href="/title/tt(\d{7})/">(.*)</a></h3><span.*>Original Air Date.*<strong>(.*)</strong></span><br>\s*(.*)(<h5>|</td>)!Ui',$this->page["Episodes"],$matches) ) {
+        for ( $i = 0 ; $i < count($matches[0]); $i++ ) {
+          $this->season_episodes[0][] = array(
+              "imdbid" => $matches[1][$i],"title" => $matches[2][$i], "airdate" => $matches[3][$i],
+              "plot" => $matches[4][$i], "season" => 0,"episode" => $i);
         }
       }
     }
