@@ -11,6 +11,8 @@ v2.0.8
 + some improvements to episode data (see http://projects.izzysoft.de/trac/imdbphp/ticket/255 for details)
 ! trailers on Moviepilot were broken due to changed URL
 ! pilot: fixed mainPictures() due to API changes
+! pilot_person: fixed photos() due to API changes
++ added basic check for pilot classes (corresponding to the IMDB checks)
 
 v2.0.7 (21.08.2011)
 -------------------
