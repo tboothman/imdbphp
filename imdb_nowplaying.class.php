@@ -5,7 +5,7 @@
  # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
  # http://www.izzysoft.de/                                                   #
  # ------------------------------------------------------------------------- #
- # IMDBPHP NOW PLAYING                                     (c) Ricardo Silva #
+ # IMDBPHP NOW PLAYING                   (c) Ricardo Silva & Itzchak Rehberg #
  # written by Ricardo Silva (banzap) <banzap@gmail.com>                      #
  # http://www.ricardosilva.pt.tl/                                            #
  # ------------------------------------------------------------------------- #
@@ -21,48 +21,38 @@
   * @package IMDB
   * @class imdb_nowplaying
   * @author Ricardo Silva (banzap) <banzap@gmail.com>
+  * @author Itzchak Rehberg
   * @version $Revision$ $Date$
   */
  class imdb_nowplaying {
- 	var $nowplayingpage = "http://www.imdb.com/nowplaying/";
-	var $page = "";
+    var $nowplayingpage = "http://www.imdb.com/movies-in-theaters/";
+    var $page = "";
 
-	/** Constructor: Obtain the raw data from IMDB site
-	 * @constructor imdb_nowplaying
-	 */
-	function imdb_nowplaying(){
-	   $req = new MDB_Request($this->nowplayingpage);
-	   $req->sendRequest();
-	   $this->page=$req->getResponseBody();
-	   $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
-	}
+    /** Constructor: Obtain the raw data from IMDB site
+     * @constructor imdb_nowplaying
+     */
+    function __construct() {
+       $req = new MDB_Request($this->nowplayingpage);
+       $req->sendRequest();
+       $this->page=$req->getResponseBody();
+       $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+    }
 
-	/** Retrieve the Now Playing Movies
-	 * @method getNowPlayingMovies
-	 * @return array of IMDB IDs
-	 */
-	function getNowPlayingMovies(){
-	  $matchinit = "<!-- begin main body -->";
-	  $matchend = "<!-- begin box office top 10 -->";
-	  $init_pos = strpos($this->page,$matchinit);
-  	  $end_pos = strpos($this->page,$matchend);
-	  $init_pos += (strlen($matchinit)+1);
-	  $offset = $init_pos;
-	  $i=0;
-	  $res = array();
-	  while($offset<$end_pos){
-	    $pattern = "<a href=\"/title/tt(\d+)/\">";
-	    $matches = "";
-	    preg_match($pattern, $this->page , $matches,PREG_OFFSET_CAPTURE,$offset);
-	    if($end_pos<$matches[0][1]+1) break;
-	    $mid_i = strpos($this->page,"tt",$matches[0][1])+2;
-	    $mid = substr($matches[0][0],17,7);
-	    $contem = in_array($mid, $res);
-	    if(!$contem) $res[$i] = $mid;
-	    $offset = $matches[0][1]+1;
-	    $i++;
-	  }
-	  return $res;
-	}
+    /** Retrieve the Now Playing Movies
+     * @method getNowPlayingMovies
+     * @return array of IMDB IDs
+     */
+    function getNowPlayingMovies() {
+      $matchinit = '<h1 class="header">';
+      $matchend = "<!-- begin TOP_RHS -->";
+      $init_pos = strpos($this->page,$matchinit);
+      $end_pos = strpos($this->page,$matchend);
+      if ( preg_match_all('!href="/title/tt(\d{7})/!', substr($this->page,$init_pos,$end_pos - $init_pos), $matches) ) {
+        $res = array_values(array_unique($matches[1]));
+      } else {
+        $res = array();
+      }
+      return $res;
+    }
  }
 ?>
