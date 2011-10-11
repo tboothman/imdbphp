@@ -36,6 +36,7 @@ if (isset ($_GET["mid"])) {
   echo "<HTML><HEAD>\n";
   echo " <TITLE>".$person->name()." [IMDBPHP2 v".$person->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
+  echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Name
