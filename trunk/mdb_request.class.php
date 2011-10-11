@@ -24,8 +24,8 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
       else $user_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
       $this->addHeader("User-Agent", $user_agent);
     }
-    function getLastResponseHeaders($url) {
-      $head = $this->head($url);
+    function getLastResponseHeaders($url='') {
+      $head = $this->getResponseHeader($url);
       return array($head["response"],$head["Date"],$head["Server"],"",$head["Connection"],$head["Content-Type"]);
     }
   }
