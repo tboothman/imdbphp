@@ -98,7 +98,7 @@
    switch ($wt){
     case "Title"       : $urlname="/movies/imdb-id-".(int)$this->imdbid().".json"; break;
     case "Credits"     : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/casts.json"; break;
-    case "Trailers"    : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/trailers.json"; break;
+    case "Trailers"    : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/trailer.json"; break;
     case "Images"      : $urlname="/movies/imdb-id-".(int)$this->imdbid()."/images.json"; break;
     default            :
       $this->page[$wt] = "unknown page identifier";
