@@ -47,7 +47,9 @@
       $matchend = "<!-- begin TOP_RHS -->";
       $init_pos = strpos($this->page,$matchinit);
       $end_pos = strpos($this->page,$matchend);
-      if ( preg_match_all('!href="/title/tt(\d{7})/!', substr($this->page,$init_pos,$end_pos - $init_pos), $matches) ) {
+      //$pattern = '!href="/title/tt(\d{7})/!';
+      $pattern = '!rg/in-theaters/overview-title/images/b.gif\?link=/title/tt(\d+)!';
+      if ( preg_match_all($pattern, substr($this->page,$init_pos,$end_pos - $init_pos), $matches) ) {
         $res = array_values(array_unique($matches[1]));
       } else {
         $res = array();
