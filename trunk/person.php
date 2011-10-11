@@ -120,7 +120,7 @@ if (isset ($_GET["mid"])) {
   # MiniBio
   $bio = $person->bio();
   if (!empty($bio)) {
-    if ($_GET['engine']=='pilot') $idx = 0; else $idx = 1;
+    if ($_GET['engine']=='pilot' || count($bio)<2) $idx = 0; else $idx = 1;
     echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1&engine='.$_GET['engine'],$bio[$idx]["desc"])."</TD></TR>\n";
   }
 
