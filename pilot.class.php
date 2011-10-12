@@ -161,6 +161,18 @@
     return $this->main_movietypes;
   }
 
+  /** Get movie type
+   * @method movietype
+   * @return string movietype (TV series, Movie, ...)
+   * @see IMDB page / (TitlePage)
+   * @brief No data available at MoviePilot. If <code>pilot_imdbfill</code> is
+   *        set at least to BASIC_ACCESS, it will be retrieved from IMDB.
+   */
+  public function movietype() {
+    if ($this->pilot_imdbfill) $this->main_movietype = $this->imdb->movieType();
+    return $this->main_movietype;
+  }
+
  #---------------------------------------------------------------[ Runtime ]---
   /** Get overall runtime (first one mentioned on title page)
    * @method runtime

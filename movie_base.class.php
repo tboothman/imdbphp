@@ -93,6 +93,7 @@ class movie_base extends mdb_base {
    $this->main_plotoutline = "";
    $this->main_rating = -1;
    $this->main_runtime = "";
+   $this->main_movietype = "";
    $this->main_title = "";
    $this->main_votes = -1;
    $this->main_year = -1;

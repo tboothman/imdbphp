@@ -35,6 +35,7 @@ switch ($_REQUEST["cache"]) {
 page("Title");
  setid($imdb,"0117500");
  method($imdb,"title");
+ method($imdb,"movietype");
  method($imdb,"year");
  method($imdb,"runtime");
  method($imdb,"rating");
