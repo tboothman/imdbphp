@@ -39,6 +39,7 @@ $check_movie   = false;
 $check_name    = false;
 $check_charts  = false;
 $check_nowplay = false;
+$check_budget  = false;
 $uri = $_SERVER['REQUEST_URI'];
 if ( strpos($uri,'?')>0 ) $uri .= '&amp;';
 else $uri .= '?';
@@ -57,11 +58,13 @@ switch ($_REQUEST["check"]) {
   case "name"    : $check_name    = true; break;
   case "charts"  : $check_charts  = true; break;
   case "nowplay" : $check_nowplay = true; break;
+  case "budget"  : $check_budget  = true; break;
   default:
     $check_movie   = true;
     $check_name    = true;
     $check_charts  = true;
     $check_nowplay = true;
+    $check_budget  = true;
 }
 if (!empty($_REQUEST["skip"])) {
   $skips = explode(",",$_REQUEST["skip"]);
@@ -74,6 +77,7 @@ if ($check_movie)   { if ($api=='imdb') require('imdb.inc'); else require('pilot
 if ($check_name)    { if ($api=='imdb') require('imdb_person.inc'); else require ('pilot_person.inc'); }
 if ($check_charts)  { if ($api=='imdb') require ("imdb_charts.inc"); }
 if ($check_nowplay) { if ($api=='imdb') require ("imdb_nowplaying.inc"); }
+if ($check_budget)  { if ($api=='imdb') require ("imdb_budget.inc"); }
 
 #===============================================[ Summary and HTML footer ]===
 $passed  = $methods - $failures;
