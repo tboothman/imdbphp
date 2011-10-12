@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.1.1
 -------------------
 + imdb: adding new budget class
++ imdb nowplaying: added Top-10-Boxoffice
 
 v2.1.0 (11.10.2011)
 -------------------

@@ -34,6 +34,12 @@ $imdb = new imdb_nowplaying();
 
 headline("Class imdb_nowplaying (Revision ".$imdb->revision.")","imdb_nowplaying");
 
+page("Movies-In-Theaters");
+// setid($imdb,"0105946");
+ method($imdb,"getNowPlayingMovies");
+ method($imdb,"getTop10BoxOfficeMovies");
+endpage();
+
 echo "<UL>\n";
 
 raw(" <LI>method getNowPlayingMovies(): ");
