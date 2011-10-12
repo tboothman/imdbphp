@@ -96,11 +96,25 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(.*) \((.*)(\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
       $this->main_title = $match[2];
+      if (empty($match[3])) $this->main_movietype = 'Movie';
+      else $this->main_movietype  = $match[3];
       if ($match[3]=="????") $this->main_year = "";
       else $this->main_year  = $match[4];
     }
   }
 
+
+  /** Get movie type
+   * @method movietype
+   * @return string movietype (TV series, Movie, ...)
+   * @see IMDB page / (TitlePage)
+   * @brief This is faster than movietypes() as it is retrieved already together with the title.
+   *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.
+   */
+  public function movietype() {
+    if ( empty($this->main_movietype) ) $this->title_year();
+    return $this->main_movietype;
+  }
 
   /** Get movie title
    * @method title

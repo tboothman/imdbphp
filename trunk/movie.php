@@ -76,6 +76,10 @@ if (isset ($_GET["mid"])) {
     flush();
   }
 
+  # Movie Type
+  ++$rows;
+  echo '<TR><TD><B>Type:</B></TD><TD>'.$movie->movietype()."</TD></TR>\n";
+
   # Keywords
   $keywords = $movie->keywords();
   if ( !empty($keywords) ) {
