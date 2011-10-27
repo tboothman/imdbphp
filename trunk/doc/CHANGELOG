@@ -8,6 +8,7 @@ v2.1.1
 + imdb: adding new budget class
 + imdb nowplaying: added Top-10-Boxoffice
 + movies: added method movietype to check wheter it is a movie, tv series, ...
+* updated API reference
 
 v2.1.0 (11.10.2011)
 -------------------
