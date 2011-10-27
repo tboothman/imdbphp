@@ -31,7 +31,7 @@ class imdb_budget extends movie_base {
 #======================================================[ Common functions ]===
 #-----------------------------------------------------------[ Constructor ]---
  /** Initialize the class
-  * @constructor imdb
+  * @constructor imdb_budget
   * @param string id IMDBID to use for data retrieval
   */
  function __construct($id) {
