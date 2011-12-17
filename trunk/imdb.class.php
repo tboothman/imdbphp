@@ -479,7 +479,7 @@
    */
   public function is_serial() {
     if ( $this->page["Title"] == "" ) $this->openpage("Title");
-    return preg_match('|<h5>TV Series:</h5>|i',$this->page["Title"],$matches);
+    return preg_match('|<span class="tv-series-smaller">|i',$this->page["Title"],$matches);
   }
 
  #--------------------------------------------------------[ Plot (Outline) ]---
