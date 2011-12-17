@@ -341,7 +341,7 @@
   public function languages() {
    if (empty($this->langs)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all('!<a href="/language/(.*?)">\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m',$this->page["Title"],$matches))
+    if (preg_match_all('!<a href="/language/(.*?)"[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m',$this->page["Title"],$matches))
       $this->langs = $matches[2];
       $mc = count($matches[2]);
       for ($i=0;$i<$mc;$i++) {
