@@ -12,6 +12,7 @@ v2.1.1
 ! is_serial() did always return FALSE (site-change)
 * fixed a bunch of NOTICEs
 ! imdb::languages() had problems with some ISO settings - hopefully fixed now.
+* sometimes imdb::genres() did not return all available genres
 
 v2.1.0 (11.10.2011)
 -------------------
