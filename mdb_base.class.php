@@ -101,14 +101,14 @@ class mdb_base extends mdb_config {
  #---------------------------------------------------------[ Other Helpers ]---
   protected $months = array("January"=>"01","February"=>"02","March"=>"03","April"=>"04",
            "May"=>"05","June"=>"06","July"=>"07","August"=>"08","September"=>"09",
-	   "October"=>"10","November"=>"11","December"=>"12");
+           "October"=>"10","November"=>"11","December"=>"12");
   /** Get numerical value for month name
    * @method monthNo
    * @param string name name of month
    * @return integer month number
    */
   function monthNo($mon) {
-    return $this->months[$mon];
+    return @$this->months[$mon];
   }
 
  #-------------------------------------------------------------[ Open Page ]---
@@ -143,7 +143,7 @@ class mdb_base extends mdb_config {
         $this->debug_scalar("cannot open page (error 404): $url");
         return false; break;
       case "HTTP/1.1 301":
-      case "HTTP/1.1 302":
+      case "HTTP/1.1 302": // echo "<pre>";print_r($head);echo "</pre>\n";
       case "HTTP/1.1 200": break;
       default: $this->debug_scalar("HTTP response code not handled explicitly: '".$head[0]."'"); break;
     }
