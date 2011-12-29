@@ -1,4 +1,4 @@
-<?
+<?php
  #############################################################################
  # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
  # written by Giorgos Giagas                                                 #
@@ -22,7 +22,7 @@ require_once("XML/Serializer.php");
  * @extends XML_Serializer
  * @author Pablo Castorino (pablo AT castorinop DOT com DOT ar)
  * @author Izzy (izzysoft AT qumran DOT org) (Documentation)
- * @copyright (c) 2008 by Pablo Castorino, Itzchak Rehberg and IzzySoft
+ * @copyright (c) 2008-2011 by Pablo Castorino, Itzchak Rehberg and IzzySoft
  * @version $Revision: 155 $ $Date: 2008-06-11 13:03:07 +0200 (Mi, 11. Jun 2008) $
  */
 class imdbXML extends XML_Serializer {
