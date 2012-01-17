@@ -1394,7 +1394,7 @@
     if (empty($this->extreviews)) {
       if (empty($this->page["ExtReviews"])) $this->openpage("ExtReviews");
       if ($this->page["ExtReviews"] == "cannot open page") return array(); // no such page
-      if (preg_match_all("/\<li\>\<a href=\"(.*?)\"\>(.*?)\<\/a\>/",$this->page["ExtReviews"],$matches)) {
+      if (preg_match_all('@<li><a href="(.*?)".*?>(.*?)</a>@',$this->page["ExtReviews"],$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
           $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
