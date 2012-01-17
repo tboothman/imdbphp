@@ -1275,7 +1275,9 @@
       if ( preg_match('|<h3[^>]*>\s*Trailers on Other Sites\s*</h3>(.*?)<hr|ims',$this->page["VideoSites"],$match) ) {
         preg_match_all('!<p[^>]*>(.*?)\s*\((.*?)\)\s*\(<a href="(.*?)">(.*?)</a>\)\s*</p!ims',$match[1],$matches);
         for ($i=0;$i<count($matches[0]);++$i) {
-          $this->video_sites[] = array("site"=>$matches[4][$i],"url"=>$matches[3][$i],"type"=>$matches[2][$i],"desc"=>$matches[1][$i]);
+          $type = $matches[2][$i];
+          if ( $pos=strrpos($type,'(') ) $type = substr($type,$pos+1);
+          $this->video_sites[] = array("site"=>$matches[4][$i],"url"=>$matches[3][$i],"type"=>$type,"desc"=>$matches[1][$i]);
         }
       }
     }
