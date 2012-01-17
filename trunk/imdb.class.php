@@ -1472,7 +1472,7 @@
     preg_match_all('|<li><a href="(.*)">(.*)</a>(.*)</li>|iUms',$text,$matches);
     $mc = count($matches[0]);
     for ($i=0;$i<$mc;++$i) {
-      $target[] = array("name"=>$matches[2][$i], "url"=>$matches[1][$i], "notes"=>$matches[3][$i]);
+      $target[] = array("name"=>$matches[2][$i], "url"=>'http://'.$this->imdbsite.$matches[1][$i], "notes"=>$matches[3][$i]);
     }
   }
 
