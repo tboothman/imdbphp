@@ -789,12 +789,11 @@
   public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match('!href="/mpaa">.*?</h4>\s*<span itemprop="contentRating">(.*?)</span!ims',$this->page["Title"],$match))
+    if (preg_match('!href="/mpaa"\s*>.*?</h4>\s*<span itemprop="contentRating">(.*?)</span!ims',$this->page["Title"],$match))
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
   }
-
 
  #------------------------------------------------------[ Production Notes ]---
   /** For not-yet completed movies, we can get the production state
