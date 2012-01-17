@@ -58,7 +58,7 @@
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
     case "VideoSites"  : $urlname="/videosites"; break;
-    case "Goofs"       : $urlname="/goofs"; break;
+    case "Goofs"       : $urlname="/trivia?tab=gf"; break;
     case "Trivia"      : $urlname="/trivia"; break;
     case "Soundtrack"  : $urlname="/soundtrack"; break;
     case "MovieConnections" : $urlname="/movieconnections"; break;
@@ -1202,13 +1202,9 @@
     if (empty($this->goofs)) {
       if (empty($this->page["Goofs"])) $this->openpage("Goofs");
       if ($this->page["Goofs"] == "cannot open page") return array(); // no such page
-      $tag_s = strpos($this->page["Goofs"],'<ul class="trivia">');
-      $tag_e = strrpos($this->page["Goofs"],'<ul class="trivia">'); // maybe more than one
-      $tag_e = strrpos($this->page["Goofs"],"</ul>");
-      $goofs = substr($this->page["Goofs"],$tag_s,$tag_e - $tag_s);
-      if (preg_match_all("/<li>.*?<b>(.*?)<\/b>(.*?)<br>\s*(<br>)?<\/li>/ims",$goofs,$matches)) {
+      if ( @preg_match_all('@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*<div.+?>(.+?)(!?&nbsp;)\s*<span class@',$this->page["Goofs"],$matches) ) {
         $gc = count($matches[1]);
-        for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[2][$i]);
+        for ($i=0;$i<$gc;++$i) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>$matches[3][$i]);
       }
     }
     return $this->goofs;

@@ -5,7 +5,7 @@ History for IMDBPHP2
 
 v2.1.2
 -------------------
-! site changes broke imdb::keywords(), imdb::seasons(), imdb::languages(), imdb::mpaa_reason()
+! site changes broke the imdb class methods keywords(), seasons(), languages(), mpaa_reason(), goofs()
 ! site changes confused imdb::extReviews(), imdb::videosites()
 
 v2.1.1 (19.12.2011)
