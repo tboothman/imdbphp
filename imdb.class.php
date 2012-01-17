@@ -459,17 +459,21 @@
   public function seasons() {
     if ( $this->seasoncount == -1 ) {
       if ( $this->page["Title"] == "" ) $this->openpage("Title");
-      if ( preg_match_all('|<a href="episodes#season-\d+">(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
+      if ( preg_match_all('|href="episodes\?season\=\d+"\s*>(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
         $this->seasoncount = $matches[1][0];
       } else {
         $this->seasoncount = 0;
       }
-      if ( preg_match_all('|<a href="episodes#season-unknown">unknown</a>|Ui',$this->page["Title"],$matches) ) {
+      if ( preg_match_all('|href="episodes\?season\=unknown"\s*>unknown</a>|Ui',$this->page["Title"],$matches) ) {
         $this->seasoncount += count($matches[0]);
       }
     }
     return $this->seasoncount;
   }
+
+/*
+<a    onclick="(new Image()).src='/rg/tt-episodes/season-1/images/b.gif?link=episodes%3Fseason%3D5';"     href="episodes?season=5"    >5</a>
+*/
 
  #-----------------------------------------------[ Is it part of a serial? ]---
   /** Try to figure out if this is a movie or part of a serie
