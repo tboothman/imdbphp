@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.1.2
 -------------------
 ! site changes broke imdb::keywords(), imdb::seasons()
+! site changes confused imdb::extReviews()
 
 v2.1.1 (19.12.2011)
 -------------------
