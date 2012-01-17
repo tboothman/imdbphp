@@ -311,7 +311,7 @@
   public function keywords() {
     if (empty($this->main_keywords)) {
       if ($this->page["Title"] == "") $this->openpage("Title");
-      if (preg_match_all('!<a href\="/keyword/[\w\-]+">(.*?)</a>!',$this->page["Title"],$matches))
+      if (preg_match_all('!href="/keyword/[\w-]+"\s*>(.*?)</a>!',$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
     return $this->main_keywords;

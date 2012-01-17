@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.1.2
+-------------------
+! site changes broke imdb::keywords()
+
 v2.1.1 (19.12.2011)
 -------------------
 + imdb: adding new budget class
