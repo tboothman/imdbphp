@@ -12,6 +12,7 @@ v2.1.2
 + added method imdb::endyear() for cases where production spanned multiple years. So for
   "xxxx-yyyy" this returns "yyyy", while imdb::year() is adjusted to "xxxx". Otherwise, both
   return the same year.
+! imdb_topcharts::getChartsBoxOffice() was broken. Fixed thanx to hints from razor.
 
 v2.1.1 (19.12.2011)
 -------------------
