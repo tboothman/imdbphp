@@ -100,9 +100,15 @@
       else $this->main_movietype  = $match[3];
       if ($match[3]=="????") $this->main_year = "";
       else $this->main_year  = $match[4];
+      if ( preg_match('!^(.+)\s+(\d{4})&ndash;\s*$!',$this->main_movietype,$match) ) {
+        $this->main_endyear = $this->main_year;
+        $this->main_year    = $match[2];
+        $this->main_movietype = $match[1];
+      } else {
+        $this->main_endyear = $this->main_year;
+      }
     }
   }
-
 
   /** Get movie type
    * @method movietype
@@ -134,6 +140,17 @@
   public function year() {
     if ($this->main_year == -1) $this->title_year();
     return $this->main_year;
+  }
+
+  /** Get end-year
+   *  Usually this returns the same value as year() -- except for those cases where production spanned multiple years, usually for series
+   * @method endyear
+   * @return string year
+   * @see IMDB page / (TitlePage)
+   */
+  public function endyear() {
+    if ($this->main_endyear == -1) $this->title_year();
+    return $this->main_endyear;
   }
 
   /** Get range of years for e.g. series spanning multiple years
