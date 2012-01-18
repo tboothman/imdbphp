@@ -493,9 +493,6 @@
     return $this->seasoncount;
   }
 
-/*
-<a    onclick="(new Image()).src='/rg/tt-episodes/season-1/images/b.gif?link=episodes%3Fseason%3D5';"     href="episodes?season=5"    >5</a>
-*/
 
  #-----------------------------------------------[ Is it part of a serial? ]---
   /** Try to figure out if this is a movie or part of a serie
@@ -507,6 +504,27 @@
     if ( $this->page["Title"] == "" ) $this->openpage("Title");
     return preg_match('|<span class="tv-series-smaller">|i',$this->page["Title"],$matches);
   }
+
+ #------------------------------------[ Provide "Uplink" info for episodes ]---
+  /** If it is an episode, we may want to now to know where it belongs to
+   * @method get_episode_details
+   * @return array [imdbid,seriestitle,series_prodtime,episodetitle,season,episode]
+   * @see IMDB page / (TitlePage)
+   * @brief based on an idea of lennert, see ticket:263
+   */
+  public function get_episode_details() {
+    if (!$this->is_serial()) return array(); // not an episode
+    if ($this->page["Title"] == "") $this->openpage("Title");
+    $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/"\s*>(?<seriestitle>.+?)</a>\s*'
+          . '<span>\(TV series\s*(?<productiontime>.+)\)</span>\s*</h2>\s*<h1 class="header" itemprop="name">\s*'
+          . '(?<episodetitle>.+)\s*<span class="tv-series-smaller">\(#(?<season>\d+).(?<episode>\d+)\)</span>!';
+    if ( preg_match($preg, $this->page["Title"], $match) ) {
+      $info = array("imdbid"=>$match[1], "seriestitle"=>$match[2], "series_prodtime"=>$match[3], "episodetitle"=>$match[4], "season"=>$match[5], "episode"=>$match[5]);
+      return $info;
+    }
+    else return array(); // no success
+  }
+
 
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
