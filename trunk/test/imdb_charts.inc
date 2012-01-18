@@ -42,7 +42,7 @@ else pass();
 raw("</LI>\n");
 ++$GLOBALS["methods"];
 
-raw(" <LI>method getChartsTop10(): ");
+raw(" <LI>method getChartsBoxOffice(): ");
 $res = $imdb->getChartsBoxOffice();
 if (count($res)<10||empty($res[0][0])) fail("getChartsBoxOffice");
 else pass();
