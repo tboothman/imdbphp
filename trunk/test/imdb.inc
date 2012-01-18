@@ -59,6 +59,8 @@ page("Title");
  method($imdb,"keywords_all");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
+ setid($imdb,"0517673"); // Babylon 5: No Compromises
+ method($imdb,"get_episode_details");
  setid($imdb,"1632658"); // Running by Sight
  method($imdb,"prodNotes");
  setid($imdb,"0094592"); // 14 going 30 (TV)
