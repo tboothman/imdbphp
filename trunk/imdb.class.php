@@ -1215,7 +1215,7 @@
       for ($i=1;$i<=$seasons;++$i) {
         if ( $this->page["Episodes-$i"] == "" ) $this->openpage("Episodes-$i");
         if ( $this->page["Episodes-$i"] == "cannot open page" ) continue; // no such page
-        if ( preg_match_all('!<meta itemprop="episodeNumber" content="(\d+)"/>\s*<div class="airdate">\s*(.+?)\s*</div>\s*<strong>.+?;"\s*href="/title/tt(\d{7})/"\s*title="(.+?)"\s*itemprop="name">.+?</a></strong>\s*.+?itemprop="description">(.+?)</div!im',$this->page["Episodes-$i"],$matches) ) {
+        if ( preg_match_all('!<meta itemprop="episodeNumber" content="(\d+)"/>\s*<div class="airdate">\s*(.+?)\s*</div>\s*<strong>.+?;"\s*href="/title/tt(\d{7})/"\s*title="(.+?)"\s*itemprop="name">.+?</a></strong>\s*.+?itemprop="description">(.*?)</div!im',$this->page["Episodes-$i"],$matches) ) {
           $eps = count($matches[1]);
           for ($k=0;$k<$eps;++$k) {
             $this->season_episodes[$i][] = array(
