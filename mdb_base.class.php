@@ -141,9 +141,22 @@ class mdb_base extends mdb_config {
       case "HTTP/1.1 404":
         $this->page[$wt] = "cannot open page";
         $this->debug_scalar("cannot open page (error 404): $url");
+        $this->debug_object($response);
         return false; break;
-      case "HTTP/1.1 301":
-      case "HTTP/1.1 302": // echo "<pre>";print_r($head);echo "</pre>\n";
+      case "HTTP/1.1 301": // permanent redirect
+      case "HTTP/1.1 302": // found
+      case "HTTP/1.1 303": // see other
+      case "HTTP/1.1 307": // temporary redirect
+        // in all these cases, the correct URL is to be found in the 'Location:' header
+        foreach ($head as $headline) {
+          if (strpos(trim(strtolower($headline)),'location')!==0) continue;
+          $aline = explode(': ',$headline);
+          $target = trim($aline[1]);
+          $this->getWebPage($wt,$target);
+          return;
+        }
+        // echo "<pre>";print_r($head);echo "</pre>\n";
+        // $this->debug_object($response);
       case "HTTP/1.1 200": break;
       default: $this->debug_scalar("HTTP response code not handled explicitly: '".$head[0]."'"); break;
     }
