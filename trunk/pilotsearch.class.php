@@ -120,12 +120,14 @@
    if (!empty($this->page->movies)) foreach ($this->page->movies as $movie) {
      if ( $this->maxresults && $i > $this->maxresults ) break;
      ++$i;
-     $mid = str_pad($movie->alternative_identifiers->imdb,7,0,STR_PAD_LEFT);
-     $item = new pilot($mid);
-     $item->page['Title'] = $movie;
-     $item->setid($mid);
-     $this->resu[] = $item;
-     if ($this->storecache) $this->cache_write($mid.'.'.'Title.pilot',json_encode($movie));
+     if ( property_exists($movie,'alternative_identifiers') && property_exists($movie->alternative_identifiers,'imdb') ) {
+       $mid = str_pad($movie->alternative_identifiers->imdb,7,0,STR_PAD_LEFT);
+       $item = new pilot($mid);
+       $item->page['Title'] = $movie;
+       $item->setid($mid);
+       $this->resu[] = $item;
+       if ($this->storecache) $this->cache_write($mid.'.'.'Title.pilot',json_encode($movie));
+     }
    }
 
    return $this->resu;
