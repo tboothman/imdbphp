@@ -98,7 +98,7 @@ if (isset ($_GET["mid"])) {
   $ser = $movie->get_episode_details();
   if (!empty($ser)) {
     ++$rows;
-    echo '<TR><TD><B>Series Details:</B></TD><TD>'.$ser['seriestitle'].' Season '.$ser['season'].', Episode '.$ser['episode']."</TD></TR>\n";
+    echo '<TR><TD><B>Series Details:</B></TD><TD>'.$ser['seriestitle'].' Season '.$ser['season'].', Episode '.$ser['episode'].", Airdate ".$ser['airdate']."</TD></TR>\n";
   }
 
   # Year & runtime
