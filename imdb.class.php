@@ -54,7 +54,7 @@
     case "Plot"        : $urlname="/plotsummary"; break;
     case "Synopsis"    : $urlname="/synopsis"; break;
     case "Taglines"    : $urlname="/taglines"; break;
-    //case "Episodes"    : $urlname="/episodes"; break;
+    case "Episodes"    : $urlname="/episodes"; break;
     case "Quotes"      : $urlname="/quotes"; break;
     case "Trailers"    : $urlname="/trailers"; break;
     case "VideoSites"  : $urlname="/videosites"; break;
@@ -1211,25 +1211,34 @@
    * @method episodes
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
    * @see IMDB page /episodes
+   * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
    */
   public function episodes() {
-    if ( $this->seasons() == 0 ) return $this->season_episodes;
+    if ( !$this->is_serial() ) return $this->season_episodes;
     if ( empty($this->season_episodes) ) {
-      $seasons = $this->seasons();
-      $this->season_episodes = array();
-      for ($i=1;$i<=$seasons;++$i) {
-        if ( $this->page["Episodes-$i"] == "" ) $this->openpage("Episodes-$i");
-        if ( $this->page["Episodes-$i"] == "cannot open page" ) continue; // no such page
-        if ( preg_match_all('!<meta itemprop="episodeNumber" content="(\d+)"/>\s*<div class="airdate">\s*(.+?)\s*</div>\s*<strong>.+?;"\s*href="/title/tt(\d{7})/"\s*title="(.+?)"\s*itemprop="name">.+?</a></strong>\s*.+?itemprop="description">(.*?)</div!im',$this->page["Episodes-$i"],$matches) ) {
-          $eps = count($matches[1]);
-          for ($k=0;$k<$eps;++$k) {
-            $this->season_episodes[$i][] = array(
-              "imdbid"=>$matches[3][$k], "title"=>$matches[4][$k], "airdate"=>$matches[2][$k],
-              "plot"=>$matches[5][$k], "season"=>$i, "episode"=>$matches[1][$k]
-            );
+      $ser = $this->get_episode_details();
+      $tid = $this->imdbID;
+      $this->imdbID = $ser['imdbid'];
+      if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
+      if ( $this->page["Episodes"] == "cannot open page" ) return $this->season_episodes; // no such page
+      if ( preg_match('!<select id="bySeason"(.*?)</select!ims',$this->page["Episodes"],$match) ) {
+        preg_match_all('!<option\s+(selected="selected" |)value="(\d+)">!i',$match[1],$matches);
+        for ($i=0;$i<count($matches[0]);++$i) {
+          $s = $matches[2][$i];
+          if ( $this->page["Episodes-$s"] == "" ) $this->openpage("Episodes-$s");
+          if ( $this->page["Episodes-$s"] == "cannot open page" ) continue; // no such page
+          $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>\d+)"/>\s*'
+                . '<div class="airdate">\s*(?<airdate>.+?)\s*</div>\s*'
+                . '.+?\shref="/title/tt(?<imdbid>\d{7})/"\s+title="(?<title>.+?)"\s+itemprop="name"'
+                . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
+          preg_match_all($preg,$this->page["Episodes-$s"],$eps);
+          $ec = count($eps[0]);
+          for ($ep=0;$ep<$ec;++$ep) {
+            $this->season_episodes[$s][$eps['episodeNumber'][$ep]] = array ('imdbid'=>$eps['imdbid'][$ep],'title'=>trim($eps['title'][$ep]),'airdate'=>$eps['airdate'][$ep],'plot'=>trim($eps['plot'][$ep]),'season'=>$s,'episode'=>$eps['episodeNumber'][$ep]);
           }
         }
       }
+      $this->imdbID = $tid;
     }
     return $this->season_episodes;
   }

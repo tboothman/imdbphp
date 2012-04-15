@@ -309,15 +309,12 @@ if (isset ($_GET["mid"])) {
   }
 
   # Seasons
-  $seasons = $movie->seasons();
-  if ( $seasons != 0 ) {
+  if ( $movie->is_serial() ) {
     ++$rows;
     $episodes = $movie->episodes();
     echo '<tr><td valign=top><b>Episodes:</b></td><td>';
-    for ( $season = 0; $season <= $seasons; ++$season ) {
-      $eps = @count($episodes[$season]);
-      for ( $episode = 0; $episode < $eps; ++$episode ) {
-        $episodedata = &$episodes[$season][$episode];
+    foreach ( $episodes as $season => $ep ) {
+      foreach ( $ep as $episodedata ) {
         echo '<b>Season '.$episodedata['season'].', Episode '.$episodedata['episode'].': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
       }
     }
