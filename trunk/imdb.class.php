@@ -502,7 +502,7 @@
    */
   public function is_serial() {
     if ( $this->page["Title"] == "" ) $this->openpage("Title");
-    return preg_match('|<span class="tv-series-smaller">|i',$this->page["Title"],$matches);
+    return preg_match('|href="/title/tt\d{7}/episodes"|i',$this->page["Title"],$matches);
   }
 
  #------------------------------------[ Provide "Uplink" info for episodes ]---
@@ -511,6 +511,7 @@
    * @return array [imdbid,seriestitle,series_prodtime,episodetitle,season,episode]
    * @see IMDB page / (TitlePage)
    * @brief based on an idea of lennert, see ticket:263
+   * @version series_prodtime is no longer available due to IMDB site changes, see ticket:281
    */
   public function get_episode_details() {
     if (!$this->is_serial()) return array(); // not an episode
@@ -518,13 +519,17 @@
     $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/"\s*>(?<seriestitle>.+?)</a>\s*'
           . '<span>\(TV series\s*(?<productiontime>.+)\)</span>\s*</h2>\s*<h1 class="header" itemprop="name">\s*'
           . '(?<episodetitle>.+)\s*<span class="tv-series-smaller">\(#(?<season>\d+).(?<episode>\d+)\)</span>!';
+    $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/"\s*>(?<seriestitle>.+?)</a>:\s*'
+          . '<span class="nobr">\s*Season\s+(?<season>\d+),\s+Episode\s+(?<episode>\d+)\s*</span>\s*'
+          . '</h2>\s*<h1 class="header" itemprop="name">\s*'
+          . '(?<episodetitle>.+)\s*<span class="nobr">!';
     if ( preg_match($preg, $this->page["Title"], $match) ) {
-      $info = array("imdbid"=>$match[1], "seriestitle"=>$match[2], "series_prodtime"=>$match[3], "episodetitle"=>$match[4], "season"=>$match[5], "episode"=>$match[5]);
+      $info = array("imdbid"=>$match['seriesimdbid'], "seriestitle"=>$match['seriestitle'], "series_prodtime"=>'', "episodetitle"=>$match['episodetitle'],
+                    "season"=>$match['season'], "episode"=>$match['episode']);
       return $info;
     }
     else return array(); // no success
   }
-
 
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
