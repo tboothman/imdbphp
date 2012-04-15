@@ -1193,12 +1193,9 @@
     if (empty($this->crazy_credits)) {
       if (empty($this->page["CrazyCredits"])) $this->openpage("CrazyCredits");
       if ( $this->page["CrazyCredits"] == "cannot open page" ) return array(); // no such page
-      $tag_s = strpos ($this->page["CrazyCredits"],"<li><tt>");
-      $tag_e = strpos ($this->page["CrazyCredits"],"</ul>",$tag_s);
-      $cred  = str_replace ("<br>"," ",substr ($this->page["CrazyCredits"],$tag_s, $tag_e - $tag_s));
-      $cred  = str_replace ("  "," ",str_replace ("\n"," ",$cred));
-      if (preg_match_all("/<li><tt>(.*?)<\/tt><\/li>/",$cred,$matches))
+      if ( preg_match_all('!<div id="cz.+?>(.+?)<br\s*/>\s*<span class="linksoda">!ims',$this->page["CrazyCredits"],$matches) ) {
         $this->crazy_credits = $matches[1];
+      }
     }
     return $this->crazy_credits;
   }
