@@ -1209,11 +1209,15 @@
    * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
    */
   public function episodes() {
-    if ( !$this->is_serial() ) return $this->season_episodes;
+    if ( !$this->is_serial() && !$this->seasons() ) return $this->season_episodes;
     if ( empty($this->season_episodes) ) {
-      $ser = $this->get_episode_details();
-      $tid = $this->imdbID;
-      $this->imdbID = $ser['imdbid'];
+      if ( !$this->seasons() ) {
+        $ser = $this->get_episode_details();
+        $tid = $this->imdbID;
+        $this->imdbID = $ser['imdbid'];
+      } else {
+        $tid = $this->imdbID;
+      }
       if ( $this->page["Episodes"] == "" ) $this->openpage("Episodes");
       if ( $this->page["Episodes"] == "cannot open page" ) return $this->season_episodes; // no such page
       if ( preg_match('!<select id="bySeason"(.*?)</select!ims',$this->page["Episodes"],$match) ) {
