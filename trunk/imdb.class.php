@@ -410,7 +410,9 @@
   public function genres() {
     if (empty($this->moviegenres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("@<a href\=\"/genre/[\w\-]+\"[^>]*\>(.*?)\</a>@",$this->page["Title"],$matches)) {
+      if (preg_match_all('!itemprop="genre"\s*>(.*?)</a>!s',$this->page["Title"],$matches)) {
+        $this->moviegenres = $matches[1];
+      } elseif (preg_match_all("@<a href\=\"/genre/[\w\-]+\"[^>]*\>(.*?)\</a>@",$this->page["Title"],$matches)) {
         $this->moviegenres = array_unique($matches[1]);
       } elseif (preg_match('!<div class="infobar">(.*?)</div>!ims',$this->page['Title'],$match)) {
         if (preg_match_all('!href="/genre/.*?"\s*>(.*?)<!ims',$match[1],$matches)) {
