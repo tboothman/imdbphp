@@ -309,7 +309,7 @@ if (isset ($_GET["mid"])) {
   }
 
   # Seasons
-  if ( $movie->is_serial() ) {
+  if ( $movie->is_serial() || $movie->seasons() ) {
     ++$rows;
     $episodes = $movie->episodes();
     echo '<tr><td valign=top><b>Episodes:</b></td><td>';
