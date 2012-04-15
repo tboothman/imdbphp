@@ -1343,14 +1343,21 @@
  #----------------------------------------------------------[ Trivia Array ]---
   /** Get the trivia info
    * @method trivia
+   * @param optional boolean spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
    * @return array trivia (array[0..n] string
    * @see IMDB page /trivia
    */
-  public function trivia() {
+  public function trivia($spoil=FALSE) {
     if (empty($this->trivia)) {
       if (empty($this->page["Trivia"])) $this->openpage("Trivia");
       if ($this->page["Trivia"] == "cannot open page") return array(); // no such page
-      if ( preg_match_all('!<div class="sodatext">\s*(.*?)\s</div>!ims',$this->page["Trivia"],$matches) ) {
+      if ($spoil) {
+        preg_match('!<a name="spoilers"(.+?)\s*<div id="sidebar">!ims',$this->page["Trivia"],$block);
+      } else {
+        preg_match('!<div id="trivia_content"(.+?)<a name="spoilers"!ims',$this->page["Trivia"],$block);
+        if (empty($block)) preg_match('!<div id="trivia_content"(.+?)<div id="sidebar">!ims',$this->page["Trivia"],$block);
+      }
+      if ( preg_match_all('!<div class="sodatext">\s*(.*?)\s*<br\s*/>\s*</div>!ims',$block[1],$matches) ) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
       }
