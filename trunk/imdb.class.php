@@ -61,7 +61,7 @@
     case "Goofs"       : $urlname="/trivia?tab=gf"; break;
     case "Trivia"      : $urlname="/trivia"; break;
     case "Soundtrack"  : $urlname="/soundtrack"; break;
-    case "MovieConnections" : $urlname="/movieconnections"; break;
+    case "MovieConnections" : $urlname="/trivia?tab=mc"; break;
     case "ExtReviews"  : $urlname="/externalreviews"; break;
     case "ReleaseInfo" : $urlname="/releaseinfo"; break;
     case "CompanyCredits" : $urlname="/companycredits"; break;
@@ -1406,16 +1406,17 @@
    * @return array [0..n] of array mid,name,year,comment - or empty array if not found
    */
   private function parseConnection($conn) {
-    $tag_s = strpos($this->page["MovieConnections"],"<h5>$conn</h5>");
+    $tag_s = strpos($this->page["MovieConnections"],"<h4 class=\"li_group\">$conn");
     if (empty($tag_s)) return array(); // no such feature
-    $tag_e = strpos($this->page["MovieConnections"],"<h5>",$tag_s+4);
-    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<hr/><h3>",$tag_s);
+    $tag_e = strpos($this->page["MovieConnections"],"<h4 class=\"li",$tag_s+4);
+    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<script",$tag_s);
     $block = substr($this->page["MovieConnections"],$tag_s,$tag_e-$tag_s);
-    if (preg_match_all("/\<a href=\"(.*?)\"\>(.*?)\<\/a\> \((\d{4})\)(.*\<br\/\>\&nbsp;-\&nbsp;(.*))?/",$block,$matches)) {
+    if (preg_match_all('!<a href="(.*?)">(.*?)</a>&nbsp;\((\d{4})\)(.*<br\s*/>(.*?)\s*</div>)?!ims',$block,$matches)) {
+      $this->debug_object($matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
         $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-10); // isolate imdb id from url
-        $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>$matches[5][$i]);
+        $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>trim($matches[5][$i]));
       }
     }
     return $arr;
