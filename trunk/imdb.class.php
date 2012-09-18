@@ -100,14 +100,13 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(.*) \((.*)(\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
       $this->main_title = $match[2];
-      if (empty($match[3])) $this->main_movietype = 'Movie';
-      else $this->main_movietype  = $match[3];
+      if (empty($match[3])) $main_movietype = 'Movie';
+      else $main_movietype  = $match[3];
       if ($match[3]=="????") $this->main_year = "";
       else $this->main_year  = $match[4];
-      if ( preg_match('!^(.+)\s+(\d{4})&ndash;\s*$!',$this->main_movietype,$match) ) {
+      if ( preg_match('!^(.+)\s+(\d{4})&ndash;\s*$!',$main_movietype,$match) ) {
         $this->main_endyear = $this->main_year;
         $this->main_year    = $match[2];
-        $this->main_movietype = $match[1];
       } else {
         $this->main_endyear = $this->main_year;
       }
@@ -122,7 +121,13 @@
    *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.
    */
   public function movietype() {
-    if ( empty($this->main_movietype) ) $this->title_year();
+    if ( empty($this->main_movietype) ) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if ( preg_match('!<h1 class="header" itemprop="name">.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
+        $this->main_movietype = $match[1];
+      }
+      $this->debug_object($match);
+    }
     return $this->main_movietype;
   }
 
