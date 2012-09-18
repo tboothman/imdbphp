@@ -502,14 +502,14 @@
 
 
  #-----------------------------------------------[ Is it part of a serial? ]---
-  /** Try to figure out if this is a movie or part of a serie
+  /** Try to figure out if this is a movie or a serie
    * @method is_serial
    * @return boolean
    * @see IMDB page / (TitlePage)
    */
   public function is_serial() {
     if ( $this->page["Title"] == "" ) $this->openpage("Title");
-    return preg_match('|href="/title/tt\d{7}/episodes"|i',$this->page["Title"],$matches);
+    return preg_match('|href="/title/tt\d{7}/episodes\?"|i',$this->page["Title"],$matches);
   }
 
  #------------------------------------[ Provide "Uplink" info for episodes ]---
