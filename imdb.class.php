@@ -1300,27 +1300,42 @@
   /** Get the trailer URLs for a given movie
    * @method trailers
    * @param optional boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
-   * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url ($full=TRUE)
+   * @param optional boolean all  Fetch all trailers (including off-site ones)? Default: True
+   * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url,resolution] ($full=TRUE)
+   * @author george
+   * @author izzy
    * @see IMDB page /trailers
+   * @brief New code thanks to george (http://projects.izzysoft.de/trac/imdbphp/ticket/286) with some minor adjustments by izzy
    */
-  public function trailers($full=FALSE) {
+  public function trailers($full=FALSE,$all=TRUE) {
     if ( empty($this->trailers) ) {
-      if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
-      if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
-      $tag_s = strpos($this->page["Trailers"], '<div id="search-results">');
-      if (!empty($tag_s)) { // trailers on the IMDB site itself
-        $tag_e = strpos($this->page["Trailers"],"</ol>",$tag_s);
-        $trail = substr($this->page["Trailers"], $tag_s, $tag_e - $tag_s +1);
-        if (preg_match_all('|<a href="{0,1}(/video/screenplay/vi\d*/).*?title="(.*?)"|ims',$trail,$matches))
-          for ($i=0;$i<count($matches[0]);++$i) {
-            $trailer = "http://".$this->imdbsite.$matches[1][$i];
-            if ( $full ) $this->trailers[] = array("lang"=>'',"title"=>$matches[2][$i],"url"=>$trailer,"restful_url"=>'');
-            else $this->trailers[] = $trailer;
+        if ( $this->page["Trailers"] == "" ) $this->openpage("Trailers");
+        if ( $this->page["Trailers"] == "cannot open page" ) return array(); // no such page
+        // due to site change, onsite / offsite trailers are mixed in on the same page
+        // following code does not weed out offsite trailers.  
+        // Also $tag_s will be TRUE even if there are no trailers
+        // old code -- $tag_s = strpos($this->page["Trailers"], '<div id="search-results">');
+        $has_trailers = strpos($this->page["Trailers"], '<div id="search-results"><ol>');
+        if ($has_trailers !== FALSE) { // if any on-site or off-site trailers exists
+            $html_trailer = substr($this->page["Trailers"], $has_trailers, strpos($this->page["Trailers"],'</ol>',$has_trailers) - ($has_trailers+1) );
+            // echo $html_trailer;
+            // offsite trailer will have links like    href="/video/imdblink/vi.....
+            if ($all) $regex = '@<a\s*onclick=".*?"\s*href="(/video/.*?/vi\d+/)".*?><img.*?title="(.*?)"\s*src="(.*?)"@s';
+            else $regex = '@<a\s*onclick=".*?"\s*href="(/video/(?!imdblink).*?/vi\d+/)".*?><img.*?title="(.*?)"\s*src="(.*?)"@s';
+            if (preg_match_all($regex, $html_trailer, $matches)) {
+                //print_r($matches);
+                for ($i=0;$i<count($matches[0]);++$i) {
+                    $trailer = "http://".$this->imdbsite.$matches[1][$i];
+                    $res = (strpos($matches[3][$i], 'HDIcon') !== FALSE )? 'HD' : 'SD';
+                    if ( $full ) $this->trailers[] = array("lang"=>'',"title"=>html_entity_decode($matches[2][$i],ENT_QUOTES, 'UTF-8'),"url"=>$trailer,"restful_url"=>'',"resolution"=>$res);
+                    else $this->trailers[] = $trailer;
+                }
+            }
         }
-      }
     }
     return $this->trailers;
   }
+
 
  #===========================================================[ /videosites ]===
  #------------------------------------------[ Off-site trailers and videos ]---
