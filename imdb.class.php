@@ -546,7 +546,9 @@
   public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
       if ($this->page["Title"] == "") $this->openpage("Title");
-      if (preg_match('!<span class="rating-rating">.*?(<p>.*?)\s*<div!ims',$this->page['Title'],$match)) {
+      if (preg_match('!<span class="rating-rating">.*?<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
+        $this->main_plotoutline = trim($match[1]);
+      } elseif (preg_match('!<span class="rating-rating">.*?(<p>.*?)\s*<div!ims',$this->page['Title'],$match)) {
         $this->main_plotoutline = trim($match[1]);
       } elseif (preg_match('!<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
         $this->main_plotoutline = trim($match[1]);
