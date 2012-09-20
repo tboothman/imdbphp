@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.1.4
+v2.1.4 (20.09.2012)
 -------------------
 ! imdb::movietype() could no longer distinguish between TV Movie and TV Serie (site changes)
 ! imdb::is_serial() invalidated by site changes
