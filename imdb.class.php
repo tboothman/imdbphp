@@ -1233,7 +1233,7 @@
         preg_match_all('!<option\s+(selected="selected" |)value="(\d+)">!i',$match[1],$matches);
         for ($i=0;$i<count($matches[0]);++$i) {
           $s = $matches[2][$i];
-          if ( $this->page["Episodes-$s"] == "" ) $this->openpage("Episodes-$s");
+          if ( empty($this->page["Episodes-$s"]) ) $this->openpage("Episodes-$s");
           if ( $this->page["Episodes-$s"] == "cannot open page" ) continue; // no such page
           $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>\d+)"/>\s*'
                 . '<div class="airdate">\s*(?<airdate>.+?)\s*</div>\s*'
