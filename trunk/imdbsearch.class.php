@@ -77,13 +77,14 @@
     $url = $this->url;
    }else{
      if (!isset($this->maxresults)) $this->maxresults = 20;
-     if ($this->maxresults > 0) $query = ";mx=20";
+     if ($this->maxresults > 0) $query = "&mx=20";
      if ($this->episode_search) $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query.";s=ep";
      else {
        switch ($this->searchvariant) {
-         case "moonface" : $query .= ";more=tt;nr=1"; // @moonface variant (untested)
+         case "moonface" : $query .= "&more=tt&nr=1"; // @moonface variant (untested)
          case "sevec"    : $query .= "&restrict=Movies+only&GO.x=0&GO.y=0&GO=search;tt=1"; // Sevec ori
-         default         : $query .= ";tt=on"; // Izzy
+         case "old"      : $query .= "&tt=on"; // Izzy
+         default         : $query .= "&s=tt"; // Izzy
        }
        $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query;
      }
