@@ -112,7 +112,6 @@
       if ($this->usecache && empty($url)) { // Try to read from cache
         $this->cache_read(urlencode(strtolower($this->name)).'.search',$this->page);
       } // end cache read
-
       if ($this->page=="") { // not found in cache - go and get it!
         if (empty($url)) $url = $this->mkurl();
         mdb_base::debug_scalar("imdbsearch::results() called. Using URL $url");
@@ -127,7 +126,7 @@
               break(4);
             }
             $url = explode("/",$header);
-            $id  = substr($url[count($url)-2],2);
+            $id  = substr($url[count($url)-1],2);
             $this->resu[0] = new imdb($id);
             return $this->resu;
           } else {
