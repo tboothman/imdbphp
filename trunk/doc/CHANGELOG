@@ -6,7 +6,8 @@ History for IMDBPHP2
 v2.1.5
 -------------------
 ! fixed "undefined index" error in imdb::episodes()
-! site changes completely broke search -- quickfix (hopefully working in all cases)
+! imdbsearch, imdbperson: site changes completely broke search
++ imdbperson: added caching of search result page
 
 v2.1.4 (20.09.2012)
 -------------------

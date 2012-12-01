@@ -785,11 +785,12 @@
    if ($this->url !== NULL) {
     $url = $this->url;
    } else {
-     $query = ";s=nm";
+     $query = "&s=nm";
      if (!isset($this->maxresults)) $this->maxresults = 20;
-     if ($this->maxresults > 0) $query .= ";mx=20";
+     if ($this->maxresults > 0) $query .= "&mx=20";
      $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query;
    }
+   mdb_base::debug_scalar("Using search URL '$url'");
    return $url;
   }
 
@@ -802,31 +803,42 @@
    */
   public function results($url="",$series=TRUE) {
    if ($this->page == "") {
+     if ($this->usecache && empty($url)) { // Try to read from cache
+       $this->cache_read(urlencode(strtolower($this->name)).'.search',$this->page);
+     } // end cache read
      if (empty($url)) $url = $this->mkurl();
      $be = new MDB_Request($url);
      $be->sendrequest();
      $fp = $be->getResponseBody();
      if ( !$fp ){
        if ($header = $be->getResponseHeader("Location")){
-        if (strpos($header,$this->imdbsite."/find?")) {
-          return $this->results($header);
-          break(4);
-        }
-        $url = explode("/",$header);
-        $id  = substr($url[count($url)-2],2);
-        $this->resu[0] = new imdb_person($id);
-        return $this->resu;
+         mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
+         if (strpos($header,$this->imdbsite."/find?")) {
+           return $this->results($header);
+           break(4);
+         }
+         $url = explode("/",$header);
+         $id  = substr($url[count($url)-2],2);
+         $this->resu[0] = new imdb_person($id);
+         return $this->resu;
        }else{
-        return NULL;
+         mdb_base::debug_scalar("No result, no redirection -- something's wrong here...");
+         return NULL;
        }
      }
      $this->page = $fp;
+
+     if ($this->storecache && $this->page != "cannot open page" && $this->page != "") { //store cache
+       $this->cache_write(urlencode(strtolower($this->name)).'.search',$this->page);
+     }
    } // end (page="")
 
    if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
    // make sure to catch col #3, not #1 (pic only)
-   preg_match_all('|<tr>\s*<td.*>.*</td>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>(.*)</td>|Uims',$this->page,$matches);
+   //                        photo           name                   1=id        2=name        3=details
+   preg_match_all('|<tr.*>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>\s*(.*)</td>|Uims',$this->page,$matches);
    $mc = count($matches[0]);
+   mdb_base::debug_scalar("$mc matches");
    $mids_checked = array();
    for ($i=0;$i<$mc;++$i) {
      if ($i == $maxresults) break; // limit result count
@@ -838,7 +850,7 @@
      $tmpres  = new imdb_person($pid);
      $tmpres->fullname = $name;
      if (!empty($info)) {
-       if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7})/">(.*)</a>\s*\((\d{4})\)\)|Ui',$info,$match)) {
+       if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7}).*"\s*>(.*)</a>\s*\((\d{4})\)\)|Ui',$info,$match)) {
          $role = $match[1];
          $mid  = $match[2];
          $movie= $match[3];
