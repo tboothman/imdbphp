@@ -3,11 +3,12 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.1.5
+v2.1.5 (06.12.2012)
 -------------------
 ! fixed "undefined index" error in imdb::episodes()
 ! imdbsearch, imdbperson: site changes completely broke search
 + imdbperson: added caching of search result page
+! imdb::is_serial() and imdb::get_episode_details() were also broken again
 
 v2.1.4 (20.09.2012)
 -------------------
