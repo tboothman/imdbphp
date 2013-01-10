@@ -17,7 +17,7 @@ $engine = $_GET["engine"];
 if ( !in_array($engine,array("imdb","pilot")) ) $engine = "imdb";
 
 # If MID has been explicitly given, we don't need to search:
-if (!empty($_GET["mid"])) {
+if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   switch($_GET["searchtype"]) {
     case "nm" : header("Location: person.php?mid=".$_GET["mid"]); break;
     default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=$engine"); break;
@@ -62,7 +62,8 @@ echo "<HTML><HEAD>\n";
 echo " <TITLE>Performing search for '".$_GET["name"]."' [IMDBPHP2 v".$search->version."]</TITLE>\n";
 echo " <STYLE TYPE='text/css'>body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</STYLE>\n";
 echo "</HEAD><BODY>\n";
-echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '".$_GET['name']."':</H2>\n";
+$sname = htmlspecialchars($_GET['name']);
+echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '$sname':</H2>\n";
 $results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
    . " <TR><TH>$headname Details</TH><TH>IMDB page</TH><TH>Pilot page</TH></TR>";

@@ -11,7 +11,7 @@
 
  /* $Id$ */
 
-if (isset ($_GET["mid"])) {
+if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $movieid = $_GET["mid"];
   $engine  = $_GET["engine"];
 
