@@ -11,7 +11,7 @@
 
  /* $Id$ */
 
-if (isset ($_GET["mid"])) {
+if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $pid = $_GET["mid"];
 
   switch($_GET["engine"]) {
