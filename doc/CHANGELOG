@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.1.6
+-------------------
+! bunch of IMDB changes broke things again: fixed imdb::votes()
+
 v2.1.5 (06.12.2012)
 -------------------
 ! fixed "undefined index" error in imdb::episodes()
