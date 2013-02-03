@@ -489,18 +489,17 @@
   public function seasons() {
     if ( $this->seasoncount == -1 ) {
       if ( $this->page["Title"] == "" ) $this->openpage("Title");
-      if ( preg_match_all('|href="episodes\?season\=\d+"\s*>(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
+      if ( preg_match_all('|href="/title/tt\d{7}/episodes\?season=\d+.*?"\s*>(\d+)</a>|Ui',$this->page["Title"],$matches) ) {
         $this->seasoncount = $matches[1][0];
       } else {
         $this->seasoncount = 0;
       }
-      if ( preg_match_all('|href="episodes\?season\=unknown"\s*>unknown</a>|Ui',$this->page["Title"],$matches) ) {
+      if ( preg_match_all('|href="/title/tt\d{7}/episodes\?season\=unknown"\s*>unknown</a>|Ui',$this->page["Title"],$matches) ) {
         $this->seasoncount += count($matches[0]);
       }
     }
     return $this->seasoncount;
   }
-
 
  #-----------------------------------------------[ Is it part of a serial? ]---
   /** Try to figure out if this is a movie or a serie
