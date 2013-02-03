@@ -124,10 +124,11 @@
     if ( empty($this->main_movietype) ) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if ( preg_match('!<h1 class="header" itemprop="name">.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
-        $this->main_movietype = $match[1];
+        $this->main_movietype = trim($match[1]);
       }
       $this->debug_object($match);
     }
+    if ( empty($this->main_movietype) ) $this->main_movietype = 'Movie';
     return $this->main_movietype;
   }
 
