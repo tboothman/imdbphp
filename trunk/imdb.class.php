@@ -839,8 +839,8 @@
    */
   public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
-    if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match('!href="/mpaa"\s*>.*?</h4>\s*<span itemprop="contentRating">(.*?)</span!ims',$this->page["Title"],$match))
+    if ($this->page["ParentalGuide"] == "") $this->openpage("ParentalGuide");
+    if (preg_match('!href="/mpaa"\s*>.*?</h5>\s*<div class="info-content">\s*(.*?)\s*</div!ims',$this->page["ParentalGuide"],$match))
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
