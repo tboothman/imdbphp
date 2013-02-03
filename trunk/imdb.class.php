@@ -338,7 +338,7 @@
   public function keywords() {
     if (empty($this->main_keywords)) {
       if ($this->page["Title"] == "") $this->openpage("Title");
-      if (preg_match_all('!href="/keyword/[\w-]+"\s*>(.*?)</a>!',$this->page["Title"],$matches))
+      if (preg_match_all('!href="/keyword/.+?"\s*>\s*(.*?)\s*</a>!',$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
     return $this->main_keywords;
@@ -1648,22 +1648,22 @@
       if ($this->page["ParentalGuide"] == "cannot open page") return array(); // no such page
       if (preg_match_all('/<div class="section">(.*)<div id="swiki(\.\d+\.\d+|_last)">/iUms',$this->page["ParentalGuide"],$matches)) {
         $mc = count($matches[0]);
-	for ($i=0;$i<$mc;++$i) {
-	  if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
-	  $section = $match[1];
-	  preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match);
-	  $content = trim($match[1]);
-	  preg_match('/^(.*)(\s|\/)/U',$section,$match);
-	  $sgot = $match[1]; if (empty($sgot)) $sgot = $section;
-	  switch($sgot) {
-	    case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
-	    case "Sex"        :
-	    case "Violence"   :
-	    case "Profanity"  :
-	    case "Frightening":
-	    default           : $this->parental_guide[$sgot] = trim($content); break;
-	  }
-	}
+        for ($i=0;$i<$mc;++$i) {
+          if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
+          $section = $match[1];
+          preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match);
+          $content = trim($match[1]);
+          preg_match('/^(.*)(\s|\/)/U',$section,$match);
+          $sgot = $match[1]; if (empty($sgot)) $sgot = $section;
+          switch($sgot) {
+            case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
+            case "Sex"        :
+            case "Violence"   :
+            case "Profanity"  :
+            case "Frightening":
+            default           : $this->parental_guide[$sgot] = trim($content); break;
+          }
+        }
       }
     }
     return $this->parental_guide;
