@@ -509,7 +509,8 @@
    */
   public function is_serial() {
     if ( $this->page["Title"] == "" ) $this->openpage("Title");
-    return preg_match('|href="/title/tt\d{7}/episodes"|i',$this->page["Title"],$matches);
+    preg_match('|href="/title/tt\d{7}/episodes\?|i',$this->page["Title"],$matches);
+    return preg_match('|href="/title/tt\d{7}/episodes\?|i',$this->page["Title"],$matches);
   }
 
  #------------------------------------[ Provide "Uplink" info for episodes ]---
@@ -523,18 +524,18 @@
   public function get_episode_details() {
     if (!$this->is_serial()) return array(); // not an episode
     if ($this->page["Title"] == "") $this->openpage("Title");
-    $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/"\s*>(?<seriestitle>.+?)</a>:\s*'
+    $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/.*?"\s*>\s*(?<seriestitle>.+?)</a>:\s*'
           . '<span class="nobr">\s*Season\s+(?<season>\d+),\s+Episode\s+(?<episode>\d+)\s*</span>\s*'
           . '</h2>\s*<h1 class="header" itemprop="name">\s*'
-          . '(?<episodetitle>.+)\s*<span class="nobr">\s*\((?<airdate>.+?)\)\s*</span>!';
+          . '(?<episodetitle>.+)\s*<span class="nobr">\s*\((?<airdate>.+?)\)\s*</span>!ims';
     if ( preg_match($preg, $this->page["Title"], $match) ) {
       $info = array("imdbid"=>$match['seriesimdbid'], "seriestitle"=>$match['seriestitle'], "series_prodtime"=>'', "episodetitle"=>$match['episodetitle'],
                     "season"=>$match['season'], "episode"=>$match['episode'], "airdate"=>$match['airdate']);
       return $info;
+    } else {
+      return array(); // no success
     }
-    else return array(); // no success
   }
-
 
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
