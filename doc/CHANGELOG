@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.1.6
+v2.1.6 (06.02.2012)
 -------------------
 ! bunch of IMDB changes broke things again: fixed imdb::votes(), imdb::movietype(), imdb::country(), imdb::genres(), imdb::mpaa_reason()
 ! same reason: fixed imdb::thumbphoto() -- and thus all dependent photo methods resolve again
