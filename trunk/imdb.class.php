@@ -302,8 +302,8 @@
   public function comment() {
     // this stuff whent into a frame in 2011! _ajax/iframe?component=footer
     if ($this->main_comment == "") {
-      if ($this->page["TitleFoot"]=="") $this->openpage ("TitleFoot");
-      if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<div class\="yn"!ms',$this->page["TitleFoot"],$match))
+      if ($this->page["Title"]=="") $this->openpage ("Title");
+      if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<hr\s*/>\s*<div class\="yn"!ms',$this->page["Title"],$match))
         $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[1]);
         $this->main_comment = str_replace("http://i.media-imdb.com/images/showtimes",$this->imdb_img_url."/showtimes",$this->main_comment);
     }
@@ -321,7 +321,7 @@
       if (@preg_match('!<strong>(.*?)</strong>.*<div class="comment-meta">\s*(.*?)\s*\|\s*by\s*(.*?)\s*&ndash;.*?<p>(.*?)</div!ims',$this->main_comment,$match)) {
         @preg_match('!href="(.*?)">(.*)</a!i',$match[3],$author);
         $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$author[1],"name"=>$author[2]),"comment"=>trim($match[4]));
-      } elseif (@preg_match('!<div class="comment-meta">\s*(.{10,20})\s*\|\s*by\s*(.*?)\s*&ndash;.*?<div>\s*(.*?)\s*</div>!ims',$this->main_comment,$match)) {
+      } elseif (@preg_match('!<div class="comment-meta">\s*<meta itemprop="datePublished" content=".+?">\s*(.{10,20})\s*\|\s*by\s*(.*?)\s*&ndash;.*?<div>\s*(.*?)\s*</div>!ims',$this->main_comment,$match)) {
         @preg_match('!href="(.*?)">(.*)</a!i',$match[2],$author);
         $this->split_comment = array('title'=>'','date'=>$match[1],'author'=>array("url"=>$author[1],"name"=>$author[2]),"comment"=>trim($match[3]));
       }
