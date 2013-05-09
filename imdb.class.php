@@ -1326,7 +1326,7 @@
             $html_trailer = substr($this->page["Trailers"], $has_trailers, strpos($this->page["Trailers"],'</ol>',$has_trailers) - ($has_trailers+1) );
             // echo $html_trailer;
             // offsite trailer will have links like    href="/video/imdblink/vi.....
-            if ($all) $regex = '@<a\s*onclick=".*?"\s*href="(/video/.*?/vi\d+/)".*?><img.*?title="(.*?)"\s*src="(.*?)"@s';
+            if ($all) $regex = '@<a\s*onclick=".*?"\s*href="(/video/.*?/vi\d+/)".*?><img.*?title="(.*?)"\s*viconst=".*?"\s*src="(.*?)"@s';
             else $regex = '@<a\s*onclick=".*?"\s*href="(/video/(?!imdblink).*?/vi\d+/)".*?><img.*?title="(.*?)"\s*src="(.*?)"@s';
             if (preg_match_all($regex, $html_trailer, $matches)) {
                 //print_r($matches);
