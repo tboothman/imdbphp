@@ -6,6 +6,7 @@ History for IMDBPHP2
 v2.1.7
 -------------------
 ! site changes again. Fixed: imdb::keywords_all(), imdb::taglines(), imdb:quotes(), imdb::trailers()
+! also due to site changes: fixed imdb::soundtrack() and extended it: soundtrack[i][credit] is now an array[credit_to,desc]
 
 v2.1.6 (06.02.2012)
 -------------------

@@ -1397,7 +1397,7 @@
  #------------------------------------------------------[ Soundtrack Array ]---
   /** Get the soundtrack listing
    * @method soundtrack
-   * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits)
+   * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits array[credit_to,desc])
    * @brief Usually, the credits array should hold [0] written by, [1] performed by.
    *  But IMDB does not always stick to that - so in many cases it holds
    *  [0] performed by, [1] courtesy of
@@ -1405,16 +1405,22 @@
    */
   public function soundtrack() {
    if (empty($this->soundtracks)) {
-    if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
-    if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
-    if (preg_match('|<p class="disclaimer">(.*?)</script|ims',$this->page["Soundtrack"],$match)) {
-      if (preg_match_all("/<li>(.*?)<\/b><br>(.*?)<br>(.*?)<br>.*?<\/li>/",str_replace("\n"," ",$match[1]),$matches)) {
+     if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
+     if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
+     if (preg_match_all('!class="soundTrack soda (odd|even)"\s*>\s*"(?<title>.+?)"<br\s*/>(?<desc>.+?)</div>!ims',str_replace("\n"," ",$this->page["Soundtrack"]),$matches)) {
         $mc = count($matches[0]);
-        for ($i=0;$i<$mc;++$i) $this->soundtracks[] = array("soundtrack"=>$matches[1][$i],"credits"=>array(
-                                                             str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[2][$i]),
-                                                             str_replace('href="/','href="http://'.$this->imdbsite.'/',$matches[3][$i])));
-      }
-    }
+        for ($i=0;$i<$mc;++$i) {
+          $s['soundtrack'] = $matches['title'][$i];
+          $s['credits'] = array();
+          if ( preg_match('|Written by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
+            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'writer');
+          if ( preg_match('|Performed by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
+            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'performer');
+          if ( preg_match('|Courtesy of\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'courtesy');
+          if ( preg_match('|By Arrangement with\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'arrangement');
+          $this->soundtracks[] = $s;
+        }
+     }
    }
    return $this->soundtracks;
   }
