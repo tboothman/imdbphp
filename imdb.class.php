@@ -1292,14 +1292,14 @@
     if ( empty($this->moviequotes) ) {
       if ( $this->page["Quotes"] == "" ) $this->openpage("Quotes");
       if ( $this->page["Quotes"] == "cannot open page" ) return array(); // no such page
-      // with this, we could even turn it into an array: url,name,quote
-      if (preg_match_all('|<b><a href="(/name/.*?)">(.*?)</a>.*?:\s*?(.*?)<br|ims',str_replace("\n"," ",$this->page["Quotes"]),$matches))
-        foreach ($matches[0] as $match) {
-          $this->moviequotes[] = str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match));
+      if (preg_match_all('!class="quote soda (odd|even)"\s*><p>\s*(.*?)\s*</p>\s*<span class="linksoda"!ims',str_replace("\n"," ",$this->page["Quotes"]),$matches))
+        foreach ($matches[2] as $match) {
+          $this->moviequotes[] = "<p>".str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match))."</p>";
         }
     }
     return $this->moviequotes;
   }
+
 
  #========================================================[ /trailers page ]===
  #--------------------------------------------------------[ Trailers Array ]---
