@@ -98,12 +98,14 @@
    */
   private function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match('!<title>(IMDb\s*-\s*)?(.*) \((.*)(\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
+    if (@preg_match('!<title>(IMDb\s*-\s*)?(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
       $this->main_title = $match[2];
       if (empty($match[3])) $main_movietype = 'Movie';
       else $main_movietype  = $match[3];
       if ($match[3]=="????") $this->main_year = "";
       else $this->main_year  = $match[4];
+      $mt = trim($match[3]);
+      if ( $mt != '????' && !empty($mt) ) $this->main_movietype = $mt;
       if ( preg_match('!^(.+)\s+(\d{4})&ndash;\s*$!',$main_movietype,$match) ) {
         $this->main_endyear = $this->main_year;
         $this->main_year    = $match[2];
@@ -122,6 +124,8 @@
    */
   public function movietype() {
     if ( empty($this->main_movietype) ) {
+      if ( empty($this->main_title) ) $this->title_year(); // in case title was not yet parsed; it might already contain the movietype
+      if ( !empty($this->main_movietype) ) return $this->main_movietype; // done already
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if ( preg_match('!<h1 class="header" itemprop="name">.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
         $this->main_movietype = trim($match[1]);
@@ -1701,7 +1705,7 @@
   function keywords_all() {
     if (empty($this->all_keywords)) {
       if ($this->page["Keywords"] == "") $this->openpage("Keywords");
-      if (preg_match_all('|<li><b class="keyword">\s*<a href\="/keyword\/[\w\-]+/">(.*?)</a>|',$this->page["Keywords"],$matches))
+      if (preg_match_all('|<a href\="/keyword/[\w\?_\=\-\s"]+>(.*?)</a>|',$this->page["Keywords"],$matches))
         $this->all_keywords = $matches[1];
     }
     return $this->all_keywords;
