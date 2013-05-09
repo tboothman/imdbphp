@@ -5,7 +5,7 @@ History for IMDBPHP2
 
 v2.1.7
 -------------------
-! site changes again. Fixed: imdb::keywords_all(), imdb::taglines()
+! site changes again. Fixed: imdb::keywords_all(), imdb::taglines(), imdb:quotes()
 
 v2.1.6 (06.02.2012)
 -------------------
