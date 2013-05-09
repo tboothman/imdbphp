@@ -961,7 +961,7 @@
    if (empty($this->taglines)) {
     if ( $this->page["Taglines"] == "" ) $this->openpage ("Taglines");
     if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
-    if (preg_match_all("/<p>(.*?)<\/p><hr/",$this->page["Taglines"],$matches))
+    if (preg_match_all('!<div class="soda[^>]+>\s*(.*)\s*</div!U',$this->page["Taglines"],$matches))
       $this->taglines = $matches[1];
    }
    return $this->taglines;
