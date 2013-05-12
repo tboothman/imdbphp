@@ -150,7 +150,7 @@
 
     // now we have the search content - go and parse it!
     if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
-    if ( preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\((?<year>\d{4})(.*?|)\)|)(?<addons>[^<]*)!ims',$this->page,$matches) ) {
+    if ( preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d{4}]\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<addons>[^<]*)!ims',$this->page,$matches) ) {
       $this->last_results = count($matches[0]);
       $mids_checked = array();
       for ($i=0;$i<$this->last_results;++$i) {
