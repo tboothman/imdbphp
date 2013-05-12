@@ -428,7 +428,9 @@
         }
       }
     }
-    for ($i=0;$i<count($this->moviegenres);++$i) $this->moviegenres[$i] = trim($this->moviegenres[$i]);
+    for ($i=0;$i<count($this->moviegenres);++$i) {
+      $this->moviegenres[$i] = trim(preg_replace('!<span [^>]*>(.+)</span>!','$1',$this->moviegenres[$i]));
+    }
     $this->moviegenres = array_unique($this->moviegenres);
     return $this->moviegenres;
   }
