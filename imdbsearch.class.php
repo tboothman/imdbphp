@@ -105,9 +105,14 @@
    * @method results
    * @param optional string URL Replace search URL by your own (Default: empty string)
    * @param optional boolean series whether to include TV series in search results (default: TRUE)
+   * @param optional boolean s_episodes whether to include TV episodes in search results (default: TRUE)
+   * @param optional boolean s_games whether to include games in search results (default: TRUE)
+   * @param optional boolean s_video whether to include videos in search results (default: TRUE). These are often Making Ofs and the like
+   * @param optional boolean s_short whether to include shorts in search results (default: TRUE)
+   * @param optional boolean s_special whether to include specials in search results (default: TRUE)
    * @return array results array of objects (instances of the imdb class)
    */
-  public function results($url="",$series=TRUE) {
+  public function results($url="",$series=TRUE,$s_episodes=TRUE,$s_games=TRUE,$s_video=TRUE,$s_short=TRUE) {
     if ($this->page == "") {
       if ($this->usecache && empty($url)) { // Try to read from cache
         $this->cache_read(urlencode(strtolower($this->name)).'.search',$this->page);
@@ -145,23 +150,24 @@
 
     // now we have the search content - go and parse it!
     if ($this->maxresults > 0) $maxresults = $this->maxresults; else $maxresults = 999999;
-/* before 2012-11-30 (just quick-fixing then)
-    if ( preg_match_all('!href="/title/tt(\d{7})/"[^>]*>(.*?)</a>\s*(\((\d{4})(/.+?|)\)|)[^<]*(<small>(.*?)</small>|)!ims',$this->page,$matches) ) {
-*/
-    if ( preg_match_all('!href="/title/tt(\d{7})/.*?"[^>]*>(.*?)</a>\s*(\((\d{4})(.*?|)\)|)!ims',$this->page,$matches) ) { //[^<]*(<small>(.*?)</small>|)!ims',$this->page,$matches) ) {
-      // 1=imdbid, 2=title, 3=(year), 4=year
+    if ( preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\((?<year>\d{4})(.*?|)\)|)(?<addons>[^<]*)!ims',$this->page,$matches) ) {
       $this->last_results = count($matches[0]);
       $mids_checked = array();
       for ($i=0;$i<$this->last_results;++$i) {
-        if (substr(trim($matches[2][$i]),0,4)=="<img") continue; // cover mini
         if (count($this->resu) == $maxresults) break; // limit result count
+        if (substr(trim($matches[2][$i]),0,4)=="<img") continue; // cover mini
         if ( empty($matches[2][$i]) || substr(trim($matches[2][$i]),0,4)=='<img' || in_array($matches[1][$i],$mids_checked) ) continue; // empty titles just come from the images
-        if ( !$series && (preg_match('!&#x22;.+&#x22;!',($matches[2][$i])) || strpos(strtoupper($matches[7][$i]),'TV SERIES')!==FALSE) ) continue; // skip series if commanded so
-#        if ( !preg_match('!onclick!i',$matches[0][$i]) ) continue; // just mentioned something in the AKAs listing (breaks things as of 2012-11-30)
-        $mids_checked[] = $matches[1][$i];
-        $tmpres = new imdb($matches[1][$i]); // make a new imdb object by id
-        $tmpres->main_title = $matches[2][$i];
-        $tmpres->main_year  = $matches[4][$i];
+        if ( !$series && (preg_match('!&#x22;.+&#x22;!',($matches[2][$i])) || strpos(strtoupper($matches['addons'][$i]),'TV SERIES')!==FALSE) ) continue; // skip series if commanded so
+        if ( !$s_episodes && strpos(strtoupper($matches['addons'][$i]),'TV EPISODE')!==FALSE ) continue; // skip episodes if commanded so
+        if ( !$s_games && strpos(strtoupper($matches['addons'][$i]),'VIDEO GAME')!==FALSE ) continue; // skip games if commanded so
+        if ( !$s_video && strpos(strtoupper($matches['addons'][$i]),'(VIDEO)')!==FALSE ) continue; // skip games if commanded so
+        if ( !$s_short && strpos(strtoupper($matches['addons'][$i]),'(SHORT)')!==FALSE ) continue; // skip shorts if commanded so
+        if ( !$s_special && strpos(strtoupper($matches['addons'][$i]),'SPECIAL)')!==FALSE ) continue; // skip specials if commanded so
+        $mids_checked[] = $matches['imdbid'][$i];
+        $tmpres = new imdb($matches['imdbid'][$i]); // make a new imdb object by id
+        $tmpres->main_title = $matches['title'][$i];
+        $tmpres->main_year  = $matches['year'][$i];
+        $tmpres->addon_info = $matches['addons'][$i];
         $this->resu[] = $tmpres;
       }
     }
