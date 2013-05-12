@@ -12,6 +12,7 @@ v2.1.7
 ! fixed imdb::get_episode_details() broken due to site changes
 ! fixed imdb::comment_split() broken due to site changes
 ! fixed company credits (all four methods have been broken due to site changes)
+* removed some garbage preceding the storyline returned by imdb::storyline()
 
 v2.1.6 (06.02.2012)
 -------------------
