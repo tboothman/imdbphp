@@ -1414,8 +1414,12 @@
           $s['credits'] = array();
           if ( preg_match('|Written by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
             $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'writer');
+          if ( preg_match('|Composed by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
+            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'composer');
           if ( preg_match('|Performed by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
             $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'performer');
+          if ( preg_match('|by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
+            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'undefined');
           if ( preg_match('|Courtesy of\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'courtesy');
           if ( preg_match('|By Arrangement with\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'arrangement');
           $this->soundtracks[] = $s;
