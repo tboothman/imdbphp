@@ -1576,10 +1576,10 @@
    * @param ref array parse target
    */
   public function companyParse(&$text,&$target) {
-    preg_match_all('|<li><a href="(.*)">(.*)</a>(.*)</li>|iUms',$text,$matches);
+    preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms',$text,$matches);
     $mc = count($matches[0]);
     for ($i=0;$i<$mc;++$i) {
-      $target[] = array("name"=>$matches[2][$i], "url"=>'http://'.$this->imdbsite.$matches[1][$i], "notes"=>$matches[3][$i]);
+      $target[] = array("name"=>$matches[2][$i], "url"=>'http://'.$this->imdbsite.$matches[1][$i], "notes"=>trim($matches[3][$i]));
     }
   }
 
@@ -1593,7 +1593,7 @@
     if (empty($this->compcred_prod)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
-      if (preg_match('|<h2>Production Companies</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+      if (preg_match('|<h4[^>]*>Production Companies</h4>\s*<ul[^>]*>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
         $this->companyParse($match[1],$this->compcred_prod);
       }
     }
@@ -1610,7 +1610,7 @@
     if (empty($this->compcred_dist)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
-      if (preg_match('|<h2>Distributors</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+      if (preg_match('|<h4[^>]*>Distributors</h4>\s*<ul[^>]*>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
         $this->companyParse($match[1],$this->compcred_dist);
       }
     }
@@ -1627,7 +1627,7 @@
     if (empty($this->compcred_special)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
-      if (preg_match('|<h2>Special Effects</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+      if (preg_match('|<h4[^>]*>Special Effects</h4>\s*<ul[^>]*>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
         $this->companyParse($match[1],$this->compcred_special);
       }
     }
@@ -1644,7 +1644,7 @@
     if (empty($this->compcred_other)) {
       if (empty($this->page["CompanyCredits"])) $this->openpage("CompanyCredits");
       if ($this->page["CompanyCredits"] == "cannot open page") return array(); // no such page
-      if (preg_match('|<h2>Other Companies</h2><ul>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
+      if (preg_match('|<h4[^>]*>Other Companies</h4>\s*<ul[^>]*>(.*?)</ul>|ims',$this->page["CompanyCredits"],$match)) {
         $this->companyParse($match[1],$this->compcred_other);
       }
     }
