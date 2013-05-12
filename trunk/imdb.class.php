@@ -420,7 +420,7 @@
   public function genres() {
     if (empty($this->moviegenres)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("@<a href\=\"/genre/.+?>(.*?)\</a>@",$this->page["Title"],$matches)) {
+      if (preg_match_all('!<a href="/genre/[^>]+?>(.*?)\</a>!',$this->page["Title"],$matches)) {
         $this->moviegenres = $matches[1];
       } elseif (preg_match('!<div class="infobar">(.*?)</div>!ims',$this->page['Title'],$match)) {
         if (preg_match_all('!href="/genre/.*?"\s*>(.*?)<!ims',$match[1],$matches)) {
@@ -429,12 +429,11 @@
       }
     }
     foreach ($this->moviegenres as $i => $val) {
-      $this->moviegenres[$i] = trim(preg_replace('!<span [^>]*>(.+)</span>!','$1',$this->moviegenres[$i]));
+      $this->moviegenres[$i] = trim(strip_tags($this->moviegenres[$i]));
     }
-    $this->moviegenres = array_unique($this->moviegenres);
+    $this->moviegenres = array_merge(array_unique($this->moviegenres));
     return $this->moviegenres;
   }
-
 
  #----------------------------------------------------------[ Color format ]---
   /** Get colors
