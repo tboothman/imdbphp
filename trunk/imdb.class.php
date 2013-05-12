@@ -710,14 +710,19 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (empty($this->main_pictures)) {
       preg_match('!<div class="mediastrip">\s*(.*?)\s*</div>!ims',$this->page["Title"],$match);
-      if (@preg_match_all('!<a .*?href="(.*?)".*?<img.*?src="(.*?)"!ims',$match[1],$matches)) {
+      if (@preg_match_all('!<a .*?href="(?<href>.*?)".*?<img.*?src="(.*?)".*?loadlate="(?<imgsrc>.*?)"!ims',$match[1],$matches)) {
         for ($i=0;$i<count($matches[0]);++$i) {
-          $this->main_pictures[$i]["imgsrc"] = $matches[2][$i];
-          if (substr($matches[1][$i],0,4)!="http") $matches[1][$i] = "http://".$this->imdbsite.$matches[1][$i];
-          $this->main_pictures[$i]["imglink"] = $matches[1][$i];
-          preg_match('|(.*\._V1).*|iUs',$matches[2][$i],$big);
+          $this->main_pictures[$i]["imgsrc"] = $matches['imgsrc'][$i];
+          if (substr($matches['href'][$i],0,4)!="http") $matches['href'][$i] = "http://".$this->imdbsite.$matches[1][$i];
+          $this->main_pictures[$i]["imglink"] = $matches['href'][$i];
+          preg_match('|(.*\._V1).*|iUs',$matches['imgsrc'][$i],$big);
           $ext = substr($matches[2][$i],-3);
           $this->main_pictures[$i]["bigsrc"] = $big[1].".${ext}";
+/*          // Get bigsrc from linked photo page. (proposed by ticket:327 -- seems to result in the same as above, so keeping it just-in-case)
+          //preg_match('!<div id="photo-container".*?>\s*(.*?)\s*</div>!ims',$this->getWebPage("Bigsrc", $matches[1][$i]),$match2);
+          //if (@preg_match_all('!<img.*?id="primary-img".*?src="(.*?)".*?!ims',$match2[1],$matches2)) {
+          //  $this->main_pictures[$i]["bigsrc"] = $matches2[1][0];
+          //} */
         }
       }
     }
