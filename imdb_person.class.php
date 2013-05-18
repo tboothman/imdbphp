@@ -660,12 +660,13 @@
    * @param ref array res where to store the results
    * @param string page name of the page
    * @param string title title of the block
-   * @brief used by interviews(), articles()
+   * @brief used by interviews(), articles(), pictorials(), magcovers()
    * @see IMDB person page /publicity
    */
   private function parsearticles(&$res,$page,$title) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
     $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
+    if ( $pos_s === FALSE ) { $res = array(); return; }
     $pos_e = strpos($this->page[$page],"</table",$pos_s);
     $block = substr($this->page[$page],$pos_s,$pos_e-$pos_s);
     @preg_match_all("|<tr>(.*)</tr>|iU",$block,$matches); // get the rows
@@ -709,7 +710,7 @@
     return $this->pub_articles;
   }
 
- #--------------------------------------------------------------[ Articles ]---
+ #-------------------------------------------------------------[ Pictorials ]---
   /** Pictorials
    * @method pictorials
    * @return array pictorials array[0..n] of array[inturl,name,date,details,auturl,author]
@@ -722,7 +723,7 @@
     return $this->pub_pictorials;
   }
 
- #--------------------------------------------------------------[ Articles ]---
+ #--------------------------------------------------------------[ Magazines ]---
   /** Magazine cover photos
    * @method magcovers
    * @return array magcovers array[0..n] of array[inturl,name,date,details,auturl,author]
