@@ -193,13 +193,13 @@
       for ($i=0;$i<$mc;++$i) {
         $char = array();
         if (preg_match('!<span class="year_column">(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
-        preg_match('!href="/title/tt(\d{7})/"\s*>(.*?)</a>!ims',$matches[1][$i],$mov);
+        preg_match('!href="/title/tt(\d{7})/"\s*>(.*?)</a>\s*</b>(.*?)<br!ims',$matches[1][$i],$mov);
         if ( preg_match('!href="/character/ch(\d{7})">(.*?)</a>!ims',$matches[1][$i],$char) ) {
           $chid   = $char[1];
           $chname = $char[2];
         } else {
           $chid   = '';
-          if ( preg_match('!<br/>\s*([^>]+)\s*<div!',$matches[0][$i],$char) ) $chname = $char[1];
+          if ( preg_match('!<br/>\s*([^>]+)\s*<div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
           else $chname = '';
         }
         if ( empty($chname) ) {
@@ -208,7 +208,7 @@
             case 'producer' : $chname = 'Producer'; break;
           }
         }
-        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>$chname,"addons"=>'');
+        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>$chname,"addons"=>trim($mov[3]));
       }
     }
   }
