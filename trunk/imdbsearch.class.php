@@ -112,7 +112,7 @@
    * @param optional boolean s_special whether to include specials in search results (default: TRUE)
    * @return array results array of objects (instances of the imdb class)
    */
-  public function results($url="",$series=TRUE,$s_episodes=TRUE,$s_games=TRUE,$s_video=TRUE,$s_short=TRUE) {
+  public function results($url="",$series=TRUE,$s_episodes=TRUE,$s_games=TRUE,$s_video=TRUE,$s_short=TRUE,$s_special=TRUE) {
     if ($this->page == "") {
       if ($this->usecache && empty($url)) { // Try to read from cache
         $this->cache_read(urlencode(strtolower($this->name)).'.search',$this->page);
