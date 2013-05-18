@@ -1407,9 +1407,6 @@
   /** Get the soundtrack listing
    * @method soundtrack
    * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits array[credit_to,desc])
-   * @brief Usually, the credits array should hold [0] written by, [1] performed by.
-   *  But IMDB does not always stick to that - so in many cases it holds
-   *  [0] performed by, [1] courtesy of
    * @see IMDB page /soundtrack
    */
   public function soundtrack() {
@@ -1421,17 +1418,50 @@
         for ($i=0;$i<$mc;++$i) {
           $s['soundtrack'] = $matches['title'][$i];
           $s['credits'] = array();
-          if ( preg_match('|Written by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
-            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'writer');
-          if ( preg_match('|Composed by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
-            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'composer');
-          if ( preg_match('|Performed by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
-            $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'performer');
-          if ( preg_match('|by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match) )
-            if (!preg_match('!(Performed|Composed|Written) by\s+<a!i',$matches['desc'][$i],$foo))
-              $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match[1]), 'desc'=>'undefined');
+          if ( preg_match_all('|^\s*(.*?)\s+by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match1) ) {
+            for ($k=0;$k<count($match1[0]);++$k) {
+              switch ($match1[1][$k]) {
+                case "Arranged" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'arrangement'); break;
+                case "Composed" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'composer'); break;
+                case "Performed": $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer'); break;
+                case "Written"  : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer'); break;
+                case "Written and Produced": {
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'producer');
+                } break;
+                case "Written and Performed": {
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer');
+                } break;
+                default: $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'**'.$match1[1][$k].'**');
+              }
+            }
+          } elseif ( preg_match_all('|\s*([^>]*)\s+by\s+([^<]+)|i',$matches['desc'][$i],$match1) ) { // creditors without link
+            for ($k=0;$k<count($match1[0]);++$k) {
+              if ( preg_match('!(.+)\s+and\s+(.+)!',$match1[2][$k],$cr) ) $creds = array($cr[1],$cr[2]);
+              else $creds = array($match1[2][$k]);
+              switch ($match1[1][$k]) {
+                case "Arranged" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'arrangement'); break;
+                case "Composed" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'composer'); break;
+                case "Performed": foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'performer'); break;
+                case "Written"  : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer'); break;
+                case "Written and Produced": foreach ($creds as $cred) {
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'producer');
+                   }
+                   break;
+                case "Written and Performed": foreach ($creds as $cred) {
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'performer');
+                   }
+                   break;
+                default: foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'**'.$match1[1][$k].'**'); break;
+              }
+            }
+          }
           if ( preg_match('|Courtesy of\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'courtesy');
           if ( preg_match('|By Arrangement with\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'arrangement');
+          if ( preg_match('|Under license from\s+([^<]+)<|i',$matches['desc'][$i],$match) ) $s['credits'][] = array('credit_to'=>$match[1], 'desc'=>'license');
           $this->soundtracks[] = $s;
         }
      }
