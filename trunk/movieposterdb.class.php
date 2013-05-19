@@ -49,7 +49,7 @@ class movieposterdb extends mdb_base {
    * @method protected parse_list
    * @param optional string type (what image URLs to retrieve: 'poster' (default),
    *        'cover', 'textless', 'logo', 'other', 'unset')
-   * @return array array of arrays[lang,url]
+   * @return array array of arrays[lang,url,title]
    */
   protected function parse_list($type='poster',$page_url='') {
     $url  = 'http://www.movieposterdb.com/movie/'.$this->imdbid().'/';
@@ -57,36 +57,33 @@ class movieposterdb extends mdb_base {
     $doc = new DOMDocument();
     @$doc->loadHTML($page);
     $xp = new DOMXPath($doc);
-    $nodes = $xp->query("//a[contains(@href,\"/poster/\")]");
-    $nodes2 = $xp->query("//img[@class=\"flag\"]");
-    $nodes3 = $xp->query("//img[starts-with(@alt,\"Category\")]");
-    foreach ($nodes as $node) {
-      $img = $node->firstChild;
-      $att = $img->tagName;
-      $xx=0;
-      while (strtolower($att)!='img') {
-        $img = $img->nextSibling;
-        $att = $img->tagName;
-        $xx++; if ($xx>5) break; // prevent endless loops
+    $posters = array();
+    $cells = $xp->query("//td[@class=\"poster\"]");
+    foreach ($cells as $cell) {
+      $imgs = $cell->getElementsByTagName('img');
+      foreach ($imgs as $imga) {
+        $tit = $imga->getAttribute('alt');
+        if ( !empty($tit) ) {
+          if ( !preg_match('!'.$type.'$!i',$tit) ) { // skip wrong types
+            continue 2;
+          }
+          $i['title'] = $tit;
+          $i['url'] = $imga->getAttribute('src');
+          break;
+        }
       }
-      $baseimgs[] = $img->getAttribute('src');
-    }
-    foreach ($nodes2 as $node) $baselangs[] = $node->getAttribute('alt');
-    foreach ($nodes3 as $node) {
-      $l = explode(': ',$node->getAttribute('alt'));
-      $basecats[]  = $l[1];
-    }
-    $urls = array();
-    for ($i=0;$i<count($baselangs);++$i) {
-      if (!empty($this->langs)) {
-        if ( !in_array(strtolower($baselangs[$i]),$this->langs) ) continue;
+      $infos = $cell->getElementsByTagName('p');
+      foreach ($infos as $info) {
+        $spans = $info->getElementsByTagName('span');
+        foreach ($spans as $span) {
+          if ( preg_match('!flag flag-([A-z]+)!', $span->getAttribute('class'), $match) ) {
+            $i['lang'] = $match[1];
+          }
+        }
       }
-      if ( strtolower($basecats[$i]) != $type ) continue;
-      $im['lang'] = $baselangs[$i];
-      $im['url']  = $baseimgs[$i];
-      $urls[] = $im;
+      $elems[] = $i;
     }
-    return $urls;
+    return $elems;
   }
 
 #---------------------------------------------------------[ public methods ]---
