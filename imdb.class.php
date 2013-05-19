@@ -100,6 +100,7 @@
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
       $this->main_title = $match[2];
+      if(preg_match('!class="title-extra" itemprop="name"\s*>\s*"?(.*?)"?\s*<i>!s',$this->page["Title"],$otitle)) $this->original_title = trim($otitle[1]);
       if (empty($match[3])) $main_movietype = 'Movie';
       else $main_movietype  = $match[3];
       if ($match[3]=="????") $this->main_year = "";
@@ -144,6 +145,16 @@
   public function title() {
     if ($this->main_title == "") $this->title_year();
     return $this->main_title;
+  }
+
+  /** Get movie original title
+   * @method orig_title
+   * @return string title original movie title (name), if available
+   * @see IMDB page / (TitlePage)
+   */
+  public function orig_title() {
+    if ($this->main_title == "") $this->title_year();
+    return $this->original_title;
   }
 
   /** Get year
