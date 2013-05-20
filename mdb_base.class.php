@@ -48,7 +48,7 @@ define('FULL_ACCESS',9);
  * @version $Revision$ $Date$
  */
 class mdb_base extends mdb_config {
-  var $version = '2.1.6';
+  var $version = '2.1.8';
 
   /** Last response from the IMDB server
    *  This is a 3-digit code according to RFC2616. This is e.g. a "200" for "OK",

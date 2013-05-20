@@ -35,6 +35,7 @@ switch ($_REQUEST["cache"]) {
 page("Title");
  setid($imdb,"0117500");
  method($imdb,"title");
+ method($imdb,"orig_title");
  method($imdb,"movietype");
  method($imdb,"year");
  method($imdb,"runtime");
@@ -57,6 +58,7 @@ page("Title");
  method($imdb,"mpaa_reason");
  method($imdb,"keywords");
  method($imdb,"keywords_all");
+ method($imdb,"movie_recommendations");
  setid($imdb,"0105946"); // Babylon 5
  method($imdb,"seasons");
  setid($imdb,"0517673"); // Babylon 5: No Compromises
