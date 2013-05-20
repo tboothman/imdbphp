@@ -11,6 +11,7 @@ v2.1.8
 ! Moviepilot changed API-error message, so instead of displaying the according error we had empty result sets
 ! rewrote movieposterdb::parse_list() -- so now the movie posters, logos, covers, etc. should work again
 + added imdb::orig_title() to retrieve the original movie title (if available; otherwise returns "")
++ added imdb::movie_recommendations() to retrieve the "people who liked this..." movies
 
 v2.1.7 (15.05.2013)
 -------------------
