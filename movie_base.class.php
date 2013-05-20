@@ -110,6 +110,7 @@ class movie_base extends mdb_base {
    $this->movieconnections = array();
    $this->moviegenres = array();
    $this->moviequotes = array();
+   $this->movierecommendations = array();
    $this->movieruntimes = array();
    $this->mpaas = array();
    $this->mpaas_hist = array();

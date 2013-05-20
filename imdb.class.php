@@ -344,6 +344,33 @@
     return $this->split_comment;
   }
 
+ #-------------------------------------------------------[ Recommendations ]---
+  /** Get recommended movies (People who liked this...also liked)
+   * @method movie_recommendations
+   * @return array recommendations (array[title,imdbid,year])
+   * @see IMDB page / (TitlePage)
+   */
+  public function movie_recommendations() {
+    if (empty($this->movierecommendations)) {
+      if ($this->page["Title"] == "") $this->openpage ("Title");
+      if ( $this->page["Title"] == "cannot open page" ) return $this->movierecommendations; // no such page
+      $doc = new DOMDocument();
+      @$doc->loadHTML($this->page["Title"]);
+      $xp = new DOMXPath($doc);
+      $posters = array();
+      $cells = $xp->query("//div[@id=\"title_recs\"]/div[@class=\"rec_overviews\"]/div[@class=\"rec_overview\"]/div[@class=\"rec_details\"]");
+      foreach ($cells as $cell) {
+        preg_match('!tt(\d+)!',$cell->getElementsByTagName('a')->item(0)->getAttribute('href'),$ref);
+        $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
+        $movie['imdbid'] = $ref[1];
+        preg_match('!(\d+)!',$cell->getElementsByTagName('span')->item(0)->nodeValue,$ref);
+        $movie['year'] = $ref[1];
+        $this->movierecommendations[] = $movie;
+      }
+    }
+    return $this->movierecommendations;
+  }
+
  #--------------------------------------------------------------[ Keywords ]---
   /** Get the keywords for the movie
    * @method keywords
