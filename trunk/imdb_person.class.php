@@ -444,32 +444,44 @@
  public function spouse() {
    if (empty($this->spouses)) {
      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-     $pos_s = strpos($this->page["Bio"],"<h5>Spouse</h5>");
-     if (!$pos_s) return $this->spouses;
-     $pos_e = strpos($this->page["Bio"],"</table>",$pos_s);
-     $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s +8);
-     if (@preg_match_all("/<tr>.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",$block,$matches)) { // table lines
-       $mc = count($matches[0]);
-       for ($i=0;$i<$mc;++$i) {
-         unset($tmp);
-         if (preg_match("/href\=\"\/name\/nm(\d{7})\/\">(.*?)<\/a>/i",$matches[1][$i],$match)) { // col#1: MID + name
-           $tmp["imdb"] = trim($match[1]);
-           $tmp["name"] = trim($match[2]);
-         } else {
-           $tmp["name"] = trim($matches[1][$i]);
+     $doc = new DOMDocument();
+     @$doc->loadHTML($this->page["Bio"]);
+     $xp = new DOMXPath($doc);
+     $posters = array();
+     $heads = $doc->getElementsByTagName('h5');
+     foreach($heads as $head) {
+       $found = FALSE;
+       if ( trim($head->nodeValue)!='Spouse' ) continue;
+       $found = TRUE;
+       $tab = $head->nextSibling;
+       while ( $tab->tagName!='table' && $tab->nextSibling ) $tab = $tab->nextSibling;
+       foreach ($tab->getElementsByTagName('tr') as $sp) {
+         $first = $sp->getElementsByTagName('td')->item(0); // name and IMDBID
+         $nam = trim($first->nodeValue);
+         if ( $href = $first->getElementsByTagName('a')->item(0) ) $mid = preg_replace('!.*/name/nm(\d+).*!','$1',$href->getAttribute('href'));
+         else $mid  = '';
+         $first = $sp->getElementsByTagName('td')->item(1); // additional details
+         $html = $first->ownerDocument->saveXML($first);
+         preg_match_all('!(\(.+?\))!',$html,$matches);
+         $comment = '';
+         $children = '';
+         for ($i=0;$i<count($matches[0]);++$i) {
+           if ($i==0) { // usually the "lifespan" of the relation
+             if ( preg_match('!.(<a href="/date/(?<month>\d+)-(?<day>\d+)/">\d+\s+(?<monthname>[^<]+)</a>)?\s*(?<year>\d{4})!',$matches[0][0],$match) ) { // from date
+               $from = array("day"=>$match['day'],"month"=>$match['month'],"mon"=>$match['monthname'],"year"=>$match['year']);
+             } else $from = array("day"=>'',"month"=>'',"mon"=>'',"year"=>'');
+             if ( preg_match('!(.+?)\s+-\s+(<a href="/date/(?<month>\d+)-(?<day>\d+)/">\d+\s+(?<monthname>[^<]+)</a>)?\s*(?<year>\d{4})!',$matches[0][0],$match) ) { // to date
+               $to = array("day"=>$match['day'],"month"=>$match['month'],"mon"=>$match['monthname'],"year"=>$match['year']);
+             } else $to = array("day"=>'',"month"=>'',"mon"=>'',"year"=>'');
+           }
+           if ($i>0 || empty($from)) $comment .= $matches[0][$i]." ";
          }
-#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\"/",$matches[2][$i],$match)) { // col#2: date (from)
-#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})|)/",$matches[2][$i],$match)) { // col#2: date from + to
-#         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)/",$matches[2][$i],$match)) { // col#2: date, comment
-         if (preg_match("/href\=\"\/OnThisDay\?day\=(\d{1,2}).{1,5}month\=(.*?)\".*\"\/MarriedInYear\?(\d{4})\">\d{4}<\/a>(.* href\=\"\/OnThisDay\?day=(\d{1,2}).{1,5}month=(.*?)\".*<\/a>\s*(\d{4})\)|)\s*\((.*?)\)(\s*(\d+) child|)/",$matches[2][$i],$match)) { // col#2: date, children
-           $tmp["from"] = array("day"=>$match[1],"month"=>$match[2],"mon"=>$this->monthNo($match[2]),"year"=>$match[3]);
-           $tmp["to"]   = array("day"=>$match[5],"month"=>$match[6],"mon"=>$this->monthNo($match[6]),"year"=>$match[7]);
-           $tmp["comment"] = $match[8];
-           $tmp["children"] = $match[10];
-         }
-         $this->spouses[] = $tmp;
+         if ( preg_match('!(\d+) child!',$html,$match) ) $children = $match[1];
+         $this->spouses[] = array('imdb'=>$mid,'name'=>$nam,'from'=>$from,'to'=>$to,'comment'=>$comment,'children'=>$children);
        }
+       break;
      }
+     if (!$found) return $this->spouses; // no spouses
    }
    return $this->spouses;
  }
