@@ -62,6 +62,7 @@ class person_base extends mdb_base {
    $this->birth_name      = "";
    $this->nick_name       = array();
    $this->bodyheight      = array();
+   $this->spouses         = array();
    $this->bio_bio         = array();
    $this->bio_trivia      = array();
    $this->bio_tm          = array();
