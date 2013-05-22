@@ -187,7 +187,7 @@
       }
     }
     else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-    if (preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*<div!ims',$match[1],$matches)) {
+    if ( !empty($match) && preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*<div!ims',$match[1],$matches)) {
       $mc = count($matches[0]);
       $year = '';
       for ($i=0;$i<$mc;++$i) {
@@ -388,7 +388,7 @@
         preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?>\d+\s+(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
         preg_match('|/search/name\?birth_place=.*?">(.*)<|ims',$match[1],$dloc);
-        $this->birthday = array("day"=>$daymon[2],"month"=>$daymon[3],"mon"=>$daymon[1],"year"=>$dyear[1],"place"=>$dloc[1]);
+        $this->birthday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@$dloc[1]);
       }
     }
     return $this->birthday;
@@ -409,7 +409,7 @@
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
         preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>$daymon[2],"month"=>$daymon[3],"mon"=>$daymon[1],"year"=>$dyear[1],"place"=>$dloc[2],"cause"=>$dcause[1]);
+        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@$dloc[2],"cause"=>@$dcause[1]);
       }
     }
     return $this->deathday;
@@ -454,7 +454,7 @@
        if ( trim($head->nodeValue)!='Spouse' ) continue;
        $found = TRUE;
        $tab = $head->nextSibling;
-       while ( $tab->tagName!='table' && $tab->nextSibling ) $tab = $tab->nextSibling;
+       while ( (!isset($tab->tagName)||$tab->tagName!='table') && $tab->nextSibling ) $tab = $tab->nextSibling;
        foreach ($tab->getElementsByTagName('tr') as $sp) {
          $first = $sp->getElementsByTagName('td')->item(0); // name and IMDBID
          $nam = trim($first->nodeValue);

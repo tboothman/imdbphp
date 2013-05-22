@@ -13,6 +13,7 @@ v2.1.8
 + added imdb::orig_title() to retrieve the original movie title (if available; otherwise returns "")
 + added imdb::movie_recommendations() to retrieve the "people who liked this..." movies
 * imdb_person::spouse() was missing detail information (most likely due to site changes) -- added them back
+! fixed a bunch of notices in person.php and imdb_person.class.php
 
 v2.1.7 (15.05.2013)
 -------------------
