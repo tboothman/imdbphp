@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.1.8
+v2.1.8 (26.05.2013)
 -------------------
 * improvements to the imdb::soundtrack() method. Much better results now :)
 + imdb_person::filmograf() now fills the "addons" information again (for all movie_*() methods)
