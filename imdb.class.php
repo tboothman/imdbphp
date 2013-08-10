@@ -801,7 +801,7 @@
   public function alsoknow() {
    if (empty($this->akas)) {
     if ($this->page["ReleaseInfo"] == "") $this->openpage ("ReleaseInfo");
-    $ak_s = strpos ($this->page["ReleaseInfo"], "<a name=\"akas\">");
+    $ak_s = strpos ($this->page["ReleaseInfo"], "<a id=\"akas\"");
     //if ($ak_s == 0) $ak_s = strpos ($this->page["ReleaseInfo"], "Alternativ:");
     if ($ak_s == 0) return array();
     $alsoknow_end = strpos ($this->page["ReleaseInfo"], "</table>", $ak_s);
@@ -1599,12 +1599,14 @@
       $tag_s = strpos($this->page["ReleaseInfo"],'<th class="xxxx">Country</th><th class="xxxx">Date</th>');
       $tag_e = strpos($this->page["ReleaseInfo"],'</table',$tag_s);
       $block = substr($this->page["ReleaseInfo"],$tag_s,$tag_e-$tag_s);
-      preg_match_all('!<tr><td><b>(.*?)</b></td>\s*<td[^>]*>(.*?)</td>\s*<td>(.*?)</td>!ims',$block,$matches);
+      preg_match_all('!<tr[^>]*>\s*<td><a[^>]*>(.*?)</a></td>\s*<td[^>]*>(.*?)</td>\s*<td>(.*?)</td>!ims',$block,$matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
         $country = strip_tags($matches[1][$i]);
         if ( preg_match('!href="/date/(\d{2})-(\d{2})/">\d+ (.*?)</a>\s*<a href="/year/(\d{4})/">!is',$matches[2][$i],$match) ) { // full info
           $this->release_info[] = array('country'=>$country,'day'=>$match[2],'month'=>$match[3],'mon'=>$match[1],'year'=>$match[4],'comment'=>$matches[3][$i]);
+        } elseif ( preg_match('!(\d{1,2})\s*(.+?)<a href="/year/(\d{4})/.+?"\s*>!is',$matches[2][$i],$match) ) { // full info v2
+          $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>$match[2],'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$matches[3][$i]);
         } elseif ( !preg_match('|a href=|i',$matches[2][$i],$match) ) { // no links within
           if ( preg_match('!^(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // month and year
             $this->release_info[] = array('country'=>$country,'day'=>'','month'=>$match[1],'mon'=>$this->monthNo(trim($match[1])),'year'=>$match[2],'comment'=>$matches[3][$i]);
