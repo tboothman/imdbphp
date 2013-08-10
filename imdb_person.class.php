@@ -194,7 +194,7 @@
         $char = array();
         if (preg_match('!<span class="year_column">(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
         preg_match('!href="/title/tt(\d{7})/"\s*>(.*?)</a>\s*</b>(.*?)<br!ims',$matches[1][$i],$mov);
-        if ( preg_match('!href="/character/ch(\d{7})">(.*?)</a>!ims',$matches[1][$i],$char) ) {
+        if ( preg_match('!href="/character/ch(\d{7})"\s*>(.*?)</a>!ims',$matches[1][$i],$char) ) {
           $chid   = $char[1];
           $chname = $char[2];
         } else {
