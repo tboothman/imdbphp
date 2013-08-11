@@ -830,7 +830,6 @@
         }
     }
    }
-   echo "<pre>";print_r($this->akas);echo "</pre>\n";
    return $this->akas;
   }
 
