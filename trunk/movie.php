@@ -26,7 +26,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     default:
         require("imdb.class.php");
         $movie = new imdb($_GET["mid"]);
-        $charset = "iso-8859-1";
+        //$charset = "iso-8859-1";
+        $charset = "utf8";
         $source  = "<B CLASS='active'>IMDB</B> | <A HREF='?engine=pilot&mid=$movieid'>MoviePilot</A>";
         break;
   }
