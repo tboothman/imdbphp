@@ -808,28 +808,29 @@
     $alsoknow_all = substr($this->page["ReleaseInfo"], $ak_s, $alsoknow_end - $ak_s);
     preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
     for($i=0;$i<count($matches[1]);$i+=2){
-        $title = trim($matches[1][$i]);
-        $countries = explode('/',$matches[1][$i+1]);
-        foreach($countries as $country){
-            $firstbracket = strpos($country, '(');
+        $country = trim($matches[1][$i]);
+        $titles = explode('/',$matches[1][$i+1]);
+        foreach($titles as $tit){
+            $firstbracket = strpos($tit, '(');
             if($firstbracket === false){
-                $_country = trim($country);
+                $title = trim($tit);
                 $comment = '';
             }else{
-                $_country = trim(substr($country, 0, $firstbracket));
-                preg_match_all("@\((.+?)\)@", $country, $matches3);
+                $title = trim(substr($tit, 0, $firstbracket));
+                preg_match_all("@\((.+?)\)@", $tit, $matches3);
                 $comment = implode(', ', $matches3[1]);
             }
             $this->akas[] = array(
                 "title"=>$title,
                 "year"=>'',
-                "country"=>$_country,
+                "country"=>$country,
                 "comment"=>$comment,
                 "lang"=>''
             );
         }
     }
    }
+   echo "<pre>";print_r($this->akas);echo "</pre>\n";
    return $this->akas;
   }
 
