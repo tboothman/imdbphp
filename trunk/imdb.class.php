@@ -636,7 +636,7 @@
    */
   private function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    preg_match('!id="img_primary">.*?<img [^>]+src="(.+?)".*<td id="overview-top"!ims',$this->page["Title"],$match);
+    preg_match('!id="img_primary">.*?<img [^>]+src="(.+?)".*(<td id="overview-top)?"!ims',$this->page["Title"],$match);
     if (empty($match[1])) return FALSE;
     $this->main_thumb = $match[1];
     if ( preg_match('|(.*\._V1).*|iUs',$match[1],$mo) ) {
