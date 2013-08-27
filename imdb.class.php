@@ -1451,7 +1451,7 @@
    if (empty($this->soundtracks)) {
      if (empty($this->page["Soundtrack"])) $this->openpage("Soundtrack");
      if ($this->page["Soundtrack"] == "cannot open page") return array(); // no such page
-     if (preg_match_all('!class="soundTrack soda (odd|even)"\s*>\s*"(?<title>.+?)"<br\s*/>(?<desc>.+?)</div>!ims',str_replace("\n"," ",$this->page["Soundtrack"]),$matches)) {
+     if (preg_match_all('!class="soundTrack soda (odd|even)"\s*>\s*(?<title>.+?)<br\s*/>(?<desc>.+?)</div>!ims',str_replace("\n"," ",$this->page["Soundtrack"]),$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
           $s['soundtrack'] = $matches['title'][$i];
