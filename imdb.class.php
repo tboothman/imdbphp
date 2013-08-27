@@ -601,7 +601,7 @@
       }
       if ( preg_match('!<p>\s*(<p>.*</p>)\s*$!ims',$this->main_plotoutline,$tmp) ) $this->main_plotoutline = $tmp[1];
     }
-    $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt1856014/plotsummary[^>]*>See full summary.*$!i','',$this->main_plotoutline);
+    $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7}/plotsummary[^>]*>See full summary.*$!i','',$this->main_plotoutline);
     return $this->main_plotoutline;
   }
 
