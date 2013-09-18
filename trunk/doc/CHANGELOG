@@ -9,7 +9,7 @@ v2.1.9
 ! imdbperson::filmograf() missed some character names due to site changes
 ! imdb::soundtrack() was broken due to site changes
 ! imdb_person: latest site changes broke all filmografies. fixed.
-! imdb::crazy_credits(), imdb::goofs() broken due to site changes
+! imdb: crazy_credits(), goofs(), quotes() broken due to site changes
 
 v2.1.8 (26.05.2013)
 -------------------
