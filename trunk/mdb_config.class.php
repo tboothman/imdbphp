@@ -124,7 +124,7 @@ class mdb_config {
      *  be automatically deleted.
      * @attribute integer cache_expire
      */
-    $this->cache_expire = 3600;
+    $this->cache_expire = 36000;
     /** Where to store images retrieved from the IMDB site by the method photo_localurl().
      *  This needs to be under documentroot to be able to display them on your pages.
      * @attribute string photodir

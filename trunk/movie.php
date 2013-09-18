@@ -42,6 +42,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
+$foo=$movie->officialSites();
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
   echo "[IMDBPHP2 v".$movie->version." Demo] Movie Details for '" . $movie->title()."' (".$movie->year().")";
