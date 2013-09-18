@@ -1314,11 +1314,11 @@
     if (empty($this->goofs)) {
       if (empty($this->page["Goofs"])) $this->openpage("Goofs");
       if ($this->page["Goofs"] == "cannot open page") return array(); // no such page
-      if ( @preg_match_all('@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(<a name="|<div id="top_rhs_wrapper")@ims',$this->page["Goofs"],$matches) ) {
+      if ( @preg_match_all('@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(<h4 class="li_group">|<div id="top_rhs_wrapper")@ims',$this->page["Goofs"],$matches) ) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) {
           if ($matches[1][$i]=='Spoilers') continue; // no spoilers, moreover they are differently formatted
-          preg_match_all('!<div id="gf.+?>(.+?)<br\s*/>\s*<span class="linksoda">!ims',$matches[3][$i],$goofy);
+          preg_match_all('!<div id="gf.+?>(.+?)<div!ims',$matches[3][$i],$goofy);
           $ic = count($goofy[0]);
           for ($k=0;$k<$ic;++$k) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$goofy[1][$k]));
         }
