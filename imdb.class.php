@@ -1391,6 +1391,70 @@
 
 
  #===========================================================[ /videosites ]===
+ #--------------------------------------------------------[ content helper ]---
+ /** Parse segments of external information on "VideoSites"
+  * @method private parse_extcontent
+  * @param string title segment title
+  * @param array res resultset (passed by reference)
+  */
+ private function parse_extcontent($title,&$res) {
+   if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
+   if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
+   if ( preg_match("!<h4 class=\"li_group\">$title\s*</h4>\s*(.+?)<(h4|div)!ims",$this->page["VideoSites"],$match) ) {
+     if ( preg_match_all('!<li>(.+?)</li>!ims',$match[1],$matches) ) {
+       $mc = count($matches[0]);
+       for ($i=0;$i<$mc;++$i) {
+         if ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.*) \((?<type>.*?)\)</a>!',$matches[1][$i],$entry) ) {
+           $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>$entry['type'], 'desc'=>$entry['desc']);
+         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+           $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
+         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+           $res[] = array('site'=>'', 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
+         }
+       }
+     }
+   }
+ }
+
+ #---------------------------------------------------[ Off-site soundclips ]---
+  /** Get the off-site soundclip URLs
+   * @method soundclipsites
+   * @return array soundclipsites array[0..n] of array(site,url,type,desc)
+   * @see IMDB page /videosites
+   */
+  public function soundclipsites() {
+    if ( empty($this->soundclip_sites) ) {
+      $this->parse_extcontent('Sound Clips',$this->soundclip_sites);
+    }
+    return $this->video_sites;
+  }
+
+ #-------------------------------------------------------[ Off-site photos ]---
+  /** Get the off-site photo URLs
+   * @method photosites
+   * @return array photosites array[0..n] of array(site,url,type,desc)
+   * @see IMDB page /videosites
+   */
+  public function photosites() {
+    if ( empty($this->photo_sites) ) {
+      $this->parse_extcontent('Photographs',$this->photo_sites);
+    }
+    return $this->photo_sites;
+  }
+
+ #--------------------------------------------------[ Off-site miscellanea ]---
+  /** Get the off-site misc URLs
+   * @method miscsites
+   * @return array miscsites array[0..n] of array(site,url,type,desc)
+   * @see IMDB page /videosites
+   */
+  public function miscsites() {
+    if ( empty($this->misc_sites) ) {
+      $this->parse_extcontent('Miscellaneous Sites',$this->misc_sites);
+    }
+    return $this->misc_sites;
+  }
+
  #------------------------------------------[ Off-site trailers and videos ]---
   /** Get the off-site videos and trailer URLs
    * @method videosites
@@ -1399,16 +1463,7 @@
    */
   public function videosites() {
     if ( empty($this->video_sites) ) {
-      if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
-      if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
-      if ( preg_match('|<h3[^>]*>\s*Trailers on Other Sites\s*</h3>(.*?)<hr|ims',$this->page["VideoSites"],$match) ) {
-        preg_match_all('!<p[^>]*>(.*?)\s*\((.*?)\)\s*\(<a href="(.*?)">(.*?)</a>\)\s*</p!ims',$match[1],$matches);
-        for ($i=0;$i<count($matches[0]);++$i) {
-          $type = $matches[2][$i];
-          if ( $pos=strrpos($type,'(') ) $type = substr($type,$pos+1);
-          $this->video_sites[] = array("site"=>$matches[4][$i],"url"=>$matches[3][$i],"type"=>$type,"desc"=>$matches[1][$i]);
-        }
-      }
+      $this->parse_extcontent('Video Clips and Trailers',$this->video_sites);
     }
     return $this->video_sites;
   }
