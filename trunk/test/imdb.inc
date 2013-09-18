@@ -63,7 +63,7 @@ page("Title");
  method($imdb,"seasons");
  setid($imdb,"0517673"); // Babylon 5: No Compromises
  method($imdb,"get_episode_details");
- setid($imdb,"2043933"); // Night Moves
+ setid($imdb,"3171716"); // Okka Adugu
  method($imdb,"prodNotes");
  setid($imdb,"0094592"); // 14 going 30 (TV)
  method($imdb,"movieTypes");
