@@ -12,6 +12,7 @@ v2.1.9
 ! imdb: crazy_credits(), goofs(), quotes(), video_sites() broken due to site changes
 + while fixing imdb::video_sites, discovered more similar content on that page: soundclip_sites(), photo_sites() and misc_sites() added
 ! imdb: trivia(), officialSites() broken due to site changes
+! imdb_person: movies_crew() and movies_archive() broken due to site changes
 
 v2.1.8 (26.05.2013)
 -------------------

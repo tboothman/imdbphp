@@ -177,7 +177,7 @@
    */
   private function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
-    preg_match("!<a name=\"$type\"(.*?)(<div id=\"filmo|<script)!msi",$this->page["Name"],$match);
+    preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi",$this->page["Name"],$match);
     if (empty($type)) $match[1] = $this->page["Name"];
     elseif (empty($match[1])) {
       $pos   = strpos($this->page['Name'],'<a name="'.ucfirst($type).'"');
@@ -291,7 +291,7 @@
    * @see IMDB person page / (Main page)
    */
   public function movies_crew() {
-    if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"MiscellaneousCrew");
+    if (empty($this->crewsfilms)) $this->filmograf($this->crewsfilms,"miscellaneous");
     return $this->crewsfilms;
   }
 
@@ -334,7 +334,7 @@
    * @see IMDB person page / (Main page)
    */
   public function movies_archive() {
-    if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"ArchiveFootage");
+    if (empty($this->archivefilms)) $this->filmograf($this->archivefilms,"archive_footage");
     return $this->archivefilms;
   }
 
