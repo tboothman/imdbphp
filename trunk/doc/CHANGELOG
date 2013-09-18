@@ -8,6 +8,7 @@ v2.1.9
 ! imdb::alsoknow() and imdb::releaseInfo() were broken due to site changes
 ! imdbperson::filmograf() missed some character names due to site changes
 ! imdb::soundtrack() was broken due to site changes
+! imdb_person: latest site changes broke all filmografies. fixed.
 
 v2.1.8 (26.05.2013)
 -------------------
