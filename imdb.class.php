@@ -1400,7 +1400,6 @@
  private function parse_extcontent($title,&$res) {
    if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
    if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
-$f = strlen($this->page["VideoSites"]); echo "LEN: $f<br>\n";
    if ( preg_match("!<h4 class=\"li_group\">$title\s*</h4>\s*(.+?)<(h4|div)!ims",$this->page["VideoSites"],$match) ) {
      if ( preg_match_all('!<li>(.+?)</li>!ims',$match[1],$matches) ) {
        $mc = count($matches[0]);
@@ -1834,8 +1833,6 @@ $f = strlen($this->page["VideoSites"]); echo "LEN: $f<br>\n";
       $this->parse_extcontent('Official Sites',$sites);
       foreach ($sites as $site) $this->official_sites[] = array('url'=>$site['url'],'name'=>$site['desc']);
     }
-echo $this->imdbID."<pre>";print_r($sites);echo "</pre>\n";
-echo "<pre>";print_r($this->official_sites);echo "</pre>\n";
     return $this->official_sites;
   }
 
