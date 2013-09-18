@@ -133,6 +133,7 @@ page("ParentalGuide");
  method($imdb,"parentalGuide");
 endpage();
 page("OfficialSites");
+ $imdb->page["VideoSites"] = "";
  method($imdb,"officialSites");
 endpage();
 page("Awards");
