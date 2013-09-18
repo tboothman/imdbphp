@@ -127,6 +127,9 @@ class movie_base extends mdb_base {
    $this->taglines = array();
    $this->trailers = array();
    $this->video_sites = array();
+   $this->soundclip_sites = array();
+   $this->photo_sites = array();
+   $this->misc_sites = array();
    $this->trivia = array();
    $this->compcred_prod = array();
    $this->compcred_dist = array();
