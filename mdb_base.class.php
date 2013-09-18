@@ -184,6 +184,7 @@ class mdb_base extends mdb_config {
 
    if ($this->usecache) { // Try to read from cache
      $fname = "$this->imdbID.$wt";
+if ($wt=="VideoSites") echo "File: $fname<br>\n";
      if ( substr(get_class($this),0,5)=="pilot" ) $fname .= ".pilot";
      $this->cache_read($fname,$this->page[$wt]);
      if ($this->page[$wt] != '') return;

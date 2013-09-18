@@ -1400,6 +1400,7 @@
  private function parse_extcontent($title,&$res) {
    if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
    if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
+$f = strlen($this->page["VideoSites"]); echo "LEN: $f<br>\n";
    if ( preg_match("!<h4 class=\"li_group\">$title\s*</h4>\s*(.+?)<(h4|div)!ims",$this->page["VideoSites"],$match) ) {
      if ( preg_match_all('!<li>(.+?)</li>!ims',$match[1],$matches) ) {
        $mc = count($matches[0]);
@@ -1825,19 +1826,16 @@
    * @method officialSites
    * @return array [0..n] of url, name
    * @see IMDB page /officialsites
+   * @brief now combined with /videosites to /externalsites
    */
   public function officialSites() {
     if (empty($this->official_sites)) {
-      if (empty($this->page["OfficialSites"])) $this->openpage("OfficialSites");
-      if ($this->page["OfficialSites"] == "cannot open page") return array(); // no such page
-      preg_match('|official sites for(.*?)related links|ims',$this->page["OfficialSites"],$match);
-      if (preg_match_all('|<li><a href="(.*?)">(.*?)</a></li>|ims',$match[1],$matches)) {
-        $mc = count($matches[0]);
-        for ($i=0;$i<$mc;++$i) {
-          $this->official_sites[] = array("url"=>$matches[1][$i],"name"=>$matches[2][$i]);
-        }
-      }
+      $sites = array();
+      $this->parse_extcontent('Official Sites',$sites);
+      foreach ($sites as $site) $this->official_sites[] = array('url'=>$site['url'],'name'=>$site['desc']);
     }
+echo $this->imdbID."<pre>";print_r($sites);echo "</pre>\n";
+echo "<pre>";print_r($this->official_sites);echo "</pre>\n";
     return $this->official_sites;
   }
 
