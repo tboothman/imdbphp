@@ -95,7 +95,7 @@
   public function photo($thumb=true) {
     if (empty($this->main_photo)) {
       if ($this->page["Name"] == "") $this->openpage ("Name","person");
-      if (preg_match('!<td id="img_primary".*?>\s*.*?<img.*?src="(.*?)"!ims',$this->page["Name"],$match)) {
+       if (preg_match('!<td.*?id="img_primary".*?>*.*?<img.*?src="(.*?)"!ims',$this->page["Name"],$match)) {
         if ($thumb) $this->main_photo = $match[1];
         else        $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[1]);
       } else {
