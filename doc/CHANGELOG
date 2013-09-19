@@ -6,6 +6,8 @@ History for IMDBPHP2
 v2.1.10
 -------------------
 + introduced the possibility to override config vars using simple *.ini files (see conf/*)
+- removed Moviepilot classes (the service is no longer operational via its API)
+! fixes to cache.php (listed the same movie over and over)
 
 v2.1.9 (19.09.2013)
 -------------------

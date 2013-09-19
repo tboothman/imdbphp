@@ -16,19 +16,12 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $engine  = $_GET["engine"];
 
   switch($engine) {
-    case "pilot":
-        require("pilot.class.php");
-        $movie = new pilot($_GET["mid"]);
-        $charset = "utf8";
-        $source  = "<A HREF='?engine=imdb&mid=$movieid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
-        if ($movie->get_pilot_imdbfill()) $source .= '<SUP>+i</SUP>';
-        break;
     default:
         require("imdb.class.php");
         $movie = new imdb($_GET["mid"]);
         //$charset = "iso-8859-1";
         $charset = "utf8";
-        $source  = "<B CLASS='active'>IMDB</B> | <A HREF='?engine=pilot&mid=$movieid'>MoviePilot</A>";
+        $source  = "<B CLASS='active'>IMDB</B>";
         break;
   }
 

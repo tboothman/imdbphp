@@ -62,7 +62,7 @@ class mdb_base extends mdb_config {
    * @attribute string lastServerResponse
    */
 
-  /** Setting the pilot IMDB fallback mode
+  /** Setting the IMDB fallback mode
    * @method set_pilot_imdbfill
    * @param int level
    * @see imdb_config::pilot_imdbfill attribute for details
@@ -73,7 +73,7 @@ class mdb_base extends mdb_config {
     $this->pilot_imdbfill = $level;
   }
 
-  /** Check the IMDB fallback level for the pilot classes.
+  /** Check the IMDB fallback level for non-IMDB classes.
    *  As <code>pilot_imdbfill</code> is a protected variable, this is the only
    *  way to read its current value.
    * @method get_pilot_imdbfill()
@@ -168,30 +168,56 @@ class mdb_base extends mdb_config {
     }
   }
 
+  /** Helper: Read a page from cache
+   *  and stores it into the $this->page array
+   * @method protected readCachedPage
+   * @param string wt internal name of the page
+   * @param mixed id ID of the record to be used for the file name (usually imdbID)
+   */
+  protected function readCachedPage($wt,$id) {
+    if ($this->usecache) { // Try to read from cache
+      $fname = "$id.$wt";
+      preg_match('!^(.+?)(_|$)!',get_class($this),$engine);
+      if ( $engine[1] != 'imdb' ) $fname .= ".$engine[1]";
+      $this->cache_read($fname,$this->page[$wt]);
+      if ($this->page[$wt] != '') return TRUE;
+    } // end cache
+  }
+
+  /** Helper: Write a page to cache
+   *  after taking it from the $this->page array
+   * @method protected writeCachedPage
+   * @param string wt internal name of the page
+   * @param mixed id ID of the record to be used for the file name (usually imdbID)
+   */
+  protected function writeCachedPage($wt,$id) {
+    if ($this->storecache) {
+      $fname = "$id.$wt";
+      preg_match('!^(.+?)(_|$)!',get_class($this),$engine);
+      if ( $engine[1] != 'imdb' ) $fname .= ".$engine[1]";
+      $this->cache_write($fname,$this->page[$wt]);
+    }
+  }
+
   /** Load an IMDB page into the corresponding property (variable)
-   * @method private openpage
+   * @method protected openpage
    * @param string wt internal name of the page
    * @param optional string type whether its a "movie" (default) or a "person"
+   * @brief for derived projects' (Moviepilot, OFDB, ...) classes, you need to override this
    */
-  function openpage ($wt,$type="movie") {
-   if (strlen($this->imdbID) != 7){
-    $this->debug_scalar("not valid imdbID: ".$this->imdbID."<BR>".strlen($this->imdbID));
-    $this->page[$wt] = "cannot open page";
-    return;
-   }
-   $urlname = $this->set_pagename($wt);
-   if ($urlname===false) return;
+  protected function openpage ($wt,$type="movie") {
+    if (strlen($this->imdbID) != 7){
+      $this->debug_scalar("not valid imdbID: ".$this->imdbID."<BR>".strlen($this->imdbID));
+      $this->page[$wt] = "cannot open page";
+      return;
+    }
+    $urlname = $this->set_pagename($wt);
+    if ($urlname===false) return;
 
-   if ($this->usecache) { // Try to read from cache
-     $fname = "$this->imdbID.$wt";
-     if ( substr(get_class($this),0,5)=="pilot" ) $fname .= ".pilot";
-     $this->cache_read($fname,$this->page[$wt]);
-     if ($this->page[$wt] != '') return;
-   } // end cache
+    if ( $this->readCachedPage($wt,$this->imdbID) ) return;
 
    switch ($type) {
      case "person" : $url = "http://".$this->imdbsite."/name/nm".$this->imdbID.$urlname; break;
-     case "pilot"  : $url = "http://".$this->pilotsite.$urlname."?api_key=".$this->pilot_apikey; break;
      default       : $url = "http://".$this->imdbsite."/title/tt".$this->imdbID.$urlname;
    }
    $this->getWebPage($wt,$url);
@@ -202,19 +228,11 @@ class mdb_base extends mdb_config {
        $this->getWebPage($wt,$match[2]);
      }
    }
-   if (@preg_match('|<body>You are being <a href="(.*)">redirected</a>|iUms',$this->page[$wt],$match)) { // pilot bug
-     if (!preg_match('|\.json|',$match[1])) $match[1] .= ".json?api_key=".$this->pilot_apikey; // double bug
-     $this->getWebPage($wt,$match[1]);
-   }
 
    if ($this->page[$wt] == "cannot open page") return; // this should not go to the cache!
    if( $this->page[$wt] ) { //storecache
-     if ($this->storecache) {
-       $fname = "$this->imdbID.$wt";
-       if ( substr(get_class($this),0,5)=="pilot" ) $fname .= ".pilot";
-       $this->cache_write($fname,$this->page[$wt]);
-     }
-    return;
+     $this->writeCachedPage($wt,$this->imdbID);
+     return;
    }
    $this->page[$wt] = "cannot open page";
    $this->debug_scalar("cannot open page: $url");
