@@ -20,7 +20,7 @@ define ('PROXY_PORT', "");
 // browseremulator. Be warned that there's no support for problems ;)
 $PEAR = false;
 
-/** Enable IMDB-Fallback for the Pilot classes?
+/** Enable IMDB-Fallback for non-IMDB classes?
  *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
  *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
  *  The imdb classes will be included based on this setting.
@@ -39,8 +39,6 @@ if ( !defined('PILOT_IMDBFALLBACK') ) define('PILOT_IMDBFALLBACK',FALSE);
  */
 class mdb_config {
   var $imdbsite;
-  var $pilotsite;
-  var $pilot_apikey;
   protected $pilot_imdbfill;
   var $cachedir;
   var $usecache;
@@ -72,20 +70,6 @@ class mdb_config {
      * @attribute string imdbsite
      */
     $this->imdbsite = "akas.imdb.com";
-    /** MoviePilot server to use.
-     *  choices are &lt;lang&gt;.moviepilot.com - where &lt;lang&gt; is one
-     *  of es|fr|pl|uk - , and www.moviepilot.de for German. More may follow
-     *  sometimes in the future. So it is really intended for chosing the
-     *  language of the desired content.
-     * @attribute string pilotsite
-     */
-    $this->pilotsite = "www.moviepilot.de";
-    /** The MoviePilot API requires an API key. We initialize it empty here, so
-     *  it is left to you to set it from your own script files (or in your own
-     *  configuration defined by the constant IMDBPHP_CONFIG)
-     * @attribute string pilot_apikey
-     */
-    $this->pilot_apikey = "50714a0681af531bc7cbb7355521b2";
     /* If the Pilot classes miss certain data (i.e. it does not provide that datatype
      *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
      *  via the IMDB class? To define this, you should use the following constants:

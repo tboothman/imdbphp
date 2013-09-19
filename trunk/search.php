@@ -12,9 +12,7 @@
  #############################################################################
  # $Id$
 
-# Security check
-$engine = $_GET["engine"];
-if ( !in_array($engine,array("imdb","pilot")) ) $engine = "imdb";
+$engine = "imdb";
 
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
@@ -39,11 +37,6 @@ switch($_GET["searchtype"]) {
               $headname = "Person";
               break;
   default   : switch($engine) {
-                case "pilot":
-                  require_once("pilotsearch.class.php");
-                  require_once("pilot.class.php");
-                  $search = new pilotsearch();
-                  break;
                 default:
                   require_once("imdbsearch.class.php");
                   require_once("imdb.class.php");
@@ -66,7 +59,7 @@ $sname = htmlspecialchars($_GET['name']);
 echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '$sname':</H2>\n";
 $results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
-   . " <TR><TH>$headname Details</TH><TH>IMDB page</TH><TH>Pilot page</TH></TR>";
+   . " <TR><TH>$headname Details</TH><TH>IMDB</TH><TH>Moviepilot</TH></TR>";
 foreach ($results as $res) {
   switch($_GET["searchtype"]) {
     case "nm" :
@@ -75,12 +68,12 @@ foreach ($results as $res) {
         $hint = " (".$details["role"]." in <a href='imdb.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
       }
       echo " <TR><TD><a href='person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
-         . "<TD><a href='http://".$search->imdbsite."/name/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
+         . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/name/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
       break;
     default   :
       echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().")".$res->addon_info."</a></TD>"
-         . "<TD><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
-         . "<TD><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
+         . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
+         . "<TD ALIGN='center'><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
       break;
   }
 }

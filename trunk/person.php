@@ -17,18 +17,11 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   else $engine = 'imdb';
 
   switch($engine) {
-    case "pilot":
-        require("pilot_person.class.php");
-        $person = new pilot_person($_GET["mid"]);
-        $charset = "utf8";
-        $source  = "<A HREF='?engine=imdb&mid=$pid'>IMDB</A> | <B CLASS='active'>MoviePilot</B>";
-        if ($person->get_pilot_imdbfill()) $source .= '<SUP>+i</SUP>';
-        break;
     default:
         require("imdb_person.class.php");
         $person = new imdb_person($_GET["mid"]);
         $charset = "iso-8859-1";
-        $source  = "<B CLASS='active'>IMDB</B> | <A HREF='?engine=pilot&mid=$pid'>MoviePilot</A>";
+        $source  = "<B CLASS='active'>IMDB</B>";
         break;
   }
 
@@ -123,7 +116,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   # MiniBio
   $bio = $person->bio();
   if (!empty($bio)) {
-    if ($engine=='pilot' || count($bio)<2) $idx = 0; else $idx = 1;
+    if (count($bio)<2) $idx = 0; else $idx = 1;
     echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1&engine='.$engine,$bio[$idx]["desc"])."</TD></TR>\n";
   }
 

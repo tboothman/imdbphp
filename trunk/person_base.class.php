@@ -1,6 +1,6 @@
 <?php
  #############################################################################
- # IMDBPHP.MoviePilot                                    (c) Itzchak Rehberg #
+ # IMDBPHP.Person                                        (c) Itzchak Rehberg #
  # written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
  # http://www.izzysoft.de/                                                   #
  # ------------------------------------------------------------------------- #
