@@ -44,16 +44,17 @@ $check_poster  = false;
 $uri = $_SERVER['REQUEST_URI'];
 if ( strpos($uri,'?')>0 ) $uri .= '&amp;';
 else $uri .= '?';
-raw("<SPAN STYLE='margin-right:2em;'><A HREF='{$uri}api=imdb'>IMDB</A></SPAN><SPAN STYLE='margin-left:2em;'><A HREF='{$uri}api=pilot'>PILOT</A></SPAN>\n");
-if ( empty($_REQUEST['api']) && !in_array($_REQUEST['api'],array('imdb','pilot')) ) {
-  if (CRON) $api = 'imdb';
-  else {
-    raw("</BODY></HTML>\n");
-    exit;
-  }
-} else {
-  $api = $_REQUEST['api'];
-}
+raw("<SPAN STYLE='margin-right:2em;'><A HREF='{$uri}api=imdb'>IMDB</A></SPAN>\n");
+#if ( empty($_REQUEST['api']) && !in_array($_REQUEST['api'],array('imdb','pilot')) ) {
+#  if (CRON) {
+    $api = 'imdb';
+#  } else {
+#    raw("</BODY></HTML>\n");
+#    exit;
+#  }
+#} else {
+#  $api = $_REQUEST['api'];
+#}
 switch ($_REQUEST["check"]) {
   case "movie"   : $check_movie   = true; break;
   case "name"    : $check_name    = true; break;
