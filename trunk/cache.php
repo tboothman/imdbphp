@@ -20,13 +20,11 @@ echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n";
 echo "</HEAD><BODY>\n";
 $imdb   = new imdb("0");
 $movies = array();
-if ($d = opendir ($imdb->cachedir)) {
-  while (false !== ($entry = readdir ($d))) {
-    if (strstr ($entry, "Title")) {
-       $imdbid = substr ($entry, 0, 7);
-       if (!preg_match('!.+\..+\..+!',$entry)) $movies[] = array('imdbid'=>$imdbid,'imdb'=>1);
+if ( is_dir($imdb->cachedir) ) {
+  $files = glob($imdb->cachedir.'*.Title');
+    foreach ($files as $file) {
+      if ( preg_match('!^(\d{7})\.Title$!i',basename($file),$match) ) $movies[] = array('imdbid'=>$match[1],'imdb'=>1);
     }
-  }
 }
 
 if (!empty($movies)) {
