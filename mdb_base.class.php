@@ -122,11 +122,11 @@ class mdb_base extends mdb_config {
   }
 
   /** Obtain page from web server
-   * @method private getWebPage
+   * @method protected getWebPage
    * @param string wt internal name of the page
    * @param string url URL to open
    */
-  function getWebPage($wt,$url) {
+  protected function getWebPage($wt,$url) {
     $req = new MDB_Request("");
     $req->setURL($url);
     if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
@@ -259,10 +259,10 @@ class mdb_base extends mdb_config {
    * @method setid
    * @param string id IMDBID of the requested movie
    */
-  function setid ($id) {
-   if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
-   $this->imdbID = $id;
-   $this->reset_vars();
+  public function setid ($id) {
+    if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
+    $this->imdbID = $id;
+    $this->reset_vars();
   }
 
  #-----------------------------------------------------------[ Constructor ]---
@@ -270,7 +270,7 @@ class mdb_base extends mdb_config {
    * @constructor mdb_base
    * @param string id IMDBID to use for data retrieval
    */
-  function __construct($id) {
+  public function __construct($id) {
     parent::__construct();
     $this->lastServerResponse = "";
     if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
@@ -290,7 +290,7 @@ class mdb_base extends mdb_config {
         while( $file=$thisdir->read() ) {
           if ($file!="." && $file!="..") {
             $fname = $this->cachedir . $file;
-	    if (is_dir($fname)) continue;
+        if (is_dir($fname)) continue;
             $mod = filemtime($fname);
             if ($mod && ($now - $mod > $this->cache_expire)) unlink($fname);
           }

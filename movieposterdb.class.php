@@ -38,6 +38,7 @@ class movieposterdb extends mdb_base {
     parent::__construct($id);
     $this->setid($id);
     $this->reset_lang();
+    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     if ($this->force_agent) $this->user_agent = $this->force_agent;
     elseif ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $this->user_agent = $_SERVER['HTTP_USER_AGENT'];
     else $this->user_agent = $this->default_agent;
