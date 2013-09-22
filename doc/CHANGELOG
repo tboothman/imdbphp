@@ -9,6 +9,7 @@ v2.1.10
 - removed Moviepilot classes (the service is no longer operational via its API)
 ! fixes to cache.php (listed the same movie over and over)
 * doc/README updated
++ cache.php now uses glob() to speed up file finding
 
 v2.1.9 (19.09.2013)
 -------------------
