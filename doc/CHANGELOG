@@ -11,6 +11,7 @@ v2.1.10
 * doc/README updated
 + cache.php now uses glob() to speed up file finding
 * some minor code cleanup
++ added some more example code to doc/examples
 
 v2.1.9 (19.09.2013)
 -------------------
