@@ -16,10 +16,12 @@ install: installdirs
 	cp -pr doc/* $(docdir)
 	$(INSTALL_DATA) *.class.php $(libdir)
 	$(INSTALL_DATA) cache.php person.php imdbXML.php movie.php search.php *.html $(datadir)
+	$(INSTALL_DATA) conf/* $(libdir)/conf
 	$(INSTALL_DATA) test/* $(datadir)/test
 	if [ ! -e $(LINKTO) ]; then ln -s $(datadir) $(LINKTO); fi
 
 installdirs:
+	mkdir -p $(libdir)/conf
 	mkdir -p $(datadir)/cache
 	mkdir -p $(datadir)/images
 	mkdir -p $(datadir)/test
