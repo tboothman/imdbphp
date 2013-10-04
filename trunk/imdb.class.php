@@ -1024,13 +1024,15 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   private function get_table_rows( $html, $table_start ) {
-   $row_s = strpos ( $html, ">".$table_start."<");
+   $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   if (preg_match_all("/<tr>(.*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches)) {
+   $block = substr($html,$row_s,$endtable - $row_s);
+   if (preg_match_all('!<tr>(.+?)</tr>!ims',$block,$matches)) {
      $mc = count($matches[1]);
-     for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i];
+     /* for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i]; */
+     $rows = $matches[1];
    }
    return $rows;
   }
@@ -1044,11 +1046,11 @@
    * @see used by the method cast
    */
   private function get_table_rows_cast( $html, $table_start, $class="nm" ) {
-   $row_s = strpos ( $html, '<table class="cast">');
+   $row_s = strpos ( $html, '<table class="cast_list">');
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   if (preg_match_all("/<tr.*?(<td class=\"$class\".*?)<\/tr>/",substr($html,$row_s,$endtable - $row_s),$matches))
+   if (preg_match_all("/<tr.*?(<td class=\"$class\".*?)<\/tr>/ims",substr($html,$row_s,$endtable - $row_s),$matches))
      return $matches[1];
    return array();
   }
