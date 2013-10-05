@@ -1024,7 +1024,8 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   private function get_table_rows( $html, $table_start ) {
-   $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
+   if ($table_start=="Writing Credits") $row_s = strpos ( $html, ">".$table_start);
+   else $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
@@ -1179,18 +1180,20 @@
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
    }
    $this->credits_writing = array();
-   $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing credits");
+   $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing Credits");
    for ( $i = 0; $i < count ($writing_rows); $i++){
-     $cels = $this->get_row_cels ($writing_rows[$i]);
-     if ( count ( $cels) > 2){
-       $wrt = array();
-       $wrt["imdb"] = $this->get_imdbname($cels[0]);
-       $wrt["name"] = strip_tags($cels[0]);
-       $role = strip_tags($cels[2]);
-       if ( $role == "") $wrt["role"] = NULL;
-       else $wrt["role"] = $role;
-       $this->credits_writing[$i] = $wrt;
-     }
+     $wrt = array();
+     if ( preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
+       $wrt['imdb'] = $match[1];
+       $wrt['name'] = trim($match[2]);
+     } elseif ( preg_match('!<td\s+class="name">(.+?)</td!ims',$writing_rows[$i],$match) ) {
+       $wrt['imdb'] = '';
+       $wrt['name'] = trim($match[1]);
+     } else continue;
+     if ( preg_match('!<td\s+class="credit"\s*>\s*(.+?)\s*</td>!ims',$writing_rows[$i],$match) ) {
+       $wrt['role'] = trim($match[1]);
+     } else $wrt['role'] = NULL;
+     $this->credits_writing[] = $wrt;
    }
    return $this->credits_writing;
   }
