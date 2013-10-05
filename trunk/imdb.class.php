@@ -1050,8 +1050,10 @@
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
-   if (preg_match_all("/<tr.*?(<td class=\"$class\".*?)<\/tr>/ims",substr($html,$row_s,$endtable - $row_s),$matches))
+   $block = substr($html,$row_s,$endtable - $row_s);
+   if (preg_match_all('!<tr.*?>(.*?)</tr>!ims',$block,$matches)) {
      return $matches[1];
+   }
    return array();
   }
 
@@ -1141,20 +1143,25 @@
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
    }
-   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "hs");
+   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "itemprop");
    for ( $i = 0; $i < count ($cast_rows); $i++){
     $cels = $this->get_row_cels ($cast_rows[$i]);
-    if (!isset ($cels[0])) return array();
+    if (!isset ($cels[1])) continue;
     $dir = array();
-    $dir["imdb"] = $this->get_imdbname($cels[1]);
-    $dir["name"] = strip_tags($cels[1]);
-    $role = strip_tags($cels[3]);
+    $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims','$1',$cels[1]);
+    $dir["name"] = trim(strip_tags($cels[1]));
+    if (empty($dir['name'])) continue;
+    $role = trim(strip_tags($cels[1]));
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
-    $dir["thumb"] = preg_replace('|.*<img src="(.*?)".*|is','$1',$cels[0]);
-    if (strpos($dir["thumb"],'._V1'))
-      $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
-    $this->credits_cast[$i] = $dir;
+    if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims',$cels[0],$match)) {
+      $dir["thumb"] = $match[1];
+      if (strpos($dir["thumb"],'._V1'))
+        $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
+    } else {
+      $dir["thumb"] = $dir["photo"] = "";
+    }
+    $this->credits_cast[] = $dir;
    }
    return $this->credits_cast;
   }
