@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.2.1
+-------------------
+! again site changes, this time they broke the personal credits (actors, composers, writers, etc.)
+
 v2.2.0 (22.09.2013)
 -------------------
 + introduced the possibility to override config vars using simple *.ini files (see conf/*)

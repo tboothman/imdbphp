@@ -1238,20 +1238,21 @@
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
    }
    $this->credits_composer = array();
-   $composer_rows = $this->get_table_rows($this->page["Credits"], "Original Music by");
+   $composer_rows = $this->get_table_rows($this->page["Credits"], "Music by");
    for ( $i = 0; $i < count ($composer_rows); $i++){
-    $cels = $this->get_row_cels ($composer_rows[$i]);
-    if ( count ( $cels) > 2){
-     $wrt = array();
-     $wrt["imdb"] = $this->get_imdbname($cels[0]);
-     $wrt["name"] = strip_tags($cels[0]);
-     $role = strip_tags($cels[2]);
-     if ( $role == "") $wrt["role"] = NULL;
-     else $wrt["role"] = $role;
+     if ( preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims',$composer_rows[$i],$match) ) {
+       $wrt['imdb'] = $match[1];
+       $wrt['name'] = trim($match[2]);
+     } elseif ( preg_match('!<td\s+class="name">(.+?)</td!ims',$composer_rows[$i],$match) ) {
+       $wrt['imdb'] = '';
+       $wrt['name'] = trim($match[1]);
+     } else continue;
+     if ( preg_match('!<td\s+class="credit"\s*>\s*(.+?)\s*</td>!ims',$composer_rows[$i],$match) ) {
+       $wrt['role'] = trim($match[1]);
+     } else $wrt['role'] = NULL;
      $this->credits_composer[$i] = $wrt;
     }
-   }
-   return $this->credits_composer;
+    return $this->credits_composer;
   }
 
  #====================================================[ /crazycredits page ]===
