@@ -186,7 +186,7 @@
   function yearspan() {
     if ( empty($this->main_yearspan) ) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
+      if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|\xe2\x80\x93|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
         $this->main_yearspan = array('start'=>$match[1],'end'=>$match[3]);
       } else {
         $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->year());
