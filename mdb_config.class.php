@@ -39,6 +39,7 @@ if ( !defined('PILOT_IMDBFALLBACK') ) define('PILOT_IMDBFALLBACK',FALSE);
  */
 class mdb_config {
   var $imdbsite;
+  var $language;
   protected $pilot_imdbfill;
   var $cachedir;
   var $usecache;
@@ -70,6 +71,12 @@ class mdb_config {
      * @attribute string imdbsite
      */
     $this->imdbsite = "akas.imdb.com";
+    /** Tell IMDB which is the preferred language.
+     *  Any valid language code can be used here (e.g. en-US, de, pt-BR).
+     *  If this option is specified, the Accept-Language header with this value
+     *  will be included in the requests.
+     */
+    $this->language = "";
     /* If the Pilot classes miss certain data (i.e. it does not provide that datatype
      *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
      *  via the IMDB class? To define this, you should use the following constants:

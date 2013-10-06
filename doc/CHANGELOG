@@ -7,6 +7,7 @@ v2.2.1
 -------------------
 ! again site changes, this time they broke the personal credits (actors, composers, writers, etc.)
 * imdb::yearspan() didn't catch all "delimiters" used on the IMDB sites
++ added new config option "language" (see mdb_config for details – and thanx to strikedaemon for the code!)
 
 v2.2.0 (22.09.2013)
 -------------------
