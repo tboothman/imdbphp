@@ -1152,7 +1152,7 @@
     $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims','$1',$cels[1]);
     $dir["name"] = trim(strip_tags($cels[1]));
     if (empty($dir['name'])) continue;
-    $role = trim(strip_tags($cels[1]));
+    $role = trim(strip_tags($cels[3]));
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
     if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims',$cels[0],$match)) {
