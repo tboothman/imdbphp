@@ -68,6 +68,9 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
         elseif ( in_array('HTTP_REFERER',array_keys($_SERVER)) ) $this->addHeaderLine('Referer',$_SERVER['HTTP_REFERER']);
       }
       if ($iconf->force_agent) $this->addHeaderLine('User-Agent', $iconf->force_agent);
+      // include language option in the request (if specified):
+      $language = trim($iconf->language);
+      if (strlen($language) > 0) $this->addHeaderLine('Accept-Language', $language);
     }
     /** Send a request to the movie site
      * @method sendRequest
