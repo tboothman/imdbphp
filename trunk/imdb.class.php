@@ -1099,6 +1099,7 @@
    * @see used by the methods director, cast, writing, producer, composer
    */
   protected function get_imdbname($href) {
+   return preg_replace('!^.*(\d{7}).*$!ims','$1',$href);
    if ( strlen( $href) == 0) return $href;
    $name_s = 17;
    $name_e = strpos ( $href, '"', $name_s);
@@ -1124,7 +1125,7 @@
     if (!isset ($cels[0])) return array();
     $dir = array();
     $dir["imdb"] = $this->get_imdbname($cels[0]);
-    $dir["name"] = strip_tags($cels[0]);
+    $dir["name"] = trim(strip_tags($cels[0]));
     $role = trim(strip_tags($cels[2]));
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
@@ -1216,8 +1217,8 @@
     if ( count ( $cels) > 2){
      $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
-     $wrt["name"] = strip_tags($cels[0]);
-     $role = strip_tags($cels[2]);
+     $wrt["name"] = trim(strip_tags($cels[0]));
+     $role = trim(strip_tags($cels[2]));
      if ( $role == "") $wrt["role"] = NULL;
      else $wrt["role"] = $role;
      $this->credits_producer[$i] = $wrt;
