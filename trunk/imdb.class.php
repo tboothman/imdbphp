@@ -128,7 +128,7 @@
       if ( empty($this->main_title) ) $this->title_year(); // in case title was not yet parsed; it might already contain the movietype
       if ( !empty($this->main_movietype) ) return $this->main_movietype; // done already
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if ( preg_match('!<h1 class="header" itemprop="name">.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
+      if ( preg_match('!<h1 class="header"[^>]*>.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
         $this->main_movietype = trim($match[1]);
       }
       $this->debug_object($match);
