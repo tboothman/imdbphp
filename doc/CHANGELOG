@@ -9,6 +9,7 @@ v2.2.1
 * imdb::yearspan() didn't catch all "delimiters" used on the IMDB sites
 + added new config option "language" (see mdb_config for details – and thanx to strikedaemon for the code!)
 * changed a bunch of methods from private to protected, to allow overriding them by extension classes
+! IMDB decided to introduce another /genre/ link to most popular genres, which messed up the genre() method
 
 v2.2.0 (22.09.2013)
 -------------------
