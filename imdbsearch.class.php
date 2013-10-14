@@ -69,10 +69,10 @@
   }
 
   /** Create the IMDB URL for the movie search
-   * @method private mkurl
+   * @method protected mkurl
    * @return string url
    */
-  private function mkurl() {
+  protected function mkurl() {
    if ($this->url !== NULL){
     $url = $this->url;
    }else{

@@ -94,9 +94,9 @@
  #======================================================[ Title page infos ]===
  #-------------------------------------------[ Movie title (name) and year ]---
   /** Setup title and year properties
-   * @method private title_year
+   * @method protected title_year
    */
-  private function title_year() {
+  protected function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
       $this->main_title = $match[2];
@@ -214,10 +214,10 @@
 
  #---------------------------------------------------------------[ Runtime ]---
   /** Get general runtime
-   * @method private runtime_all
+   * @method protected runtime_all
    * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
    */
-  private function runtime_all() {
+  protected function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
       if (@preg_match('!Runtime:</h4>\s*(.*)\s*</div!ms',$this->page["Title"],$match))
@@ -272,9 +272,9 @@
 
  #----------------------------------------------------------[ Movie Rating ]---
   /** Setup votes
-   * @method private rate_vote
+   * @method protected rate_vote
    */
-  private function rate_vote() {
+  protected function rate_vote() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     if (preg_match('!<span itemprop="ratingValue">(\d{1,2}\.\d)!i',$this->page["Title"],$match)){
       $this->main_rating = $match[1];
@@ -630,11 +630,11 @@
 
  #--------------------------------------------------------[ Photo specific ]---
   /** Setup cover photo (thumbnail and big variant)
-   * @method private thumbphoto
+   * @method protected thumbphoto
    * @return boolean success (TRUE if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
    */
-  private function thumbphoto() {
+  protected function thumbphoto() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     preg_match('!id="img_primary">.*?<img [^>]+src="(.+?)".*(<td id="overview-top)?"!ims',$this->page["Title"],$match);
     if (empty($match[1])) return FALSE;
@@ -1017,13 +1017,13 @@
  #=====================================================[ /fullcredits page ]===
  #-----------------------------------------------------[ Helper: TableRows ]---
   /** Get rows for a given table on the page
-   * @method private get_table_rows
+   * @method protected get_table_rows
    * @param string html
    * @param string table_start
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the methods director, cast, writing, producer, composer
    */
-  private function get_table_rows( $html, $table_start ) {
+  protected function get_table_rows( $html, $table_start ) {
    if ($table_start=="Writing Credits") $row_s = strpos ( $html, ">".$table_start);
    else $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
    $row_e = $row_s;
@@ -1040,13 +1040,13 @@
 
  #------------------------------------------------[ Helper: Cast TableRows ]---
   /** Get rows for the cast table on the page
-   * @method private get_table_rows_cast
+   * @method protected get_table_rows_cast
    * @param string html
    * @param string table_start
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the method cast
    */
-  private function get_table_rows_cast( $html, $table_start, $class="nm" ) {
+  protected function get_table_rows_cast( $html, $table_start, $class="nm" ) {
    $row_s = strpos ( $html, '<table class="cast_list">');
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
@@ -1060,14 +1060,14 @@
 
  #------------------------------------------------[ Helper: Awards TableRows ]---
   /** Get rows for the awards table on the page
-   * @method private get_table_rows_awards
+   * @method protected get_table_rows_awards
    * @param string html
    * @param string table_start
    * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
    * @see used by the method awards
    * @author Qvist
    */
-  private function get_table_rows_awards( $html ) {
+  protected function get_table_rows_awards( $html ) {
    $row_s = strpos ( $html, '<table style="margin-top:' );
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
@@ -1081,24 +1081,24 @@
 
  #------------------------------------------------------[ Helper: RowCells ]---
   /** Get content of table row cells
-   * @method private get_row_cels
+   * @method protected get_row_cels
    * @param string row (as returned by imdb::get_table_rows)
    * @return array cells (array[0..n] of strings)
    * @see used by the methods director, cast, writing, producer, composer
    */
-  private function get_row_cels( $row ) {
+  protected function get_row_cels( $row ) {
    if (preg_match_all("/<td.*?>(.*?)<\/td>/ims",$row,$matches)) return $matches[1];
    return array();
   }
 
  #-------------------------------------------[ Helper: Get IMDBID from URL ]---
   /** Get the IMDB ID from a names URL
-   * @method private get_imdbname
+   * @method protected get_imdbname
    * @param string href url to the staff members IMDB page
    * @return string IMDBID of the staff member
    * @see used by the methods director, cast, writing, producer, composer
    */
-  private function get_imdbname($href) {
+  protected function get_imdbname($href) {
    if ( strlen( $href) == 0) return $href;
    $name_s = 17;
    $name_e = strpos ( $href, '"', $name_s);
@@ -1406,11 +1406,11 @@
  #===========================================================[ /videosites ]===
  #--------------------------------------------------------[ content helper ]---
  /** Parse segments of external information on "VideoSites"
-  * @method private parse_extcontent
+  * @method protected parse_extcontent
   * @param string title segment title
   * @param array res resultset (passed by reference)
   */
- private function parse_extcontent($title,&$res) {
+ protected function parse_extcontent($title,&$res) {
    if ( $this->page["VideoSites"] == "" ) $this->openpage("VideoSites");
    if ( $this->page["VideoSites"] == "cannot open page" ) return array(); // no such page
    if ( preg_match("!<h4 class=\"li_group\">$title\s*</h4>\s*(.+?)<(h4|div)!ims",$this->page["VideoSites"],$match) ) {
@@ -1579,11 +1579,11 @@
  #=================================================[ /movieconnection page ]===
  #----------------------------------------[ Helper: ConnectionBlock Parser ]---
   /** Parse connection block (used by method movieconnection only)
-   * @method private parseConnection
+   * @method protected parseConnection
    * @param string conn connection type
    * @return array [0..n] of array mid,name,year,comment - or empty array if not found
    */
-  private function parseConnection($conn) {
+  protected function parseConnection($conn) {
     $tag_s = strpos($this->page["MovieConnections"],"<h4 class=\"li_group\">$conn");
     if (empty($tag_s)) return array(); // no such feature
     $tag_e = strpos($this->page["MovieConnections"],"<h4 class=\"li",$tag_s+4);
@@ -1717,11 +1717,11 @@
  #==================================================[ /companycredits page ]===
  #---------------------------------------------[ Helper: Parse CompanyInfo ]---
   /** Parse company info
-   * @method private companyParse
+   * @method protected companyParse
    * @param ref string text to parse
    * @param ref array parse target
    */
-  public function companyParse(&$text,&$target) {
+  protected function companyParse(&$text,&$target) {
     preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms',$text,$matches);
     $mc = count($matches[0]);
     for ($i=0;$i<$mc;++$i) {

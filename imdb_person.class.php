@@ -171,11 +171,11 @@
 
  #----------------------------------------------------------[ Filmographie ]---
   /** Get filmography
-   * @method private filmograf
+   * @method protected filmograf
    * @param ref array where to store the filmography
    * @param string type Which filmografie to retrieve ("actor",)
    */
-  private function filmograf(&$res,$type) {
+  protected function filmograf(&$res,$type) {
     if ($this->page["Name"] == "") $this->openpage ("Name","person");
     preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi",$this->page["Name"],$match);
     if (empty($type)) $match[1] = $this->page["Name"];
@@ -516,11 +516,11 @@
 
  #-----------------------------------------[ Helper to Trivia, Quotes, ... ]---
   /** Parse Trivia, Quotes, etc (same structs)
-   * @method private parparse
+   * @method protected parparse
    * @param string name
    * @param ref array res
    */
-  private function parparse($name,&$res) {
+  protected function parparse($name,&$res) {
     if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
     $pos_s = strpos($this->page["Bio"],"<h5>$name</h5>");
     $pos_e = strpos($this->page["Bio"],"<br",$pos_s);
@@ -623,13 +623,13 @@
 
  #----------------------------------------------[ Helper for movie parsing ]---
   /** Parse movie helper
-   * @method private parsepubmovies
+   * @method protected parsepubmovies
    * @param ref array res where to store the results
    * @param string page name of the page
    * @param string header header of the block on the IMDB site
    * @brief helper to pubmovies() and portrayedmovies()
    */
-  private function parsepubmovies(&$res,$page,$header) {
+  protected function parsepubmovies(&$res,$page,$header) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
     $pos_s = strpos($this->page[$page],"<h5>$header</h5>");
     $pos_e = strpos($this->page[$page],"<h5",$pos_s+5);
@@ -668,14 +668,14 @@
 
  #--------------------------------------------[ Helper for Article parsing ]---
   /** Helper for article parsing
-   * @method private parsearticles
+   * @method protected parsearticles
    * @param ref array res where to store the results
    * @param string page name of the page
    * @param string title title of the block
    * @brief used by interviews(), articles(), pictorials(), magcovers()
    * @see IMDB person page /publicity
    */
-  private function parsearticles(&$res,$page,$title) {
+  protected function parsearticles(&$res,$page,$title) {
     if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
     $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
     if ( $pos_s === FALSE ) { $res = array(); return; }
@@ -789,12 +789,12 @@
      parent::__construct();
    }
 
- #-------------------------------------------------------[ private helpers ]---
+ #-------------------------------------------------------[ protected helpers ]---
   /** Create the IMDB URL for the name search
-   * @method private mkurl
+   * @method protected mkurl
    * @return string url
    */
-  private function mkurl() {
+  protected function mkurl() {
    if ($this->url !== NULL) {
     $url = $this->url;
    } else {
