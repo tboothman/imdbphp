@@ -956,9 +956,13 @@
    if (empty($this->plot_plot)) {
     if ( $this->page["Plot"] == "" ) $this->openpage ("Plot");
     if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
-    if (preg_match_all("/p class=\"plotpar\">(.*?)<\/p>/",str_replace("\n"," ",$this->page["Plot"]),$matches))
-      for ($i=0;$i<count($matches[0]);++$i)
-        $this->plot_plot[$i] = preg_replace('/<a href=\"\/SearchPlotWriters/i','<a href="http://'.$this->imdbsite.'/SearchPlotWriters/',$matches[1][$i]);
+    if (preg_match('!<div class="desc"[^>]*>(.+?)<h4!ims',$this->page["Plot"],$block)) {
+      if (preg_match_all('!<li\s+class="(odd|even)[^"]*"\s*>(.+?)</li>!ims',$block[0],$matches)) {
+        for ($i=0;$i<count($matches[0]);++$i) {
+          $this->plot_plot[$i] = preg_replace('!<a href="/search/title!i','<a href="http://'.$this->imdbsite.'/search/title',$matches[2][$i]);
+        }
+      }
+    }
    }
    return $this->plot_plot;
   }
@@ -1126,7 +1130,8 @@
     $dir = array();
     $dir["imdb"] = $this->get_imdbname($cels[0]);
     $dir["name"] = trim(strip_tags($cels[0]));
-    $role = trim(strip_tags($cels[2]));
+    if (isset($cels[2])) $role = trim(strip_tags($cels[2]));
+    else $role = "";
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
     $this->credits_director[$i] = $dir;
@@ -1153,7 +1158,8 @@
     $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims','$1',$cels[1]);
     $dir["name"] = trim(strip_tags($cels[1]));
     if (empty($dir['name'])) continue;
-    $role = trim(strip_tags($cels[3]));
+    if (isset($cels[3])) $role = trim(strip_tags($cels[3]));
+    else $role = "";
     if ( $role == "") $dir["role"] = NULL;
     else $dir["role"] = $role;
     if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims',$cels[0],$match)) {
@@ -1218,7 +1224,8 @@
      $wrt = array();
      $wrt["imdb"] = $this->get_imdbname($cels[0]);
      $wrt["name"] = trim(strip_tags($cels[0]));
-     $role = trim(strip_tags($cels[2]));
+     if (isset($cels[2])) $role = trim(strip_tags($cels[2]));
+     else $role = "";
      if ( $role == "") $wrt["role"] = NULL;
      else $wrt["role"] = $role;
      $this->credits_producer[$i] = $wrt;
