@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.2.1
+v2.2.1 (20.10.2013)
 -------------------
 ! again site changes, this time they broke the personal credits (actors, composers, writers, etc.)
 * imdb::yearspan() didn't catch all "delimiters" used on the IMDB sites
