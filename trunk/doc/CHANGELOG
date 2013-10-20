@@ -10,7 +10,7 @@ v2.2.1
 + added new config option "language" (see mdb_config for details – and thanx to strikedaemon for the code!)
 * changed a bunch of methods from private to protected, to allow overriding them by extension classes
 ! IMDB decided to introduce another /genre/ link to most popular genres, which messed up the genre() method
-! imdb::plot() was broken due to another site change
+! imdb::plot() and imdb::plot_split() were broken due to another site change
 
 v2.2.0 (22.09.2013)
 -------------------
