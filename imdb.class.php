@@ -977,8 +977,9 @@
     if (empty($this->split_plot)) {
       if (empty($this->plot_plot)) $plots = $this->plot();
       for ($i=0;$i<count($this->plot_plot);++$i) {
-        if (preg_match("/(.*?)<i>.*<a href=\"(.*?)\">(.*?)<\/a>/",$this->plot_plot[$i],$match))
+        if (preg_match('!(.*?)<em>Written by\s+<a href="(.*?)"\s*>(.*?)</a>\s*</span>\s*</em>!ims',$this->plot_plot[$i],$match)) {
           $this->split_plot[] = array("plot"=>$match[1],"author"=>array("name"=>$match[3],"url"=>$match[2]));
+        }
       }
     }
     return $this->split_plot;
