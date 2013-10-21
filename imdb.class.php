@@ -1144,6 +1144,13 @@
   /** Get the actors
    * @method cast
    * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
+   * @version the "role" field might contain several "newlines" in the middle of the
+   *        string. They usually separate multiple entries (see e.g. IMDBID 2186562:
+   *        "Dakaria Tepes &lt;newlines&gt; (as Laura Roge)"). After this has been
+   *        brought up with ticket #375, we discussed it on IRC and decided to leave
+   *        it as-is: If you want it removed, a simple regexp will do that:
+   *        <CODE>preg_replace('!\s{2,}!ims',' ',$role)</CODE>. The API shouldn't
+   *        do this as it would rob those who want to split of the opportunity doing so.
    * @see IMDB page /fullcredits
    */
   public function cast() {
