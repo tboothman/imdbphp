@@ -75,6 +75,7 @@ class mdb_config {
      *  Any valid language code can be used here (e.g. en-US, de, pt-BR).
      *  If this option is specified, the Accept-Language header with this value
      *  will be included in the requests.
+     * @attribute string language
      */
     $this->language = "";
     /* If the Pilot classes miss certain data (i.e. it does not provide that datatype
