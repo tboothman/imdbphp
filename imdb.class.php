@@ -1296,7 +1296,8 @@
       if ( !$this->seasons() ) {
         $ser = $this->get_episode_details();
         $tid = $this->imdbID;
-        $this->imdbID = $ser['imdbid'];
+        if (isset($ser['imdbid'])) $this->imdbID = $ser['imdbid'];
+        else return $this->season_episodes;
       } else {
         $tid = $this->imdbID;
       }
