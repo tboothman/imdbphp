@@ -395,8 +395,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "There are $gc soundtracks listed - like these:<br>";
     echo "<table align='center' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Soundtrack</th><th style='background-color:#07f;'>Credit 1</th><th style='background-color:#07f;'>Credit 2</th></tr>";
     for ($i=0;$i<5;++$i) {
-      if (empty($soundtracks[$i])) break;
-      $credit1 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$soundtracks[$i]["credits"][0]['credit_to'])." (".$soundtracks[$i]["credits"][0]['desc'].")";
+      if (isset($soundtracks[$i]["credits"][0])) $credit1 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$soundtracks[$i]["credits"][0]['credit_to'])." (".$soundtracks[$i]["credits"][0]['desc'].")"; else $credit1 = '';
       if (isset($soundtracks[$i]["credits"][1])) $credit2 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$soundtracks[$i]["credits"][1]['credit_to'])." (".$soundtracks[$i]["credits"][1]['desc'].")"; else $credit2 = '';
       echo "<tr><td>".$soundtracks[$i]["soundtrack"]."</td><td>$credit1</td><td>$credit2</td></tr>";
     }
