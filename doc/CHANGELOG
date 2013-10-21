@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.2.2
+-------------------
+! imdbperson: filmographs had skipped every second entry somehow
+
 v2.2.1 (20.10.2013)
 -------------------
 ! again site changes, this time they broke the personal credits (actors, composers, writers, etc.)

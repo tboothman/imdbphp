@@ -20,7 +20,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     default:
         require("imdb_person.class.php");
         $person = new imdb_person($_GET["mid"]);
-        $charset = "iso-8859-1";
+        $charset = "utf-8";
         $source  = "<B CLASS='active'>IMDB</B>";
         break;
   }

@@ -186,8 +186,7 @@
         $match[1] = substr($this->page['Name'],$pos,$epos-$pos);
       }
     }
-    else $match[1] = str_replace("</li><li>","</li>\n<li>",$match[1]); // *!* ugly workaround for long lists, see Sly (mid=0000230)
-    if ( !empty($match) && preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*<div!ims',$match[1],$matches)) {
+    if ( !empty($match) && preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*</div!ims',$match[1],$matches)) {
       $mc = count($matches[0]);
       $year = '';
       for ($i=0;$i<$mc;++$i) {
