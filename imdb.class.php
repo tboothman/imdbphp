@@ -913,13 +913,16 @@
       } else {
         $status = trim($tmp); $statnote = '';
       }
+    else $status = '';
     if ( preg_match('!<b>Updated:\s*</b>\s*(\d+)\s*(\D+)\s+(\d{4})!ims',$match[1],$tmp) )
         $update = array("day"=>$tmp[1],"month"=>$tmp[2],"mon"=>$this->monthNo($tmp[2]),"year"=>$tmp[3]);
-    if ( preg_match('!<b>More Info:\s*</b>\s*(.*)!ims',$match[1],$tmp) )
+    else $update = array();
+    if ( preg_match('!<b>More Info:\s*</b>\s*(.*)!ims',$match[1],$tmp) ) {
         $more = preg_replace('!\s*onclick=".*?"!ims','',trim($tmp[1]));
         $more = preg_replace('!href="/!ims','href="http://'.$this->imdbsite.'/',$more);
-    if ( preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims',$match[1],$tmp) )
-        $note = trim($tmp[1]);
+    } else $more = '';
+    if ( preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims',$match[1],$tmp) ) $note = trim($tmp[1]);
+    else $note = '';
     $this->main_prodnotes = array("status"=>$status,"statnote"=>$statnote,"lastUpdate"=>$update,"more"=>$more,"note"=>$note);
    }
    return $this->main_prodnotes;
