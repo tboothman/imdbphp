@@ -1834,10 +1834,11 @@
         for ($i=0;$i<$mc;++$i) {
           if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
           $section = $match[1];
-          preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match);
-          $content = trim($match[1]);
+          if (preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match)) $content = trim($match[1]);
+          else $content = '';
           preg_match('/^(.*)(\s|\/)/U',$section,$match);
-          $sgot = $match[1]; if (empty($sgot)) $sgot = $section;
+          if (isset($match[1])) $sgot = $match[1];
+          if (empty($sgot)) $sgot = $section;
           switch($sgot) {
             case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
             case "Sex"        :

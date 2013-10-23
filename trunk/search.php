@@ -71,6 +71,7 @@ foreach ($results as $res) {
          . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/name/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
       break;
     default   :
+      if (!isset($res->addon_info)) $res->addon_info = '';
       echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().")".$res->addon_info."</a></TD>"
          . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
          . "<TD ALIGN='center'><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
