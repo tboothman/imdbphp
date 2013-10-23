@@ -17,7 +17,7 @@ require_once ("imdb_nowplaying.class.php");
 require_once(dirname(__FILE__)."/helpers.inc");
 
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;

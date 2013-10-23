@@ -19,7 +19,7 @@ require_once(dirname(__FILE__)."/helpers.inc");
 $imdbp = new imdb_person("0000197"); // Jack Nicholson
 headline("Class imdb_person (Version ".$imdbp->version.", Revision ".$imdbp->revision.")","imdb_person");
 $imdbp->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdbp->usecache = 0; $imdbp->storecache = 0; 

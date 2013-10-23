@@ -19,7 +19,7 @@ require_once(dirname(__FILE__)."/helpers.inc");
 $imdb = new imdb("0117500"); // The Rock
 headline("Class imdb (Version ".$imdb->version.", Revision ".$imdb->revision.")");
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;

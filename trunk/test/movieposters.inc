@@ -20,7 +20,7 @@ $imdb = new movieposterdb('0117500');
 headline("Class movieposterdb (Revision ".$imdb->revision.")","movieposterdb");
 
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
