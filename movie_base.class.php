@@ -32,6 +32,7 @@ class movie_base extends mdb_base {
    */
   function __construct ($id) {
     parent::__construct($id);
+    $this->reset_vars();
   }
 
 #--------------------------------------------------[ Start (over) / Reset ]---
@@ -66,6 +67,7 @@ class movie_base extends mdb_base {
    $this->page["Keywords"] = "";
    $this->page["Awards"] = "";
    $this->page["Locations"] = "";
+   $this->page["VideoSites"] = "";
 
    $this->akas = array();
    $this->awards = array();
