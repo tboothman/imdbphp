@@ -23,7 +23,7 @@ $imdb = new imdb("0117571"); // page with AllTrailers trailer
 headline("Class imdb_trailers (Revision ".$showtrailer->revision.")","imdb_trailers");
 
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;

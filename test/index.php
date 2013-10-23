@@ -55,7 +55,9 @@ raw("<SPAN STYLE='margin-right:2em;'><A HREF='{$uri}api=imdb'>IMDB</A></SPAN>\n"
 #} else {
 #  $api = $_REQUEST['api'];
 #}
-switch ($_REQUEST["check"]) {
+(isset($_REQUEST["check"])) ? $check = $_REQUEST["check"] : $check = '';
+(isset($_REQUEST["cache"])) ? $cache = $_REQUEST["cache"] : $cache = '0';
+switch ($check) {
   case "movie"   : $check_movie   = true; break;
   case "name"    : $check_name    = true; break;
   case "charts"  : $check_charts  = true; break;

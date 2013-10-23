@@ -20,7 +20,7 @@ $imdb = new imdb_budget('0117500');
 headline("Class imdb_budget (Revision ".$imdb->revision.")","imdb_budget");
 
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;

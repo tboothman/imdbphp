@@ -20,7 +20,7 @@ $imdb = new imdb_topcharts;
 headline("Class imdb_topcharts (Revision ".$imdb->revision.")","imdb_topcharts");
 
 $imdb->cachedir = "../cache";
-switch ($_REQUEST["cache"]) {
+switch ($cache) {
   case "false":
   case "off"  :
   case "0"    : $imdb->usecache = 0; $imdb->storecache = 0;
