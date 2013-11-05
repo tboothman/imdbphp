@@ -178,7 +178,7 @@ class mdb_config {
     # error_reporting(E_ALL ^ E_NOTICE);
     #----------------------------------------------=[ User specific values ]=--
     $ini_files = glob(dirname(__FILE__).'/conf/*.ini');
-    foreach ($ini_files as $file) {
+    if (is_array($ini_files)) foreach ($ini_files as $file) {
       $ini = parse_ini_file($file);
       foreach($ini as $var=>$val) $this->$var = $val;
     }
