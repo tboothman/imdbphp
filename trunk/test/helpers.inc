@@ -16,7 +16,7 @@
 #======================================================[ Global Variables ]===
 $methods  = 0;
 $failures = 0;
-if ( $_REQUEST["cron"] || (is_array($_SERVER['argv']) && in_array("cron",$_SERVER['argv'])) ) define("CRON",TRUE);
+if ( isset($_REQUEST["cron"]) && $_REQUEST["cron"] || (isset($_SERVER['argv']) && is_array($_SERVER['argv']) && in_array("cron",$_SERVER['argv'])) ) define("CRON",TRUE);
 else define("CRON",FALSE);
 $method = "";
 $failed = array();
