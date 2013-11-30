@@ -190,7 +190,8 @@
       $mc = count($matches[0]);
       $year = '';
       for ($i=0;$i<$mc;++$i) {
-        if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>(.*?)<br!ims',$matches[1][$i],$mov) ) continue;
+        if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>(.*?)!ims',$matches[1][$i],$mov) ) continue;
+        if ( preg_match('!<br/>\s*([^>]+)\s*</div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
         $char = array();
         if (preg_match('!<span class="year_column">[^<]*(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
         if ( preg_match('!href="/character/ch(\d{7})[^"]*"\s*>(.*?)</a>!ims',$matches[1][$i],$char) ) {
