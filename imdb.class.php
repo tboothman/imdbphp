@@ -113,6 +113,8 @@
       } else {
         $this->main_endyear = $this->main_year;
       }
+    } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!',$this->page["Title"],$match)) { // not yet released, so no dates etc.
+      $this->main_title = $match['title'];
     }
   }
 
