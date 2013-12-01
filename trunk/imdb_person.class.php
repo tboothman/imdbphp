@@ -570,7 +570,7 @@
   public function salary() {
     if (empty($this->bio_salary)) {
       if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
-      $pos_s = strpos($this->page["Bio"],"<h5>Salary</h5>");
+      $pos_s = strpos($this->page["Bio"],'<table id="salariesTable"');
       if (!$pos_s) return $this->bio_salary;
       $pos_e = strpos($this->page["Bio"],"</table",$pos_s);
       $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
