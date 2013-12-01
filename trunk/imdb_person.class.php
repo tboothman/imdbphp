@@ -349,7 +349,7 @@
  public function birthname() {
    if (empty($this->birth_name)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-    if (preg_match("/Birth Name<\/h5>\s*\n(.*?)\n/m",$this->page["Bio"],$match))
+    if (preg_match("!Birth Name</td>\s*<td>(.*?)</td>\n!m",$this->page["Bio"],$match))
       $this->birth_name = trim($match[1]);
    }
    return $this->birth_name;
@@ -364,7 +364,7 @@
  public function nickname() {
    if (empty($this->nick_name)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-    if (preg_match("/Nickname<\/h5>\s*\n(.*?)\n<h5>/ms",$this->page["Bio"],$match)) {
+    if (preg_match("!Nicknames</td>\s*<td>\s*(.*?)</td>\s*</tr>!ms",$this->page["Bio"],$match)) {
       $nicks = explode("<br/>",$match[1]);
       foreach ($nicks as $nick) {
         $nick = trim($nick);
@@ -426,9 +426,9 @@
  public function height() {
    if (empty($this->bodyheight)) {
     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-    if (preg_match("/Height<\/h5>\s*\n(.*?)\s*\((.*?)\)/m",$this->page["Bio"],$match)) {
-      $this->bodyheight["imperial"] = trim($match[1]);
-      $this->bodyheight["metric"] = trim($match[2]);
+    if (preg_match("!Height</td>\s*<td>\s*(?<imperial>.*?)\s*(&nbsp;)?\((?<metric>.*?)\)!m",$this->page["Bio"],$match)) {
+      $this->bodyheight["imperial"] = str_replace('&nbsp;',' ',trim($match['imperial']));
+      $this->bodyheight["metric"] = str_replace('&nbsp;',' ',trim($match['metric']));
     }
    }
    return $this->bodyheight;
@@ -450,29 +450,25 @@
      @$doc->loadHTML($this->page["Bio"]);
      $xp = new DOMXPath($doc);
      $posters = array();
-     $heads = $doc->getElementsByTagName('h5');
-     foreach($heads as $head) {
-       $found = FALSE;
-       if ( trim($head->nodeValue)!='Spouse' ) continue;
-       $found = TRUE;
-       $tab = $head->nextSibling;
-       while ( (!isset($tab->tagName)||$tab->tagName!='table') && $tab->nextSibling ) $tab = $tab->nextSibling;
+     $found = FALSE;
+     $tab = $doc->getElementById('tableSpouses');
        foreach ($tab->getElementsByTagName('tr') as $sp) {
          $first = $sp->getElementsByTagName('td')->item(0); // name and IMDBID
          $nam = trim($first->nodeValue);
          if ( $href = $first->getElementsByTagName('a')->item(0) ) $mid = preg_replace('!.*/name/nm(\d+).*!','$1',$href->getAttribute('href'));
          else $mid  = '';
+         if (!empty($nam)) $found = TRUE;
          $first = $sp->getElementsByTagName('td')->item(1); // additional details
          $html = $first->ownerDocument->saveXML($first);
-         preg_match_all('!(\(.+?\))!',$html,$matches);
+         preg_match_all('!(\(.+?\))!ms',$html,$matches);
          $comment = '';
          $children = '';
          for ($i=0;$i<count($matches[0]);++$i) {
            if ($i==0) { // usually the "lifespan" of the relation
-             if ( preg_match('!.(<a href="/date/(?<month>\d+)-(?<day>\d+)/">\d+\s+(?<monthname>[^<]+)</a>)?\s*(?<year>\d{4})!',$matches[0][0],$match) ) { // from date
+             if ( preg_match('!(\(<a href="/date/(?<month>\d+)-(?<day>\d+).*>\s*\d+\s*(?<monthname>.*)<.*)?\s*(&nbsp;)?\s*(?<year>\d{4})\s+-!ms',$matches[0][0],$match) ) { // from date
                $from = array("day"=>$match['day'],"month"=>$match['month'],"mon"=>$match['monthname'],"year"=>$match['year']);
              } else $from = array("day"=>'',"month"=>'',"mon"=>'',"year"=>'');
-             if ( preg_match('!(.+?)\s+-\s+(<a href="/date/(?<month>\d+)-(?<day>\d+)/">\d+\s+(?<monthname>[^<]+)</a>)?\s*(?<year>\d{4})!',$matches[0][0],$match) ) { // to date
+             if ( preg_match('!(.+?)\s+-\s+(<a href="/date/(?<month>\d+)-(?<day>\d+).*>\s*\d+\s*(?<monthname>.*)<.*)?\s*(&nbsp;)?\s*(?<year>\d{4})!ms',$matches[0][0],$match) ) { // to date
                $to = array("day"=>$match['day'],"month"=>$match['month'],"mon"=>$match['monthname'],"year"=>$match['year']);
              } else $to = array("day"=>'',"month"=>'',"mon"=>'',"year"=>'');
            }
@@ -481,8 +477,6 @@
          if ( preg_match('!(\d+) child!',$html,$match) ) $children = $match[1];
          $this->spouses[] = array('imdb'=>$mid,'name'=>$nam,'from'=>$from,'to'=>$to,'comment'=>$comment,'children'=>$children);
        }
-       break;
-     }
      if (!$found) return $this->spouses; // no spouses
    }
    return $this->spouses;
