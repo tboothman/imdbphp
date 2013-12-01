@@ -370,6 +370,8 @@
         $nick = trim($nick);
         if (!empty($nick)) $this->nick_name[] = $nick;
       }
+    } elseif (preg_match('!Nickname</td><td>\s*([^<]+)\s*</td>!',$this->page["Bio"],$match)) {
+      $this->nick_name[] = trim($match[1]);
     }
    }
    return $this->nick_name;
@@ -405,11 +407,11 @@
   public function died() {
     if (empty($this->deathday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if (preg_match('|Date of Death</td>(.*)<br|iUms',$this->page["Bio"],$match)) {
+      if (preg_match('|Date of Death</td>(.*?)</tr|ims',$this->page["Bio"],$match)) {
         preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?>\d+\s*(&nbsp;)?(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
         if (!preg_match('/(\,\s*(&nbsp;)?([^\(]+))(&nbsp;)/ims',$match[1],$dloc))
-          preg_match('/(\,\s*(&nbsp;)?([^\(]+))/ims',$match[1],$dloc);
+          preg_match('!(\,\s*(&nbsp;)?([^\(]+?))\s*</td>!ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
         $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[4],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim(strip_tags($dloc[3])),"cause"=>@$dcause[1]);
       }
@@ -451,7 +453,7 @@
      $xp = new DOMXPath($doc);
      $posters = array();
      $found = FALSE;
-     $tab = $doc->getElementById('tableSpouses');
+     if ($tab = $doc->getElementById('tableSpouses')) {
        foreach ($tab->getElementsByTagName('tr') as $sp) {
          $first = $sp->getElementsByTagName('td')->item(0); // name and IMDBID
          $nam = trim($first->nodeValue);
@@ -477,6 +479,7 @@
          if ( preg_match('!(\d+) child!',$html,$match) ) $children = $match[1];
          $this->spouses[] = array('imdb'=>$mid,'name'=>$nam,'from'=>$from,'to'=>$to,'comment'=>$comment,'children'=>$children);
        }
+     }
      if (!$found) return $this->spouses; // no spouses
    }
    return $this->spouses;
@@ -492,12 +495,12 @@
    if (empty($this->bio_bio)) {
      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
-     if (@preg_match_all('|<h4[^>]*>Mini Bio[^<]*</h4>\s*<p>\s*(.+?)\s*</p>\s*<p><b>[^>]+</b>\s*(.+?)</p>|ms',$this->page["Bio"],$matches)) {
+     if (@preg_match_all('|<h4[^>]*>Mini Bio[^<]*</h4>\s*<p>\s*(?<bio>.+?)\s*</p>(\s*<p><b>[^>]+</b>\s*(?<author>.+?)</p>)?|ms',$this->page["Bio"],$matches)) {
        for ($i=0;$i<count($matches[0]);++$i) {
          $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",
                               str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",
-                                str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches[1][$i])));
-         $author = 'Written by '.(str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches[2][$i]));
+                                str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches['bio'][$i])));
+         $author = 'Written by '.(str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches['author'][$i]));
          if (@preg_match('!href="(.+?)"[^>]*>\s*(.*?)\s*</a>!',$author,$match)) {
            $bio_bio["author"]["url"]  = $match[1];
            $bio_bio["author"]["name"] = $match[2];
