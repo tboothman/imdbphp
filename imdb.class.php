@@ -1430,6 +1430,27 @@
 
  #===========================================================[ /videosites ]===
  #--------------------------------------------------------[ content helper ]---
+ /** Convert IMDB redirect-URLs of external sites to real URLs
+  * @method convertIMDBtoRealURL
+  * @param string url redirect-url
+  * @return string url real-url
+  */
+ protected function convertIMDBtoRealURL($url) {
+   if (preg_match('/^http:\/\//', $url)) return $url;
+   $req = new MDB_Request("");
+   $req->setURL("http://".$this->imdbsite.$url);
+   if ($req->sendRequest()!==FALSE) {
+     $head = $req->getLastResponseHeaders();
+     foreach ($head as $header) {
+       if (preg_match('/:/', $header)) {
+         list($type, $value) = explode(':', $header, 2);
+         if ($type == 'Location') return preg_replace('/\s/', '', $value);
+       }
+     }
+   }
+   return false;
+ }
+
  /** Parse segments of external information on "VideoSites"
   * @method protected parse_extcontent
   * @param string title segment title
@@ -1443,10 +1464,13 @@
        $mc = count($matches[0]);
        for ($i=0;$i<$mc;++$i) {
          if ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.*) \((?<type>.*?)\)</a>!',$matches[1][$i],$entry) ) {
+           $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>$entry['type'], 'desc'=>$entry['desc']);
          } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+           $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
          } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+           $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>'', 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
          }
        }
