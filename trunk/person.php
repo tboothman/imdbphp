@@ -117,7 +117,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $bio = $person->bio();
   if (!empty($bio)) {
     if (count($bio)<2) $idx = 0; else $idx = 1;
-    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1&engine='.$engine,$bio[$idx]["desc"])."</TD></TR>\n";
+    echo "<TR><TD><B>Mini Bio:</B></TD><TD>".preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})\//','?mid=\\1&engine='.$engine,$bio[$idx]["desc"])."<BR>(Written by: ".$bio[$idx]['author']['name'].")</TD></TR>\n";
   }
 
   # Some Trivia (Personal Quotes work the same)

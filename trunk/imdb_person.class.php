@@ -492,15 +492,15 @@
    if (empty($this->bio_bio)) {
      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
-     if (@preg_match_all('|<h5>Mini Biography</h5>\s*(.+)\s+.+\s+(.+)|',$this->page["Bio"],$matches)) {
+     if (@preg_match_all('|<h4[^>]*>Mini Bio[^<]*</h4>\s*<p>\s*(.+?)\s*</p>\s*<p><b>[^>]+</b>\s*(.+?)</p>|ms',$this->page["Bio"],$matches)) {
        for ($i=0;$i<count($matches[0]);++$i) {
          $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",
                               str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",
-                                str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[1][$i])));
-         $author = 'Written by '.(str_replace('/SearchBios','http://'.$this->imdbsite.'/SearchBios',$matches[2][$i]));
-         if (@preg_match("/href\=\"(.*?)\">(.*?)<\/a>/",$author,$match)) {
-           $bio_bio["author"]["url"]  = $match[1][$i];
-           $bio_bio["author"]["name"] = $match[2][$i];
+                                str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches[1][$i])));
+         $author = 'Written by '.(str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches[2][$i]));
+         if (@preg_match('!href="(.+?)"[^>]*>\s*(.*?)\s*</a>!',$author,$match)) {
+           $bio_bio["author"]["url"]  = $match[1];
+           $bio_bio["author"]["name"] = $match[2];
          }
          $this->bio_bio[] = $bio_bio;
          unset($bio_bio,$author);
@@ -518,10 +518,11 @@
    */
   protected function parparse($name,&$res) {
     if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
-    $pos_s = strpos($this->page["Bio"],"<h5>$name</h5>");
-    $pos_e = strpos($this->page["Bio"],"<br",$pos_s);
+    $pos_s = strpos($this->page["Bio"],'<h4 class="li_group">'.$name);
+    $pos_e = strpos($this->page["Bio"],"<h4",$pos_s+1);
+    if (!$pos_e) $pos_e = strpos($this->page["Bio"],"</tbody",$pos_s+1);
     $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
-    if (preg_match_all("/<p>(.*?)<\/p>/ms",$block,$matches))
+    if (preg_match_all('!<div class="soda[^>]*>(.*?)</div>!ms',$block,$matches))
       foreach ($matches[1] as $match)
         $res[] = str_replace('href="/name/nm', 'href="http://'.$this->imdbsite.'/name/nm',
                  str_replace('href="/title/tt','href="http://'.$this->imdbsite.'/title/tt',$match));
