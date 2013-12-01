@@ -98,23 +98,26 @@
    */
   protected function title_year() {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (@preg_match('!<title>(IMDb\s*-\s*)?(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$match)) {
-      $this->main_title = $match[2];
-      if(preg_match('!class="title-extra" itemprop="name"\s*>\s*"?(.*?)"?\s*<i>!s',$this->page["Title"],$otitle)) $this->original_title = trim($otitle[1]);
-      if (empty($match[3])) $main_movietype = 'Movie';
-      else $main_movietype  = $match[3];
-      if ($match[3]=="????") $this->main_year = "";
-      else $this->main_year  = $match[4];
-      $mt = trim($match[3]);
-      if ( $mt != '????' && !empty($mt) ) $this->main_movietype = $mt;
-      if ( preg_match('!^(.+)\s+(\d{4})&ndash;\s*$!',$main_movietype,$match) ) {
-        $this->main_endyear = $this->main_year;
-        $this->main_year    = $match[2];
-      } else {
-        $this->main_endyear = $this->main_year;
+    if (@preg_match('!<title>(IMDb\s*-\s*)?(?<ititle>.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$imatch)) {
+      $ititle = $imatch['ititle'];
+      if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4})).*\)(.*)!',$ititle,$match)) { // serial
+        $this->main_movietype = $match['movietype'];
+        $this->main_year = $match['year'];
+        $this->main_endyear = $match['endyear'];
+        $this->main_title = $match['title'];
+      } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!',$ititle,$match)) {
+        $this->main_movietype = $match['movietype'];
+        $this->main_year = $match['year'];
+        $this->main_endyear = '0';
+        $this->main_title = $match['title'];
+      } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!',$this->page["Title"],$match)) { // not yet released, so no dates etc.
+        $this->main_title = $match['title'];
+        $this->main_year = '0';
+        $this->main_endyear = '0';
       }
-    } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!',$this->page["Title"],$match)) { // not yet released, so no dates etc.
-      $this->main_title = $match['title'];
+      if(preg_match('!class="title-extra" itemprop="name"\s*>\s*"?(.*?)"?\s*<i>!s',$this->page["Title"],$otitle)) $this->original_title = trim($otitle[1]);
+      if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
+      if ($this->main_year=="????") $this->main_year = "";
     }
   }
 
