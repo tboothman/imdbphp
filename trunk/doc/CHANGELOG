@@ -9,6 +9,7 @@ v2.2.2
 ! imdbperson: born() and died() got broken due to site changes. Thanks to GeorgeFive for the fix!
 ! imdb::title() returned an empty string for movies that haven't been released yet
 * reworked imdb::title_year() to better handle year-spans (e.g. for serials: "2010-2012")
+* imdb: decoding IMDB external site re-directs to target URLs
 
 v2.2.1 (20.10.2013)
 -------------------
