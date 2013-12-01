@@ -1151,6 +1151,7 @@
  #----------------------------------------------------------------[ Actors ]---
   /** Get the actors
    * @method cast
+   * @param optional boolean clean_ws whether to clean white-space inside names
    * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
    * @version the "role" field might contain several "newlines" in the middle of the
    *        string. They usually separate multiple entries (see e.g. IMDBID 2186562:
@@ -1161,7 +1162,7 @@
    *        do this as it would rob those who want to split of the opportunity doing so.
    * @see IMDB page /fullcredits
    */
-  public function cast() {
+  public function cast($clean_ws=FALSE) {
    if (empty($this->credits_cast)) {
     if ( $this->page["Credits"] == "" ) $this->openpage ("Credits");
     if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
@@ -1184,6 +1185,10 @@
         $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
     } else {
       $dir["thumb"] = $dir["photo"] = "";
+    }
+    if ($clean_ws) {
+      $dir['name'] = preg_replace('!\s{2,}!ims',' ',$dir['name']);
+      $dir['role'] = preg_replace('!\s{2,}!ims',' ',$dir['role']);
     }
     $this->credits_cast[] = $dir;
    }
