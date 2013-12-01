@@ -406,11 +406,12 @@
     if (empty($this->deathday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
       if (preg_match('|Date of Death</td>(.*)<br|iUms',$this->page["Bio"],$match)) {
-        preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?>\d+\s*(.*?)<|',$match[1],$daymon);
+        preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?>\d+\s*(&nbsp;)?(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
-        preg_match('/(\,\s*([^\(]+))/ims',$match[1],$dloc);
+        if (!preg_match('/(\,\s*(&nbsp;)?([^\(]+))(&nbsp;)/ims',$match[1],$dloc))
+          preg_match('/(\,\s*(&nbsp;)?([^\(]+))/ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@$dloc[2],"cause"=>@$dcause[1]);
+        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[4],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim($dloc[3]),"cause"=>@$dcause[1]);
       }
     }
     return $this->deathday;
