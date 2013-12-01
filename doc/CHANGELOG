@@ -11,7 +11,7 @@ v2.2.2
 * reworked imdb::title_year() to better handle year-spans (e.g. for serials: "2010-2012")
 * imdb: decoding IMDB external site re-directs to target URLs
 * imdb::cast() now has an optional parameter $clean_ws (default: FALSE) to remove whitespaces (especially line-breaks) in names
-! imdb_person: more adjustments due to site changes to birthname(), nickname(), height(), spouse(), bio(), trivia(), quotes(), trademark()
+! imdb_person: more adjustments due to site changes to birthname(), nickname(), height(), spouse(), bio(), trivia(), quotes(), trademark(), salary()
 
 v2.2.1 (20.10.2013)
 -------------------
