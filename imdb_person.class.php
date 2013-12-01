@@ -411,7 +411,7 @@
         if (!preg_match('/(\,\s*(&nbsp;)?([^\(]+))(&nbsp;)/ims',$match[1],$dloc))
           preg_match('/(\,\s*(&nbsp;)?([^\(]+))/ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[4],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim($dloc[3]),"cause"=>@$dcause[1]);
+        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[4],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim(strip_tags($dloc[3])),"cause"=>@$dcause[1]);
       }
     }
     return $this->deathday;
