@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.2.3
+-------------------
+* some cleanup to imdb::plot_split
+
 v2.2.2 (02.12.2013)
 -------------------
 ! imdbperson: filmographs had skipped every second entry somehow
