@@ -1071,27 +1071,6 @@
    return array();
   }
 
- #------------------------------------------------[ Helper: Awards TableRows ]---
-  /** Get rows for the awards table on the page
-   * @method protected get_table_rows_awards
-   * @param string html
-   * @param string table_start
-   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
-   * @see used by the method awards
-   * @author Qvist
-   */
-  protected function get_table_rows_awards( $html ) {
-   $row_s = strpos ( $html, '<table style="margin-top:' );
-   $row_e = $row_s;
-   if ( $row_s == 0 )  return FALSE;
-   $endtable = strpos($html, "</table>", $row_s);
-   $table_string = substr($html,$row_s,$endtable - $row_s);
-   if (preg_match_all("/<tr>(.*?)<\/tr>/ims",$table_string,$matches)) {
-     return $matches[1];
-   }
-   return $rows;
-  }
-
  #------------------------------------------------------[ Helper: RowCells ]---
   /** Get content of table row cells
    * @method protected get_row_cels
@@ -1924,51 +1903,39 @@
   #--------------------------------------------------------------[ Awards ]---
   /** Get the complete awards for the movie
    * @method awards
-   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people,comment]
+   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people[],comment,outcome]
    * @see IMDB page /awards
    * @author Qvist
    * @brief array[festivalName] is array[name,entries] - where name is a string,
-   *        and entries is above described array
+   *        and entries is above described array. people is an array of imdbid=>name.
+   *        comment and outcome are currently empty, and just kept for backward compatibility.
    */
   public function awards() {
     if (empty($this->awards)) {
       if ($this->page["Awards"] == "") $this->openpage("Awards");
-      $award_rows = $this->get_table_rows_awards($this->page["Awards"]);
-      $rowcount = count ($award_rows);
-      $festival = ""; $year = 0; $won = false; $award = ""; $comment = ""; $people = array(); $nr = 0;
-      for ( $i = 0; $i < $rowcount; $i++){
-        $cels = $this->get_row_cels ($award_rows[$i]);
-        if( count ($cels) == 0 ){ continue; }
-        if( count ($cels) == 1 && preg_match( '|<big><a href\="/Sections/Awards/([^\/]+)/">(.*?)</a></big>|s', $cels[0], $matches ) ){
-            $festival = $matches[1];
-            $this->awards[$festival]['name'] = $matches[2];
-            $nr = 0;
+      $row_s = strpos($this->page["Awards"],'<h1 class="header">Awards</h1>');
+      $row_e = strpos($this->page["Awards"],'<div class="article"',$row_s);
+      $block = substr($this->page["Awards"],$row_s,$row_e - $row_s);
+      preg_match_all('!<h3>\s*(?<festival>.+?)\s*<a [^>]+>\s*(?<year>\d{4}).*?</h3>\s*<table [^>]+>(?<table>.+?)</table>!ims',$block,$matches);
+      $acount = count($matches[0]);
+      for ( $i = 0; $i < $acount; $i++) {
+        if ( preg_match('!<td class="title_award_outcome"[^>]*>\s(.+?)<br!ims',$matches['table'][$i],$tab) ) $outcome = trim(strip_tags($tab[1]));
+        else $outcome = '';
+        if ( preg_match('!<span class="award_category">\s*(.+?)\s*</span>!ims',$matches['table'][$i],$tab) ) $award = strip_tags($tab[1]);
+        else $award = '';
+        if ( preg_match('!<td class="award_description">\s*(.+?)\s*(<br\s*/>|)\s*</td>!ims',$matches['table'][$i],$tab) ) {
+          $desc = trim($tab[1]);
+          if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $tab ) ) {
+            $people = isset( $tab[0][0] )?array_combine( $tab[1], $tab[2] ):array();
+            preg_match('!(.+?)<br!ims',$desc,$tab)?$cat=$tab[1]:$cat='';
+          } else $cat = $desc;
+        } else {
+          $desc = '';
+          $people = array();
         }
-        if( count ($cels) == 4 && preg_match( '|<a href\="/Sections/Awards/'.quotemeta( $festival ).'/[\d-]+">(\d{4}) </a>|s', $cels[0], $matches ) ){
-            $year = $matches[1];
-            array_shift( $cels );
-        }
-        if( count ($cels) == 3 && preg_match( '|<b>(.*?)</b>|s', $cels[0], $matches ) ){
-            $won = ($matches[1]=="Won")?true:false;
-            array_shift( $cels );
-        }
-        if( count ($cels) == 2 && strpos( $cels[0], "<" ) === false ){
-            $award = $cels[0];
-            array_shift( $cels );
-        }
-        if( count ($cels) == 1 && preg_match( '|([^<>]*)<br>(.*)<small>|s', $cels[0], $matches ) ){
-            $category = trim( $matches[1] );
-            preg_match_all( '|<a href\="/name/nm(\d{7})/">(.*?)</a>|s', $cels[0], $matches );
-            $people = isset( $matches[0][0] )?array_combine( $matches[1], $matches[2] ):array();
-            preg_match( '|<small>(.*?)</small>|s', $cels[0], $matches );
-            $comment = isset( $matches[1] )?strip_tags( $matches[1] ):'';
-            array_shift( $cels );
-            $nr++;
-        }
-        if( count ($cels) == 0 ){
-            $this->awards[$festival]['entries'][$nr] = array(
-                'year' => $year, 'won' => $won, 'category' => $category, 'award' => $award, 'people' => $people, 'comment' => $comment );
-        }
+        $this->awards[$festival]['entries'][$i] = array (
+          'year'=>$matches['year'][$i], 'won'=>'', 'category'=>$cat, 'award'=>$award, 'people'=>$people, 'comment'=>'', 'outcome'=>$outcome
+        );
       }
     }
     return $this->awards;
