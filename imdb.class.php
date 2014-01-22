@@ -1938,6 +1938,7 @@
               if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
                 $people = isset( $data[0][0] ) ? array_combine($data[1],$data[2]) : array();
                 preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
+                if (substr($cat,0,3)=='<a ') $cat = '';
               } else {
                 $cat = $desc;
               }
