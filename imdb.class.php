@@ -1903,14 +1903,16 @@
   #--------------------------------------------------------------[ Awards ]---
   /** Get the complete awards for the movie
    * @method awards
+   * @param optional boolean compat whether stay backward compatible to the original format of Qvist. Default: TRUE
    * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people[],comment,outcome]
    * @see IMDB page /awards
-   * @author Qvist
    * @brief array[festivalName] is array[name,entries] - where name is a string,
    *        and entries is above described array. people is an array of imdbid=>name.
-   *        comment and outcome are currently empty, and just kept for backward compatibility.
+   *        comment is currently empty, and just kept for backward compatibility,
+   *        unless you passed FALSE for 'compat' – then comment is omitted, as
+   *        well as the "intermediate" 'entries' level.
    */
-  public function awards() {
+  public function awards($compat=TRUE) {
     if (empty($this->awards)) {
       if ($this->page["Awards"] == "") $this->openpage("Awards");
       $row_s = strpos($this->page["Awards"],'<h1 class="header">Awards</h1>');
@@ -1918,29 +1920,46 @@
       $block = substr($this->page["Awards"],$row_s,$row_e - $row_s);
       preg_match_all('!<h3>\s*(?<festival>.+?)\s*<a [^>]+>\s*(?<year>\d{4}).*?</h3>\s*<table [^>]+>(?<table>.+?)</table>!ims',$block,$matches);
       $acount = count($matches[0]);
-      for ( $i = 0; $i < $acount; $i++) {
-        if ( preg_match('!<td class="title_award_outcome"[^>]*>\s(.+?)<br!ims',$matches['table'][$i],$tab) ) $outcome = trim(strip_tags($tab[1]));
-        else $outcome = '';
-        if ( preg_match('!<span class="award_category">\s*(.+?)\s*</span>!ims',$matches['table'][$i],$tab) ) $award = strip_tags($tab[1]);
-        else $award = '';
-        if ( preg_match('!<td class="award_description">\s*(.+?)\s*(<br\s*/>|)\s*</td>!ims',$matches['table'][$i],$tab) ) {
-          $desc = trim($tab[1]);
-          if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $tab ) ) {
-            $people = isset( $tab[0][0] )?array_combine( $tab[1], $tab[2] ):array();
-            preg_match('!(.+?)<br!ims',$desc,$tab)?$cat=$tab[1]:$cat='';
-          } else $cat = $desc;
-        } else {
-          $desc = '';
-          $people = array();
+      for ( $i=0,$rec=0; $i < $acount; $i++) {
+        $festival = $matches['festival'][$i];
+        if ( !preg_match_all('!<td class="(?<class>.+?)"[^>]*>\s*(?<data>.+?)\s*</td>!ims',$matches['table'][$i],$col) ) continue;
+        $ccount = count($col[0]);
+        for ($k=0;$k<$ccount;++$k) {
+          switch($col['class'][$k]) {
+            case "title_award_outcome":
+              $have_title = TRUE; $have_desc = FALSE;
+              preg_match('!(?<outcome>.+?)<br\s*/>\s*<span class="award_category">\s*(?<award>.+?)</span>!ims',$col['data'][$k],$data);
+              $outcome = trim(strip_tags($data['outcome']));
+              $outcome == "Won" ? $won = TRUE : $won = FALSE;
+              $award = trim($data['award']);
+              break;
+            case "award_description":
+              $desc = trim($col['data'][$k]);
+              if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
+                $people = isset( $data[0][0] ) ? array_combine($data[1],$data[2]) : array();
+                preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
+              } else {
+                $cat = $desc;
+              }
+              if ($compat) {
+                $this->awards[$festival]['entries'][] = array (
+                  'year'=>$matches['year'][$i], 'won'=>$won, 'category'=>$cat, 'award'=>$award, 'people'=>$people, 'comment'=>'', 'outcome'=>$outcome
+                );
+              } else {
+                $this->awards[$festival][] = array (
+                  'year'=>$matches['year'][$i], 'won'=>$won, 'category'=>$cat, 'award'=>$award, 'people'=>$people, 'outcome'=>$outcome
+                );
+              }
+              break;
+            default:
+              break;
+          }
         }
-        $this->awards[$festival]['entries'][$i] = array (
-          'year'=>$matches['year'][$i], 'won'=>'', 'category'=>$cat, 'award'=>$award, 'people'=>$people, 'comment'=>'', 'outcome'=>$outcome
-        );
+        continue;
       }
     }
     return $this->awards;
   }
-
 
  } // end class imdb
 
