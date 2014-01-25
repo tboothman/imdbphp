@@ -78,7 +78,7 @@
    }else{
      if (!isset($this->maxresults)) $this->maxresults = 20;
      if ($this->maxresults > 0) $query = "&mx=20";
-     if ($this->episode_search) $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query.";s=ep";
+     if ($this->episode_search) $url = "http://".$this->imdbsite."/find?q=".urlencode($this->name).$query."&s=ep";
      else {
        switch ($this->searchvariant) {
          case "moonface" : $query .= "&more=tt&nr=1"; // @moonface variant (untested)
@@ -126,8 +126,9 @@
         if ( !$fp ) {
           if ($header = $be->getResponseHeader("Location")) {
             mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
-            if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) ) {
-              return $this->results($header);
+            if ( preg_match('!\.imdb\.(com|de|it)/find\?!',$header) || substr($header,0,1)=='/' ) {
+              if ( substr($header,0,1)=='/' ) return $this->results($this->imdbsite.$header);
+              else return $this->results($header);
               break(4);
             }
             $url = explode("/",$header);
