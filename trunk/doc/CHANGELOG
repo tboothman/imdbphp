@@ -3,7 +3,7 @@ $Id$
 History for IMDBPHP2
 ====================
 
-v2.2.3
+v2.2.3 (25.01.2014)
 -------------------
 * some cleanup to imdb::plot_split
 * IMDB site updates hit us again. Fixed: imdb::awards(), imdb_person::bio()
