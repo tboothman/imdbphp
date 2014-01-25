@@ -495,7 +495,8 @@
    if (empty($this->bio_bio)) {
      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
-     if (@preg_match_all('|<h4[^>]*>Mini Bio[^<]*</h4>\s*<p>\s*(?<bio>.+?)\s*</p>(\s*<p><b>[^>]+</b>\s*(?<author>.+?)</p>)?|ms',$this->page["Bio"],$matches)) {
+     if ( preg_match('!<h4 class="li_group">Mini Bio[^>]+?>(.+?)<(h4 class="li_group"|div class="article")!ims',$this->page["Bio"],$block) ) {
+       preg_match_all('!<div class="soda.*?\s*<p>\s*(?<bio>.+?)\s</p>\s*<p><em>- IMDb Mini Biography By:\s*(?<author>.+?)\s*</em>!ims',$block[1],$matches);
        for ($i=0;$i<count($matches[0]);++$i) {
          $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",
                               str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",
@@ -504,9 +505,11 @@
          if (@preg_match('!href="(.+?)"[^>]*>\s*(.*?)\s*</a>!',$author,$match)) {
            $bio_bio["author"]["url"]  = $match[1];
            $bio_bio["author"]["name"] = $match[2];
+         } else {
+           $bio_bio["author"]["url"]  = '';
+           $bio_bio["author"]["name"] = trim($matches['author'][$i]);
          }
          $this->bio_bio[] = $bio_bio;
-         unset($bio_bio,$author);
        }
      }
    }
