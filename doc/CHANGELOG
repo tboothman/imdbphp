@@ -8,6 +8,7 @@ v2.2.3
 * some cleanup to imdb::plot_split
 * IMDB site updates hit us again. Fixed: imdb::awards(), imdb_person::bio()
 ! Episode search was broken due to incomplete redirect handling in imdbsearch::results()
+* tiny fix to imdb_person::filmograf() to return all character names
 
 v2.2.2 (02.12.2013)
 -------------------

@@ -199,7 +199,7 @@
           $chname = $char[2];
         } else {
           $chid   = '';
-          if ( preg_match('!<br/>\s*([^>]+)\s*<div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
+          if ( preg_match('!<br/>\s*([^>]+)\s*</*div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
           else $chname = '';
         }
         if ( empty($chname) ) {
