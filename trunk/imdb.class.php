@@ -275,7 +275,7 @@
   public function aspect_ratio() {
     if (empty($this->aspectratio)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s</div>!ims',$this->page["Title"],$match);
+      preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s+</div>!ims',$this->page["Title"],$match);
       $this->aspectratio = $match[1];
     }
     return $this->aspectratio;
