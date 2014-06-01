@@ -225,7 +225,7 @@
   protected function runtime_all() {
     if ($this->main_runtime == "") {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match('!Runtime:</h4>\s*(.*)\s*</div!ms',$this->page["Title"],$match))
+      if (@preg_match('!Runtime:</h4>\s*(.+?)\s*</div!ms',$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
     return $this->main_runtime;
@@ -243,18 +243,24 @@
     return NULL;
   }
 
-  /** Retrieve language specific runtimes
-   * @method runtimes
-   * @return array runtimes (array[0..n] of array[time,country,comment])
-   * @see IMDB page / (TitlePage)
-   */
+  /** Retrieve all runtimes and their descriptions
+    * @method runtimes
+    * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
+    * @see IMDB page / (TitlePage)
+    */
   public function runtimes(){
     if (empty($this->movieruntimes)) {
-      if (empty($this->main_runtime)) $rt = $this->runtime_all();
-      if (preg_match_all("/[\/ ]*((\D*?):|)([\d]+?) min( \((.*?)\)|)/",$this->main_runtime,$matches)) {
-        for ($i=0;$i<count($matches[0]);++$i) $this->movieruntimes[] = array("time"=>$matches[3][$i],"country"=>$matches[2][$i],"comment"=>$matches[5][$i]);
-      } elseif (preg_match('!<div class="infobar">.*?(\d+)\s*min!ims',$this->page['Title'],$match)) {
-        $this->movieruntimes[] = array('time'=>$match[1],'country'=>'','comment'=>'');
+      $this->movieruntimes = array();
+      $rt = $this->runtime_all();
+      foreach (explode('|', strip_tags($rt)) as $runtimestring) {
+        if (preg_match("/(\d+) min/", $runtimestring, $matches)) {
+          $runtime = $matches[1];
+          $annotations = array();
+          if (preg_match_all("/\((.+?)\)/", $runtimestring, $matches)) {
+            $annotations = $matches[1];
+          }
+          $this->movieruntimes[] = array("time"=>$runtime, "country"=>'', "comment"=>'', "annotations" => $annotations);
+        }
       }
     }
     return $this->movieruntimes;
