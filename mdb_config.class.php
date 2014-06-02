@@ -11,15 +11,6 @@
 
  /* $Id$ */
 
-// the proxy to use for connections to imdb (leave it empty for no proxy).
-// this is only supported with PEAR. 
-define ('PROXY', "");
-define ('PROXY_PORT', "");
-
-// set this to TRUE if you want to play with the PEAR stuff instead of
-// browseremulator. Be warned that there's no support for problems ;)
-$PEAR = false;
-
 /** Enable IMDB-Fallback for non-IMDB classes?
  *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
  *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
@@ -54,6 +45,9 @@ class mdb_config {
   var $debug;
   var $maxresults;
   var $searchvariant;
+  var $default_agent;
+  var $force_agent;
+  var $trigger_referer;
 
   /** Constructor and only method of this base class.
    *  There's no need to call this yourself - you should just place your

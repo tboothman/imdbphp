@@ -11,25 +11,6 @@
 
  /* $Id$ */
 
-if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR project.
-  require_once("HTTP/Request.php");
-  class MDB_Request extends HTTP_Request{
-    function __construct($url){
-      $this->HTTP_Request($url);
-      if ( PROXY != ""){
-        $this->setProxy(PROXY, PROXY_PORT);
-      }
-      $this->_allowRedirects = false;
-      if ( in_array('HTTP_USER_AGENT',array_keys($_SERVER)) ) $user_agent = $_SERVER['HTTP_USER_AGENT'];
-      else $user_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
-      $this->addHeader("User-Agent", $user_agent);
-    }
-    function getLastResponseHeaders($url='') {
-      $head = $this->getResponseHeader($url);
-      return array($head["response"],$head["Date"],$head["Server"],"",$head["Connection"],$head["Content-Type"]);
-    }
-  }
-} else { // Use the browseremu class
   require_once (dirname(__FILE__)."/browseremulator.class.php");
   if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
   else require_once (dirname(__FILE__)."/mdb_config.class.php");
@@ -47,30 +28,32 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
      * @constructor MDB_Request
      * @param string url URL to open
      * @param optional string force_agent user agent string to use. Defaults to the one set in mdb_config.
-     * @param optional string trigger_referer whether to trigger the referer. 'TRUE' = yes, 'FALSE' = no, '' = take value from mdb_config (default)
+     * @param optional bool trigger_referer whether to trigger the referer. '' = take value from mdb_config (default)
+     * @param mdb_config Optionally pass in the mdb_config object to use
      */
-    function __construct($url,$force_agent='',$trigger_referer=''){
-      if (isset($GLOBALS['PEAR']) && $GLOBALS['PEAR']) parent::__construct();
-      else $this->BrowserEmulator();
+    public function __construct($url, $force_agent='', $trigger_referer='', $iconf = null){
+      $this->BrowserEmulator();
       $this->urltoopen = $url;
-      $iconf = new mdb_config;
-      if (!empty($force_agent)) $iconf->force_agent = $force_agent;
-      if ($trigger_referer !== '' && is_bool($trigger_referer)) {
-        $iconf->trigger_referer = $trigger_referer;
-      } else {
-        switch (strtolower($trigger_referer)) {
-          case 'true' : $iconf->trigger_referer = TRUE; break;
-          case 'false': $iconf->trigger_referer = FALSE; break;
-        }
+      if (!$iconf){
+        $iconf = new mdb_config();
       }
-      if ($iconf->trigger_referer) {
-        if ( substr(get_class($this),0,4)=="imdb" ) $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
-        elseif ( in_array('HTTP_REFERER',array_keys($_SERVER)) ) $this->addHeaderLine('Referer',$_SERVER['HTTP_REFERER']);
+
+      if ($force_agent === ''){
+        $force_agent = $iconf->force_agent;
       }
-      if ($iconf->force_agent) $this->addHeaderLine('User-Agent', $iconf->force_agent);
-      // include language option in the request (if specified):
-      $language = trim($iconf->language);
-      if (strlen($language) > 0) $this->addHeaderLine('Accept-Language', $language);
+
+      if ($trigger_referer === ''){
+        $trigger_referer = $iconf->trigger_referer;
+      }
+
+      if ($trigger_referer){
+        if ( substr(get_class($this),0,4)=="imdb" )
+          $this->addHeaderLine('Referer','http://' . $this->imdbsite . '/');
+        elseif ( in_array('HTTP_REFERER',array_keys($_SERVER)) )
+          $this->addHeaderLine('Referer',$_SERVER['HTTP_REFERER']);
+      }
+      if ($force_agent) $this->addHeaderLine('User-Agent', $iconf->force_agent);
+      if ($iconf->language) $this->addHeaderLine('Accept-Language', $iconf->language);
     }
     /** Send a request to the movie site
      * @method sendRequest
@@ -115,6 +98,5 @@ if ( isset($PEAR) && $PEAR ) { // Use the HTTP_Request class from the PEAR proje
       }
     }
   }
-}
 
 ?>
