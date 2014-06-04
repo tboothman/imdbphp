@@ -101,14 +101,14 @@
     if (@preg_match('!<title>(IMDb\s*-\s*)?(?<ititle>.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$imatch)) {
       $ititle = $imatch['ititle'];
       if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4})).*\)(.*)!',$ititle,$match)) { // serial
-        $this->main_movietype = $match['movietype'];
+        $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
         $this->main_endyear = $match['endyear'];
         $this->main_title = $match['title'];
       } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!',$ititle,$match)) {
-        $this->main_movietype = $match['movietype'];
+        $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
-        $this->main_endyear = '0';
+        $this->main_endyear = $match['year'];
         $this->main_title = $match['title'];
       } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!',$this->page["Title"],$match)) { // not yet released, so no dates etc.
         $this->main_title = $match['title'];
@@ -123,7 +123,7 @@
 
   /** Get movie type
    * @method movietype
-   * @return string movietype (TV series, Movie, ...)
+   * @return string movietype (TV Series, Movie, ...)
    * @see IMDB page / (TitlePage)
    * @brief This is faster than movietypes() as it is retrieved already together with the title.
    *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.

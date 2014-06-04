@@ -2,9 +2,14 @@
 class imdbTest extends PHPUnit_Framework_TestCase {
 
     // @TODO tests for other types
-    public function testMovietype() {
+    public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
         $this->assertEquals('Movie', $imdb->movietype());
+    }
+
+    public function testMovietype_on_tv() {
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals('TV Series', $imdb->movietype());
     }
 
     public function testTitle() {
@@ -25,21 +30,26 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Kaze no tani no Naushika', $imdb->orig_title());
     }
 
-    public function testYear() {
+    public function testYear_for_a_film() {
         $imdb = $this->getImdb();
         $this->assertEquals(1999, $imdb->year());
     }
 
-    public function testEndyear() {
+    public function testYear_for_a_tv_show() {
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals(2002, $imdb->year());
+    }
+
+    public function testEndyear_for_a_film() {
+        // Film has no range, so endyear is the same as year
         $imdb = $this->getImdb();
         $this->assertEquals(1999, $imdb->endyear());
     }
 
-    //@TODO do some tests for this on a tv show
-//    public function testEndyear() {
-//        $imdb = $this->getImdb();
-//        $this->assertEquals(1999, $imdb->endyear());
-//    }
+    public function testEndyear_for_a_tv_show() {
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals(2008, $imdb->endyear());
+    }
 
     public function testYearspan() {
         // @TODO
