@@ -39,7 +39,6 @@ switch($_GET["searchtype"]) {
   default   : switch($engine) {
                 default:
                   require_once("imdbsearch.class.php");
-                  require_once("imdb.class.php");
                   $search = new imdbsearch();
                   break;
               }
