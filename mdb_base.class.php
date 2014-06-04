@@ -268,9 +268,8 @@ class mdb_base extends mdb_config {
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor mdb_base
-   * @param string id IMDBID to use for data retrieval
    */
-  public function __construct($id) {
+  public function __construct($id=0) {
     parent::__construct();
     $this->lastServerResponse = "";
     if ($this->storecache && ($this->cache_expire > 0)) $this->purge();

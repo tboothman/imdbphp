@@ -12,6 +12,7 @@ v2.2.4
 * Make sure endyear is the startyear if film has no production span (DJMcTom)
 * Include imdb class in imdbsearch class to prevent errors (DJMcTom)
 * declaring imdbsearch::seturl() obsolete: nowhere referenced, and does not really make sense anymore (Izzy)
+- constructor of mdb_base had a mandatory parameter (id) which was not used. This parameter is now deprecated (no longer listed in ApiRef) but left in for compatibility, will be removed later (Izzy)
 
 v2.2.3 (25.01.2014)
 -------------------
