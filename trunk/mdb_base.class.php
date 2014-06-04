@@ -268,6 +268,7 @@ class mdb_base extends mdb_config {
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor mdb_base
+   * @version parameter $id was unused and obsoleted. Removed from ApiRef on 2014-06-05. Will be dropped entirely at a later point
    */
   public function __construct($id=0) {
     parent::__construct();
