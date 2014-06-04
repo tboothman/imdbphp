@@ -55,6 +55,7 @@ class imdbsearch extends mdb_base {
    * Set the URL (overwrite default search URL and run your own)
    *  This URL will be reset if you call the setsearchname() method
    * @param string URL to use
+   * @deprecated This will be dropped soon if nobody objects. Please check whether you're using it!
    */
   public function seturl($url) {
     $this->url = $url;
