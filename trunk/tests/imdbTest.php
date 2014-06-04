@@ -247,7 +247,36 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testAlsoknow() {
-        //@TODO
+        $imdb = $this->getImdb("0087544");
+        $akas = $imdb->alsoknow();
+
+        // No country
+        $this->assertEquals('Nausicaä of the Valley of the Wind', $akas[0]['title']);
+        $this->assertEquals('original title', $akas[0]['comments'][0]);
+
+        //No country or comments (Should this really be included?)
+        $this->assertEquals('Kaze no tani no Nausicaa', $akas[2]['title']);
+        $this->assertEmpty($akas[2]['comments']);
+
+        // Country, no comment
+        $this->assertEquals('Nausicaä del Valle del Viento', $akas[3]['title']);
+        $this->assertEquals('Argentina', $akas[3]['country']);
+        $this->assertEmpty($akas[3]['comments']);
+
+        // Country with comment
+        $this->assertEquals('Наусика от Долината на вятъра', $akas[4]['title']);
+        $this->assertEquals('Bulgaria', $akas[4]['country']);
+        $this->assertEquals('Bulgarian title', $akas[4]['comments'][0]);
+
+        // Country with two comments
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[6]['title']);
+        $this->assertEquals('Switzerland', $akas[6]['country']);
+        $this->assertEquals('DVD title', $akas[6]['comments'][0]);
+        $this->assertEquals('German title', $akas[6]['comments'][1]);
+    }
+
+    public function testAlsoknow_returns_no_results_when_film_has_no_akas() {
+      //@TODO
     }
 
     public function testSound() {

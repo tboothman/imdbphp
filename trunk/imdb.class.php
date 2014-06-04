@@ -797,51 +797,49 @@
 
 
  #------------------------------------------------------------[ Movie AKAs ]---
-  /** Get movies alternative names
-   * @method alsoknow
-   * @return array aka array[0..n] of array[title,year,country,comment]; searching
-   *         on akas.imdb.com will add "lang" (2-char language code) to the array
-   *         for localized names, "country" may hold multiple countries separated
-   *         by commas
+  /** Get movie's alternative names
+   * Note: This may return an empty country or comments.
+   * comment, year and lang are there for backwards compatibility and should not be used
+   * @return array aka array[0..n] of array[title,country,comments[]]
    * @see IMDB page ReleaseInfo
-   * @version Due to changes on the IMDB sites, neither the languages nor the year
-   *          seems to be available anymore - so those array properties will always
-   *          be empty, and kept for compatibility only (for a while, at least).
-   *          Moreover, content has been moved from the title page to ReleaseInfo page.
    */
   public function alsoknow() {
-   if (empty($this->akas)) {
-    if ($this->page["ReleaseInfo"] == "") $this->openpage ("ReleaseInfo");
-    $ak_s = strpos ($this->page["ReleaseInfo"], "<a id=\"akas\"");
-    //if ($ak_s == 0) $ak_s = strpos ($this->page["ReleaseInfo"], "Alternativ:");
-    if ($ak_s == 0) return array();
-    $alsoknow_end = strpos ($this->page["ReleaseInfo"], "</table>", $ak_s);
-    $alsoknow_all = substr($this->page["ReleaseInfo"], $ak_s, $alsoknow_end - $ak_s);
-    preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
-    for($i=0;$i<count($matches[1]);$i+=2){
-        $country = trim($matches[1][$i]);
-        $titles = explode('/',$matches[1][$i+1]);
-        foreach($titles as $tit){
-            $firstbracket = strpos($tit, '(');
-            if($firstbracket === false){
-                $title = trim($tit);
-                $comment = '';
-            }else{
-                $title = trim(substr($tit, 0, $firstbracket));
-                preg_match_all("@\((.+?)\)@", $tit, $matches3);
-                $comment = implode(', ', $matches3[1]);
-            }
-            $this->akas[] = array(
-                "title"=>$title,
-                "year"=>'',
-                "country"=>$country,
-                "comment"=>$comment,
-                "lang"=>''
-            );
+    if (empty($this->akas)) {
+      if ($this->page["ReleaseInfo"] == "")
+        $this->openpage("ReleaseInfo");
+      $ak_s = strpos($this->page["ReleaseInfo"], "<a id=\"akas\"");
+      if ($ak_s == 0)
+        return array();
+      $alsoknow_end = strpos($this->page["ReleaseInfo"], "</table>", $ak_s);
+      $alsoknow_all = substr($this->page["ReleaseInfo"], $ak_s, $alsoknow_end - $ak_s);
+      preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
+      for ($i = 0; $i < count($matches[1]); $i+=2) {
+        $description = trim($matches[1][$i]);
+        $titles = explode('/', $matches[1][$i + 1]); // This might not happen anymore
+        if (empty($titles[0])) {
+          continue;
         }
+        $title = trim($titles[0]);
+        $firstbracket = strpos($description, '(');
+        if ($firstbracket === false) {
+          $country = trim($description);
+          $comments = array();
+        } else {
+          $country = trim(substr($description, 0, $firstbracket));
+          preg_match_all("@\((.+?)\)@", $description, $matches3);
+          $comments = $matches3[1];
+        }
+        $this->akas[] = array(
+          "title" => $title,
+          "country" => $country,
+          "comments" => $comments,
+          "comment" => implode(', ', $comments),
+          "year" => '',
+          "lang" => ''
+        );
+      }
     }
-   }
-   return $this->akas;
+    return $this->akas;
   }
 
 
