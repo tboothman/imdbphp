@@ -35,7 +35,7 @@ class BrowserEmulator {
   var $port;
   var $lastResponse = Array ();
 
-  function BrowserEmulator () {
+  public function __construct() {
     $this->resetHeaderLines ();
     $this->resetPort ();
   }
