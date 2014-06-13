@@ -26,8 +26,6 @@ if (!defined('PILOT_IMDBFALLBACK'))
 /**
  * Configuration class for imdbphp
  * You should override the settings in here by creating an ini file in the conf folder.
- * Alternately you can copy this file somewhere, edit the settings and set IMDBPHP_CONFIG to be the path to that file
- * e.g. define(IMDBPHP_CONFIG, '/var/www/imdbphp_config.php');
  * @package MDBApi
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
