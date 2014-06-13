@@ -1712,7 +1712,7 @@
         if ( preg_match('!href="/date/(\d{2})-(\d{2})/">\d+ (.*?)</a>\s*<a href="/year/(\d{4})/">!is',$matches[2][$i],$match) ) { // full info
           $this->release_info[] = array('country'=>$country,'day'=>$match[2],'month'=>$match[3],'mon'=>$match[1],'year'=>$match[4],'comment'=>$matches[3][$i]);
         } elseif ( preg_match('!(\d{1,2})\s*(.+?)<a href="/year/(\d{4})/.+?"\s*>!is',$matches[2][$i],$match) ) { // full info v2
-          $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>$match[2],'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$matches[3][$i]);
+          $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>trim($match[2]),'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$matches[3][$i]);
         } elseif ( !preg_match('|a href=|i',$matches[2][$i],$match) ) { // no links within
           if ( preg_match('!^(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // month and year
             $this->release_info[] = array('country'=>$country,'day'=>'','month'=>$match[1],'mon'=>$this->monthNo(trim($match[1])),'year'=>$match[2],'comment'=>$matches[3][$i]);
