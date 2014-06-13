@@ -50,10 +50,10 @@ class movie_base extends mdb_base {
   protected $main_rating = -1;
   protected $main_runtime = "";
   protected $main_movietype = "";
-  protected $main_title = "";
+  public $main_title = "";
   protected $original_title = "";
   protected $main_votes = -1;
-  protected $main_year = -1;
+  public $main_year = -1;
   protected $main_endyear = -1;
   protected $main_yearspan = array();
   protected $main_creator = array();
