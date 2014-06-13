@@ -10,24 +10,93 @@
 
  /* $Id$ */
 
- require_once (dirname(__FILE__)."/browseremulator.class.php");
  require_once (dirname(__FILE__)."/mdb_base.class.php");
- require_once (dirname(__FILE__)."/mdb_request.class.php");
 
 #===================================================[ The Movie Base class ]===
 /** Accessing Movie information
  * @package MDBApi
- * @class movie_base
- * @extends mdb_base
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2009 by Itzchak Rehberg and IzzySoft
  * @version $Revision$ $Date$
  */
 class movie_base extends mdb_base {
 
-#------------------------------------------------------------[ Constructor ]---
-  /** Initialize class
-   * @constructor movie_base
+  protected $page = array();
+
+  protected $akas = array();
+  protected $awards = array();
+  protected $countries = array();
+  protected $castlist = array(); // pilot only
+  protected $crazy_credits = array();
+  protected $credits_cast = array();
+  protected $credits_composer = array();
+  protected $credits_director = array();
+  protected $credits_producer = array();
+  protected $credits_writing = array();
+  protected $extreviews = array();
+  protected $goofs = array();
+  protected $langs = array();
+  protected $langs_full = array();
+  protected $aspectratio = "";
+  protected $main_comment = "";
+  protected $main_genre = "";
+  protected $main_keywords = array();
+  protected $all_keywords = array();
+  protected $main_language = "";
+  protected $main_photo = "";
+  protected $main_thumb = "";
+  protected $main_pictures = array();
+  protected $main_plotoutline = "";
+  protected $main_rating = -1;
+  protected $main_runtime = "";
+  protected $main_movietype = "";
+  protected $main_title = "";
+  protected $original_title = "";
+  protected $main_votes = -1;
+  protected $main_year = -1;
+  protected $main_endyear = -1;
+  protected $main_yearspan = array();
+  protected $main_creator = array();
+  protected $main_tagline = "";
+  protected $main_storyline = "";
+  protected $main_prodnotes = array();
+  protected $main_movietypes = array();
+  protected $main_top250 = -1;
+  protected $moviecolors = array();
+  protected $movieconnections = array();
+  protected $moviegenres = array();
+  protected $moviequotes = array();
+  protected $movierecommendations = array();
+  protected $movieruntimes = array();
+  protected $mpaas = array();
+  protected $mpaas_hist = array();
+  protected $mpaa_justification = "";
+  protected $plot_plot = array();
+  protected $synopsis_wiki = "";
+  protected $release_info = array();
+  protected $seasoncount = -1;
+  protected $season_episodes = array();
+  protected $sound = array();
+  protected $soundtracks = array();
+  protected $split_comment = array();
+  protected $split_plot = array();
+  protected $taglines = array();
+  protected $trailers = array();
+  protected $video_sites = array();
+  protected $soundclip_sites = array();
+  protected $photo_sites = array();
+  protected $misc_sites = array();
+  protected $trivia = array();
+  protected $compcred_prod = array();
+  protected $compcred_dist = array();
+  protected $compcred_special = array();
+  protected $compcred_other = array();
+  protected $parental_guide = array();
+  protected $official_sites = array();
+  protected $locations = array();
+
+  /**
+   * Initialize class
    * @param string id IMDBID to use for data retrieval
    */
   function __construct ($id) {
@@ -35,9 +104,8 @@ class movie_base extends mdb_base {
     $this->reset_vars();
   }
 
-#--------------------------------------------------[ Start (over) / Reset ]---
-  /** Reset page vars
-   * @method protected reset_vars
+  /**
+   * Reset all in object caching data e.g. page strings and parsed values
    */
   protected function reset_vars() {
    $this->page["Title"] = "";
@@ -142,6 +210,4 @@ class movie_base extends mdb_base {
    $this->locations = array();
   }
 
-
-} // end class movie_base
-?>
+}
