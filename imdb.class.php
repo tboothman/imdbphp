@@ -25,7 +25,23 @@
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
   * @version $Revision$ $Date$
   */
- class imdb extends movie_base {
+class imdb extends movie_base {
+
+  /**
+   * Create an imdb object populated with id, title, year
+   * @param string $id imdb ID
+   * @param string $title film title
+   * @param int $year
+   * @param string $additional
+   * @return imdb
+   */
+  public static function fromSearchResult($id, $title, $year, $additional = '') {
+    $imdb = new imdb($id);
+    $imdb->main_title = $title;
+    $imdb->main_year = $year;
+    $imdb->addon_info = $additional; //Not sure what this is -  needs defining
+    return $imdb;
+  }
 
  #======================================================[ Common functions ]===
  #-----------------------------------------------------------[ Constructor ]---

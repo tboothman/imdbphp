@@ -1,4 +1,6 @@
 <?php
+require_once dirname(__FILE__) . '/../imdb.class.php';
+
 class imdbTest extends PHPUnit_Framework_TestCase {
 
     // @TODO tests for other types

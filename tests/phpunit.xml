@@ -1,3 +1,0 @@
-<phpunit
-    bootstrap="../imdb.class.php">
-</phpunit>
