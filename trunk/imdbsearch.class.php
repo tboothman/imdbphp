@@ -30,7 +30,7 @@ class imdbsearch extends mdb_base {
   var $name = null;
   var $resu = array();
   var $url = "http://www.imdb.com/";
-  var $search_episodes = false;
+  protected $episode_search = false;
   var $last_results = 0;
 
   /**
@@ -148,11 +148,7 @@ class imdbsearch extends mdb_base {
         if (!$s_special && strpos(strtoupper($matches['addons'][$i]), 'SPECIAL)') !== FALSE)
           continue; // skip specials if commanded so
         $mids_checked[] = $matches['imdbid'][$i];
-        $tmpres = new imdb($matches['imdbid'][$i]); // make a new imdb object by id
-        $tmpres->main_title = $matches['title'][$i];
-        $tmpres->main_year = $matches['year'][$i];
-        $tmpres->addon_info = $matches['addons'][$i];
-        $this->resu[] = $tmpres;
+        $this->resu[] = imdb::fromSearchResult($matches['imdbid'][$i], $matches['title'][$i], $matches['year'][$i], $matches['addons'][$i]);
       }
     }
     return $this->resu;
