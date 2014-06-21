@@ -227,8 +227,20 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
 
+    public function testPhoto_returns_false_if_no_poster() {
+        $imdb = $this->getImdb('3626430');
+        $this->assertFalse($imdb->photo(false));
+    }
+
+    public function testPhoto_thumb_returns_false_if_no_poster() {
+        $imdb = $this->getImdb('3626430');
+        $this->assertFalse($imdb->photo(true));
+    }
+
     public function testPhoto() {
-        //@TODO more tests!
+        $imdb = $this->getImdb();
+        // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
+        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTkxNDYxOTA4M15BMl5BanBnXkFtZTgwNTk0NzQxMTE@._V1', $imdb->photo(false));
     }
 
     public function testPhoto_thumb() {
