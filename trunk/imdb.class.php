@@ -1303,8 +1303,8 @@ class imdb extends movie_base {
 
  #========================================================[ /episodes page ]===
  #--------------------------------------------------------[ Episodes Array ]---
-  /** Get the series episode(s)
-   * @method episodes
+  /**
+   * Get the series episode(s)
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
    * @see IMDB page /episodes
    * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
@@ -1329,13 +1329,21 @@ class imdb extends movie_base {
           if ( empty($this->page["Episodes-$s"]) ) $this->openpage("Episodes-$s");
           if ( $this->page["Episodes-$s"] == "cannot open page" ) continue; // no such page
           $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>\d+)"/>\s*'
-                . '<div class="airdate">\s*(?<airdate>.+?)\s*</div>\s*'
-                . '.+?\shref="/title/tt(?<imdbid>\d{7})/"\s+title="(?<title>.+?)"\s+itemprop="name"'
+                . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
+                . '.+?\shref="/title/tt(?<imdbid>\d{7})/.+?"\s+title="(?<title>.+?)"\s+itemprop="name"'
                 . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
           preg_match_all($preg,$this->page["Episodes-$s"],$eps);
           $ec = count($eps[0]);
-          for ($ep=0;$ep<$ec;++$ep) {
-            $this->season_episodes[$s][$eps['episodeNumber'][$ep]] = array ('imdbid'=>$eps['imdbid'][$ep],'title'=>trim($eps['title'][$ep]),'airdate'=>$eps['airdate'][$ep],'plot'=>trim($eps['plot'][$ep]),'season'=>$s,'episode'=>$eps['episodeNumber'][$ep]);
+          for ($ep=0; $ep<$ec; ++$ep) {
+            $plot = preg_replace('#<a href="[^"]+" >Add a Plot</a>#', '', trim($eps['plot'][$ep]));
+            $this->season_episodes[$s][$eps['episodeNumber'][$ep]] = array(
+              'imdbid'  => $eps['imdbid'][$ep],
+              'title'   => trim($eps['title'][$ep]),
+              'airdate' => $eps['airdate'][$ep],
+              'plot'    => $plot,
+              'season'  => $s,
+              'episode' => $eps['episodeNumber'][$ep]
+            );
           }
         }
       }

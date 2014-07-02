@@ -397,7 +397,72 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
     
-    // Stopped writing out tests for all functions here .. there are plenty more
+    // @TODO Stopped writing out tests for all functions here .. there are plenty more
+
+    public function testEpisodes_returns_nothing_for_a_film() {
+      $imdb = $this->getImdb();
+      $episodes = $imdb->episodes();
+      $this->assertInternalType('array', $episodes);
+      $this->assertEmpty($episodes);
+    }
+    
+    public function testEpisodes_returns_episodes_for_a_multiseason_show() {
+      $imdb = $this->getImdb('0306414');
+      $seasons = $imdb->episodes();
+      $this->assertInternalType('array', $seasons);
+      $this->assertCount(5, $seasons);
+      $episode1 = $seasons[1][1];
+      $lastEpisode = $seasons[5][10];
+
+      $this->assertEquals('0749451', $episode1['imdbid']);
+      $this->assertEquals('The Target', $episode1['title']);
+      $this->assertEquals('2 Jun. 2002', $episode1['airdate']);
+      $this->assertEquals("Baltimore Det. Jimmy McNulty finds himself in hot water with his superior Major William Rawls after a drug dealer, D'Angelo Barksdale who is charged with three murders, is acquitted. McNulty knows the judge in question and although it's not his case, he's called into chambers to explain what happened. Obviously key witnesses recanted their police statements on the stand but McNulty doesn't underplay Barksdale's role in at least 7 other murders. When the judge's raises his concerns at the senior levels of the police department, they have a new investigation on their ...", $episode1['plot']);
+      $this->assertEquals(1, $episode1['season']);
+      $this->assertEquals(1, $episode1['episode']);
+
+      $this->assertEquals('0977179', $lastEpisode['imdbid']);
+      $this->assertEquals('-30-', $lastEpisode['title']);
+      $this->assertEquals('9 Mar. 2008', $lastEpisode['airdate']);
+      $this->assertEquals("In the series finale, Carcetti maps out a damage-control scenario with the police brass in the wake of a startling revelation from Pearlman and Daniels. Their choice: clean up the mess...or hide the dirt.", $lastEpisode['plot']);
+      $this->assertEquals(5, $lastEpisode['season']);
+      $this->assertEquals(10, $lastEpisode['episode']);
+    }
+
+    public function testEpisodes_returns_episodes_for_a_multiseason_show_with_missing_airdates() {
+      $imdb = $this->getImdb('1027544');
+      $seasons = $imdb->episodes();
+      $this->assertInternalType('array', $seasons);
+      $this->assertCount(2, $seasons);
+      $episode = $seasons[1][2];
+
+      $this->assertEquals('1878585', $episode['imdbid']);
+      $this->assertEquals("Roary Slips Up", $episode['title']);
+      $this->assertEquals('', $episode['airdate']);
+      $this->assertEquals("", $episode['plot']);
+      $this->assertEquals(1, $episode['season']);
+      $this->assertEquals(2, $episode['episode']);
+    }
+
+    public function testEpisodes_returns_episodes_for_a_multiseason_show_with_empty_plots() {
+      $imdb = $this->getImdb('1027544');
+      $seasons = $imdb->episodes();
+      $this->assertInternalType('array', $seasons);
+      $this->assertCount(2, $seasons);
+      $episode = $seasons[1][1];
+
+      $this->assertEquals('1084805', $episode['imdbid']);
+      $this->assertEquals("Roary's First Day", $episode['title']);
+      $this->assertEquals('7 May 2007', $episode['airdate']);
+      $this->assertEquals("", $episode['plot']);
+      $this->assertEquals(1, $episode['season']);
+      $this->assertEquals(1, $episode['episode']);
+    }
+
+    // @TODO should it? this alters the imdb object to be the show rather than the episode .. could mess someone up
+    public function testEpisodes_works_for_an_episode() {
+
+    }
 
     public function testSoundtrack_nosoundtracks() {
         $imdb = $this->getImdb('0087544');
@@ -431,6 +496,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     
     /**
      * Create an imdb object that uses cached pages
+     * The matrix by default
      * @return \imdb
      */
     protected function getImdb($imdbId = '0133093') {
