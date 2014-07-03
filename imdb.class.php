@@ -38,7 +38,7 @@ class imdb extends movie_base {
   public static function fromSearchResult($id, $title, $year, $additional = '') {
     $imdb = new imdb($id);
     $imdb->main_title = $title;
-    $imdb->main_year = $year;
+    $imdb->main_year = (int)$year;
     $imdb->addon_info = $additional; //Not sure what this is -  needs defining
     return $imdb;
   }
