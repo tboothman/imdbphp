@@ -41,7 +41,7 @@ class imdbsearch2Test extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_show_returns_only_tv() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Bebop', [imdbsearch2::TV]);
+    $results = $search->search('Cowboy Bebop', [imdbsearch2::TV_SERIES]);
 
     $this->assertInternalType('array', $results);
 
