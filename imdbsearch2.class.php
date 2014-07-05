@@ -38,7 +38,7 @@ class imdbsearch2 extends mdb_base {
       $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
       $page = $this->makeRequest($url);
 
-      if ($this->usecache && $page) {
+      if ($this->storecache && $page) {
         $this->cache_write(urlencode(strtolower($searchTerms)) . '.search', $page);
       }
     }
@@ -101,5 +101,80 @@ class imdbsearch2 extends mdb_base {
     } else {
       return self::MOVIE;
     }
+  }
+
+
+
+  // Some backwards compatibility stuff. Don't use any of this - It will be removed
+
+  protected $searchTerms;
+  protected $episode_search = false;
+  /**
+   * Search for episodes or movies
+   * @param boolean enabled TRUE: Search for episodes; FALSE: Search for movies (default)
+   * @deprecated since version 2.2.4
+   */
+  public function search_episodes($enable) {
+    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
+    $this->episode_search = $enable;
+  }
+
+  /**
+   * Set the name (title) to search for
+   * @param string searchstring what to search for - (part of) the movie name
+   * @deprecated since version 2.2.4
+   */
+  public function setsearchname($name) {
+    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
+    $this->searchTerms = $name;
+  }
+
+  /**
+   * Perform the search
+   * @param optional string URL Replace search URL by your own (Default: empty string)
+   * @param optional boolean series whether to include TV series in search results (default: TRUE)
+   * @param optional boolean s_episodes whether to include TV episodes in search results (default: TRUE)
+   * @param optional boolean s_games whether to include games in search results (default: TRUE)
+   * @param optional boolean s_video whether to include videos in search results (default: TRUE). These are often Making Ofs and the like
+   * @param optional boolean s_short whether to include shorts in search results (default: TRUE)
+   * @param optional boolean s_special whether to include specials in search results (default: TRUE)
+   * @return array results array of objects (instances of the imdb class)
+   * @deprecated since version 2.2.4
+   */
+  public function results($url = "", $series = TRUE, $s_episodes = TRUE, $s_games = TRUE, $s_video = TRUE, $s_short = TRUE, $s_special = TRUE) {
+    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
+
+    $searchTypes = [self::MOVIE];
+    if ($series) {
+      $searchTypes[] = self::TV;
+    }
+    if ($s_episodes) {
+      $searchTypes[] = self::TV_EPISODE;
+    }
+    if ($s_games) {
+      $searchTypes[] = self::GAME;
+    }
+    if ($s_video) {
+      $searchTypes[] = self::VIDEO;
+    }
+    if ($s_short) {
+      $searchTypes[] = self::SHORT;
+    }
+    if ($s_special) {
+      $searchTypes[] = self::SPECIAL;
+    }
+    if ($this->episode_search) {
+      // yea, this looks stupid .. but it's how the old one worked. This made a different call to imdb for episodes only
+      $searchTypes = [self::TV_EPISODE];
+    }
+
+    return $this->search($this->searchTerms, $searchTypes);
+  }
+
+  /**
+   * @deprecated since version 2.2.4
+   */
+  public function reset() {
+    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
   }
 }
