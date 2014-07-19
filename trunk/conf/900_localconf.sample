@@ -47,8 +47,6 @@ debug = 0
 [tweaks]
 ; Limit for the result set of searches.
 maxresults = 20
-; Moviename search variant.
-; searchvariant = ""
 ; Set the default user agent (if none is detected)
 default_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3'
 ; Enforce the use of a special user agent
