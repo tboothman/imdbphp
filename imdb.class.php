@@ -35,11 +35,11 @@ class imdb extends movie_base {
    * @param string $additional
    * @return imdb
    */
-  public static function fromSearchResult($id, $title, $year, $additional = '') {
+  public static function fromSearchResult($id, $title, $year, $type) {
     $imdb = new imdb($id);
     $imdb->main_title = $title;
     $imdb->main_year = (int)$year;
-    $imdb->addon_info = $additional; //Not sure what this is -  needs defining
+    $imdb->main_movietype = $type;
     return $imdb;
   }
 

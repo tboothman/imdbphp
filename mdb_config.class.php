@@ -151,15 +151,6 @@ class mdb_config {
   public $maxresults = 20;
 
   /**
-   * Moviename search variant. There are different ways of searching for a
-   * movie name, with slightly differing result sets. Set the variant you
-   * prefer, either "sevec", "moonface", or "izzy". The latter one is the
-   * default if you comment out this setting or use an empty string.
-   * @var string
-   */
-  public $searchvariant = "";
-
-  /**
    * Set the default user agent (if none is detected)
    * @var string
    */
