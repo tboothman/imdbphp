@@ -674,8 +674,8 @@ class imdb extends movie_base {
   }
 
 
-  /** Get cover photo
-   * @method photo
+  /**
+   * Get poster/cover photo
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
@@ -689,55 +689,40 @@ class imdb extends movie_base {
     return $this->main_photo;
   }
 
-  /** Save the photo to disk
-   * @method savephoto
+  /**
+   * Save the poster/cover photo to disk
    * @param string path where to store the file
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return boolean success
    * @see IMDB page / (TitlePage)
    */
-  public function savephoto($path,$thumb=true,$rerun=0) {
-    switch ($rerun) {
-      case 2:  $req = new MDB_Request(''); break;
-      case 1:  $req = new MDB_Request('',!$this->trigger_referer); break;
-      default: $req = new MDB_Request('',$this->trigger_referer); break;
-    }
-    $photo_url = $this->photo ($thumb);
-    if (!$photo_url) return FALSE;
-    $req->setURL($photo_url);
-    $req->sendRequest();
-    if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
-      || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
-      || strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0 ){
-        $fp = $req->getResponseBody();
-    } else {
-        switch ($rerun) {
-          case 2 :
-            $ctype = $req->getResponseHeader("Content-Type");
-            $this->debug_scalar("<BR>*photoerror* at ".__FILE__." line ".__LINE__. ": ".$photo_url.": Content Type is '$ctype'<BR>");
-            if (substr($ctype,0,4)=='text') $this->debug_scalar("Details: <PRE>". $req->getResponseBody() ."</PRE>\n");
-            return FALSE;
-            break;
-          case 1 :
-            $this->debug_scalar("<BR>Initiate third run for savephoto($path) on IMDBID ".$this->imdbID."<BR>");
-            unset($req);
-            return $this->savephoto($path,$thumb,2);
-            break;
-          default:
-            $this->debug_scalar("<BR>Initiate second run for savephoto($path) on IMDBID ".$this->imdbID."<BR>");
-            unset($req);
-            return $this->savephoto($path,$thumb,1);
-            break;
-        }
-    }
-    $fp2 = fopen ($path, "w");
-    if ((!$fp) || (!$fp2)){
-      $this->debug_scalar("image error at ".__FILE__." line ".__LINE__."...<BR>");
+  public function savephoto($path, $thumb = true) {
+    $photo_url = $this->photo($thumb);
+    if (!$photo_url) {
       return false;
     }
-    fputs ($fp2, $fp);
-    return TRUE;
+
+    $req = new MDB_Request($photo_url);
+    $req->sendRequest();
+    if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
+      $fp = $req->getResponseBody();
+    } else {
+      $ctype = $req->getResponseHeader("Content-Type");
+      $this->debug_scalar("<BR>*photoerror* at " . __FILE__ . " line " . __LINE__ . ": " . $photo_url . ": Content Type is '$ctype'<BR>");
+      if (substr($ctype, 0, 4) == 'text')
+        $this->debug_scalar("Details: <PRE>" . $req->getResponseBody() . "</PRE>\n");
+      return false;
+    }
+    $fp2 = fopen($path, "w");
+    if ((!$fp) || (!$fp2)) {
+      $this->debug_scalar("image error at " . __FILE__ . " line " . __LINE__ . "...<BR>");
+      return false;
+    }
+    fputs($fp2, $fp);
+    return true;
   }
 
   /** Get the URL for the movies cover photo

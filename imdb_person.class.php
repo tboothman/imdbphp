@@ -114,14 +114,9 @@
    * @see IMDB person page / (Main page)
    */
   public function savephoto($path,$thumb=TRUE,$rerun=FALSE) {
-    if ($rerun) {
-        $req = new MDB_Request('',!$this->trigger_referer);
-    } else {
-        $req = new MDB_Request('',$this->trigger_referer);
-    }
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
-    $req->setURL($photo_url);
+    $req = new MDB_Request($photo_url);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0

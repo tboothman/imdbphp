@@ -250,7 +250,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSavephoto() {
-        //@TODO
+        $imdb = $this->getImdb();
+        @unlink(dirname(__FILE__).'/cache/poster.jpg');
+        $result = $imdb->savephoto(dirname(__FILE__).'/cache/poster.jpg');
+        $this->assertTrue($result);
+        $this->assertFileExists(dirname(__FILE__).'/cache/poster.jpg');
+        @unlink(dirname(__FILE__).'/cache/poster.jpg');
     }
 
     public function testPhoto_localurl() {

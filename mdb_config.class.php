@@ -162,14 +162,6 @@ class mdb_config {
    */
   public $force_agent = '';
 
-  /**
-   * Add a Referer header to http requests to imdb
-   * This is required in some places. However, if you think you need to disable
-   * this behaviour, do it here.
-   * @var boolean
-   */
-  public $trigger_referer = true;
-
   public function __construct() {
     // A little hack to maintain the old default behaviour of making sure the cache folder is
     // within the imdbphp folder by default ('.' is the directory of the first php file loaded)
