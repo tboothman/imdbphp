@@ -700,8 +700,8 @@ class imdb extends movie_base {
   public function savephoto($path,$thumb=true,$rerun=0) {
     switch ($rerun) {
       case 2:  $req = new MDB_Request(''); break;
-      case 1:  $req = new MDB_Request('','',!$this->trigger_referer); break;
-      default: $req = new MDB_Request('','',$this->trigger_referer); break;
+      case 1:  $req = new MDB_Request('',!$this->trigger_referer); break;
+      default: $req = new MDB_Request('',$this->trigger_referer); break;
     }
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;

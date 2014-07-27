@@ -115,9 +115,9 @@
    */
   public function savephoto($path,$thumb=TRUE,$rerun=FALSE) {
     if ($rerun) {
-        $req = new MDB_Request('','',!$this->trigger_referer);
+        $req = new MDB_Request('',!$this->trigger_referer);
     } else {
-        $req = new MDB_Request('','',$this->trigger_referer);
+        $req = new MDB_Request('',$this->trigger_referer);
     }
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
