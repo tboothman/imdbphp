@@ -136,8 +136,7 @@ class mdb_base extends mdb_config {
    * @param string url URL to open
    */
   protected function getWebPage($wt,$url) {
-    $req = new MDB_Request("", '', $this);
-    $req->setURL($url);
+    $req = new MDB_Request($url, $this);
     if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
     else ($head[0] = "HTTP/1.1 000");
     $response = explode(" ",$head[0]);

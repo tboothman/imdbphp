@@ -68,7 +68,7 @@ class imdbsearch extends mdb_base {
 
   protected function makeRequest($url) {
     mdb_base::debug_scalar("imdbsearch: Using URL $url");
-    $be = new MDB_Request($url, '', $this);
+    $be = new MDB_Request($url, $this);
     $be->sendrequest();
     $body = $be->getResponseBody();
 
