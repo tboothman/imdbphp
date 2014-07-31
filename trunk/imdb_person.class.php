@@ -46,8 +46,8 @@
 
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
-   * @constructor imdb_person
    * @param string id IMDBID to use for data retrieval
+   * @param mdb_config $config OPTIONAL override default config
    */
   function __construct($id, mdb_config $config = null) {
     parent::__construct($config);
@@ -116,7 +116,7 @@
   public function savephoto($path,$thumb=TRUE,$rerun=FALSE) {
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
-    $req = new MDB_Request($photo_url);
+    $req = new MDB_Request($photo_url, $this);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0

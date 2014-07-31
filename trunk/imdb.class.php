@@ -705,7 +705,7 @@ class imdb extends movie_base {
       return false;
     }
 
-    $req = new MDB_Request($photo_url);
+    $req = new MDB_Request($photo_url, $this);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
             strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
@@ -1436,8 +1436,7 @@ class imdb extends movie_base {
   */
  protected function convertIMDBtoRealURL($url) {
    if (preg_match('/^http:\/\//', $url)) return $url;
-   $req = new MDB_Request("");
-   $req->setURL("http://".$this->imdbsite.$url);
+   $req = new MDB_Request("http://".$this->imdbsite.$url, $this);
    if ($req->sendRequest()!==FALSE) {
      $head = $req->getLastResponseHeaders();
      foreach ($head as $header) {

@@ -72,7 +72,7 @@ class imdb_person_search extends mdb_base {
       } // end cache read
       if (empty($url))
         $url = $this->mkurl();
-      $be = new MDB_Request($url);
+      $be = new MDB_Request($url, $this);
       $be->sendrequest();
       $fp = $be->getResponseBody();
       if (!$fp) {

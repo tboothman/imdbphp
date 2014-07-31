@@ -3,6 +3,15 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.3
+-------------------
++ New interface for searching people and films ( ->search($searchTerms) )
++ Add composer support
++ Add ability to pass config into classes to override default config. This makes it possible use imdb without editing or adding files to the imdb library folder
+! Fix episode parsing
+! Fix referrer header being same as $_SERVER['referer'] when making requests to imdb
+- Remove unnecessary config key 'trigger_referer'
+
 v2.2.4
 -------------------
 + phpUnit tests added (DJMcTom)
