@@ -162,14 +162,23 @@ class mdb_config {
    */
   public $force_agent = '';
 
-  public function __construct() {
+  /**
+   *
+   * @param string $iniFile OPTIONAL A config file containing any config overrides
+   */
+  public function __construct($iniFile = null) {
     // A little hack to maintain the old default behaviour of making sure the cache folder is
     // within the imdbphp folder by default ('.' is the directory of the first php file loaded)
     if ($this->cachedir == './cache/') {
       $this->cachedir = dirname(__FILE__) . '/cache/';
     }
 
-    $ini_files = glob(dirname(__FILE__) . '/conf/*.ini');
+    if ($iniFile) {
+      $ini_files = array($iniFile);
+    } else {
+      $ini_files = glob(dirname(__FILE__) . '/conf/*.ini');
+    }
+    
     if (is_array($ini_files)) {
       foreach ($ini_files as $file) {
         $ini = parse_ini_file($file);

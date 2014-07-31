@@ -3,6 +3,13 @@ require_once dirname(__FILE__) . '/../imdb.class.php';
 
 class imdbTest extends PHPUnit_Framework_TestCase {
 
+    public function testConstruct_from_ini_constructed_config() {
+        $config = new mdb_config(dirname(__FILE__) . '/resources/test.ini');
+        $imdb = new imdb('0133093', $config);
+        $this->assertEquals('test.local', $imdb->imdbsite);
+        $this->assertEquals('/somefolder', $imdb->cachedir);
+    }
+
     // @TODO tests for other types
     public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
@@ -505,12 +512,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
      * @return \imdb
      */
     protected function getImdb($imdbId = '0133093') {
-        $imdb = new imdb($imdbId);
-        $imdb->cachedir = realpath(dirname(__FILE__).'/cache');
-        $imdb->usezip = true;
-        $imdb->cache_expire = 9999999999;
-        $imdb->debug = true;
-        $imdb->language = 'En';
+        $config = new mdb_config();
+        $config->language = 'En';
+        $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+        $config->usezip = true;
+        $config->cache_expire = 9999999999;
+        $config->debug = true;
+        $imdb = new imdb($imdbId, $config);
         return $imdb;
     }
 }

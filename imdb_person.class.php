@@ -49,8 +49,8 @@
    * @constructor imdb_person
    * @param string id IMDBID to use for data retrieval
    */
-  function __construct($id) {
-    parent::__construct($id);
+  function __construct($id, mdb_config $config = null) {
+    parent::__construct($config);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
   }

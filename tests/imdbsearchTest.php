@@ -102,11 +102,13 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
   }
 
   protected function getimdbsearch() {
-    $imdbsearch = new imdbsearch();
-    $imdbsearch->language = 'en';
-    $imdbsearch->cachedir = realpath(dirname(__FILE__).'/cache');
-    $imdbsearch->usezip = true;
-    $imdbsearch->cache_expire = 9999999999;
+    $config = new mdb_config();
+    $config->language = 'en';
+    $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+    $config->usezip = true;
+    $config->cache_expire = 9999999999;
+
+    $imdbsearch = new imdbsearch($config);
     return $imdbsearch;
   }
 }
