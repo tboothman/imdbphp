@@ -33,11 +33,14 @@
 	var $latemagflashplayer = "/files/mediaplayer.swf";
 	var $moviemazefilesyntax = "file=";
 	var $latemagfilesyntax = "file=";
+  protected $config;
 
-	/** Constructor: Nothing (yet)
-	 * @constructor imdb_trailers
-	 */
-    function imdb_trailers(){
+  /**
+   *
+   * @param mdb_config $config OPTIONAL override default config
+   */
+    public function __construct(mdb_config $config = null) {
+      $this->config = $config;
       $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     }
 		
@@ -48,7 +51,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash or Quicktime)
     */
     function getFlashCodeMovieMaze($url){
-      $req = new MDB_Request($url);
+      $req = new MDB_Request($url, $this->config);
       $req->sendRequest();
       $this->page=$req->getResponseBody();
       if($this->page=="" || $this->page==false) return false;
@@ -69,7 +72,7 @@
     */
     function getFlashCodeAllTrailers($url){
       if (strpos($url,"http://alltrailers")!==FALSE) $url = str_replace("http://","http://www.",$url);
-      $req = new MDB_Request($url);
+      $req = new MDB_Request($url, $this->config);
       $req->sendRequest();
       $pattern = "'";
       $this->page=$req->getResponseBody();
@@ -90,7 +93,7 @@
     */
    function getImdbTrailers($url) {
      $url = str_replace("rg/VIDEO_TITLE/GALLERY/","",$url)."player";
-     $req = new MDB_Request($url);
+     $req = new MDB_Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -106,7 +109,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getMoviePlayerTrailers($url) {
-     $req = new MDB_Request($url);
+     $req = new MDB_Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -121,7 +124,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getAZMovieTrailers($url) {
-     $req = new MDB_Request($url);
+     $req = new MDB_Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -168,7 +171,7 @@
     * @return array [0..n] of array[url,format] of movie trailers
     */
    function getAllTrailers($mid) {
-     $movie = new imdb($mid);
+     $movie = new imdb($mid, $this->config);
      $arraytrailers = $movie->videosites();
      $list = array();
      foreach ($arraytrailers as $trail) {
@@ -190,6 +193,5 @@
      }
    	 return $list;
    }
- } // end class imdb_trailers
+ }
 
-?>
