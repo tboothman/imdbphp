@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='iso-8859-15'?>
+<imdbdata>
+  <movie>
+    <imdbid>1452151</imdbid>
+    <title>"Poios mas pianei!" Episode #1.15</title>
+    <year>2009</year>
+    <director>Antonis Aggelopoulos</director>
+    <actor>Tania Tripi;Elisavet Moutafi;Maria Antoulinaki;Jenny Theona;Yannis Stankoglou;Dezy Sempekopoulou;Nikos Hitas;Giorgos Giannopoulos;Agis Emmanouil;Aspasia Miliaraki;Vagelis Nassis;Giannis Diakakis;Venetia Kontou;Sofoklis Kostoulas;Konstadina Hahlaki;Nikos Galanos</actor>
+    <genre>Comedy;Drama;Mystery</genre>
+  </movie>
+  <movie>
+    <imdbid>1234567</imdbid>
+    <title>"So You Think You Can Dance" The Top 14 Perform</title>
+    <year>2008</year>
+    <rating>4.3</rating>
+    <votes>9</votes>
+    <plot><![CDATA[Host Cat Deeley promised at the outset that the final 14 dancers will face some changes and the competition would get more difficult for the final seven couples...                <a href="/title/tt1234567/synopsis?ref_=tt_ov_pl" >See full synopsis</a>&nbsp;&raquo;]]></plot>
+    <director>Don Weiner</director>
+    <actor>Joshua Allen;Stephen Boss;Cat Deeley;Matthew Dorame;Napoleon Dumo;Tabitha Dumo;Comfort Fedoke;Courtney Galiano;Chelsie Hightower;Thayne Jasperson;Mark Kanemura;Jessica King;Kourtni Lind;Nigel Lythgoe;Gevorg Manoukian;Mary Murphy;Kherington Payne;Katee Shean;William Wingfield</actor>
+    <genre>Game-Show;Reality-TV</genre>
+    <cover>./images/1234567.jpg</cover>
+  </movie>
+  <movie>
+    <imdbid>6625322</imdbid>
+    <year>-1</year>
+  </movie>
+  <movie>
+    <imdbid>0117500</imdbid>
+    <title>The Rock - Fels der Entscheidung</title>
+    <year>1996</year>
+    <rating>7.3</rating>
+    <votes>196,040</votes>
+    <tagline><![CDATA[From Don Simpson and Jerry Bruckheimer the producers of &quot;Top Gun&quot; and &quot;Crimson Tide&quot;, and from Michael Bay, the director of &quot;Bad Boys.&quot;]]></tagline>
+    <plot><![CDATA[A mild-mannered chemist and an ex-con must lead the counterstrike when a rogue group of military men, led by a renegade general, threaten a nerve gas attack from Alcatraz against San Francisco.]]></plot>
+    <company>Hollywood Pictures;Don Simpson/Jerry Bruckheimer Films</company>
+    <director>Michael Bay</director>
+    <actor>Sean Connery;Nicolas Cage;Ed Harris;John Spencer;David Morse;William Forsythe;Michael Biehn;Vanessa Marcil;John C. McGinley;Gregory Sporleder;Tony Todd;Bokeem Woodbine;Jim Maniaci;Greg Collins;Brendan Kelly;Steve Harris;Danny Nucci;Claire Forlani;Celeste Weaver;Todd Louiso;David Bowe;Raquel Krelle;Dennis Chalker;Marshall R. Teague;Duffy Gaver;Steve Decker;Joseph Hawes;Mike Mahrer;Carlos Sandoval;Rick Toms;Billy Devlin;Jack Yates;Juan A. Riojas;Joseph Patrick Kelly;Ingo Neuhaus;John Laughlin;Harry Humphries;Howard Platt;Willie Garson;John Nathan;Robert M. Anselmo;Jack Ford;Thomas J. Hageboeck;Dwight Hicks;Ralph Peduto;Anthony Clark;Andy Ryan;Hans Georg Struhar;Robert C. Besgrove;Sean Skelton;Raymond O&#x27;Connor;Jane Sanguinetti;Luenell;John W. Love Jr.;Sam Whipple;Tom Towles;Ronald Simmons;Robert Ben Rajab;Leonard McMahan;Anthony Guidera;Jim Caviezel;John Enos III;Ken Kells;Fred Salvallon;Buck Kartalian;Stanley Anderson;Xander Berkeley;Richard Conti;Raymond Cruz;Ric Drasin;David Marshall Grant;Matthew James Gulbranson;Philip Baker Hall;Jeronimo Spinx;Ezra Stanley;Kevin Weisman;Stuart Wilson</actor>
+    <genre>Action;Adventure;Thriller</genre>
+    <cover>./images/0117500.jpg</cover>
+    <budget>70000000</budget>
+  </movie>
+</imdbdata>
