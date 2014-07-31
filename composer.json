@@ -1,5 +1,6 @@
 {
-    "name": "izzysoft/imdbphp",
+    "name": "imdbphp/imdbphp",
+    "version": "2.3.0",
     "autoload": {
         "classmap": [""]
     }
