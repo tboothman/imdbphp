@@ -66,11 +66,18 @@ class mdb_base extends mdb_config {
 
 
   /**
-   * Initialize class
-   * @version parameter $id was unused and obsoleted. Removed from ApiRef on 2014-06-05. Will be dropped entirely at a later point
+   *
+   * @param mdb_config $config OPTIONAL override default config
    */
-  public function __construct($id=0) {
+  public function __construct(mdb_config $config = null) {
     parent::__construct();
+
+    if ($config) {
+      foreach ($config as $key => $value) {
+        $this->$key = $value;
+      }
+    }
+
     $this->lastServerResponse = "";
     if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
   }

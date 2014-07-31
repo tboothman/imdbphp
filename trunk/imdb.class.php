@@ -33,10 +33,11 @@ class imdb extends movie_base {
    * @param string $title film title
    * @param int $year
    * @param string $additional
+   * @param mdb_config $config
    * @return imdb
    */
-  public static function fromSearchResult($id, $title, $year, $type) {
-    $imdb = new imdb($id);
+  public static function fromSearchResult($id, $title, $year, $type, mdb_config $config = null) {
+    $imdb = new imdb($id, $config);
     $imdb->main_title = $title;
     $imdb->main_year = (int)$year;
     $imdb->main_movietype = $type;
@@ -47,10 +48,11 @@ class imdb extends movie_base {
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize the class
    * @constructor imdb
-   * @param string id IMDBID to use for data retrieval
+   * @param string $id IMDBID to use for data retrieval
+   * @param mdb_config $config OPTIONAL override default config
    */
-  function __construct($id) {
-    parent::__construct($id);
+  function __construct($id, mdb_config $config = null) {
+    parent::__construct($id, $config);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
   }

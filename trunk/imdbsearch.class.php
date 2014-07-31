@@ -59,7 +59,7 @@ class imdbsearch extends mdb_base {
           continue;
         }
 
-        $results[] = imdb::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type);
+        $results[] = imdb::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type, $this);
       }
     }
 

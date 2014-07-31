@@ -84,7 +84,7 @@ class imdb_person_search extends mdb_base {
           }
           $url = explode("/", $header);
           $id = substr($url[count($url) - 2], 2);
-          $this->resu[0] = new imdb_person($id);
+          $this->resu[0] = new imdb_person($id, $this);
           return $this->resu;
         } else {
           mdb_base::debug_scalar("No result, no redirection -- something's wrong here...");
