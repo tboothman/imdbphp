@@ -28,12 +28,11 @@ class imdb_nowplaying {
   var $nowplayingpage = "http://www.imdb.com/movies-in-theaters/";
   var $page = "";
 
-  /**
-   * Constructor: Obtain the raw data from IMDB site
-   * @param mdb_config Optionally pass in the mdb_config object to use
+  /** Constructor: Obtain the raw data from IMDB site
+   * @constructor imdb_nowplaying
    */
-  function __construct(mdb_config $iconf = null) {
-     $req = new MDB_Request($this->nowplayingpage, $config);
+  function __construct() {
+     $req = new MDB_Request($this->nowplayingpage);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');

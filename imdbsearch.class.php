@@ -1,147 +1,77 @@
 <?php
 
+#############################################################################
+# IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
+# written by Giorgos Giagas                                                 #
+# extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+# http://www.izzysoft.de/                                                   #
+# ------------------------------------------------------------------------- #
+# This program is free software; you can redistribute and/or modify it      #
+# under the terms of the GNU General Public License (see doc/LICENSE)       #
+#############################################################################
+
+/* $Id$ */
+
 require_once (dirname(__FILE__) . "/imdb.class.php");
+
+#====================================================[ IMDB Search class ]===
+/**
+ * Search IMDB for a title
+ * Set the search string with setsearchname then run the search with results
+ * @package IMDB
+ * @author Izzy (izzysoft AT qumran DOT org)
+ * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
+ * @version $Revision$ $Date$
+ */
 
 class imdbsearch extends mdb_base {
 
-  const MOVIE = 'Movie';
-  const TV_SERIES = 'TV Series';
-  const TV_EPISODE = 'TV Episode';
-  const TV_MINI_SERIES = 'TV Mini-Series';
-  const TV_MOVIE = 'TV Movie';
-  const TV_SPECIAL = 'TV Special';
-  const TV_SHORT = 'TV Short';
-  const GAME = 'Video Game';
-  const VIDEO = 'Video';
-  const SHORT = 'Short';
-
-  /**
-   * Search IMDb for titles matching $searchTerms
-   * @param type $searchTerms
-   * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
-   *                            The class constants MOVIE,GAME etc should be used e.g. [imdbsearch::MOVIE, imdbsearch::TV_SERIES]
-   * @param int $maxResults *optional* The maximum number of results to retrieve from IMDB. 0 for unlimited. Defaults to mdb_config::$maxresults
-   * @return array array of imdb objects
-   */
-  public function search($searchTerms, $wantedTypes = null, $maxResults = null) {
-    $page = '';
-    $results = array();
-
-    // @TODO remove maxresults? It has no effect on imdb and why would the user want less results than possible?
-    if ($maxResults === null) {
-      $maxResults = $this->maxresults;
-    }
-
-    if ($this->usecache) {
-      $this->cache_read(urlencode(strtolower($searchTerms)) . '.search', $page);
-    }
-
-    if (!$page) {
-      // @TODO pre filter if they only pick one type
-      $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
-      $page = $this->makeRequest($url);
-
-      if ($this->storecache && $page) {
-        $this->cache_write(urlencode(strtolower($searchTerms)) . '.search', $page);
-      }
-    }
-
-    // Parse & filter results
-    if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d{4}]\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<type>[^<]*)!ims', $page, $matches, PREG_SET_ORDER)) {
-      foreach ($matches as $match) {
-        if (count($results) == $maxResults) {
-          break;
-        }
-
-        $type = $this->parseTitleType($match['type']);
-
-        if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
-          continue;
-        }
-
-        $results[] = imdb::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type, $this);
-      }
-    }
-
-    return $results;
-  }
-
-  protected function makeRequest($url) {
-    mdb_base::debug_scalar("imdbsearch: Using URL $url");
-    $be = new MDB_Request($url, $this);
-    $be->sendrequest();
-    $body = $be->getResponseBody();
-
-    // @TODO The intricacies of http should be delt with by the http library
-    // @TODO does this ever happen?
-    if ($header = $be->getResponseHeader("Location")) {
-      mdb_base::debug_scalar("imdbsearch: No immediate response body - we are redirected.<br>New URL: $header");
-      if (substr($header, 0, 1) == '/') {
-        return $this->makeRequest($this->imdbsite . $header);
-      } else {
-        return $this->makeRequest($header);
-      }
-    }
-
-    return $body;
-  }
-
-  protected function parseTitleType($string) {
-    $string = strtoupper($string);
-
-    if (strpos($string, 'TV SERIES') !== FALSE) {
-      return self::TV_SERIES;
-    } elseif (strpos($string, 'TV EPISODE') !== FALSE) {
-      return self::TV_EPISODE;
-    } elseif (strpos($string, 'VIDEO GAME') !== FALSE) {
-      return self::GAME;
-    } elseif (strpos($string, '(VIDEO)') !== FALSE) {
-      return self::VIDEO;
-    } elseif (strpos($string, '(SHORT)') !== FALSE) {
-      return self::SHORT;
-    } elseif (strpos($string, 'TV MINI-SERIES)') !== FALSE) {
-      return self::TV_MINI_SERIES;
-    } elseif (strpos($string, 'TV MOVIE)') !== FALSE) {
-      return self::TV_MOVIE;
-    } elseif (strpos($string, 'TV SPECIAL)') !== FALSE) {
-      return self::TV_SPECIAL;
-    } elseif (strpos($string, 'TV SHORT)') !== FALSE) {
-      return self::TV_SHORT;
-    } else {
-      return self::MOVIE;
-    }
-  }
-
-
-
-  // Some backwards compatibility stuff. Don't use any of this - It will be removed
-
-  protected $name;
+  var $page = "";
+  var $name = null;
+  var $resu = array();
+  var $url = "http://www.imdb.com/";
   protected $episode_search = false;
+  var $last_results = 0;
+
   /**
-   * DEPRICATED
    * Search for episodes or movies
    * @param boolean enabled TRUE: Search for episodes; FALSE: Search for movies (default)
-   * @deprecated since version 2.2.4
    */
   public function search_episodes($enable) {
-    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
     $this->episode_search = $enable;
   }
 
   /**
-   * DEPRICATED
    * Set the name (title) to search for
    * @param string searchstring what to search for - (part of) the movie name
-   * @deprecated since version 2.2.4
    */
   public function setsearchname($name) {
-    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
     $this->name = $name;
+    $this->page = "";
+    $this->url = null;
   }
 
   /**
-   * DEPRICATED
+   * Set the URL (overwrite default search URL and run your own)
+   *  This URL will be reset if you call the setsearchname() method
+   * @param string URL to use
+   * @deprecated This will be dropped soon if nobody objects. Please check whether you're using it!
+   */
+  public function seturl($url) {
+    $this->url = $url;
+  }
+
+  /**
+   * Reset search results
+   * This empties the collected search results. Without calling this, every
+   * new search appends its results to the ones collected by the previous search.
+   * @method reset
+   */
+  function reset() {
+    $this->resu = array();
+  }
+
+  /**
    * Perform the search
    * @param optional string URL Replace search URL by your own (Default: empty string)
    * @param optional boolean series whether to include TV series in search results (default: TRUE)
@@ -151,42 +81,104 @@ class imdbsearch extends mdb_base {
    * @param optional boolean s_short whether to include shorts in search results (default: TRUE)
    * @param optional boolean s_special whether to include specials in search results (default: TRUE)
    * @return array results array of objects (instances of the imdb class)
-   * @deprecated since version 2.2.4
    */
   public function results($url = "", $series = TRUE, $s_episodes = TRUE, $s_games = TRUE, $s_video = TRUE, $s_short = TRUE, $s_special = TRUE) {
-    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
+    if ($this->page == ""){
+      if ($this->usecache && empty($url)){ // Try to read from cache
+        $this->cache_read(urlencode(strtolower($this->name)) . '.search', $this->page);
+      } // end cache read
+      if ($this->page == ""){ // not found in cache - go and get it!
+        if (empty($url))
+          $url = $this->mkurl();
+        mdb_base::debug_scalar("imdbsearch::results() called. Using URL $url");
+        $be = new MDB_Request($url, '', '', $this);
+        $be->sendrequest();
+        $fp = $be->getResponseBody();
+        if (!$fp){
+          if ($header = $be->getResponseHeader("Location")){
+            mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
+            if (preg_match('!\.imdb\.(com|de|it)/find\?!', $header) || substr($header, 0, 1) == '/'){
+              if (substr($header, 0, 1) == '/')
+                return $this->results($this->imdbsite . $header);
+              else
+                return $this->results($header);
+              break(4);
+            }
+            $url = explode("/", $header);
+            $id = substr($url[count($url) - 1], 2);
+            $this->resu[0] = new imdb($id);
+            return $this->resu;
+          } else{
+            mdb_base::debug_scalar('No response body, no redirect - going to Nirwana');
+            return null;
+          }
+        }
+        $this->page = $fp;
+      }
 
-    $searchTypes = array(self::MOVIE, self::TV_MINI_SERIES, self::TV_MOVIE, self::TV_SHORT);
-    if ($series) {
-      $searchTypes[] = self::TV_SERIES;
+      if ($this->storecache && $this->page != "cannot open page" && $this->page != ""){ //store cache
+        $this->cache_write(urlencode(strtolower($this->name)) . '.search', $this->page);
+      }
+    } // end (page="")
+    // now we have the search content - go and parse it!
+    if ($this->maxresults > 0)
+      $maxresults = $this->maxresults;
+    else
+      $maxresults = 999999;
+    if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d{4}]\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<addons>[^<]*)!ims', $this->page, $matches)){
+      $this->last_results = count($matches[0]);
+      $mids_checked = array();
+      for ($i = 0; $i < $this->last_results; ++$i) {
+        if (count($this->resu) == $maxresults)
+          break; // limit result count
+        if (substr(trim($matches[2][$i]), 0, 4) == "<img")
+          continue; // cover mini
+        if (empty($matches[2][$i]) || substr(trim($matches[2][$i]), 0, 4) == '<img' || in_array($matches[1][$i], $mids_checked))
+          continue; // empty titles just come from the images
+        if (!$series && (preg_match('!&#x22;.+&#x22;!', ($matches[2][$i])) || strpos(strtoupper($matches['addons'][$i]), 'TV SERIES') !== FALSE))
+          continue; // skip series if commanded so
+        if (!$s_episodes && strpos(strtoupper($matches['addons'][$i]), 'TV EPISODE') !== FALSE)
+          continue; // skip episodes if commanded so
+        if (!$s_games && strpos(strtoupper($matches['addons'][$i]), 'VIDEO GAME') !== FALSE)
+          continue; // skip games if commanded so
+        if (!$s_video && strpos(strtoupper($matches['addons'][$i]), '(VIDEO)') !== FALSE)
+          continue; // skip games if commanded so
+        if (!$s_short && strpos(strtoupper($matches['addons'][$i]), '(SHORT)') !== FALSE)
+          continue; // skip shorts if commanded so
+        if (!$s_special && strpos(strtoupper($matches['addons'][$i]), 'SPECIAL)') !== FALSE)
+          continue; // skip specials if commanded so
+        $mids_checked[] = $matches['imdbid'][$i];
+        $this->resu[] = imdb::fromSearchResult($matches['imdbid'][$i], $matches['title'][$i], $matches['year'][$i], $matches['addons'][$i]);
+      }
     }
-    if ($s_episodes) {
-      $searchTypes[] = self::TV_EPISODE;
-    }
-    if ($s_games) {
-      $searchTypes[] = self::GAME;
-    }
-    if ($s_video) {
-      $searchTypes[] = self::VIDEO;
-    }
-    if ($s_short) {
-      $searchTypes[] = self::SHORT;
-    }
-    if ($s_special) {
-      $searchTypes[] = self::TV_SPECIAL;
-    }
-    if ($this->episode_search) {
-      // yea, this looks stupid .. but it's how the old one worked. This made a different call to imdb for episodes only
-      $searchTypes = array(self::TV_EPISODE);
-    }
-
-    return $this->search($this->name, $searchTypes);
+    return $this->resu;
   }
 
   /**
-   * @deprecated since version 2.2.4
+   * Create the IMDB URL for the movie search
+   * @return string url
    */
-  public function reset() {
-    trigger_error('imdbsearch has a new interface. Please use imdbsearch::search instead', E_USER_DEPRECATED);
+  protected function mkurl() {
+    if ($this->url !== null){
+      $url = $this->url;
+    }else{
+      if (!isset($this->maxresults))
+        $this->maxresults = 20;
+      if ($this->maxresults > 0)
+        $query = "&mx=20";
+      if ($this->episode_search)
+        $url = "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . $query . "&s=ep";
+      else{
+        switch ($this->searchvariant) {
+          case "moonface" : $query .= "&more=tt&nr=1"; // @moonface variant (untested)
+          case "sevec" : $query .= "&restrict=Movies+only&GO.x=0&GO.y=0&GO=search;tt=1"; // Sevec ori
+          case "old" : $query .= "&tt=on"; // Izzy
+          default : $query .= "&s=tt"; // Izzy
+        }
+        $url = "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . $query;
+      }
+    }
+    return $url;
   }
+
 }

@@ -30,24 +30,25 @@ if (empty($_GET["name"])) {
 }
 
 # Still here? Then we need to search for the movie:
-switch ($_GET["searchtype"]) {
-  case "nm" :
-    require_once("imdb_person_search.class.php");
-    $search = new imdbpsearch();
-    $headname = "Person";
-    $results = $search->search($_GET["name"]);
-    break;
-  default:
-    require_once("imdbsearch.class.php");
-    $search = new imdbsearch();
-    if ($_GET["searchtype"] == "episode")
-      $results = $search->search($_GET["name"], array(imdbsearch::TV_EPISODE));
-    else
-      $results = $search->search($_GET["name"]);
-    $headname = "Movie";
-    break;
+switch($_GET["searchtype"]) {
+  case "nm" : require_once("imdbsearch.class.php");
+              require_once("imdb_person.class.php");
+              $search = new imdbpsearch();
+              $headname = "Person";
+              break;
+  default   : switch($engine) {
+                default:
+                  require_once("imdbsearch.class.php");
+                  $search = new imdbsearch();
+                  break;
+              }
+              if ($_GET["searchtype"]=="episode") $search->search_episodes(TRUE);
+              else $search->search_episodes(FALSE);
+              $headname = "Movie";
+              break;
 }
 
+$search->setsearchname($_GET["name"]);
 echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 echo "<HTML><HEAD>\n";
 echo " <TITLE>Performing search for '".$_GET["name"]."' [IMDBPHP2 v".$search->version."]</TITLE>\n";
@@ -55,6 +56,7 @@ echo " <STYLE TYPE='text/css'>body,td,th,h2 { font-size:12px; font-family:sans-s
 echo "</HEAD><BODY>\n";
 $sname = htmlspecialchars($_GET['name']);
 echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '$sname':</H2>\n";
+$results = $search->results ();
 echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
    . " <TR><TH>$headname Details</TH><TH>IMDB</TH><TH>Moviepilot</TH></TR>";
 foreach ($results as $res) {
@@ -69,7 +71,7 @@ foreach ($results as $res) {
       break;
     default   :
       if (!isset($res->addon_info)) $res->addon_info = '';
-      echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().") (".$res->movietype().")</a></TD>"
+      echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().")".$res->addon_info."</a></TD>"
          . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
          . "<TD ALIGN='center'><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
       break;

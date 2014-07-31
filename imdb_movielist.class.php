@@ -26,11 +26,11 @@ class imdb_movielist extends movie_base {
 
 #==========================================[ internal (protected) methods ]===
 #-----------------------------------------------------------[ Constructor ]---
- /**
-  * @param mdb_config $config OPTIONAL override default config
+ /** Initialize the class
+  * @constructor imdb_movielist
   */
- function __construct(mdb_config $config = null) {
-   parent::__construct('0000001', $config);
+ function __construct() {
+   parent::__construct('0000001');
    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
    $this->reset_vars();
  }

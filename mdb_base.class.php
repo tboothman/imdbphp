@@ -45,7 +45,7 @@ define('FULL_ACCESS',9);
  * @version $Revision$ $Date$
  */
 class mdb_base extends mdb_config {
-  public $version = '2.3.0';
+  public $version = '2.2.3';
 
   /**
    * The last HTTP status code from the IMDB server
@@ -66,18 +66,11 @@ class mdb_base extends mdb_config {
 
 
   /**
-   *
-   * @param mdb_config $config OPTIONAL override default config
+   * Initialize class
+   * @version parameter $id was unused and obsoleted. Removed from ApiRef on 2014-06-05. Will be dropped entirely at a later point
    */
-  public function __construct(mdb_config $config = null) {
+  public function __construct($id=0) {
     parent::__construct();
-
-    if ($config) {
-      foreach ($config as $key => $value) {
-        $this->$key = $value;
-      }
-    }
-
     $this->lastServerResponse = "";
     if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
   }
@@ -143,7 +136,8 @@ class mdb_base extends mdb_config {
    * @param string url URL to open
    */
   protected function getWebPage($wt,$url) {
-    $req = new MDB_Request($url, $this);
+    $req = new MDB_Request("", '', '', $this);
+    $req->setURL($url);
     if ($req->sendRequest()!==FALSE) $head = $req->getLastResponseHeaders();
     else ($head[0] = "HTTP/1.1 000");
     $response = explode(" ",$head[0]);

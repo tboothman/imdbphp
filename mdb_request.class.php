@@ -29,9 +29,11 @@ class MDB_Request extends BrowserEmulator {
   /**
    * No need to call this.
    * @param string url URL to open
+   * @param optional string force_agent user agent string to use. Defaults to the one set in mdb_config.
+   * @param optional bool trigger_referer whether to trigger the referer. '' = take value from mdb_config (default)
    * @param mdb_config Optionally pass in the mdb_config object to use
    */
-  public function __construct($url, mdb_config $iconf = null) {
+  public function __construct($url, $force_agent = '', $trigger_referer = '', $iconf = null) {
     parent::__construct();
 
     $this->urltoopen = $url;
@@ -39,10 +41,19 @@ class MDB_Request extends BrowserEmulator {
       $iconf = new mdb_config();
     }
 
-    $this->addHeaderLine('Referer', 'http://' . $iconf->imdbsite . '/');
+    if ($force_agent === ''){
+      $force_agent = $iconf->force_agent;
+    }
 
-    if ($iconf->force_agent)
-      $this->addHeaderLine('User-Agent', $iconf->force_agent);
+    if ($trigger_referer === ''){
+      $trigger_referer = $iconf->trigger_referer;
+    }
+
+    if ($trigger_referer){
+      $this->addHeaderLine('Referer', 'http://' . $iconf->imdbsite . '/');
+    }
+    if ($force_agent)
+      $this->addHeaderLine('User-Agent', $force_agent);
     if ($iconf->language)
       $this->addHeaderLine('Accept-Language', $iconf->language);
   }

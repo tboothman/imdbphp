@@ -3,13 +3,6 @@ require_once dirname(__FILE__) . '/../imdb.class.php';
 
 class imdbTest extends PHPUnit_Framework_TestCase {
 
-    public function testConstruct_from_ini_constructed_config() {
-        $config = new mdb_config(dirname(__FILE__) . '/resources/test.ini');
-        $imdb = new imdb('0133093', $config);
-        $this->assertEquals('test.local', $imdb->imdbsite);
-        $this->assertEquals('/somefolder', $imdb->cachedir);
-    }
-
     // @TODO tests for other types
     public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
@@ -257,12 +250,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSavephoto() {
-        $imdb = $this->getImdb();
-        @unlink(dirname(__FILE__).'/cache/poster.jpg');
-        $result = $imdb->savephoto(dirname(__FILE__).'/cache/poster.jpg');
-        $this->assertTrue($result);
-        $this->assertFileExists(dirname(__FILE__).'/cache/poster.jpg');
-        @unlink(dirname(__FILE__).'/cache/poster.jpg');
+        //@TODO
     }
 
     public function testPhoto_localurl() {
@@ -287,28 +275,28 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $akas = $imdb->alsoknow();
 
         // No country
-        $this->assertEquals('Kaze no tani no Naushika', $akas[0]['title']);
+        $this->assertEquals('Nausicaä of the Valley of the Wind', $akas[0]['title']);
         $this->assertEquals('original title', $akas[0]['comments'][0]);
 
         //No country or comments (Should this really be included?)
-        $this->assertEquals('Kaze no tani no Nausicaa', $akas[1]['title']);
+        $this->assertEquals('Kaze no tani no Nausicaa', $akas[2]['title']);
         $this->assertEmpty($akas[2]['comments']);
 
         // Country, no comment
-        $this->assertEquals('Nausicaä del Valle del Viento', $akas[2]['title']);
-        $this->assertEquals('Argentina', $akas[2]['country']);
-        $this->assertEmpty($akas[2]['comments']);
+        $this->assertEquals('Nausicaä del Valle del Viento', $akas[3]['title']);
+        $this->assertEquals('Argentina', $akas[3]['country']);
+        $this->assertEmpty($akas[3]['comments']);
 
         // Country with comment
-        $this->assertEquals('Наусика от Долината на вятъра', $akas[3]['title']);
-        $this->assertEquals('Bulgaria', $akas[3]['country']);
-        $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
+        $this->assertEquals('Наусика от Долината на вятъра', $akas[4]['title']);
+        $this->assertEquals('Bulgaria', $akas[4]['country']);
+        $this->assertEquals('Bulgarian title', $akas[4]['comments'][0]);
 
         // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[5]['title']);
-        $this->assertEquals('Switzerland', $akas[5]['country']);
-        $this->assertEquals('DVD title', $akas[5]['comments'][0]);
-        $this->assertEquals('German title', $akas[5]['comments'][1]);
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[6]['title']);
+        $this->assertEquals('Switzerland', $akas[6]['country']);
+        $this->assertEquals('DVD title', $akas[6]['comments'][0]);
+        $this->assertEquals('German title', $akas[6]['comments'][1]);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas() {
@@ -512,13 +500,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
      * @return \imdb
      */
     protected function getImdb($imdbId = '0133093') {
-        $config = new mdb_config();
-        $config->language = 'En';
-        $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
-        $config->usezip = true;
-        $config->cache_expire = 9999999999;
-        $config->debug = true;
-        $imdb = new imdb($imdbId, $config);
+        $imdb = new imdb($imdbId);
+        $imdb->cachedir = realpath(dirname(__FILE__).'/cache');
+        $imdb->usezip = true;
+        $imdb->cache_expire = 9999999999;
+        $imdb->debug = true;
+        $imdb->language = 'En';
         return $imdb;
     }
 }

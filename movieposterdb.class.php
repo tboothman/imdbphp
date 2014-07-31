@@ -34,8 +34,8 @@ class movieposterdb extends mdb_base {
    * @param optional boolean recurse whether to recurse if multiple versions
    *        are available (default: TRUE). Can be changed via set_recurse()
    */
-  function __construct($id,$limit=20,$recurse=TRUE, mdb_config $config = null) {
-    parent::__construct($config);
+  function __construct($id,$limit=20,$recurse=TRUE) {
+    parent::__construct($id);
     $this->setid($id);
     $this->reset_lang();
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');

@@ -151,6 +151,15 @@ class mdb_config {
   public $maxresults = 20;
 
   /**
+   * Moviename search variant. There are different ways of searching for a
+   * movie name, with slightly differing result sets. Set the variant you
+   * prefer, either "sevec", "moonface", or "izzy". The latter one is the
+   * default if you comment out this setting or use an empty string.
+   * @var string
+   */
+  public $searchvariant = "";
+
+  /**
    * Set the default user agent (if none is detected)
    * @var string
    */
@@ -163,22 +172,21 @@ class mdb_config {
   public $force_agent = '';
 
   /**
-   *
-   * @param string $iniFile OPTIONAL A config file containing any config overrides
+   * Add a Referer header to http requests to imdb
+   * This is required in some places. However, if you think you need to disable
+   * this behaviour, do it here.
+   * @var boolean
    */
-  public function __construct($iniFile = null) {
+  public $trigger_referer = true;
+
+  public function __construct() {
     // A little hack to maintain the old default behaviour of making sure the cache folder is
     // within the imdbphp folder by default ('.' is the directory of the first php file loaded)
     if ($this->cachedir == './cache/') {
       $this->cachedir = dirname(__FILE__) . '/cache/';
     }
 
-    if ($iniFile) {
-      $ini_files = array($iniFile);
-    } else {
-      $ini_files = glob(dirname(__FILE__) . '/conf/*.ini');
-    }
-    
+    $ini_files = glob(dirname(__FILE__) . '/conf/*.ini');
     if (is_array($ini_files)) {
       foreach ($ini_files as $file) {
         $ini = parse_ini_file($file);
