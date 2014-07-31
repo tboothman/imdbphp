@@ -1,0 +1,16 @@
+People never read documentation. But before giving up, consider some basic steps:
+
+* Read installation instructions at http://projects.izzysoft.de/trac/imdbphp/wiki/Installation
+* Installation with the "make" utility: See install.txt
+* Manual installation: See README
+
+* IMPORTANT: You may have to adjust the configuration at least concerning the
+  cache and image directories (see README or the Wiki), or you won't be able to
+  use them but instead see a bunch of errors
+
+More information can be found on the project site:
+http://projects.izzysoft.de/?topic=trac;subject=imdbphp
+
+
+Izzy
+(Munich, April 2008)
