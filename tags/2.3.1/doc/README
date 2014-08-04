@@ -1,0 +1,59 @@
+This is a "quick-starter" for the impatient. A more thorough documentation can
+be found in the project wiki, please refer to
+http://projects.izzysoft.de/trac/imdbphp/wiki
+                                                                                         
+To use this API you need to have a php installation. They have been 
+tested in Linux running apache2 and php 5.x but should probably work
+on any php installation version 5 or higher.
+                                                                                         
+To install it:
+- this API requires PEARs HTTP_Request class (see pear.php.net)
+  or the browser emulator class (included with this distribution).
+
+- Untar the archive.
+- move the imdbphp* directory under your document root.
+- cd to the conf/ dir, where you will find a sample ini file (*.sample).
+  Copy that as described in its "head comments", and check at least the
+  following values:
+  - 'cachedir' should point to the directory where pages retrieved from IMDB
+    will be stored and used if information for the same movie is requested
+    again. The web server process must have read/write access to this directory.
+    If does not necessarily have to be inside the web servers document root.
+    If you don't want to use caching you can set it to an empty string; in that
+    case make sure to also set 'usecache' and 'storecache' to 0 (FALSE).
+  - 'photoroot' should be set to a directory where cover images are stored
+    with photo_localurl(). If you don't intent to use this function you can
+    leave it empty. The specified directory should also be read/write accessible
+    by the user that runs the web server process.
+  You can safely comment out everything else; if anything is not defined in the
+  *.ini file, defaults from the mdb_config.class.php will be used.
+- test it:
+  - point your browser to the imdbphp* dir (e.g. "http://localhost/imdb/")
+  - enter a search term
+    a test script (imdbsearch.php) will be opened and perform your search
+    using the imdbsearch class.
+  - select a movie for the results.
+    a test script (imdb.php) will be opened and retrieve details for the
+    selected movie using the imdb class. This script uses most of the functions
+    from imdb.class.php and is a good start to learn how to use the class. It
+    is, however, only intended as a demo to get you started.
+  - after you have tested the script with a couple of movies, and if you use
+    cache, you can check cache.php - this script shows a list of the movies
+    that are in cache. In this script you can also see how to use the same
+    object to get information on multiple movies.
+- if you use IMDBPHP in your application you probably want to remove imdb.php,
+  imdbsearch.php and cache.php
+
+To get started, next to the sample code to be found in the imdb.php file of
+this distributions archive, an API reference is included and can also be found
+at the projects page for your convinience:
+http://projects.izzysoft.de/trac/imdbphp/wiki/ApiReference
+
+If you find an IMDB movie for which this API doesn't work right in any way,
+please try to reproduce on the demos first to confirm it is not just a problem
+with your local installation. You can find links to the latest release and
+development setups at http://projects.izzysoft.de/trac/imdbphp/wiki/Demo
+If your problem is reproducable there, or you think your special case cannot
+be verified this way (e.g. because it affects a method not covered by the
+demo code), check if there's already an open ticket for this at
+http://projects.izzysoft.de/trac/imdbphp/report/1 – if not, please open one.
