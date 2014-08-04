@@ -197,6 +197,26 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
 
+    public function testCreator_one_creator() {
+      $imdb = $this->getImdb('0306414');
+      $creators = $imdb->creator();
+
+      $this->assertInternalType('array', $creators);
+      $this->assertEquals('David Simon', $creators[0]['name']);
+      $this->assertEquals('0800108', $creators[0]['imdb']);
+    }
+
+    public function testCreator_two_creators() {
+      $imdb = $this->getImdb('1286039');
+      $creators = $imdb->creator();
+
+      $this->assertInternalType('array', $creators);
+      $this->assertEquals('Robert C. Cooper', $creators[0]['name']);
+      $this->assertEquals('0178338', $creators[0]['imdb']);
+      $this->assertEquals('Brad Wright', $creators[1]['name']);
+      $this->assertEquals('0942249', $creators[1]['imdb']);
+    }
+
     public function testTagline() {
         //@TODO
     }
