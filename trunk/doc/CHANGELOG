@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.3.1
+-------------------
+! Fix 'creator' parsing
+
 v2.3
 -------------------
 + New interface for searching people and films ( ->search($searchTerms) )

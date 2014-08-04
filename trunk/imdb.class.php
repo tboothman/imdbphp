@@ -518,18 +518,18 @@ class imdb extends movie_base {
   }
 
  #---------------------------------------------------------------[ Creator ]---
-  /** Get the creator of a movie (most likely for seasons only)
-   * @method creator
+  /**
+   * Get the creator of a movie (most likely for seasons only)
    * @return array creator (array[0..n] of array[name,imdb])
    * @see IMDB page / (TitlePage)
    */
   public function creator() {
     if (empty($this->main_creator)) {
-      if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (@preg_match("/Creator:\<\/h5\>\s*\n(.*?)(<\/div|<a class=\"tn15more)/ms",$this->page["Title"],$match)) {
-        if ( preg_match_all('|/name/nm(\d{7}).*?>(.*?)<|ims',$match[1],$matches) ) {
-          for ($i=0;$i<count($matches[0]);++$i)
-          $this->main_creator[] = array('name'=>$matches[2][$i],'imdb'=>$matches[1][$i]);
+      if ($this->page["Title"] == "") $this->openpage("Title");
+      if (@preg_match("#Creators?:\</h4\>[\s\n]*(.*?)(</div|<a class=\"tn15more)#ms", $this->page["Title"], $match)) {
+        if (preg_match_all('#/name/nm(\d{7}).*?><span.+?>(.*?)</span#s', $match[1], $matches)) {
+          for ($i = 0; $i < count($matches[0]); ++$i)
+            $this->main_creator[] = array('name' => $matches[2][$i], 'imdb' => $matches[1][$i]);
         }
       }
     }
