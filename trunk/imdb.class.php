@@ -796,7 +796,7 @@ class imdb extends movie_base {
    if (empty($this->countries)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
     $this->countries = array();
-    if (preg_match_all('!/country/.+?>(.*?)<\/a!m',$this->page["Title"],$matches))
+    if (preg_match_all('!/country/.+?\s.+?>(.*?)<\/a!m',$this->page["Title"],$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
    }
    return $this->countries;
