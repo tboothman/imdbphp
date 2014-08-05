@@ -99,7 +99,7 @@ class movie_base extends mdb_base {
    * Initialize class
    * @constructor movie_base
    * @param string id IMDBID to use for data retrieval
-   * @param object mdb_config $config OPTIONAL override default config
+   * @param optional object mdb_config override default config
    */
   function __construct ($id, mdb_config $config = null) {
     parent::__construct($config);

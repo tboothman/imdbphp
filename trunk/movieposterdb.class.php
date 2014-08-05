@@ -33,6 +33,7 @@ class movieposterdb extends mdb_base {
    *        (default: 20). Can be changed via set_limit()
    * @param optional boolean recurse whether to recurse if multiple versions
    *        are available (default: TRUE). Can be changed via set_recurse()
+   * @param optional object mdb_config
    */
   function __construct($id,$limit=20,$recurse=TRUE, mdb_config $config = null) {
     parent::__construct($config);

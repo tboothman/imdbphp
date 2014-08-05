@@ -65,9 +65,9 @@ class mdb_base extends mdb_config {
            "October"=>"10","November"=>"11","December"=>"12");
 
 
-  /**
+  /** Initialize the class
    * @constructor mdb_base
-   * @param object mdb_config $config OPTIONAL override default config
+   * @param optional object mdb_config override default config
    */
   public function __construct(mdb_config $config = null) {
     parent::__construct();

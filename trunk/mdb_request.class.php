@@ -30,7 +30,7 @@ class MDB_Request extends BrowserEmulator {
    * No need to call this.
    * @constructor MDB_Request
    * @param string url URL to open
-   * @param object mdb_config Optionally pass in the mdb_config object to use
+   * @param optional object mdb_config Optionally pass in the mdb_config object to use
    */
   public function __construct($url, mdb_config $iconf = null) {
     parent::__construct();
