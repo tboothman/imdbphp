@@ -7,6 +7,7 @@ v2.3.2 (05.08.2014)
 -------------------
 ! Fix sound, color and countries methods (broken due to imdb change)
 ! Remove 'Add a Plot' from outline method when no outline exists
+! fixing up APIDoc to work with the current processor once more
 
 v2.3.1
 -------------------
