@@ -536,7 +536,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $config->language = 'En';
         $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
         $config->usezip = true;
-        $config->cache_expire = 9999999999;
+        $config->cache_expire = 3600;
         $config->debug = true;
         $imdb = new imdb($imdbId, $config);
         return $imdb;
