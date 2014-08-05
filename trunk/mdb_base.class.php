@@ -45,7 +45,7 @@ define('FULL_ACCESS',9);
  * @version $Revision$ $Date$
  */
 class mdb_base extends mdb_config {
-  public $version = '2.3.1';
+  public $version = '2.3.2';
 
   /**
    * The last HTTP status code from the IMDB server
