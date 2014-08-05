@@ -247,7 +247,9 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPlotoutline_nooutline() {
-        // @TODO there are lots of scenarios this function covers ...
+      $imdb = $this->getImdb('1027544');
+      $outline = $imdb->plotoutline();
+      $this->assertEquals('', $outline);
     }
 
     public function testStoryline() {
