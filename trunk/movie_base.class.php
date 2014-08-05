@@ -97,8 +97,9 @@ class movie_base extends mdb_base {
 
   /**
    * Initialize class
+   * @constructor movie_base
    * @param string id IMDBID to use for data retrieval
-   * @param mdb_config $config OPTIONAL override default config
+   * @param object mdb_config $config OPTIONAL override default config
    */
   function __construct ($id, mdb_config $config = null) {
     parent::__construct($config);
@@ -107,6 +108,7 @@ class movie_base extends mdb_base {
 
   /**
    * Reset all in object caching data e.g. page strings and parsed values
+   * @method reset_vars
    */
   protected function reset_vars() {
    $this->page["Title"] = "";

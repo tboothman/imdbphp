@@ -21,7 +21,8 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Search for people on imdb who match $searchTerms
-   * @param type $searchTerms
+   * @method search
+   * @param string $searchTerms
    * @return array of imdb_person
    */
   public function search($searchTerms) {
@@ -32,6 +33,7 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Set the name (title) to search for
+   * @method setsearchname
    * @param string searchstring what to search for - (part of) the movie name
    */
   public function setsearchname($name) {
@@ -43,6 +45,7 @@ class imdb_person_search extends mdb_base {
   /**
    * Set the URL (overwrite default search URL and run your own)
    *  This URL will be reset if you call the setsearchname() method
+   * @method seturl
    * @param string URL to use
    * @deprecated This will be dropped soon if nobody objects. Please check whether you're using it!
    */
@@ -62,6 +65,7 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Setup search results
+   * @method results
    * @param optional string URL Replace search URL by your own
    * @return array results array of objects (instances of the imdb_person class)
    */
@@ -136,6 +140,7 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Create the IMDB URL for the name search
+   * @method protected mkurl
    * @return string url
    */
   protected function mkurl() {

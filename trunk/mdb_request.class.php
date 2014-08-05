@@ -28,8 +28,9 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * No need to call this.
+   * @constructor MDB_Request
    * @param string url URL to open
-   * @param mdb_config Optionally pass in the mdb_config object to use
+   * @param object mdb_config Optionally pass in the mdb_config object to use
    */
   public function __construct($url, mdb_config $iconf = null) {
     parent::__construct();
@@ -49,6 +50,7 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * Send a request to the movie site
+   * @method sendRequest
    * @return boolean success
    */
   public function sendRequest() {
@@ -60,6 +62,7 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * Get the Response body
+   * @method getResponseBody
    * @return string page
    */
   public function getResponseBody() {
@@ -74,6 +77,7 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * Set the URL we need to parse
+   * @method setURL
    */
   public function setURL($url) {
     $this->urltoopen = $url;
@@ -81,6 +85,7 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * Get a header value from the response
+   * @method getresponseheader
    * @param string $header header field name
    * @return string header value
    */
