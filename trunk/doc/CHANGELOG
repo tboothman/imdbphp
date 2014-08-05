@@ -7,8 +7,8 @@ v2.3.1
 -------------------
 ! Fix 'creator' parsing
 
-v2.3
--------------------
+v2.3 (31.07.2014)
+-----------------
 + New interface for searching people and films ( ->search($searchTerms) )
 + Add composer support
 + Add ability to pass config into classes to override default config. This makes it possible use imdb without editing or adding files to the imdb library folder
@@ -16,7 +16,7 @@ v2.3
 ! Fix referrer header being same as $_SERVER['referer'] when making requests to imdb
 - Remove unnecessary config key 'trigger_referer'
 
-v2.2.4
+v2.2.4 (05.06.2014)
 -------------------
 + phpUnit tests added (DJMcTom)
 * some code cleanup and RegExp speedup (DJMcTom)
