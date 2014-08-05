@@ -35,9 +35,9 @@
     var $latemagfilesyntax = "file=";
   protected $config;
 
-  /**
+  /** Initialize the class
    * @constructor imdb_trailers
-   * @param object mdb_config $config OPTIONAL override default config
+   * @param optional object mdb_config override default config
    */
     public function __construct(mdb_config $config = null) {
       $this->config = $config;
