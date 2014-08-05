@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<HTML><HEAD>
+  <TITLE>imdbphp2 movie search</TITLE>
+  <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>
+</HEAD><BODY>
+<FORM ACTION="search.php" METHOD="get">
+ <TABLE ALIGN="center" STYLE="margin-top:20px;border-collapse:collapse;" BORDER="1">
+  <TR><TH COLSPAN="5" STYLE="background-color:#ffb000">IMDBPHP2 Movie Search</TH></TR>
+  <TR><TD ALIGN="right" STYLE="padding-right:10px;padding-left:10px;">Name:<BR>Type:</TD>
+      <TD><INPUT TYPE="text" NAME="name" SIZE="30" MAXLENGTH="50"><BR>
+          <SELECT NAME="searchtype"><OPTION VALUE="movie">Movie</OPTION><OPTION VALUE="episode">Episode</OPTION><OPTION VALUE="nm">Name</OPTION></SELECT>
+          &nbsp;<INPUT TYPE="radio" NAME="engine" VALUE="imdb" CHECKED>IMDB</TD></TR>
+  <TR><TD ALIGN="right" STYLE="padding-right:10px;padding-left:10px;">or IMDB ID:</TD><TD><INPUT TYPE="text" NAME="mid"  SIZE="30" MAXLENGTH="7"></TD></TR>
+  <TR><TD COLSPAN="2" ALIGN="center"><INPUT TYPE="submit" VALUE="Search"></TD></TR>
+ </TABLE>
+</FORM>
+<P ALIGN="center"><A href="cache.php">view movies in cache</A>
+<SPAN STYLE="margin-left:50px;">&nbsp;</SPAN>
+<A HREF="test/">test suite</A></P>
+</BODY></HTML>

@@ -1,0 +1,53 @@
+;
+; Rename this file to 9??_*.ini (e.g. 900_localconf.ini) and adjust the values
+; below to your needs. They will then overrule defaults from
+; mdb_config.class.php
+; For explanations of the options, please see mdb_config.class.php and/or
+; http://projects.izzysoft.de/trac/imdbphp/wiki/Installation
+;
+; This is just an example file and might not contain all settings available.
+;
+
+[sites]
+; IMDB server to use.
+imdbsite = "akas.imdb.com"
+; Tell IMDB which is the preferred language (e.g. en-US, de-DE, pt-BR)
+;language = 
+; fallback to IMDB for missing data: 0=NO_ACCESS, 1=BASIC_ACCESS, 2=MEDIUM_ACCESS, 9=FULL_ACCESS
+pilot_imdbfill = 0
+
+[cache]
+; Directory to store the cache files
+; cachedir = '/path/to/cache/'
+; use cache for reading if available?
+usecache = 1
+; Store the pages retrieved for later use?
+storecache = 1
+; Use zip compression for caching the retrieved html-files?
+usezip = 1
+; Convert non-zip cache-files to zip (check file permissions!)?
+converttozip = 1
+; Cache expiration: 3600 = 1h (default), 86400 = 1d, 604800 = 1w, 2592000 = 1m
+cache_expire = 36000
+
+[images]
+; Where to store images retrieved from the IMDB site
+photodir = './images/'
+; URL corresponding to photodir
+photoroot = './images/'
+; Where the local IMDB images reside (look for the "showtimes/" directory)
+imdb_img_url = './imgs/'
+
+[misc]
+; Try to recode all non-UTF-8 content to UTF-8?
+imdb_utf8recode = 0
+; Enable debug mode?
+debug = 0
+
+[tweaks]
+; Limit for the result set of searches.
+maxresults = 20
+; Set the default user agent (if none is detected)
+default_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3'
+; Enforce the use of a special user agent
+; force_agent = ''

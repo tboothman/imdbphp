@@ -1,0 +1,14 @@
+{
+    "name": "imdbphp/imdbphp",
+    "description": "Library for retrieving film and tv information from IMDb",
+    "license": "GPL-2.0",
+    "autoload": {
+        "classmap": [""]
+    },
+    "require": {
+        "php": ">5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">3.7"
+    }
+}
