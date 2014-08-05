@@ -504,7 +504,9 @@ class imdb extends movie_base {
   }
 
  #----------------------------------------------------------[ Color format ]---
-  /** Get colors
+  /**
+   * Get the colours this movie was shot in.
+   * e.g. Color, Black and White
    * @method colors
    * @return array colors (array[0..1] of strings)
    * @see IMDB page / (TitlePage)
@@ -512,7 +514,7 @@ class imdb extends movie_base {
   public function colors() {
     if (empty($this->moviecolors)) {
       if ($this->page["Title"] == "") $this->openpage ("Title");
-      if (preg_match_all("|/search/title\?colors=.*?>\s*(.*?)<|",$this->page["Title"],$matches))
+      if (preg_match_all("|/search/title\?colors=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
         $this->moviecolors = $matches[1];
     }
     return $this->moviecolors;
@@ -861,7 +863,7 @@ class imdb extends movie_base {
   public function sound() {
    if (empty($this->sound)) {
     if ($this->page["Title"] == "") $this->openpage ("Title");
-    if (preg_match_all("|/search/title\?sound_mixes=.*?>\s*(.*?)<|",$this->page["Title"],$matches))
+    if (preg_match_all("|/search/title\?sound_mixes=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
       $this->sound = $matches[1];
    }
    return $this->sound;

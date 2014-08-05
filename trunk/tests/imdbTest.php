@@ -193,8 +193,23 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
 
-    public function testColors() {
-        //@TODO
+    public function testColors_one_color() {
+      $imdb = $this->getImdb();
+      $colors = $imdb->colors();
+
+      $this->assertInternalType('array', $colors);
+      $this->assertCount(1, $colors);
+      $this->assertEquals('Color', $colors[0]);
+    }
+
+    public function testColors_two_colors() {
+      $imdb = $this->getImdb('0108052');
+      $colors = $imdb->colors();
+
+      $this->assertInternalType('array', $colors);
+      $this->assertCount(2, $colors);
+      $this->assertEquals('Black and White', $colors[0]);
+      $this->assertEquals('Color', $colors[1]);
     }
 
     public function testCreator_one_creator() {
@@ -337,8 +352,29 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       //@TODO
     }
 
-    public function testSound() {
-        //@TODO
+    public function testSound_multiple_types() {
+      $imdb = $this->getImdb();
+      $sound = $imdb->sound();
+      $this->assertInternalType('array', $sound);
+      $this->assertCount(3, $sound);
+      $this->assertEquals('DTS', $sound[0]);
+      $this->assertEquals('Dolby Digital', $sound[1]);
+      $this->assertEquals('SDDS', $sound[2]);
+    }
+
+    public function testSound_one_type() {
+      $imdb = $this->getImdb('0087544');
+      $sound = $imdb->sound();
+      $this->assertInternalType('array', $sound);
+      $this->assertCount(1, $sound);
+      $this->assertEquals('Mono', $sound[0]);
+    }
+
+    public function testSound_none() {
+      $imdb = $this->getImdb('1027544');
+      $sound = $imdb->sound();
+      $this->assertInternalType('array', $sound);
+      $this->assertCount(0, $sound);
     }
 
     public function testMpaa() {
@@ -537,7 +573,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $config = new mdb_config();
         $config->language = 'En';
         $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
-        $config->usezip = true;
+        $config->usezip = false;
         $config->cache_expire = 3600;
         $config->debug = true;
         $imdb = new imdb($imdbId, $config);
