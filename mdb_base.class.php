@@ -66,8 +66,8 @@ class mdb_base extends mdb_config {
 
 
   /**
-   *
-   * @param mdb_config $config OPTIONAL override default config
+   * @constructor mdb_base
+   * @param object mdb_config $config OPTIONAL override default config
    */
   public function __construct(mdb_config $config = null) {
     parent::__construct();
@@ -84,6 +84,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Setting the IMDB fallback mode
+   * @method set_pilot_imdbfill
    * @param int level
    * @see imdb_config::pilot_imdbfill attribute for details
    */
@@ -97,6 +98,7 @@ class mdb_base extends mdb_config {
    * Check the IMDB fallback level for non-IMDB classes.
    * As <code>pilot_imdbfill</code> is a protected variable, this is the only
    * way to read its current value.
+   * @method get_pilot_imdbfill
    * @return int
    */
   function get_pilot_imdbfill() {
@@ -120,6 +122,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Get numerical value for month name
+   * @method protected monthNo
    * @param string name name of month
    * @return integer month number
    */
@@ -130,6 +133,7 @@ class mdb_base extends mdb_config {
  #-------------------------------------------------------------[ Open Page ]---
   /**
    * Define page urls
+   * @method protected set_pagename
    * @param string wt internal name of the page
    * @return string urlname page URL
    */
@@ -139,6 +143,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Obtain page from web server
+   * @method protected getWebPage
    * @param string wt internal name of the page
    * @param string url URL to open
    */
@@ -185,6 +190,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Helper: Read a page from cache and stores it into the $this->page array
+   * @method protected readCachedPage
    * @param string wt internal name of the page
    * @param mixed id ID of the record to be used for the file name (usually imdbID)
    */
@@ -200,6 +206,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Helper: Write a page to cache after taking it from the $this->page array
+   * @method protected writeCachedPage
    * @param string wt internal name of the page
    * @param mixed id ID of the record to be used for the file name (usually imdbID)
    */
@@ -214,6 +221,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Load an IMDB page into the corresponding property (variable)
+   * @method protected openpage
    * @param string wt internal name of the page
    * @param optional string type whether its a "movie" (default) or a "person"
    * @brief for derived projects' (Moviepilot, OFDB, ...) classes, you need to override this
@@ -254,6 +262,7 @@ class mdb_base extends mdb_config {
  #-------------------------------------------------------[ Get current MID ]---
   /**
    * Retrieve the IMDB ID
+   * @method imdbid
    * @return string id IMDBID currently used
    */
   public function imdbid() {
@@ -263,6 +272,7 @@ class mdb_base extends mdb_config {
  #--------------------------------------------------[ Start (over) / Reset ]---
   /**
    * Reset page vars
+   * @method protected reset_vars
    */
   protected function reset_vars() {
     return;
@@ -270,6 +280,7 @@ class mdb_base extends mdb_config {
 
   /**
    * Setup class for a new IMDB id
+   * @method setid
    * @param string id IMDBID of the requested movie
    */
   public function setid ($id) {
@@ -283,6 +294,7 @@ class mdb_base extends mdb_config {
    * Check cache and purge outdated files
    * This method looks for files older than the cache_expire set in the
    * mdb_config and removes them
+   * @method purge
    */
   public function purge() {
     if (is_dir($this->cachedir))  {
@@ -307,8 +319,9 @@ class mdb_base extends mdb_config {
 
  /**
   * Read content from cache
+  * @method cache_read
   * @param string filename file name relative to the cache dir to read from
-  * @param &string content variable to store the retrieved content in
+  * @param string content variable to store the retrieved content in
   */
   public function cache_read($file, &$content) {
     $fname = $this->cachedir . '/' . $file;
@@ -344,6 +357,7 @@ class mdb_base extends mdb_config {
 
  /**
   * Writing content to cache
+  * @method cache_write
   * @param string filename file name relative to cache dir to store the content into
   * @param ref string content content to store
   */
