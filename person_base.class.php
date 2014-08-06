@@ -31,6 +31,7 @@ class person_base extends mdb_base {
   protected function reset_vars() {
    $this->page["Name"] = "";
    $this->page["Bio"]  = "";
+   $this->page["Publicity"]  = "";
 
    // "Name" page:
    $this->main_photo      = "";

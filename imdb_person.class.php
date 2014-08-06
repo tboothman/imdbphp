@@ -375,15 +375,15 @@
  #------------------------------------------------------------------[ Born ]---
   /** Get Birthday
    * @method born
-   * @return array birthday [day,month,mon,year,place]
+   * @return array|null birthday [day,month,mon,year,place]
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
   public function born() {
     if (empty($this->birthday)) {
       if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
-      if ( preg_match('|Date of Birth</td>\s*(.*)<br|iUms',$this->page["Bio"],$match) ) {
-        preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?>\d+\s*(.*?)<|',$match[1],$daymon);
+      if ( preg_match('|Date of Birth</td>\s*(.*)</td|iUms',$this->page["Bio"],$match) ) {
+        preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
         preg_match('|/search/name\?birth_place=.*?"\s*>(.*?)<|ims',$match[1],$dloc);
         $this->birthday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@$dloc[1]);
