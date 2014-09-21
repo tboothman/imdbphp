@@ -7,10 +7,10 @@ Search for titles on IMDb, including filtering by type (film, tv series, etc).
 Download film posters and actor images.
 
 
-Getting started
-===============
+Quick Start
+===========
 
-* Include [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) using [composer](https://www.getcomposer.org), clone this repo or download the latest release zip.
+* Include [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) using [composer](https://www.getcomposer.org), clone this repo or download the latest [release zip](https://github.com/tboothman/imdbphp/releases).
 * Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
 * Include the imdb class (It's in imdb.class.php). This is automatic if you use composer.
 * Get some data
@@ -19,6 +19,19 @@ $imdb = new \imdb('0335266');
 $rating = $imdb->rating();
 $plotOutline = $imdb->plotoutline();
 ```
+
+Installation
+============
+
+This library scrapes imdb.com so changes their site can cause parts of this library to fail. You will probably need to update a few times a year. Keep this in mind when choosing how to install/configure.
+
+Watch this repo get a notification from GitHub when a new release happens.
+
+* [Composer](https://www.getcomposer.org) (recommended). Include the imdbphp/imdbphp package.
+* Git clone. Checkout the latest release tag.
+* [APT/RPM/ARK packages](http://apt.izzysoft.de/). Updated soon after a release.
+* [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
+
 
 Configuration
 =============
@@ -34,6 +47,8 @@ $imdb = new \imdb('0335266', $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
 ```
+
+The cache folder is `./cache` by default. Create it and pages requested from imdb will be cached there to speed up future requests.
 
 Searching
 =========
