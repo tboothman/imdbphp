@@ -41,8 +41,9 @@ $search = new \imdbsearch(); // Optional $config parameter
 $results = $search->search('The Matrix', [imdbsearch::MOVIE]); // Optional second parameter restricts types returned
 
 // $results is an array of \imdb objects
-// The objects will have title, year and movietype available for free, but any other data will have to be looked up on IMDb
-foreach ($results as $result) { /** @var $result \imdb */
+// The objects will have title, year and movietype available
+//  for free, but any other data will have to be looked up on IMDb
+foreach ($results as $result) { /* @var $result \imdb */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
 ```
