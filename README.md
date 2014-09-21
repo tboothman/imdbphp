@@ -12,6 +12,8 @@ Getting started
 
 * Include [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) using [composer](https://www.getcomposer.org), clone this repo or download the latest release zip.
 * Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
+* Include the imdb class (It's in imdb.class.php). This is automatic if you use composer.
+* Get some data
 ```php
 $imdb = new \imdb('0335266');
 $rating = $imdb->rating();
