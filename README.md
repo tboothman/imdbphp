@@ -23,11 +23,26 @@ Configuration
 
 imdbphp needs no configuration by default but can cache imdb lookups, store images and change languages if configured.
 
-Configuration is done by the \mdb_config class in mdb_config.class.php which has detailed explanations of all the config options available.
+Configuration is done by the `\mdb_config` class in mdb_config.class.php which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
 $config = new \mdb_config();
-$config->language = 'de';
+$config->language = 'de-DE';
 $imdb = new \imdb('0335266', $config);
-$imdb->title(); // ...
+$imdb->title(); // Lost in Translation - Zwischen den Welten
+$imdb->orig_title(); // Lost in Translation
+```
+
+Searching
+=========
+
+```php
+$search = new \imdbsearch(); // Optional $config parameter
+$results = $search->search('The Matrix', [imdbsearch::MOVIE]); // Optional second parameter restricts types returned
+
+// $results is an array of \imdb objects
+// The objects will have title, year and movietype available for free, but any other data will have to be looked up on IMDb
+foreach ($results as $result) { /** @var $result \imdb */
+    echo $result->title() . ' ( ' . $result->year() . ')';
+}
 ```
