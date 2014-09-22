@@ -323,7 +323,8 @@ class imdb extends movie_base {
       $this->main_rating = 0;
     }
     if (preg_match('!<span itemprop="ratingCount">([\d\.,]+)</span!i',$this->page["Title"],$match)){
-        $this->main_votes = $match[1];
+        $votes = str_replace(['.', ','], '', $match[1]);
+        $this->main_votes = (int)$votes;
     }else{
         $this->main_votes = 0;
     }
@@ -339,9 +340,10 @@ class imdb extends movie_base {
     return $this->main_rating;
   }
 
-  /** Return votes for this movie
+  /**
+   * Return number of votes for this movie
    * @method votes
-   * @return string votes count of votes for this movie
+   * @return int
    * @see IMDB page / (TitlePage)
    */
   public function votes() {

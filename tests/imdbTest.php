@@ -127,10 +127,11 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
 
-    //@TODO this has nasty commas in the value, would be nice to remove them
     public function testVotes() {
         $imdb = $this->getImdb();
-        $this->assertEquals(1, preg_match('/^(\d+,)+\d+$/', $imdb->votes()));
+        $votes = $imdb->votes();
+        $this->assertGreaterThan(907000, $votes);
+        $this->assertLessThan(1500000, $votes);
     }
 
     public function testVotes_no_votes() {
