@@ -237,7 +237,8 @@ class imdb extends movie_base {
   }
 
  #---------------------------------------------------------------[ Runtime ]---
-  /** Get general runtime
+  /**
+   * Get general runtime
    * @method protected runtime_all
    * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
    */
@@ -250,23 +251,33 @@ class imdb extends movie_base {
     return $this->main_runtime;
   }
 
-  /** Get overall runtime (first one mentioned on title page)
+  /**
+   * Get overall runtime (first one mentioned on title page)
    * @method runtime
-   * @return mixed string runtime in minutes (if set), NULL otherwise
+   * @return int|null runtime in minutes (if set), NULL otherwise
    * @see IMDB page / (TitlePage)
    */
   public function runtime() {
-    if (empty($this->movieruntimes)) $runarr = $this->runtimes();
-    else $runarr = $this->movieruntimes;
-    if (isset($runarr[0]["time"])) return $runarr[0]["time"];
+    $runarr = $this->runtimes();
+    if (isset($runarr[0]["time"])) {
+      return $runarr[0]["time"];
+    }
+
+    // No runtimes in tech details? Maybe there's one under the title
+    if ($this->page["Title"] == "") $this->openpage ("Title");
+    if (preg_match('/<time itemprop="duration" datetime="PT(\d+)M"/', $this->page["Title"], $matches)) {
+      return (int)$matches[1];
+    }
+
     return NULL;
   }
 
-  /** Retrieve all runtimes and their descriptions
-    * @method runtimes
-    * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
-    * @see IMDB page / (TitlePage)
-    */
+  /**
+   * Retrieve all runtimes and their descriptions
+   * @method runtimes
+   * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
+   * @see IMDB page / (TitlePage)
+   */
   public function runtimes(){
     if (empty($this->movieruntimes)) {
       $this->movieruntimes = array();

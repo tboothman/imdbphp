@@ -73,6 +73,11 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(136, $imdb->runtime());
     }
 
+    public function testRuntime_no_runtime_in_technical_details() {
+        $imdb = $this->getImdb('1570728');
+        $this->assertEquals(118, $imdb->runtime());
+    }
+
     public function testRuntime_primary_where_multiple_exist() {
         $imdb = $this->getImdb('0087544');
         $this->assertEquals(117, $imdb->runtime());
