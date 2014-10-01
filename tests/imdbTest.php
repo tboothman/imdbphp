@@ -267,6 +267,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(stripos($outline, 'full summary'));
     }
 
+    public function testPlotoutline_strip_see_full_synopsis() {
+        $imdb = $this->getImdb('0338187');
+        $outline = $imdb->plotoutline();
+        $this->assertEquals(0, strpos($outline, 'Lifelong friends Lenny (Dominic Chianese) and Ruben (Dick Latessa) are both in their 70s and dyed-in-the-wool New Yorkers...'));
+        $this->assertFalse(stripos($outline, 'See full synopsis'));
+    }
+
     public function testPlotoutline_nooutline() {
       $imdb = $this->getImdb('1027544');
       $outline = $imdb->plotoutline();
