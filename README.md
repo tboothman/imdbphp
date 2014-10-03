@@ -52,17 +52,32 @@ If you're using a git clone you might prefer to configure IMDbPHP by putting an 
 
 The cache folder is `./cache` by default. Create it and pages requested from imdb will be cached there to speed up future requests.
 
-Searching
-=========
+Searching for a film
+====================
 
 ```php
+// include "imdbsearch.class.php"; // Load the class in if you're not using an autoloader
 $search = new \imdbsearch(); // Optional $config parameter
 $results = $search->search('The Matrix', [imdbsearch::MOVIE]); // Optional second parameter restricts types returned
 
 // $results is an array of \imdb objects
 // The objects will have title, year and movietype available
-//  for free, but any other data will have to be looked up on IMDb
+//  immediately, but any other data will have to be fetched from IMDb
 foreach ($results as $result) { /* @var $result \imdb */
     echo $result->title() . ' ( ' . $result->year() . ')';
+}
+```
+
+Searching for a person
+======================
+```php
+// include "imdb_person_search.class.php"; // Load the class in if you're not using an autoloader
+$search = new \imdb_person_search(); // Optional $config parameter
+$results = $search->search('Forest Whitaker');
+
+// $results is an array of \imdb_person objects
+// The objects will have name available, everything else must be fetched from IMDb
+foreach ($results as $result) { /* @var $result \imdb_person */
+    echo $result->name();
 }
 ```
