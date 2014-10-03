@@ -121,7 +121,7 @@ class imdb_person_search extends mdb_base {
       $mids_checked[] = $pid;
       $name = $matches[2][$i];
       $info = $matches[3][$i];
-      $tmpres = new imdb_person($pid);
+      $tmpres = new imdb_person($pid, $this);
       $tmpres->fullname = $name;
       if (!empty($info)) {
         if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7}).*"\s*>(.*)</a>\s*\((\d{4})\)\)|Ui', $info, $match)) {
