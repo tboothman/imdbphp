@@ -14,28 +14,6 @@ if (defined('IMDBPHP_CONFIG')) require_once (IMDBPHP_CONFIG);
 else require_once (dirname(__FILE__)."/mdb_config.class.php");
 require_once (dirname(__FILE__)."/mdb_request.class.php");
 
-#===============================================[ Definition of Constants ]===
-/** No access at all
- * @package MDBApi
- * @constant integer NO_ACCESS
- */
-define('NO_ACCESS',0);
-/** Minimum access - only the most basic stuff
- * @package MDBApi
- * @constant integer BASIC_ACCESS
- */
-define('BASIC_ACCESS',1);
-/** Moderate access - some more than just the minimum
- * @package MDBApi
- * @constant integer MEDIUM_ACCESS
- */
-define('MEDIUM_ACCESS',2);
-/** Full access - all that's possible
- * @package MDBApi
- * @constant integer FULL_ACCESS
- */
-define('FULL_ACCESS',9);
-
 #===================================================[ The IMDB Base class ]===
 /** Accessing Movie information
  * @package MDBApi
@@ -80,29 +58,6 @@ class mdb_base extends mdb_config {
 
     $this->lastServerResponse = "";
     if ($this->storecache && ($this->cache_expire > 0)) $this->purge();
-  }
-
-  /**
-   * Setting the IMDB fallback mode
-   * @method set_pilot_imdbfill
-   * @param int level
-   * @see imdb_config::pilot_imdbfill attribute for details
-   */
-  public function set_pilot_imdbfill($level) {
-    if ( !PILOT_IMDBFALLBACK ) return;
-    if ( !is_integer($level) ) return;
-    $this->pilot_imdbfill = $level;
-  }
-
-  /**
-   * Check the IMDB fallback level for non-IMDB classes.
-   * As <code>pilot_imdbfill</code> is a protected variable, this is the only
-   * way to read its current value.
-   * @method get_pilot_imdbfill
-   * @return int
-   */
-  function get_pilot_imdbfill() {
-    return $this->pilot_imdbfill;
   }
 
  #---------------------------------------------------------[ Debug helpers ]---

@@ -12,17 +12,6 @@
 
 /* $Id$ */
 
-/** Enable IMDB-Fallback for non-IMDB classes?
- *  If this is not set to TRUE, changing of the <code>pilot_imdbfill</code>
- *  setting will have no effect, it will always be set to <code>NO_ACCESS</code>.
- *  The imdb classes will be included based on this setting.
- * @package MDBApi
- * @constant boolean PILOT_IMDBFALLBACK
- * @see mdb_config::pilot_imdbfill
- */
-if (!defined('PILOT_IMDBFALLBACK'))
-  define('PILOT_IMDBFALLBACK', false);
-
 /**
  * Configuration class for imdbphp
  * You should override the settings in here by creating an ini file in the conf folder.
@@ -53,20 +42,6 @@ class mdb_config {
    * @var string language
    */
   public $language = "";
-
-  /**
-   * If the Pilot classes miss certain data (i.e. it does not provide that datatype
-   *  at all, as it is e.g. with MPAA/FSK), should the API try to substitute them
-   *  via the IMDB class? To define this, you should use the following constants:
-   *  <UL><LI>NO_ACCESS - don't access IMDB.COM at all</LI>
-   *      <LI>BASIC_ACCESS - access it only for very basic data. This means very
-   *          non-descriptive stuff, like e.g. MPAA/FSK.</LI>
-   *      <LI>MEDIUM_ACCESS - something more than BASIC, but ommit "traceable"
-   *          stuff like full descriptions, IMDB ratings, and the like</LI>
-   *      <LI>FULL_ACCESS - get all we can get</LI></UL>
-   * @var integer pilot_imdbfill
-   */
-  public $pilot_imdbfill = NO_ACCESS;
 
   /**
    * Directory to store the cache files. This must be writable by the web
