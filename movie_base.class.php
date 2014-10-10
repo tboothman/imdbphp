@@ -21,8 +21,6 @@
  */
 class movie_base extends mdb_base {
 
-  protected $page = array();
-
   protected $akas = array();
   protected $awards = array();
   protected $countries = array();

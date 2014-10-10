@@ -13,7 +13,6 @@ require_once (dirname(__FILE__) . "/imdb_person.class.php");
 
 class imdb_person_search extends mdb_base {
 
-  var $page = "";
   var $name = null;
   var $resu = array();
   var $url = null;
@@ -38,7 +37,6 @@ class imdb_person_search extends mdb_base {
    */
   public function setsearchname($name) {
     $this->name = $name;
-    $this->page = "";
     $this->url = null;
   }
 
@@ -70,37 +68,13 @@ class imdb_person_search extends mdb_base {
    * @return array results array of objects (instances of the imdb_person class)
    */
   public function results($url = "") {
-    if ($this->page == "") {
-      if ($this->usecache && empty($url)) { // Try to read from cache
-        $this->cache_read(urlencode(strtolower($this->name)) . '.search', $this->page);
-      } // end cache read
-      if (empty($url))
+    if (empty($url)) {
         $url = $this->mkurl();
-      $be = new MDB_Request($url, $this);
-      $be->sendrequest();
-      $fp = $be->getResponseBody();
-      if (!$fp) {
-        if ($header = $be->getResponseHeader("Location")) {
-          mdb_base::debug_scalar("No immediate response body - we are redirected.<br>New URL: $header");
-          if (strpos($header, $this->imdbsite . "/find?")) {
-            return $this->results($header);
-            break(4);
-          }
-          $url = explode("/", $header);
-          $id = substr($url[count($url) - 2], 2);
-          $this->resu[0] = new imdb_person($id, $this);
-          return $this->resu;
-        } else {
-          mdb_base::debug_scalar("No result, no redirection -- something's wrong here...");
-          return NULL;
-        }
-      }
-      $this->page = $fp;
+    }
 
-      if ($this->storecache && $this->page != "cannot open page" && $this->page != "") { //store cache
-        $this->cache_write(urlencode(strtolower($this->name)) . '.search', $this->page);
-      }
-    } // end (page="")
+    $pageRequest = new imdb_page($url, $this, $this->cache, $this->logger);
+
+    $page = $pageRequest->get();
 
     if ($this->maxresults > 0)
       $maxresults = $this->maxresults;
@@ -108,9 +82,9 @@ class imdb_person_search extends mdb_base {
       $maxresults = 999999;
     // make sure to catch col #3, not #1 (pic only)
     //                        photo           name                   1=id        2=name        3=details
-    preg_match_all('|<tr.*>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>\s*(.*)</td>|Uims', $this->page, $matches);
+    preg_match_all('|<tr.*>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7})[^>]*>([^<]+)</a>\s*(.*)</td>|Uims', $page, $matches);
     $mc = count($matches[0]);
-    mdb_base::debug_scalar("$mc matches");
+    $this->logger->debug("[Person Search] $mc matches");
     $mids_checked = array();
     for ($i = 0; $i < $mc; ++$i) {
       if ($i == $maxresults)
@@ -121,19 +95,18 @@ class imdb_person_search extends mdb_base {
       $mids_checked[] = $pid;
       $name = $matches[2][$i];
       $info = $matches[3][$i];
-      $tmpres = new imdb_person($pid, $this);
-      $tmpres->fullname = $name;
+      $resultPerson = imdb_person::fromSearchResults($pid, $name, $this);
       if (!empty($info)) {
         if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7}).*"\s*>(.*)</a>\s*\((\d{4})\)\)|Ui', $info, $match)) {
           $role = $match[1];
           $mid = $match[2];
           $movie = $match[3];
           $year = $match[4];
-          $tmpres->setSearchDetails($role, $mid, $movie, $year);
+          $resultPerson->setSearchDetails($role, $mid, $movie, $year);
         }
       }
-      $this->resu[$i] = $tmpres;
-      unset($tmpres);
+      $this->resu[$i] = $resultPerson;
+      unset($resultPerson);
     }
     return $this->resu;
   }
@@ -144,18 +117,12 @@ class imdb_person_search extends mdb_base {
    * @return string url
    */
   protected function mkurl() {
-    if ($this->url !== NULL) {
-      $url = $this->url;
-    } else {
-      $query = "&s=nm";
-      if (!isset($this->maxresults))
-        $this->maxresults = 20;
-      if ($this->maxresults > 0)
-        $query .= "&mx=20";
-      $url = "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . $query;
-    }
-    mdb_base::debug_scalar("Using search URL '$url'");
-    return $url;
+    $query = "&s=nm";
+    if (!isset($this->maxresults))
+      $this->maxresults = 20;
+    if ($this->maxresults > 0)
+      $query .= "&mx=20";
+    return "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . $query;
   }
 
 }

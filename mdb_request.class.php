@@ -100,4 +100,42 @@ class MDB_Request extends BrowserEmulator {
     }
   }
 
+  /**
+   * HTTP status code of the last response
+   * @return int|null null if last request failed
+   */
+  public function getStatus() {
+    $headers = $this->getLastResponseHeaders();
+    if (empty($headers[0])) {
+      return null;
+    }
+
+    if (!preg_match("#^HTTP/[\d\.]+ (\d+)#i", $headers[0], $matches)) {
+      return null;
+    }
+
+    return (int)$matches[1];
+  }
+
+  /**
+   * Get the URL to redirect to if a 30* was returned
+   * @return string|null URL to redirect to if 300, otherwise null
+   */
+  public function getRedirect() {
+    $status = $this->getStatus();
+    if ($status == 301 || $status == 302 || $status == 303 || $status == 307) {
+      foreach ($this->getLastResponseHeaders() as $header) {
+        if (strpos(trim(strtolower($header)), 'location') !== 0)
+          continue;
+        $aline = explode(': ', $header);
+        $target = trim($aline[1]);
+        $urlParts = parse_url($target);
+        if (!isset($urlParts['host'])) {
+          $initialRequestUrlParts = parse_url($this->urltoopen);
+          $target = $initialRequestUrlParts['scheme'] . "://" . $initialRequestUrlParts['host'] . $target;
+        }
+        return $target;
+      }
+    }
+  }
 }

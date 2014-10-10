@@ -107,6 +107,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $config->usezip = true;
     $config->cache_expire = 3600;
+    $config->debug = true;
 
     $imdbsearch = new imdbsearch($config);
     return $imdbsearch;

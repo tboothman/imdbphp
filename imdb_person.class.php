@@ -44,6 +44,16 @@
    return $urlname;
   }
 
+  protected function buildUrl($page) {
+    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->set_pagename($page);
+  }
+
+  public static function fromSearchResults($id, $name, mdb_config $config) {
+    $person = new imdb_person($id, $config);
+    $person->fullname = $name;
+    return $person;
+  }
+
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize class
    * @constructor imdb_person
@@ -74,7 +84,7 @@
    */
   public function name() {
     if (empty($this->fullname)) {
-      if ($this->page["Name"] == "") $this->openpage ("Name","person");
+      $this->getPage("Name");
       if (preg_match("/<title>(.*?) - IMDb<\/title>/i",$this->page["Name"],$match)) {
         $this->fullname = trim($match[1]);
       } elseif (preg_match("/<title>IMDb - (.*?)<\/title>/i",$this->page["Name"],$match)) {
@@ -94,7 +104,7 @@
    */
   public function photo($thumb=true) {
     if (empty($this->main_photo)) {
-      if ($this->page["Name"] == "") $this->openpage ("Name","person");
+      $this->getPage("Name");
        if (preg_match('!<td.*?id="img_primary".*?>*.*?<img.*?src="(.*?)"!ims',$this->page["Name"],$match)) {
         if ($thumb) $this->main_photo = $match[1];
         else        $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400',$match[1]);
@@ -171,7 +181,7 @@
    * @param string type Which filmografie to retrieve ("actor",)
    */
   protected function filmograf(&$res,$type) {
-    if ($this->page["Name"] == "") $this->openpage ("Name","person");
+    $this->getPage("Name");
     preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi",$this->page["Name"],$match);
     if (empty($type)) $match[1] = $this->page["Name"];
     elseif (empty($match[1])) {
@@ -343,7 +353,7 @@
   */
  public function birthname() {
    if (empty($this->birth_name)) {
-    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    $this->getPage("Bio");
     if (preg_match("!Birth Name</td>\s*<td>(.*?)</td>\n!m",$this->page["Bio"],$match))
       $this->birth_name = trim($match[1]);
    }
@@ -358,7 +368,7 @@
   */
  public function nickname() {
    if (empty($this->nick_name)) {
-    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    $this->getPage ("Bio");
     if (preg_match("!Nicknames</td>\s*<td>\s*(.*?)</td>\s*</tr>!ms",$this->page["Bio"],$match)) {
       $nicks = explode("<br/>",$match[1]);
       foreach ($nicks as $nick) {
@@ -381,7 +391,7 @@
    */
   public function born() {
     if (empty($this->birthday)) {
-      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+      $this->getPage ("Bio");
       if ( preg_match('|Date of Birth</td>\s*(.*)</td|iUms',$this->page["Bio"],$match) ) {
         preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
@@ -401,7 +411,7 @@
    */
   public function died() {
     if (empty($this->deathday)) {
-      if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+      $this->getPage ("Bio");
       if (preg_match('|Date of Death</td>(.*?)</td|ims',$this->page["Bio"],$match)) {
         preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
@@ -422,7 +432,7 @@
   */
  public function height() {
    if (empty($this->bodyheight)) {
-    if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+    $this->getPage ("Bio");
     if (preg_match("!Height</td>\s*<td>\s*(?<imperial>.*?)\s*(&nbsp;)?\((?<metric>.*?)\)!m",$this->page["Bio"],$match)) {
       $this->bodyheight["imperial"] = str_replace('&nbsp;',' ',trim($match['imperial']));
       $this->bodyheight["metric"] = str_replace('&nbsp;',' ',trim($match['metric']));
@@ -442,7 +452,7 @@
   */
  public function spouse() {
    if (empty($this->spouses)) {
-     if ($this->page["Bio"] == "") $this->openpage ("Bio","person");
+     $this->getPage ("Bio");
      $doc = new DOMDocument();
      @$doc->loadHTML($this->page["Bio"]);
      $xp = new DOMXPath($doc);
@@ -488,7 +498,7 @@
   */
   public function bio() {
    if (empty($this->bio_bio)) {
-     if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+     $this->getPage("Bio");
      if ( $this->page["Bio"] == "cannot open page" ) return array(); // no such page
      if ( preg_match('!<h4 class="li_group">Mini Bio[^>]+?>(.+?)<(h4 class="li_group"|div class="article")!ims',$this->page["Bio"],$block) ) {
        preg_match_all('!<div class="soda.*?\s*<p>\s*(?<bio>.+?)\s</p>\s*<p><em>- IMDb Mini Biography By:\s*(?<author>.+?)\s*</em>!ims',$block[1],$matches);
@@ -518,7 +528,7 @@
    * @param ref array res
    */
   protected function parparse($name,&$res) {
-    if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+    $this->getPage("Bio");
     $pos_s = strpos($this->page["Bio"],'<h4 class="li_group">'.$name);
     $pos_e = strpos($this->page["Bio"],"<h4",$pos_s+1);
     if (!$pos_e) $pos_e = strpos($this->page["Bio"],"</tbody",$pos_s+1);
@@ -570,7 +580,7 @@
    */
   public function salary() {
     if (empty($this->bio_salary)) {
-      if ( $this->page["Bio"] == "" ) $this->openpage ("Bio","person");
+      $this->getPage("Bio");
       $pos_s = strpos($this->page["Bio"],'<table id="salariesTable"');
       if (!$pos_s) return $this->bio_salary;
       $pos_e = strpos($this->page["Bio"],"</table",$pos_s);
@@ -602,7 +612,7 @@
    */
   public function pubprints() {
     if (empty($this->pub_prints)) {
-      if ( empty($this->page["Publicity"]) ) $this->openpage ("Publicity","person");
+      $this->getPage("Publicity");
       $pos_s = strpos($this->page["Publicity"],"<h5>Biography (print)</h5>");
       $pos_e = strpos($this->page["Publicity"],"<br",$pos_s);
       $block = substr($this->page["Publicity"],$pos_s,$pos_e - $pos_s);
@@ -628,7 +638,7 @@
    * @brief helper to pubmovies() and portrayedmovies()
    */
   protected function parsepubmovies(&$res,$page,$header) {
-    if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
+    $this->getPage($page);
     $pos_s = strpos($this->page[$page],"<h5>$header</h5>");
     $pos_e = strpos($this->page[$page],"<h5",$pos_s+5);
     $skip  = strlen($header)+9;
@@ -674,7 +684,7 @@
    * @see IMDB person page /publicity
    */
   protected function parsearticles(&$res,$page,$title) {
-    if ( $this->page[$page] == "" ) $this->openpage ($page,"person");
+    $this->getPage($page);
     $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
     if ( $pos_s === FALSE ) { $res = array(); return; }
     $pos_e = strpos($this->page[$page],"</table",$pos_s);

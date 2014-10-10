@@ -30,7 +30,6 @@ class imdbsearch extends mdb_base {
    * @return array array of imdb objects
    */
   public function search($searchTerms, $wantedTypes = null, $maxResults = null) {
-    $page = '';
     $results = array();
 
     // @TODO remove maxresults? It has no effect on imdb and why would the user want less results than possible?
@@ -38,19 +37,10 @@ class imdbsearch extends mdb_base {
       $maxResults = $this->maxresults;
     }
 
-    if ($this->usecache) {
-      $this->cache_read(urlencode(strtolower($searchTerms)) . '.search', $page);
-    }
+    $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
+    $pageRequest = new imdb_page($url, $this, $this->cache, $this->logger);
 
-    if (!$page) {
-      // @TODO pre filter if they only pick one type
-      $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
-      $page = $this->makeRequest($url);
-
-      if ($this->storecache && $page) {
-        $this->cache_write(urlencode(strtolower($searchTerms)) . '.search', $page);
-      }
-    }
+    $page = $pageRequest->get();
 
     // Parse & filter results
     if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d{4}]\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<type>[^<]*)!ims', $page, $matches, PREG_SET_ORDER)) {
@@ -70,26 +60,6 @@ class imdbsearch extends mdb_base {
     }
 
     return $results;
-  }
-
-  protected function makeRequest($url) {
-    mdb_base::debug_scalar("imdbsearch: Using URL $url");
-    $be = new MDB_Request($url, $this);
-    $be->sendrequest();
-    $body = $be->getResponseBody();
-
-    // @TODO The intricacies of http should be delt with by the http library
-    // @TODO does this ever happen?
-    if ($header = $be->getResponseHeader("Location")) {
-      mdb_base::debug_scalar("imdbsearch: No immediate response body - we are redirected.<br>New URL: $header");
-      if (substr($header, 0, 1) == '/') {
-        return $this->makeRequest($this->imdbsite . $header);
-      } else {
-        return $this->makeRequest($header);
-      }
-    }
-
-    return $body;
   }
 
   protected function parseTitleType($string) {

@@ -18,7 +18,8 @@ require_once (dirname(__FILE__)."/movie_base.class.php");
 #=============================================================================
 #=================================================[ The IMDB class itself ]===
 #=============================================================================
-/** Accessing IMDB Budget Data
+/**
+ * IMDb Budget Data and other business data such as country/weekend grosses
  * @package IMDB
  * @class imdb_budget
  * @extends movie_base
@@ -47,12 +48,13 @@ class imdb_budget extends movie_base {
   * @method protected reset_vars
   */
  protected function reset_vars() {
-   $this->budget = '';
+   $this->budget = null;
    $this->openingWeekend = array();
    $this->gross = array();
    $this->weekendGross = array();
    $this->admissions = array();
    $this->filmingDates = array();
+   $this->page['BoxOffice'] = '';
  }
 
 #-------------------------------------------------------------[ Open Page ]---
@@ -61,16 +63,17 @@ class imdb_budget extends movie_base {
   * @param string wt internal name of the page
   * @return string urlname page URL
   */
- protected function set_pagename($wt) {
-  switch ($wt){
-   case "BoxOffice"   : $urlname="/business"; break;
-   default            :
-     $this->page[$wt] = "unknown page identifier";
-     $this->debug_scalar("Unknown page identifier: $wt");
-     return false;
+  protected function set_pagename($wt) {
+    switch ($wt) {
+      case "BoxOffice":
+        $urlname = "/business";
+        break;
+      default:
+        $this->logger->critical("[Budget] Unknown page identifier [$wt]");
+        return '';
+    }
+    return $urlname;
   }
-  return $urlname;
- }
 
 #-----------------------------------------------[ URL to movies main page ]---
  /** Set up the URL to the movie title page
@@ -81,43 +84,49 @@ class imdb_budget extends movie_base {
   return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
  }
 
+  protected function buildUrl($page) {
+    return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->set_pagename($page);
+  }
+
 #====================================================[ /business page ]=== 
 
  /* Get budget
   * @method protected get_budget
-  * @param ref string budg
-  * @return string
+  * @param string budg
+  * @return int|null null on failure
   * @brief Assuming budget is estimated, and in american dollar
   * @see IMDB page / (TitlePage)
   */
- protected function get_budget(&$budg){
+ protected function get_budget($budg){
      // Tries to get a single entry
-     if (@preg_match("!(.*?)\s*\(estimated\)!ims",$budg,$opWe)){ 
-         $result = $opWe[1];
-         return intval(substr(str_replace(",","",$result), 1));
-     }
-     else return "";
+    if (@preg_match("!(.*?)\s*\(estimated\)!ims", $budg, $opWe)) {
+      $result = $opWe[1];
+      return intval(substr(str_replace(",", "", $result), 1));
+    } else {
+      return null;
+    }
  } // End of get_budget
 
  /* Get budget
   * @method get_budget
-  * @return string
+  * @return int|null null on failure / no data
   * @brief Assuming budget is estimated, and in american dollar
   * @see IMDB page / (TitlePage)
   */
- public function budget() {
-   if (empty($this->budget)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->budget; // no such page
-     if (@preg_match("!<h5>Budget</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims",$this->page["BoxOffice"],$bud)) // Opening Weekend
-     $budget = $bud[1];
-     $this->budget = $this->get_budget($budget);
-   }
-   return $this->budget;
- }
+  public function budget() {
+    if (empty($this->budget)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Budget</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $bud)) { // Opening Weekend
+        $budget = $bud[1];
+      } else {
+        return null;
+      }
+      $this->budget = $this->get_budget($budget);
+    }
+    return $this->budget;
+  }
 
-
- #-------------------------------------------------[ Openingbudget ]---
+  #-------------------------------------------------[ Openingbudget ]---
  /** Get opening weekend budget
   * @method protected get_openingWeekend
   * @param ref string listOpening
@@ -155,7 +164,7 @@ class imdb_budget extends movie_base {
 
      // Parse the results in an array
      $result[$i] = array(
-       'value'     => $value[1],
+       'value'     => trim($value[1]),
        'country'   => $country[1],
        'date'      => $dateValue,
        'nbScreens' => intval(str_replace(",","",$nbScreen[1]))
@@ -172,20 +181,20 @@ class imdb_budget extends movie_base {
 
 
  /** Opening weekend budget
-  * @method openingWeekend
-  * @return array[0..n] of array[value,country,date,nbScreens]
-  * @see IMDB page
-  */
- public function openingWeekend() {
-   if (empty($this->openingWeekend)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->openingWeekend; // no such page
-     if (@preg_match("!<h5>Opening Weekend</h5>\n*(.*?)<br/>\n*<h5!ims",$this->page["BoxOffice"],$opWe)) // Opening Weekend
-     $openingWeekend = $opWe[1];
-     $this->openingWeekend = $this->get_openingWeekend($openingWeekend);
+   * @method openingWeekend
+   * @return array[0..n] of array[value,country,date,nbScreens]
+   * @see IMDB page
+   * @TODO fix 'value' field .. "&#163;3,384,948" isn't good enough
+   */
+  public function openingWeekend() {
+    if (empty($this->openingWeekend)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Opening Weekend</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $opWe)) // Opening Weekend
+        $openingWeekend = $opWe[1];
+      $this->openingWeekend = $this->get_openingWeekend($openingWeekend);
+    }
+    return $this->openingWeekend;
   }
-  return $this->openingWeekend;
- }
 
  #-------------------------------------------------[ Gross ]---
  /** Get gross budget
@@ -221,7 +230,7 @@ class imdb_budget extends movie_base {
 
      // Parse the results in an array
      $result[$i] = array(
-       'value'     => $value[1],
+       'value'     => trim($value[1]),
        'country'   => $country[1],
        'date'      => $dateValue,
      );
@@ -237,20 +246,20 @@ class imdb_budget extends movie_base {
 
 
  /** Get gross budget
-  * @method gross
-  * @return array[0..n] of array[value,country,date]
-  * @see IMDB page / (TitlePage)
-  */
- public function gross() {
-   if (empty($this->gross)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->gross; // no such page
-     if (@preg_match("!<h5>Gross</h5>\n*(.*?)<br/>\n*<h5!ims",$this->page["BoxOffice"],$gr)) // Gross
-     $gross = $gr[1];
-     $this->gross = $this->get_gross($gross);
+   * @method gross
+   * @return array[0..n] of array[value,country,date]
+   * @see IMDB page / (TitlePage)
+   * @TODO fix 'value' field .. "&#163;3,384,948" isn't good enough
+   */
+  public function gross() {
+    if (empty($this->gross)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Gross</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $gr)) // Gross
+        $gross = $gr[1];
+      $this->gross = $this->get_gross($gross);
+    }
+    return $this->gross;
   }
-  return $this->gross;
- }
 
 
  #-------------------------------------------------[ Weekend Gross ]---
@@ -291,7 +300,7 @@ class imdb_budget extends movie_base {
 
      // Parse the results in an array
      $result[$i] = array(
-       'value'     => $value[1],
+       'value'     => trim($value[1]),
        'country'   => $country[1],
        'date'      => $dateValue,
        'nbScreens' => intval(str_replace(",","",$nbScreen[1]))
@@ -308,23 +317,21 @@ class imdb_budget extends movie_base {
 
 
  /** Get weekend gross budget
-  * @method weekendGross
-  * @return array[0..n] of array[value,country,date,nbScreen]
-  * @see IMDB page / (TitlePage)
-  */
- public function weekendGross() {
-   if (empty($this->weekendGross)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->weekendGross; // no such page
-     if (@preg_match("!<h5>Weekend Gross</h5>\n*(.*?)<br/>\n*<h5!ims",$this->page["BoxOffice"],$weGr)) // Weekend Gross
-     $weekendGross = $weGr[1];
-     $this->weekendGross = $this->get_weekendGross($weekendGross);
-   }
-   return $this->weekendGross;
- } // End of weekendGross
+   * @method weekendGross
+   * @return array[0..n] of array[value,country,date,nbScreen]
+   * @see IMDB page / (TitlePage)
+   */
+  public function weekendGross() {
+    if (empty($this->weekendGross)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Weekend Gross</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $weGr)) // Weekend Gross
+        $weekendGross = $weGr[1];
+      $this->weekendGross = $this->get_weekendGross($weekendGross);
+    }
+    return $this->weekendGross;
+  }
 
-
- #-------------------------------------------------[ Admissions ]---
+  #-------------------------------------------------[ Admissions ]---
  /** Get admissions budget
   * @method protected get_admissions
   * @param ref string listAdmissions
@@ -374,23 +381,21 @@ class imdb_budget extends movie_base {
 
 
  /** Get admissions budget
-  * @method admissions
-  * @return array[0..n] of array[value,country,date]
-  * @see IMDB page / (TitlePage)
-  */
- public function admissions() {
-   if (empty($this->admissions)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->admissions; // no such page
-     if (@preg_match("!<h5>Admissions</h5>\n*(.*?)<br/>\n*<h5!ims",$this->page["BoxOffice"],$weGr)) // Admissions
-       $admissions = $weGr[1];
-     $this->admissions = $this->get_admissions($admissions);
+   * @method admissions
+   * @return array[0..n] of array[value,country,date]
+   * @see IMDB page / (business)
+   */
+  public function admissions() {
+    if (empty($this->admissions)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Admissions</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $weGr)) // Admissions
+        $admissions = $weGr[1];
+      $this->admissions = $this->get_admissions($admissions);
+    }
+    return $this->admissions;
   }
-  return $this->admissions;
- } // End of admissions
 
-
- #-------------------------------------------------[ Filming Dates ]---  
+  #-------------------------------------------------[ Filming Dates ]---
  /** Get filming dates
   * @method get_filmingDates
   * @param ref string listFilmingDates
@@ -398,8 +403,7 @@ class imdb_budget extends movie_base {
   * Time format : YYYY-MM-DD
   * @see IMDB page / (TitlePage)
   */
- function get_filmingDates($listFilmingDates){
-   $result = array();
+ protected function get_filmingDates($listFilmingDates){
    $temp = $listFilmingDates;
 
    // Tries to get the beginning
@@ -435,26 +439,23 @@ class imdb_budget extends movie_base {
    );
 
    return $result;
- } // End of get_filmingDates
+ }
 
 
  /** Get filming dates
-  * @method filmingDates
-  * @return array[0..n] of array[beginning,end]
-  * Time format : YYYY-MM-DD
-  * @see IMDB page / (TitlePage)
-  */
- public function filmingDates() {
-   if (empty($this->filmingDates)) {
-     if ($this->page["BoxOffice"] == "") $this->openpage ("BoxOffice");
-     if ($this->page["BoxOffice"] == "cannot open page" ) return $this->filmingDates; // no such page
-     if (@preg_match("!<h5>Filming Dates</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims",$this->page["BoxOffice"],$filDates)) // Filming Dates
-       $filmingDates = $filDates[1];
-     $this->filmingDates = $this->get_filmingDates($filmingDates);
-   }
-   return $this->filmingDates;
- } // End of filmingDates
+   * @method filmingDates
+   * @return array[beginning, end]
+   * Time format : YYYY-MM-DD
+   * @see IMDB page / (TitlePage)
+   */
+  public function filmingDates() {
+    if (empty($this->filmingDates)) {
+      $page = $this->getPage("BoxOffice");
+      if (@preg_match("!<h5>Filming Dates</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $filDates)) // Filming Dates
+        $filmingDates = $filDates[1];
+      $this->filmingDates = $this->get_filmingDates($filmingDates);
+    }
+    return $this->filmingDates;
+  }
 
-} // end class imdb_budget
-
-?>
+}
