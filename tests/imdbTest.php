@@ -3,6 +3,22 @@ require_once dirname(__FILE__) . '/../imdb.class.php';
 
 class imdbTest extends PHPUnit_Framework_TestCase {
 
+  /**
+   * IMDb IDs for testing:
+   * 0133093 = The Matrix (has everything)
+   * 0087544 = Nausicaa (foreign, nonascii)
+   * 1570728 = Crazy, Stupid, Love (no runtime in tech details (but has a runtime at top)
+   * 0078788 = Apocalypse Now (Two cuts, multiple languages)
+   * 0108052 = Schindler's List (multiple colours)
+   * 0338187 = The Last New Yorker (see full synopsis...)
+   *
+   * 0306414 = The Wire (TV / has everything)
+   * 1286039 = Stargate Universe (multiple creators)
+   * 1027544 = Roary the Racing Car (TV show, almost everything missing)
+   *
+   * 0284717 = Crociati (tv movie, see full summary...)
+   */
+
     public function testConstruct_from_ini_constructed_config() {
         $config = new mdb_config(dirname(__FILE__) . '/resources/test.ini');
         $imdb = new imdb('0133093', $config);
@@ -19,6 +35,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testMovietype_on_tv() {
         $imdb = $this->getImdb("0306414");
         $this->assertEquals('TV Series', $imdb->movietype());
+    }
+
+    public function testMovietype_on_tvMovie() {
+      // @todo I would've thought this should be TV Movie but it's actually Movie
+//        $imdb = $this->getImdb("284717");
+//        $this->assertEquals('TV Movie', $imdb->movietype());
     }
 
     public function testTitle() {
@@ -164,13 +186,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLanguages_multiplelanguage() {
-        $imdb = $this->getImdb('1136608');
+        $imdb = $this->getImdb('0078788');
         $languages = $imdb->languages();
         $this->assertTrue(in_array('English', $languages));
-        $this->assertTrue(in_array('Nyanja', $languages));
-        $this->assertTrue(in_array('Afrikaans', $languages));
-        $this->assertTrue(in_array('Zulu', $languages));
-        $this->assertTrue(in_array('Xhosa', $languages));
+        $this->assertTrue(in_array('French', $languages));
+        $this->assertTrue(in_array('Vietnamese', $languages));
+        $this->assertTrue(in_array('Khmer', $languages));
     }
 
     public function testLanguages_nolanguage() {
@@ -216,6 +237,15 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(2, $colors);
       $this->assertEquals('Black and White', $colors[0]);
       $this->assertEquals('Color', $colors[1]);
+    }
+
+    public function testCreator_no_creators() {
+      // A little weak to test a movie for this, but it is testing a missing field
+      $imdb = $this->getImdb('0133093');
+      $creators = $imdb->creator();
+
+      $this->assertInternalType('array', $creators);
+      $this->assertEquals(0, count($creators));
     }
 
     public function testCreator_one_creator() {
@@ -285,12 +315,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPhoto_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('3626430');
+        $imdb = $this->getImdb('1027544');
         $this->assertFalse($imdb->photo(false));
     }
 
     public function testPhoto_thumb_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('3626430');
+        $imdb = $this->getImdb('1027544');
         $this->assertFalse($imdb->photo(true));
     }
 
