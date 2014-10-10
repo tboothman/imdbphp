@@ -127,6 +127,10 @@ class mdb_base extends mdb_config {
           if (strpos(trim(strtolower($headline)),'location')!==0) continue;
           $aline = explode(': ',$headline);
           $target = trim($aline[1]);
+          $urlParts = parse_url($target);
+          if (!isset($urlParts['host'])) {
+            $target = "http://" . $this->imdbsite . $target;
+          }
           $this->getWebPage($wt,$target);
           return;
         }

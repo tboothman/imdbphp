@@ -11,6 +11,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 0078788 = Apocalypse Now (Two cuts, multiple languages)
    * 0108052 = Schindler's List (multiple colours)
    * 0338187 = The Last New Yorker (see full synopsis...)
+   * 2768262 = redirect to 2386868
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -604,6 +605,11 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals(8, count($dg['credits']), "Incorrect number of credits");
 //        $this->assertEquals('writer', $dg['credits'][0]['desc']);
 //        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
+    }
+
+    public function test_title_redirects_are_followed() {
+        $imdb = $this->getImdb('2768262');
+        $this->assertEquals('The Battle of the Sexes', $imdb->title());
     }
 
     
