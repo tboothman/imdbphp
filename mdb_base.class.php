@@ -23,7 +23,7 @@ require_once (dirname(__FILE__)."/mdb_request.class.php");
  * @version $Revision$ $Date$
  */
 class mdb_base extends mdb_config {
-  public $version = '2.3.3';
+  public $version = '2.3.4';
 
   /**
    * The last HTTP status code from the IMDB server
