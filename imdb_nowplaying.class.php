@@ -30,7 +30,7 @@ class imdb_nowplaying {
 
   /**
    * Constructor: Obtain the raw data from IMDB site
-   * @param object mdb_config Optionally pass in the mdb_config object to use
+   * @param mdb_config Optionally pass in the mdb_config object to use
    */
   function __construct(mdb_config $iconf = null) {
      $req = new MDB_Request($this->nowplayingpage, $config);

@@ -34,7 +34,7 @@ class imdb_movielist extends movie_base {
 #==========================================[ internal (protected) methods ]===
 #-----------------------------------------------------------[ Constructor ]---
  /**
-  * @param object mdb_config $config OPTIONAL override default config
+  * @param mdb_config $config OPTIONAL override default config
   */
  public function __construct(mdb_config $config = null) {
    parent::__construct('0000001', $config);

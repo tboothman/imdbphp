@@ -39,59 +39,59 @@ class mdb_config {
    * Any valid language code can be used here (e.g. en-US, de, pt-BR).
    * If this option is specified, the Accept-Language header with this value
    * will be included in the requests.
-   * @var string language
+   * @var string
    */
   public $language = "";
 
   /**
    * Directory to store the cache files. This must be writable by the web
    * server. It doesn't need to be under documentroot.
-   * @var string cachedir
+   * @var string
    */
   public $cachedir = './cache/';
 
   /**
    * Use a cached page to retrieve the information if available?
-   * @var boolean usecache
+   * @var boolean
    */
   public $usecache = true;
 
   /**
    * Store the pages retrieved for later use?
-   * @var boolean storecache
+   * @var boolean
    */
   public $storecache = true;
 
   /**
    * Use zip compression for caching the retrieved html-files?
-   * @var boolean usezip
+   * @var boolean
    */
   public $usezip = true;
 
   /**
    * Convert non-zip cache-files to zip (check file permissions!)?
-   * @var boolean converttozip
+   * @var boolean
    */
   public $converttozip = true;
 
   /**
    * Cache expiration - cache files older than this value (in seconds) will
    * be automatically deleted.
-   * @var integer cache_expire
+   * @var integer
    */
   public $cache_expire = 3600;
 
   /**
    * Where to store images retrieved from the IMDB site by the method photo_localurl().
    * This needs to be under documentroot to be able to display them on your pages.
-   * @var string photodir
+   * @var string
    */
   public $photodir = './images/';
 
   /**
    * URL corresponding to photodir, i.e. the URL to the images, i.e. start at
    * your servers DOCUMENT_ROOT when specifying absolute path
-   * @var string photoroot
+   * @var string
    */
   public $photoroot = './images/';
 
@@ -99,20 +99,20 @@ class mdb_config {
    * Where the local IMDB images reside (look for the "showtimes/" directory)
    * This should be either a relative, an absolute, or an URL including the
    * protocol (e.g. when a different server shall deliver them)
-   * @var string imdb_img_url
+   * @var string
    */
   public $imdb_img_url = './imgs/';
 
   /**
    * Try to recode all non-UTF-8 content to UTF-8?
    * As the name suggests, this only should concern IMDB classes.
-   * @var boolean imdb_utf8recode
+   * @var boolean
    */
   public $imdb_utf8recode = false;
 
   /**
    * Enable debug mode?
-   * @var boolean debug
+   * @var boolean
    */
   public $debug = false;
 
@@ -121,24 +121,24 @@ class mdb_config {
    * Limit for the result set of searches.
    * Use 0 for no limit, or the number of maximum entries you wish. Default
    * (when commented out) is 20.
-   * @var integer maxresults
+   * @var integer
    */
   public $maxresults = 20;
 
   /**
    * Set the default user agent (if none is detected)
-   * @var string default_agent
+   * @var string
    */
   public $default_agent = 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3';
 
   /**
    * Enforce the use of a special user agent
-   * @var string force_agent
+   * @var string
    */
   public $force_agent = '';
 
   /**
-   * @constructor mdb_config
+   *
    * @param string $iniFile OPTIONAL A config file containing any config overrides
    */
   public function __construct($iniFile = null) {
@@ -153,7 +153,7 @@ class mdb_config {
     } else {
       $ini_files = glob(dirname(__FILE__) . '/conf/*.ini');
     }
-
+    
     if (is_array($ini_files)) {
       foreach ($ini_files as $file) {
         $ini = parse_ini_file($file);

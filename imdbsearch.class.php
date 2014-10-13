@@ -2,11 +2,6 @@
 
 require_once (dirname(__FILE__) . "/imdb.class.php");
 
- /** Search IMDB
-  * @package IMDB
-  * @class imdbsearch
-  * @version $Revision$ $Date$
-  */
 class imdbsearch extends mdb_base {
 
   const MOVIE = 'Movie';
@@ -22,8 +17,7 @@ class imdbsearch extends mdb_base {
 
   /**
    * Search IMDb for titles matching $searchTerms
-   * @method search
-   * @param string $searchTerms
+   * @param type $searchTerms
    * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
    *                            The class constants MOVIE,GAME etc should be used e.g. [imdbsearch::MOVIE, imdbsearch::TV_SERIES]
    * @param int $maxResults *optional* The maximum number of results to retrieve from IMDB. 0 for unlimited. Defaults to mdb_config::$maxresults
@@ -95,9 +89,8 @@ class imdbsearch extends mdb_base {
   protected $name;
   protected $episode_search = false;
   /**
-   * DEPRECATED
+   * DEPRICATED
    * Search for episodes or movies
-   * @method search_episodes
    * @param boolean enabled TRUE: Search for episodes; FALSE: Search for movies (default)
    * @deprecated since version 2.2.4
    */
@@ -107,9 +100,8 @@ class imdbsearch extends mdb_base {
   }
 
   /**
-   * DEPRECATED
+   * DEPRICATED
    * Set the name (title) to search for
-   * @method setsearchname
    * @param string searchstring what to search for - (part of) the movie name
    * @deprecated since version 2.2.4
    */
@@ -119,9 +111,8 @@ class imdbsearch extends mdb_base {
   }
 
   /**
-   * DEPRECATED
+   * DEPRICATED
    * Perform the search
-   * @method results
    * @param optional string URL Replace search URL by your own (Default: empty string)
    * @param optional boolean series whether to include TV series in search results (default: TRUE)
    * @param optional boolean s_episodes whether to include TV episodes in search results (default: TRUE)
@@ -163,7 +154,6 @@ class imdbsearch extends mdb_base {
   }
 
   /**
-   * @method reset
    * @deprecated since version 2.2.4
    */
   public function reset() {

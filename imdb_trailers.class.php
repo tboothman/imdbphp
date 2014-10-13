@@ -25,25 +25,25 @@
   * @version $Revision$ $Date$
   */
  class imdb_trailers {
-    var $page = "";
-    var $moviemazeurl = "http://www.moviemaze.de";
-    var $alltrailersurl = "http://www.alltrailers.net";
-    var $latemagurl = "http://latemag.com";
-    var $moviemazeflashplayer = "/media/trailer/flash/player.swf";
-    var $latemagflashplayer = "/files/mediaplayer.swf";
-    var $moviemazefilesyntax = "file=";
-    var $latemagfilesyntax = "file=";
+	var $page = "";
+	var $moviemazeurl = "http://www.moviemaze.de";
+	var $alltrailersurl = "http://www.alltrailers.net";
+	var $latemagurl = "http://latemag.com";
+	var $moviemazeflashplayer = "/media/trailer/flash/player.swf";
+	var $latemagflashplayer = "/files/mediaplayer.swf";
+	var $moviemazefilesyntax = "file=";
+	var $latemagfilesyntax = "file=";
   protected $config;
 
   /**
-   * @constructor imdb_trailers
-   * @param object mdb_config $config OPTIONAL override default config
+   *
+   * @param mdb_config $config OPTIONAL override default config
    */
     public function __construct(mdb_config $config = null) {
       $this->config = $config;
       $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     }
-
+		
    /** Retrieve trailer URLs from moviemaze.de
     * @method getFlashCodeMovieMaze
     * @param string url trailer url as retrieved with imdb::videosites

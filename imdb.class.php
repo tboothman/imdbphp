@@ -29,12 +29,11 @@ class imdb extends movie_base {
 
   /**
    * Create an imdb object populated with id, title, year
-   * @method fromSearchResult
    * @param string $id imdb ID
    * @param string $title film title
    * @param int $year
    * @param string $additional
-   * @param object mdb_config $config
+   * @param mdb_config $config
    * @return imdb
    */
   public static function fromSearchResult($id, $title, $year, $type, mdb_config $config = null) {
@@ -50,7 +49,7 @@ class imdb extends movie_base {
   /** Initialize the class
    * @constructor imdb
    * @param string $id IMDBID to use for data retrieval
-   * @param object mdb_config $config OPTIONAL override default config
+   * @param mdb_config $config OPTIONAL override default config
    */
   function __construct($id, mdb_config $config = null) {
     parent::__construct($id, $config);
@@ -540,7 +539,6 @@ class imdb extends movie_base {
  #---------------------------------------------------------------[ Creator ]---
   /**
    * Get the creator of a movie (most likely for seasons only)
-   * @method creator
    * @return array creator (array[0..n] of array[name,imdb])
    * @see IMDB page / (TitlePage)
    */
@@ -700,7 +698,6 @@ class imdb extends movie_base {
 
   /**
    * Get poster/cover photo
-   * @method photo
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
@@ -716,7 +713,6 @@ class imdb extends movie_base {
 
   /**
    * Save the poster/cover photo to disk
-   * @method savephoto
    * @param string path where to store the file
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
@@ -827,7 +823,6 @@ class imdb extends movie_base {
   /** Get movie's alternative names
    * Note: This may return an empty country or comments.
    * comment, year and lang are there for backwards compatibility and should not be used
-   * @method alsoknow
    * @return array aka array[0..n] of array[title,country,comments[]]
    * @see IMDB page ReleaseInfo
    */
@@ -1323,7 +1318,6 @@ class imdb extends movie_base {
  #--------------------------------------------------------[ Episodes Array ]---
   /**
    * Get the series episode(s)
-   * @method episodes
    * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
    * @see IMDB page /episodes
    * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
