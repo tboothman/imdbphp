@@ -51,9 +51,9 @@ class mdb_base extends mdb_config {
   protected $page = array();
 
 
-  /** Initialize the class
+  /**
    * @constructor mdb_base
-   * @param optional object mdb_config override default config
+   * @param object mdb_config $config OPTIONAL override default config
    */
   public function __construct(mdb_config $config = null) {
     parent::__construct();

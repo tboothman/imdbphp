@@ -30,8 +30,7 @@ class imdb_topcharts {
 
    /**
     * Constructor: Get data from the charts page
-    * @constructor imdb_topcharts
-    * @param optional object mdb_config override default config
+    * @param object mdb_config $config OPTIONAL override default config
     */
    function __construct(mdb_config $config = null){
       $req = new MDB_Request($this->chartspage, $config);

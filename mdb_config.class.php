@@ -137,9 +137,9 @@ class mdb_config {
    */
   public $force_agent = '';
 
-  /** Initialize the class
+  /**
    * @constructor mdb_config
-   * @param optional string iniFile A config file containing any config overrides
+   * @param string $iniFile OPTIONAL A config file containing any config overrides
    */
   public function __construct($iniFile = null) {
     // A little hack to maintain the old default behaviour of making sure the cache folder is

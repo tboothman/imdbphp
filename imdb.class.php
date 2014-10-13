@@ -49,8 +49,8 @@ class imdb extends movie_base {
  #-----------------------------------------------------------[ Constructor ]---
   /** Initialize the class
    * @constructor imdb
-   * @param string id IMDBID to use for data retrieval
-   * @param optional object mdb_config override default config
+   * @param string $id IMDBID to use for data retrieval
+   * @param object mdb_config $config OPTIONAL override default config
    */
   function __construct($id, mdb_config $config = null) {
     parent::__construct($id, $config);

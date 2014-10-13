@@ -162,7 +162,7 @@ class imdbsearch extends mdb_base {
     return $this->search($this->name, $searchTypes);
   }
 
-  /** Reset variables
+  /**
    * @method reset
    * @deprecated since version 2.2.4
    */
