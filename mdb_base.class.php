@@ -70,14 +70,34 @@ class mdb_base extends mdb_config {
     if ($this->storecache && ($this->cache_expire > 0)) $this->cache->purge();
   }
 
+  /**
+   * Setup class for a new IMDB id
+   * @method setid
+   * @param string id IMDBID of the requested movie
+   */
+  public function setid ($id) {
+    if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
+    $this->imdbID = $id;
+    $this->reset_vars();
+  }
+
+  /**
+   * Retrieve the IMDB ID
+   * @method imdbid
+   * @return string id IMDBID currently used
+   */
+  public function imdbid() {
+    return $this->imdbID;
+  }
+
  #---------------------------------------------------------[ Debug helpers ]---
-  function debug_scalar($scalar) {
+  protected function debug_scalar($scalar) {
     $this->logger->error($scalar);
   }
-  function debug_object($object) {
+  protected function debug_object($object) {
     $this->logger->error('{object}', ['object' => $object]);
   }
-  function debug_html($html) {
+  protected function debug_html($html) {
     $this->logger->error(htmlentities($html));
   }
 
@@ -138,34 +158,12 @@ class mdb_base extends mdb_config {
     return '';
   }
 
- #-------------------------------------------------------[ Get current MID ]---
-  /**
-   * Retrieve the IMDB ID
-   * @method imdbid
-   * @return string id IMDBID currently used
-   */
-  public function imdbid() {
-    return $this->imdbID;
-  }
-
- #--------------------------------------------------[ Start (over) / Reset ]---
   /**
    * Reset page vars
    * @method protected reset_vars
    */
   protected function reset_vars() {
     return;
-  }
-
-  /**
-   * Setup class for a new IMDB id
-   * @method setid
-   * @param string id IMDBID of the requested movie
-   */
-  public function setid ($id) {
-    if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
-    $this->imdbID = $id;
-    $this->reset_vars();
   }
 
 }
