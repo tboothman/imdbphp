@@ -32,7 +32,7 @@ class imdb extends movie_base {
    * @param string $id imdb ID
    * @param string $title film title
    * @param int $year
-   * @param string $additional
+   * @param string $type
    * @param mdb_config $config
    * @return imdb
    */
@@ -631,7 +631,7 @@ class imdb extends movie_base {
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
    * @method plotoutline
-   * @param optional boolean fallback Fallback to storyline if we could not catch plotoutline? Default: FALSE
+   * @param boolean $fallback Fallback to storyline if we could not catch plotoutline
    * @return string plotoutline
    * @see IMDB page / (TitlePage)
    */
@@ -698,7 +698,7 @@ class imdb extends movie_base {
 
   /**
    * Get poster/cover photo
-   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   * @param boolean $thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
@@ -713,8 +713,8 @@ class imdb extends movie_base {
 
   /**
    * Save the poster/cover photo to disk
-   * @param string path where to store the file
-   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   * @param string $path where to store the file
+   * @param boolean $thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return boolean success
    * @see IMDB page / (TitlePage)
@@ -749,7 +749,7 @@ class imdb extends movie_base {
 
   /** Get the URL for the movies cover photo
    * @method photo_localurl
-   * @param optional boolean thumb get the thumbnail (100x140, default) or the
+   * @param boolean $thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
    * @see IMDB page / (TitlePage)
@@ -1156,7 +1156,7 @@ class imdb extends movie_base {
  #----------------------------------------------------------------[ Actors ]---
   /** Get the actors
    * @method cast
-   * @param optional boolean clean_ws whether to clean white-space inside names
+   * @param boolean $clean_ws whether to clean white-space inside names
    * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
    * @version the "role" field might contain several "newlines" in the middle of the
    *        string. They usually separate multiple entries (see e.g. IMDBID 2186562:
@@ -1415,8 +1415,8 @@ class imdb extends movie_base {
  #--------------------------------------------------------[ Trailers Array ]---
   /** Get the trailer URLs for a given movie
    * @method trailers
-   * @param optional boolean full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
-   * @param optional boolean all  Fetch all trailers (including off-site ones)? Default: True
+   * @param boolean $full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
+   * @param boolean $all  Fetch all trailers (including off-site ones)? Default: True
    * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url,resolution] ($full=TRUE)
    * @author george
    * @author izzy
@@ -1559,7 +1559,7 @@ class imdb extends movie_base {
  #----------------------------------------------------------[ Trivia Array ]---
   /** Get the trivia info
    * @method trivia
-   * @param optional boolean spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
+   * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
    * @return array trivia (array[0..n] string
    * @see IMDB page /trivia
    */
@@ -1943,7 +1943,7 @@ class imdb extends movie_base {
   #--------------------------------------------------------------[ Awards ]---
   /** Get the complete awards for the movie
    * @method awards
-   * @param optional boolean compat whether stay backward compatible to the original format of Qvist. Default: TRUE
+   * @param boolean $compat whether stay backward compatible to the original format of Qvist. Default: TRUE
    * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people[],comment,outcome]
    * @see IMDB page /awards
    * @brief array[festivalName] is array[name,entries] - where name is a string,

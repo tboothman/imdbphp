@@ -17,7 +17,7 @@ class imdbsearch extends mdb_base {
 
   /**
    * Search IMDb for titles matching $searchTerms
-   * @param type $searchTerms
+   * @param string $searchTerms
    * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
    *                            The class constants MOVIE,GAME etc should be used e.g. [imdbsearch::MOVIE, imdbsearch::TV_SERIES]
    * @param int $maxResults *optional* The maximum number of results to retrieve from IMDB. 0 for unlimited. Defaults to mdb_config::$maxresults

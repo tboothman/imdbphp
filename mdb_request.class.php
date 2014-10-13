@@ -28,8 +28,8 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * No need to call this.
-   * @param string url URL to open
-   * @param mdb_config Optionally pass in the mdb_config object to use
+   * @param string $url URL to open
+   * @param mdb_config $ifconf Optionally pass in the mdb_config object to use
    */
   public function __construct($url, mdb_config $iconf = null) {
     parent::__construct();
@@ -74,6 +74,7 @@ class MDB_Request extends BrowserEmulator {
 
   /**
    * Set the URL we need to parse
+   * @param string $url
    */
   public function setURL($url) {
     $this->urltoopen = $url;
