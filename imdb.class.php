@@ -1381,9 +1381,9 @@ class imdb extends movie_base {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) {
           if ($matches[1][$i]=='Spoilers') continue; // no spoilers, moreover they are differently formatted
-          preg_match_all('!<div id="gf.+?>(.+?)<div!ims',$matches[3][$i],$goofy);
+          preg_match_all('!<div id="gf.+?>(\s*<div class="sodatext">)?(.+?)<div!ims',$matches[3][$i],$goofy);
           $ic = count($goofy[0]);
-          for ($k=0;$k<$ic;++$k) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$goofy[1][$k]));
+          for ($k=0;$k<$ic;++$k) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$goofy[2][$k]));
         }
       }
     }
