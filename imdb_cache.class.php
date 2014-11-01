@@ -119,7 +119,7 @@ class imdb_cache {
   }
 
   private function sanitiseKey($key) {
-    return str_replace(['/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'], '.', $key);
+    return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
   }
 
 }

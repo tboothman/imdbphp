@@ -95,7 +95,7 @@ class mdb_base extends mdb_config {
     $this->logger->error($scalar);
   }
   protected function debug_object($object) {
-    $this->logger->error('{object}', ['object' => $object]);
+    $this->logger->error('{object}', array('object' => $object));
   }
   protected function debug_html($html) {
     $this->logger->error(htmlentities($html));
