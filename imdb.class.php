@@ -1377,7 +1377,7 @@ class imdb extends movie_base {
     if (empty($this->goofs)) {
       $page = $this->getPage("Goofs");
       if (empty($page)) return array(); // no such page
-      if ( @preg_match_all('@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(<h4 class="li_group">|<div id="top_rhs_wrapper")@ims',$this->page["Goofs"],$matches) ) {
+      if ( @preg_match_all('@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(?=<h4 class="li_group">|<div id="top_rhs_wrapper")@ims',$this->page["Goofs"],$matches) ) {
         $gc = count($matches[1]);
         for ($i=0;$i<$gc;++$i) {
           if ($matches[1][$i]=='Spoilers') continue; // no spoilers, moreover they are differently formatted
