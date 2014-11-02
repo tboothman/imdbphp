@@ -27,7 +27,7 @@ require_once dirname(__FILE__)."/imdb_logger.class.php";
  * @version $Revision$ $Date$
  */
 class mdb_base extends mdb_config {
-  public $version = '2.3.4';
+  public $version = '2.3.5';
 
   /**
    * @deprecated since version 2.3.4

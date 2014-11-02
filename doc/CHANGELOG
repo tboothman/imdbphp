@@ -3,6 +3,12 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.3.5 (02.11.2014)
+-------------------
+! Fix goofs parsing.
++ Caching / requesting layer rewritten to be simpler and more modular. Cache files are different, so previously cached requests will be lost.
+! Remove some short array syntax to keep compatibility with older versions of PHP5 (added in 2.3.4)
+
 v2.3.4 (11.10.2014)
 -------------------
 ! Fix `runtime()` not always returning a value
