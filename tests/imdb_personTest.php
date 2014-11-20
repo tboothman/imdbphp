@@ -207,6 +207,18 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('accidental overdose of prescription drugs', $result['cause']);
   }
 
+  public function test_movies_died_without_cause() {
+    $search = $this->getimdb_person('0662730');
+    $result = $search->died();
+    $this->assertCount(6, $result);
+    $this->assertEquals('19', $result['day']);
+    $this->assertEquals('October', $result['month']);
+    $this->assertEquals('10', $result['mon']);
+    $this->assertEquals('2014', $result['year']);
+    $this->assertEquals('Toronto, Ontario, Canada', $result['place']);
+    $this->assertEquals(null, $result['cause']);
+  }
+
   public function test_height() {
     $search = $this->getimdb_person();
     $result = $search->height();

@@ -414,10 +414,9 @@
       if (preg_match('|Date of Death</td>(.*?)</td|ims',$this->page["Bio"],$match)) {
         preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
-        if (!preg_match('/(\,\s*(&nbsp;)?([^\(]+))(&nbsp;)/ims',$match[1],$dloc))
-          preg_match('!(\,\s*(&nbsp;)?([^\(]+?))\s*</td>!ims',$match[1],$dloc);
+        preg_match('|/search/name\?death_place=.*?"\s*>(.*?)<|ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
-        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim(strip_tags($dloc[3])),"cause"=>@$dcause[1]);
+        $this->deathday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@trim(strip_tags($dloc[1])),"cause"=>@$dcause[1]);
       }
     }
     return $this->deathday;
