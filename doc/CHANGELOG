@@ -3,6 +3,10 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.3.6 (21.11.2014)
+-------------------
+! Fix regexp for place of death parsing when no cause of death is given
+
 v2.3.5 (02.11.2014)
 -------------------
 ! Fix goofs parsing.
