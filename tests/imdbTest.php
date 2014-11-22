@@ -12,6 +12,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 0108052 = Schindler's List (multiple colours)
    * 0338187 = The Last New Yorker (see full synopsis...)
    * 2768262 = redirect to 2386868
+   * 1899250 = Mr. Considerate. short, no poster
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -316,12 +317,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPhoto_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('1027544');
+        $imdb = $this->getImdb('1899250');
         $this->assertFalse($imdb->photo(false));
     }
 
     public function testPhoto_thumb_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('1027544');
+        $imdb = $this->getImdb('1899250');
         $this->assertFalse($imdb->photo(true));
     }
 
