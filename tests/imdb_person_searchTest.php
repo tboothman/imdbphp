@@ -24,7 +24,7 @@ class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $config->usezip = true;
     $config->cache_expire = 3600;
-    $config->debug = true;
+    $config->debug = false;
 
     $imdbsearch = new imdb_person_search($config);
     return $imdbsearch;
