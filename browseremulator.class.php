@@ -110,12 +110,9 @@ class BrowserEmulator {
    * @return mixed file handle on success, FALSE otherwise
    */
   function fopen ($url) {
-    $debug = false;
-
     $this->lastResponse = Array ();
 
     preg_match ("~([a-z]*://)?([^:^/]*)(:([0-9]{1,5}))?(/.*)?~i", $url, $matches);
-    if ($debug) var_dump ($matches);
     $protocol = $matches[1];
     $server = $matches[2];
     $port = $matches[4];
@@ -133,7 +130,6 @@ class BrowserEmulator {
       if (count ($this->postData) == 0)  $request = "GET $path HTTP/1.0\r\n";
       else  $request = "POST $path HTTP/1.0\r\n";
 
-      if ($debug) echo $request;
       fputs ($socket, $request);
 
       if (count ($this->postData) > 0) {
@@ -144,26 +140,19 @@ class BrowserEmulator {
       }
 
       foreach ($this->headerLines AS $key => $value) {
-        if ($debug)
-        echo "$key: $value\n";
         fputs ($socket, "$key: $value\r\n");
       }
-      if ($debug) echo "\n";
       fputs ($socket, "\r\n");
       if (count ($this->postData) > 0) {
-        if ($debug)
         echo "$PostString";
         fputs ($socket, $PostString."\r\n");
       }
     }
-    if ($debug) echo "\n";
     if ($socket) {
       $line = fgets ($socket, 1000);
-      if ($debug) echo $line;
       $this->lastResponse[] = $line;
       $status = substr ($line, 9, 3);
       while (trim ($line = fgets ($socket, 1000)) != "") {
-        if ($debug) echo "$line";
         $this->lastResponse[] = $line;
         if ($status == "401" AND strpos ($line, "WWW-Authenticate: Basic realm=\"")  === 0) {
           fclose ($socket);
@@ -206,5 +195,4 @@ class BrowserEmulator {
     return $this->lastResponse;
   }
 
-} // end class
-?>
+}
