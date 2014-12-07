@@ -20,13 +20,13 @@ if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     case "nm" : header("Location: person.php?mid=".$_GET["mid"]); break;
     default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=$engine"); break;
   }
-  exit;
+  return;
 }
 
 # If we have no MID and no NAME, go back to search page
 if (empty($_GET["name"])) {
   header("Location: index.html");
-  exit;
+  return;
 }
 
 # Still here? Then we need to search for the movie:
@@ -76,4 +76,3 @@ foreach ($results as $res) {
   }
 }
 echo "</TABLE>\n</BODY></HTML>";
-?>
