@@ -124,7 +124,7 @@ class BrowserEmulator {
     if ($socket) {
       $this->headerLines["Host"] = $server;
 
-      if ($this->authUser != "" AND $this->authPass != "")
+      if ($this->authUser != "" && $this->authPass != "")
         $headers["Authorization"] = "Basic ".base64_encode ($this->authUser.":".$this->authPass);
 
       if (count ($this->postData) == 0)  $request = "GET $path HTTP/1.0\r\n";
@@ -134,12 +134,12 @@ class BrowserEmulator {
 
       if (count ($this->postData) > 0) {
         $PostStringArray = Array ();
-        foreach ($this->postData AS $key => $value) $PostStringArray[] = "$key=$value";
+        foreach ($this->postData as $key => $value) $PostStringArray[] = "$key=$value";
         $PostString = join ("&", $PostStringArray);
         $this->headerLines["Content-Length"] = strlen ($PostString);
       }
 
-      foreach ($this->headerLines AS $key => $value) {
+      foreach ($this->headerLines as $key => $value) {
         fputs ($socket, "$key: $value\r\n");
       }
       fputs ($socket, "\r\n");
@@ -154,7 +154,7 @@ class BrowserEmulator {
       $status = substr ($line, 9, 3);
       while (trim ($line = fgets ($socket, 1000)) != "") {
         $this->lastResponse[] = $line;
-        if ($status == "401" AND strpos ($line, "WWW-Authenticate: Basic realm=\"")  === 0) {
+        if ($status == "401" && strpos ($line, "WWW-Authenticate: Basic realm=\"")  === 0) {
           fclose ($socket);
           return FALSE;
         }
