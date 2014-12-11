@@ -633,6 +633,151 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('The Battle of the Sexes', $imdb->title());
     }
 
+    public function testAwards_correctly_parses_a_single_entry_award_with_one_person() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $ifmca = $awards['International Film Music Critics Award (IFMCA)'];
+      $firstEntry = $ifmca['entries'][0];
+
+      $this->assertEquals(1999, $firstEntry['year']);
+      $this->assertEquals(false, $firstEntry['won']);
+      $this->assertEquals('Film Score of the Year', $firstEntry['category']);
+      $this->assertEquals('FMCJ Award', $firstEntry['award']);
+      $this->assertCount(1, $firstEntry['people']);
+      $this->assertEquals('Don Davis', $firstEntry['people']['0204485']);
+      $this->assertEquals('Nominated', $firstEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_a_single_entry_award_with_two_people() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $this->assertCount(34, $awards);
+
+      $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
+      $firstEntry = $scifiWritersAward['entries'][0];
+
+      $this->assertEquals(2000, $firstEntry['year']);
+      $this->assertEquals(false, $firstEntry['won']);
+      $this->assertEquals('Best Script', $firstEntry['category']);
+      $this->assertEquals('Nebula Award', $firstEntry['award']);
+      $this->assertCount(2, $firstEntry['people']);
+      $this->assertEquals('Lana Wachowski', $firstEntry['people']['0905154']);
+      $this->assertEquals('Andy Wachowski', $firstEntry['people']['0905152']);
+      $this->assertEquals('Nominated', $firstEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_a_multi_entry_award() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $award = $awards['Online Film & Television Association'];
+
+      $this->assertCount(5, $award['entries']);
+
+      $firstEntry = $award['entries'][0];
+
+      $this->assertEquals(2000, $firstEntry['year']);
+      $this->assertEquals(true, $firstEntry['won']);
+      $this->assertEquals('Best Sound Mixing', $firstEntry['category']);
+      $this->assertEquals('OFTA Film Award', $firstEntry['award']);
+      $this->assertCount(4, $firstEntry['people']);
+      $this->assertEquals('John T. Reitz', $firstEntry['people']['0718676']);
+      $this->assertEquals('Gregg Rudloff', $firstEntry['people']['0748832']);
+      $this->assertEquals('David E. Campbell', $firstEntry['people']['0132372']);
+      $this->assertEquals('David Lee Fein', $firstEntry['people']['0270646']);
+      $this->assertEquals('Won', $firstEntry['outcome']);
+
+      $secondEntry = $award['entries'][1];
+
+      $this->assertEquals(2000, $secondEntry['year']);
+      $this->assertEquals(true, $secondEntry['won']);
+      $this->assertEquals('Best Visual Effects', $secondEntry['category']);
+      $this->assertEquals('OFTA Film Award', $secondEntry['award']);
+      $this->assertCount(4, $secondEntry['people']);
+      $this->assertEquals('John Gaeta', $secondEntry['people']['0300665']);
+      $this->assertEquals('Janek Sirrs', $secondEntry['people']['0802938']);
+      $this->assertEquals('Steve Courtley', $secondEntry['people']['0183871']);
+      $this->assertEquals('Jon Thum', $secondEntry['people']['0862039']);
+      $this->assertEquals('Won', $secondEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_an_entry_with_no_people() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $award = $awards['Online Film & Television Association'];
+
+      $this->assertCount(5, $award['entries']);
+
+      $fifthEntry = $award['entries'][4];
+
+      $this->assertEquals(2000, $fifthEntry['year']);
+      $this->assertEquals(false, $fifthEntry['won']);
+      $this->assertEquals('Best Official Film Website', $fifthEntry['category']);
+      $this->assertEquals('OFTA Film Award', $fifthEntry['award']);
+      $this->assertCount(0, $fifthEntry['people']);
+      $this->assertEquals('Nominateed', $fifthEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_an_entry_with_no_category_or_people() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $award = $awards['National Film Preservation Board, USA'];
+
+      $this->assertCount(1, $award['entries']);
+
+      $firstEntry = $award['entries'][0];
+
+      $this->assertEquals(2012, $firstEntry['year']);
+      $this->assertEquals(true, $firstEntry['won']);
+      $this->assertEquals('', $firstEntry['category']);
+      $this->assertEquals('National Film Registry', $firstEntry['award']);
+      $this->assertCount(0, $firstEntry['people']);
+      $this->assertEquals('Won', $firstEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_an_entry_where_people_have_role_descriptions() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $award = $awards['Motion Picture Sound Editors, USA'];
+
+      $this->assertCount(3, $award['entries']);
+
+      $thirdEntry = $award['entries'][4];
+
+      $this->assertEquals(2000, $thirdEntry['year']);
+      $this->assertEquals(false, $thirdEntry['won']);
+      $this->assertEquals('Best Sound Editing - Music (Foreign & Domestic)', $thirdEntry['category']);
+      $this->assertEquals('Golden Reel Award', $thirdEntry['award']);
+      $this->assertCount(3, $thirdEntry['people']);
+      $this->assertEquals('Lori L. Eschler', $thirdEntry['people']['0002669']);
+      $this->assertEquals('Zigmund Gron', $thirdEntry['people']['0343065']);
+      $this->assertEquals('Jordan Corngold', $thirdEntry['people']['0180383']);
+      $this->assertEquals('Nominated', $thirdEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_an_entry_with_no_category_name() {
+      $imdb = $this->getImdb();
+      $awards = $imdb->awards();
+
+      $award = $awards['BMI Film & TV Awards'];
+
+      $this->assertCount(1, $award['entries']);
+
+      $firstEntry = $award['entries'][0];
+
+      $this->assertEquals(1999, $firstEntry['year']);
+      $this->assertEquals(true, $firstEntry['won']);
+      $this->assertEquals('', $firstEntry['category']);
+      $this->assertEquals('BMI Film Music Award', $firstEntry['award']);
+      $this->assertCount(1, $firstEntry['people']);
+      $this->assertEquals('Don Davis', $firstEntry['people']['0204485']);
+      $this->assertEquals('Won', $firstEntry['outcome']);
+    }
     
     /**
      * Create an imdb object that uses cached pages
