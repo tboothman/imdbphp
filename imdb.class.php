@@ -1936,7 +1936,28 @@ class imdb extends movie_base {
 
   #========================================================[ /awards page ]===
   #--------------------------------------------------------------[ Awards ]---
-  /** Get the complete awards for the movie
+  /** Get all awards this title was nominated for or won
+   * e.g.
+   *   [
+   *    'Science Fiction and Fantasy Writers of America' =>
+   *    [
+   *      'entries' =>
+   *      [
+   *        [
+   *          'year' => '2000',
+   *          'won' => false,
+   *          'category' => 'Best Script',
+   *          'award' => 'Nebula Award',
+   *          'people' =>
+   *          [
+   *              '0905154' => 'Lana Wachowski',
+   *              '0905152' => 'Andy Wachowski',
+   *          ],
+   *          'outcome' => 'Nominated'
+   *        ]
+   *      ]
+   *    ]
+   *  ]
    * @method awards
    * @param boolean $compat whether stay backward compatible to the original format of Qvist. Default: TRUE
    * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,people[],comment,outcome]
