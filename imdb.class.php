@@ -1976,9 +1976,10 @@ class imdb extends movie_base {
       $block = substr($this->page["Awards"],$row_s,$row_e - $row_s);
       preg_match_all('!<h3>\s*(?<festival>.+?)\s*<a [^>]+>\s*(?<year>\d{4}).*?</h3>\s*<table [^>]+>(?<table>.+?)</table>!ims',$block,$matches);
       $acount = count($matches[0]);
-      for ( $i=0,$rec=0; $i < $acount; $i++) {
+      for ($i=0; $i < $acount; $i++) {
         $festival = $matches['festival'][$i];
-        if ( !preg_match_all('!<td class="(?<class>.+?)"[^>]*>\s*(?<data>.+?)\s*</td>!ims',$matches['table'][$i],$col) ) continue;
+        if (!preg_match_all('!<td class="(?<class>.+?)"[^>]*>\s*(?<data>.*?)\s*</td>!ims', $matches['table'][$i], $col))
+          continue;
         $ccount = count($col[0]);
         for ($k=0;$k<$ccount;++$k) {
           switch($col['class'][$k]) {
@@ -1996,7 +1997,9 @@ class imdb extends movie_base {
                 preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
                 if (substr($cat,0,3)=='<a ') $cat = '';
               } else {
-                $cat = $desc;
+                $desc = preg_replace('#<div class="award_detail_notes">.+?</div>#s', '', $desc);
+                $cat = trim(strip_tags($desc));
+                $people = [];
               }
               if ($compat) {
                 $this->awards[$festival]['entries'][] = array (
@@ -2018,6 +2021,4 @@ class imdb extends movie_base {
     return $this->awards;
   }
 
- } // end class imdb
-
-?>
+}
