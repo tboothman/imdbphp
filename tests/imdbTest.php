@@ -633,6 +633,36 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('The Battle of the Sexes', $imdb->title());
     }
 
+    public function testAwards_correctly_parses_an_entry_with_expandable_note() {
+      $imdb = $this->getImdb('0306414');
+      $awards = $imdb->awards();
+
+      $award = $awards['AFI Awards, USA'];
+      $firstEntry = $award['entries'][0];
+
+      $this->assertEquals(2009, $firstEntry['year']);
+      $this->assertEquals(true, $firstEntry['won']);
+      $this->assertEquals('TV Program of the Year', $firstEntry['category']);
+      $this->assertEquals('AFI Award', $firstEntry['award']);
+      $this->assertCount(0, $firstEntry['people']);
+      $this->assertEquals('Won', $firstEntry['outcome']);
+    }
+
+    public function testAwards_correctly_parses_an_entry_with_no_category_with_a_following_entry() {
+      $imdb = $this->getImdb('0306414');
+      $awards = $imdb->awards();
+
+      $award = $awards['Television Critics Association Awards'];
+      $firstEntry = $award['entries'][0];
+
+      $this->assertEquals(2008, $firstEntry['year']);
+      $this->assertEquals(true, $firstEntry['won']);
+      $this->assertEquals('', $firstEntry['category']);
+      $this->assertEquals('Heritage Award', $firstEntry['award']);
+      $this->assertCount(0, $firstEntry['people']);
+      $this->assertEquals('Won', $firstEntry['outcome']);
+    }
+
     public function testAwards_correctly_parses_a_single_entry_award_with_one_person() {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
@@ -718,7 +748,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Best Official Film Website', $fifthEntry['category']);
       $this->assertEquals('OFTA Film Award', $fifthEntry['award']);
       $this->assertCount(0, $fifthEntry['people']);
-      $this->assertEquals('Nominateed', $fifthEntry['outcome']);
+      $this->assertEquals('Nominated', $fifthEntry['outcome']);
     }
 
     public function testAwards_correctly_parses_an_entry_with_no_category_or_people() {
@@ -747,7 +777,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
       $this->assertCount(3, $award['entries']);
 
-      $thirdEntry = $award['entries'][4];
+      $thirdEntry = $award['entries'][2];
 
       $this->assertEquals(2000, $thirdEntry['year']);
       $this->assertEquals(false, $thirdEntry['won']);
