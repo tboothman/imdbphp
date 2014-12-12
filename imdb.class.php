@@ -1162,39 +1162,45 @@ class imdb extends movie_base {
    *        do this as it would rob those who want to split of the opportunity doing so.
    * @see IMDB page /fullcredits
    */
-  public function cast($clean_ws=FALSE) {
-   if (empty($this->credits_cast)) {
+  public function cast($clean_ws = FALSE) {
+    if (empty($this->credits_cast)) {
       $page = $this->getPage("Credits");
       if (empty($page)) {
         return array(); // no such page
       }
     }
-   $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "itemprop");
-   for ( $i = 0; $i < count ($cast_rows); $i++){
-    $cels = $this->get_row_cels ($cast_rows[$i]);
-    if (!isset ($cels[1])) continue;
-    $dir = array();
-    $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims','$1',$cels[1]);
-    $dir["name"] = trim(strip_tags($cels[1]));
-    if (empty($dir['name'])) continue;
-    if (isset($cels[3])) $role = trim(strip_tags($cels[3]));
-    else $role = "";
-    if ( $role == "") $dir["role"] = NULL;
-    else $dir["role"] = $role;
-    if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims',$cels[0],$match)) {
-      $dir["thumb"] = $match[1];
-      if (strpos($dir["thumb"],'._V1'))
-        $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is','$1.$2',$dir["thumb"]);
-    } else {
-      $dir["thumb"] = $dir["photo"] = "";
+    $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "itemprop");
+    for ($i = 0; $i < count($cast_rows); $i++) {
+      $cels = $this->get_row_cels($cast_rows[$i]);
+      if (!isset($cels[1]))
+        continue;
+      $dir = array();
+      $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims', '$1', $cels[1]);
+      $dir["name"] = trim(strip_tags($cels[1]));
+      if (empty($dir['name']))
+        continue;
+      if (isset($cels[3]))
+        $role = trim(strip_tags($cels[3]));
+      else
+        $role = "";
+      if ($role == "")
+        $dir["role"] = NULL;
+      else
+        $dir["role"] = str_replace('&nbsp;', '', $role);
+      if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims', $cels[0], $match)) {
+        $dir["thumb"] = $match[1];
+        if (strpos($dir["thumb"], '._V1'))
+          $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is', '$1.$2', $dir["thumb"]);
+      } else {
+        $dir["thumb"] = $dir["photo"] = "";
+      }
+      if ($clean_ws) {
+        $dir['name'] = preg_replace('!\s{2,}!ims', ' ', $dir['name']);
+        $dir['role'] = preg_replace('!\s{2,}!ims', ' ', $dir['role']);
+      }
+      $this->credits_cast[] = $dir;
     }
-    if ($clean_ws) {
-      $dir['name'] = preg_replace('!\s{2,}!ims',' ',$dir['name']);
-      $dir['role'] = preg_replace('!\s{2,}!ims',' ',$dir['role']);
-    }
-    $this->credits_cast[] = $dir;
-   }
-   return $this->credits_cast;
+    return $this->credits_cast;
   }
 
 

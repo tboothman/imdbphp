@@ -486,11 +486,23 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO this needs more tests for different scenarios
     }
 
-    public function testCast() {
-        //@TODO
+    public function testCast_tv() {
+      // @TODO the linebreaks are daft, thumb/photo are equal
+        $imdb = $this->getImdb('0306414');
+        $cast = $imdb->cast();
+        $firstCast = $cast[0];
+
+        $this->assertEquals('0922035', $firstCast['imdb']);
+        $this->assertEquals('Dominic West', $firstCast['name']);
+        $this->assertEquals('Det. James \'Jimmy\' McNulty
+         / ...  
+                  (60 episodes, 2002-2008)', $firstCast['role']);
+        //$this->assertEquals('0922035', $firstCast['thumb']);
+        //$this->assertEquals('0922035', $firstCast['photo']);
+        var_export($cast[0]);
     }
 
-    // Why keep the brackets?
+    // @TODO Why keep the brackets?
     public function testWriting_multiple_withrole() {
         $imdb = $this->getImdb('0087544');
         $this->assertEquals(array(
