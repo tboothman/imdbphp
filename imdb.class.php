@@ -1087,7 +1087,6 @@ class imdb extends movie_base {
    */
   protected function get_table_rows_cast( $html, $table_start, $class="nm" ) {
    $row_s = strpos ( $html, '<table class="cast_list">');
-   $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
    $endtable = strpos($html, "</table>", $row_s);
    $block = substr($html,$row_s,$endtable - $row_s);
@@ -1152,52 +1151,87 @@ class imdb extends movie_base {
   /** Get the actors
    * @method cast
    * @param boolean $clean_ws whether to clean white-space inside names
-   * @return array cast (array[0..n] of arrays[imdb,name,role,thumb,photo])
-   * @version the "role" field might contain several "newlines" in the middle of the
-   *        string. They usually separate multiple entries (see e.g. IMDBID 2186562:
-   *        "Dakaria Tepes &lt;newlines&gt; (as Laura Roge)"). After this has been
-   *        brought up with ticket #375, we discussed it on IRC and decided to leave
-   *        it as-is: If you want it removed, a simple regexp will do that:
-   *        <CODE>preg_replace('!\s{2,}!ims',' ',$role)</CODE>. The API shouldn't
-   *        do this as it would rob those who want to split of the opportunity doing so.
+   * @return array cast (array[0..n] of array[imdb,name,name_alias,role,role_episodes,role_start_year,role_end_year,thumb,photo])
+   * e.g.
+   * <pre>
+   * array (
+   *  'imdb' => '0922035',
+   *  'name' => 'Dominic West', // Actor's name on imdb
+   *  'name_alias' => NULL, // Name credited to part
+   *  'role' => "Det. James 'Jimmy' McNulty",
+   *  'role_episodes' => 60, // Only applies to episodic titles. Will be NULL if not available
+   *  'role_start_year' => 2002, // Only applies to episodic titles. Will be NULL if not available
+   *  'role_end_year' => 2008, // Only applies to episodic titles. Will be NULL if not available
+   *  'thumb' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
+   *  'photo' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg' // Fullsize image of actor
+   * )
+   * </pre>
    * @see IMDB page /fullcredits
    */
-  public function cast($clean_ws = FALSE) {
-    if (empty($this->credits_cast)) {
-      $page = $this->getPage("Credits");
-      if (empty($page)) {
-        return array(); // no such page
-      }
+  public function cast() {
+    if (!empty($this->credits_cast)) {
+      return $this->credits_cast;
     }
-    $cast_rows = $this->get_table_rows_cast($this->page["Credits"], "Cast", "itemprop");
-    for ($i = 0; $i < count($cast_rows); $i++) {
-      $cels = $this->get_row_cels($cast_rows[$i]);
-      if (!isset($cels[1]))
+
+    $page = $this->getPage("Credits");
+    if (empty($page)) {
+      return array(); // no such page
+    }
+
+    $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
+    foreach ($cast_rows as $cast_row) {
+      $cels = $this->get_row_cels($cast_row);
+      if (4 !== count($cels))
         continue;
-      $dir = array();
+      $dir = array(
+          'imdb' => null,
+          'name' => null,
+          'name_alias' => null,
+          'role' => null,
+          'role_episodes' => null,
+          'role_start_year' => null,
+          'role_end_year' => null,
+          'thumb' => null,
+          'photo' => null
+      );
       $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims', '$1', $cels[1]);
       $dir["name"] = trim(strip_tags($cels[1]));
       if (empty($dir['name']))
         continue;
-      if (isset($cels[3]))
-        $role = trim(strip_tags($cels[3]));
-      else
-        $role = "";
-      if ($role == "")
-        $dir["role"] = NULL;
-      else
-        $dir["role"] = str_replace('&nbsp;', '', $role);
+
+
+      $role_cell = trim(strip_tags(str_replace('&nbsp;', '', $cels[3])));
+      if ($role_cell) {
+        $role_lines = explode("\n", $role_cell);
+        if ($role_lines) {
+          $dir['role'] = trim($role_lines[0]);
+
+          if (preg_match("#\(as (.+?)\)#s", $role_cell, $matches)) {
+            $dir['name_alias'] = $matches[1];
+          }
+
+          if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", $role_cell, $matches)) {
+            $dir['role_episodes'] = (int)$matches[1];
+            $dir['role_start_year'] = (int)$matches[2];
+            if (isset($matches[3])) {
+              $dir['role_end_year'] = (int)$matches[3];
+            } else {
+              // If no end year, make the same as start year
+              $dir['role_end_year'] = (int)$matches[2];
+            }
+          }
+        }
+      }
+
+
       if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims', $cels[0], $match)) {
         $dir["thumb"] = $match[1];
         if (strpos($dir["thumb"], '._V1'))
-          $dir["photo"] = preg_replace('|(.*._V1)\..+\.(.*)|is', '$1.$2', $dir["thumb"]);
+          $dir["photo"] = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $dir["thumb"]);
       } else {
         $dir["thumb"] = $dir["photo"] = "";
       }
-      if ($clean_ws) {
-        $dir['name'] = preg_replace('!\s{2,}!ims', ' ', $dir['name']);
-        $dir['role'] = preg_replace('!\s{2,}!ims', ' ', $dir['role']);
-      }
+
       $this->credits_cast[] = $dir;
     }
     return $this->credits_cast;

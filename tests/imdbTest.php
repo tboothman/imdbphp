@@ -486,20 +486,83 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO this needs more tests for different scenarios
     }
 
-    public function testCast_tv() {
-      // @TODO the linebreaks are daft, thumb/photo are equal
+    public function testCast_film_with_role_link() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast();
+      $firstCast = $cast[0];
+      $this->assertEquals('0000206', $firstCast['imdb']);
+      $this->assertEquals('Keanu Reeves', $firstCast['name']);
+      $this->assertEquals('Neo', $firstCast['role']);
+    }
+
+    public function testCast_film_with_role_link_and_as_name() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast();
+      $castMember = $cast[14];
+      $this->assertEquals('0336802', $castMember['imdb']);
+      $this->assertEquals('Marc Aden Gray', $castMember['name']);
+      $this->assertEquals('Marc Gray', $castMember['name_alias']);
+      $this->assertEquals('Choi', $castMember['role']);
+    }
+
+    public function testCast_film_no_role_link() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast();
+      $castMember = $cast[16];
+      $this->assertEquals('0330139', $castMember['imdb']);
+      $this->assertEquals('Deni Gordon', $castMember['name']);
+      $this->assertEquals('Priestess', $castMember['role']);
+    }
+
+    public function testCast_film_no_role_link_and_as_name() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast();
+      $castMember = $cast[18];
+      $this->assertEquals('0936860', $castMember['imdb']);
+      $this->assertEquals('Eleanor Witt', $castMember['name']);
+      $this->assertEquals('Elenor Witt', $castMember['name_alias']);
+      $this->assertEquals('Potential', $castMember['role']);
+    }
+
+    public function testCast_tv_multi_episode_multi_year() {
         $imdb = $this->getImdb('0306414');
         $cast = $imdb->cast();
         $firstCast = $cast[0];
 
         $this->assertEquals('0922035', $firstCast['imdb']);
         $this->assertEquals('Dominic West', $firstCast['name']);
-        $this->assertEquals('Det. James \'Jimmy\' McNulty
-         / ...  
-                  (60 episodes, 2002-2008)', $firstCast['role']);
-        //$this->assertEquals('0922035', $firstCast['thumb']);
-        //$this->assertEquals('0922035', $firstCast['photo']);
-        var_export($cast[0]);
+        $this->assertEquals("Det. James 'Jimmy' McNulty", $firstCast['role']);
+        $this->assertEquals(60, $firstCast['role_episodes']);
+        $this->assertEquals(2002, $firstCast['role_start_year']);
+        $this->assertEquals(2008, $firstCast['role_end_year']);
+        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg', $firstCast['thumb']);
+        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg', $firstCast['photo']);
+    }
+
+    public function testCast_tv_multi_episode_one_year() {
+        $imdb = $this->getImdb('0306414');
+        $cast = $imdb->cast();
+        $castMember = $cast[62];
+
+        $this->assertEquals('0430107', $castMember['imdb']);
+        $this->assertEquals('Michael B. Jordan', $castMember['name']);
+        $this->assertEquals("Wallace", $castMember['role']);
+        $this->assertEquals(13, $castMember['role_episodes']);
+        $this->assertEquals(2002, $castMember['role_start_year']);
+        $this->assertEquals(2002, $castMember['role_end_year']);
+    }
+
+    public function testCast_tv_one_episode_one_year() {
+        $imdb = $this->getImdb('0306414');
+        $cast = $imdb->cast();
+        $castMember = $cast[274];
+
+        $this->assertEquals('0661449', $castMember['imdb']);
+        $this->assertEquals('Neko Parham', $castMember['name']);
+        $this->assertEquals("State Police Undercover Troy Wiggins", $castMember['role']);
+        $this->assertEquals(1, $castMember['role_episodes']);
+        $this->assertEquals(2002, $castMember['role_start_year']);
+        $this->assertEquals(2002, $castMember['role_end_year']);
     }
 
     // @TODO Why keep the brackets?
