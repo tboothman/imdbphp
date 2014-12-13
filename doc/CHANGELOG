@@ -3,6 +3,14 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.4 (13.12.2014)
+-------------------
+! Speed up poster parsing and fix errors on large pages
+! Fix `awards()` where award has no recipients, no category or large notes
+! Fix `cast()` parsing of role. The role field no longer contains anything other than the name of the role played
++ Added extra fields for number of episodes and years playing the role to `cast()`
+! Fix photo field in `cast()` results to correctly remove the resizing bit in the url
+
 v2.3.6 (21.11.2014)
 -------------------
 ! Fix regexp for place of death parsing when no cause of death is given
