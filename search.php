@@ -62,7 +62,7 @@ foreach ($results as $res) {
     case "nm" :
       $details = $res->getSearchDetails();
       if (!empty($details)) {
-        $hint = " (".$details["role"]." in <a href='imdb.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
+        $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
       }
       echo " <TR><TD><a href='person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
          . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/name/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
