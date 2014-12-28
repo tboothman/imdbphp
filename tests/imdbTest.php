@@ -13,6 +13,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 0338187 = The Last New Yorker (see full synopsis...)
    * 2768262 = redirect to 2386868
    * 1899250 = Mr. Considerate. short, no poster
+   * 0416449 = 300 (some multi bracket credits)
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -493,6 +494,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('0000206', $firstCast['imdb']);
       $this->assertEquals('Keanu Reeves', $firstCast['name']);
       $this->assertEquals('Neo', $firstCast['role']);
+      $this->assertTrue($firstCast['credited']);
+      $this->assertCount(0, $firstCast['role_other']);
     }
 
     public function testCast_film_with_role_link_and_as_name() {
@@ -503,6 +506,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Marc Aden Gray', $castMember['name']);
       $this->assertEquals('Marc Gray', $castMember['name_alias']);
       $this->assertEquals('Choi', $castMember['role']);
+      $this->assertTrue($castMember['credited']);
+      $this->assertCount(0, $castMember['role_other']);
     }
 
     public function testCast_film_no_role_link() {
@@ -512,6 +517,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('0330139', $castMember['imdb']);
       $this->assertEquals('Deni Gordon', $castMember['name']);
       $this->assertEquals('Priestess', $castMember['role']);
+      $this->assertTrue($castMember['credited']);
+      $this->assertCount(0, $castMember['role_other']);
     }
 
     public function testCast_film_no_role_link_and_as_name() {
@@ -522,6 +529,63 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Eleanor Witt', $castMember['name']);
       $this->assertEquals('Elenor Witt', $castMember['name_alias']);
       $this->assertEquals('Potential', $castMember['role']);
+      $this->assertTrue($castMember['credited']);
+      $this->assertCount(0, $castMember['role_other']);
+    }
+
+    public function testCast_film_uncredited() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast();
+      $castMember = $cast[36];
+      $this->assertEquals('1248119', $castMember['imdb']);
+      $this->assertEquals('Mike Duncan', $castMember['name']);
+      $this->assertEquals(null, $castMember['name_alias']);
+      $this->assertEquals('Twin', $castMember['role']);
+      $this->assertFalse($castMember['credited']);
+    }
+
+    public function testCast_film_as_name_and_brackets_in_role_name() {
+      $imdb = $this->getImdb('0416449');
+      $cast = $imdb->cast();
+      $castMember = $cast[19];
+      $this->assertEquals('2542697', $castMember['imdb']);
+      $this->assertEquals('Sebastian St. Germain', $castMember['name']);
+      $this->assertEquals('Sébastian St Germain', $castMember['name_alias']);
+      $this->assertEquals('Fighting Boy (12 years old)', $castMember['role']);
+      $this->assertTrue($castMember['credited']);
+      $this->assertInternalType('array', $castMember['role_other']);
+      $this->assertCount(0, $castMember['role_other']);
+    }
+
+    public function testCast_film_uncredited_and_other() {
+      $imdb = $this->getImdb('2015381');
+      $cast = $imdb->cast();
+      $castMember = $cast[83];
+      $this->assertEquals('0001293', $castMember['imdb']);
+      $this->assertEquals('Seth Green', $castMember['name']);
+      $this->assertEquals(null, $castMember['name_alias']);
+      $this->assertEquals('Howard the Duck', $castMember['role']);
+      $this->assertFalse($castMember['credited']);
+      $this->assertInternalType('array', $castMember['role_other']);
+      $this->assertCount(1, $castMember['role_other']);
+      $this->assertEquals('voice', $castMember['role_other'][0]);
+    }
+
+    public function testCast_tv_episode_and_other_role_info() {
+      $imdb = $this->getImdb('0306414');
+      $cast = $imdb->cast();
+      $castMember = $cast[587];
+
+      $this->assertEquals('0000738', $castMember['imdb']);
+      $this->assertEquals('Muhammad Ali', $castMember['name']);
+      $this->assertFalse($castMember['credited']);
+      $this->assertEquals("Himself", $castMember['role']);
+      $this->assertEquals(1, $castMember['role_episodes']);
+      $this->assertEquals(2004, $castMember['role_start_year']);
+      $this->assertEquals(2004, $castMember['role_end_year']);
+      $this->assertInternalType('array', $castMember['role_other']);
+      $this->assertCount(1, $castMember['role_other']);
+      $this->assertEquals('archive footage', $castMember['role_other'][0]);
     }
 
     public function testCast_tv_multi_episode_multi_year() {
@@ -535,6 +599,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(60, $firstCast['role_episodes']);
         $this->assertEquals(2002, $firstCast['role_start_year']);
         $this->assertEquals(2008, $firstCast['role_end_year']);
+        $this->assertInternalType('array', $firstCast['role_other']);
+        $this->assertCount(0, $firstCast['role_other']);
         $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg', $firstCast['thumb']);
         $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg', $firstCast['photo']);
     }
@@ -550,6 +616,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(13, $castMember['role_episodes']);
         $this->assertEquals(2002, $castMember['role_start_year']);
         $this->assertEquals(2002, $castMember['role_end_year']);
+        $this->assertInternalType('array', $castMember['role_other']);
+        $this->assertCount(0, $castMember['role_other']);
     }
 
     public function testCast_tv_one_episode_one_year() {
@@ -563,6 +631,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, $castMember['role_episodes']);
         $this->assertEquals(2002, $castMember['role_start_year']);
         $this->assertEquals(2002, $castMember['role_end_year']);
+        $this->assertInternalType('array', $castMember['role_other']);
+        $this->assertCount(0, $castMember['role_other']);
     }
 
     // @TODO Why keep the brackets?

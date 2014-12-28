@@ -1148,7 +1148,8 @@ class imdb extends movie_base {
   }
 
  #----------------------------------------------------------------[ Actors ]---
-  /** Get the actors
+  /**
+   * Get the actors/cast members for this title
    * @method cast
    * @param boolean $clean_ws whether to clean white-space inside names
    * @return array cast (array[0..n] of array[imdb,name,name_alias,role,role_episodes,role_start_year,role_end_year,thumb,photo])
@@ -1157,11 +1158,13 @@ class imdb extends movie_base {
    * array (
    *  'imdb' => '0922035',
    *  'name' => 'Dominic West', // Actor's name on imdb
-   *  'name_alias' => NULL, // Name credited to part
+   *  'name_alias' => NULL, // Name credited to actor if it is different to their imdb name
+   *  'credited' => true, // Was the actor credited in the film?
    *  'role' => "Det. James 'Jimmy' McNulty",
    *  'role_episodes' => 60, // Only applies to episodic titles. Will be NULL if not available
    *  'role_start_year' => 2002, // Only applies to episodic titles. Will be NULL if not available
    *  'role_end_year' => 2008, // Only applies to episodic titles. Will be NULL if not available
+   *  'role_other' => array() // Any other information about what the cast member did e.g. 'voice', 'archive footage'
    *  'thumb' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
    *  'photo' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg' // Fullsize image of actor
    * )
@@ -1187,10 +1190,12 @@ class imdb extends movie_base {
           'imdb' => null,
           'name' => null,
           'name_alias' => null,
+          'credited' => true,
           'role' => null,
           'role_episodes' => null,
           'role_start_year' => null,
           'role_end_year' => null,
+          'role_other' => array(),
           'thumb' => null,
           'photo' => null
       );
@@ -1204,13 +1209,16 @@ class imdb extends movie_base {
       if ($role_cell) {
         $role_lines = explode("\n", $role_cell);
         if ($role_lines) {
-          $dir['role'] = trim($role_lines[0]);
+          $dir['role'] = trim(array_shift($role_lines));
+          
+          $cleaned_role_cell = implode("\n", $role_lines);
 
-          if (preg_match("#\(as (.+?)\)#s", $role_cell, $matches)) {
+          if (preg_match("#\(as (.+?)\)#s", $cleaned_role_cell, $matches)) {
             $dir['name_alias'] = $matches[1];
+            $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
           }
 
-          if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", $role_cell, $matches)) {
+          if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", $cleaned_role_cell, $matches)) {
             $dir['role_episodes'] = (int)$matches[1];
             $dir['role_start_year'] = (int)$matches[2];
             if (isset($matches[3])) {
@@ -1218,6 +1226,19 @@ class imdb extends movie_base {
             } else {
               // If no end year, make the same as start year
               $dir['role_end_year'] = (int)$matches[2];
+            }
+            $cleaned_role_cell = preg_replace("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", '', $cleaned_role_cell);
+          }
+
+          // Extract uncredited and other bits from their brackets after the role
+          if (preg_match_all("#\((.+?)\)#", $cleaned_role_cell, $matches)) {
+            foreach ($matches[1] as $role_info) {
+              $role_info = trim($role_info);
+              if ($role_info == 'uncredited') {
+                $dir['credited'] = false;
+              } else {
+                $dir['role_other'][] = $role_info;
+              }
             }
           }
         }
