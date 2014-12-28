@@ -729,7 +729,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
-      $this->assertEquals(102, count($goofs));
+      $this->assertEquals(103, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
@@ -740,8 +740,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Character error', $goofs[2]['type']);
       $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[2]['content']);
 
-      $this->assertEquals('Revealing mistakes', $goofs[101]['type']);
-      $this->assertEquals("When Neo is being run through the agent training program with the woman in the red dress, Morpheus' sunglasses reflect Neo with a Desert Eagle pistol being held up by an Agent standing in an empty sound stage, not the busy city they're supposed to be in.", $goofs[101]['content']);
+      $this->assertEquals('Revealing mistakes', $goofs[102]['type']);
+      $this->assertEquals("When Neo is being run through the agent training program with the woman in the red dress, Morpheus' sunglasses reflect Neo with a Desert Eagle pistol being held up by an Agent standing in an empty sound stage, not the busy city they're supposed to be in.", $goofs[102]['content']);
     }
 
     public function testSoundtrack_nosoundtracks() {
