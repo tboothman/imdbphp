@@ -3,6 +3,12 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.4.1 (02.01.2015)
+-------------------
++ Add two extra fields to `cast()`. `credited` indicates whether the actor was credited for that role or not. `role_other` is an array of any other extra information put again the role, such as 'voice' or 'archive footage'
+! Fix multiple roles per actor not showing in the 'role' field of `cast()`
+! Fix link to movie overview page in the demo site
+
 v2.4 (13.12.2014)
 -------------------
 ! Speed up poster parsing and fix errors on large pages
