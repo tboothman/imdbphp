@@ -1208,37 +1208,54 @@ class imdb extends movie_base {
       $role_cell = trim(strip_tags(str_replace('&nbsp;', '', $cels[3])));
       if ($role_cell) {
         $role_lines = explode("\n", $role_cell);
-        if ($role_lines) {
-          $dir['role'] = trim(array_shift($role_lines));
-          
-          $cleaned_role_cell = implode("\n", $role_lines);
-
-          if (preg_match("#\(as (.+?)\)#s", $cleaned_role_cell, $matches)) {
-            $dir['name_alias'] = $matches[1];
-            $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
+        // The first few lines (before any lines starting with brackets) are the role name
+        while ($role_line = array_shift($role_lines)) {
+          $role_line = trim($role_line);
+          if (!$role_line) {
+            continue;
           }
+          if ($role_line[0] == '(') {
+            // Start of additional information, stop looking for the role name
+            array_unshift($role_lines, $role_line);
+            break;
+          }
+          if ($dir['role']) {
+            $dir['role'] .= ' ' . $role_line;
+          } else {
+            $dir['role'] = $role_line;
+          }
+        }
 
-          if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", $cleaned_role_cell, $matches)) {
-            $dir['role_episodes'] = (int)$matches[1];
-            $dir['role_start_year'] = (int)$matches[2];
-            if (isset($matches[3])) {
-              $dir['role_end_year'] = (int)$matches[3];
+        // Trim off the funny / ... role added on tv shows where an actor has multiple characters
+        $dir['role'] = str_replace(' / ...', '', $dir['role']);
+
+        $cleaned_role_cell = implode("\n", $role_lines);
+
+        if (preg_match("#\(as (.+?)\)#s", $cleaned_role_cell, $matches)) {
+          $dir['name_alias'] = $matches[1];
+          $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
+        }
+
+        if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+))?\)#", $cleaned_role_cell, $matches)) {
+          $dir['role_episodes'] = (int)$matches[1];
+          $dir['role_start_year'] = (int)$matches[2];
+          if (isset($matches[3])) {
+            $dir['role_end_year'] = (int)$matches[3];
+          } else {
+            // If no end year, make the same as start year
+            $dir['role_end_year'] = (int)$matches[2];
+          }
+          $cleaned_role_cell = preg_replace("#\((\d+) episodes?, (\d+)(?:-(\d+))?\)#", '', $cleaned_role_cell);
+        }
+
+        // Extract uncredited and other bits from their brackets after the role
+        if (preg_match_all("#\((.+?)\)#", $cleaned_role_cell, $matches)) {
+          foreach ($matches[1] as $role_info) {
+            $role_info = trim($role_info);
+            if ($role_info == 'uncredited') {
+              $dir['credited'] = false;
             } else {
-              // If no end year, make the same as start year
-              $dir['role_end_year'] = (int)$matches[2];
-            }
-            $cleaned_role_cell = preg_replace("#\((\d+) episodes?, (\d+)(?:-(\d+)\))?#", '', $cleaned_role_cell);
-          }
-
-          // Extract uncredited and other bits from their brackets after the role
-          if (preg_match_all("#\((.+?)\)#", $cleaned_role_cell, $matches)) {
-            foreach ($matches[1] as $role_info) {
-              $role_info = trim($role_info);
-              if ($role_info == 'uncredited') {
-                $dir['credited'] = false;
-              } else {
-                $dir['role_other'][] = $role_info;
-              }
+              $dir['role_other'][] = $role_info;
             }
           }
         }

@@ -557,6 +557,19 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(0, $castMember['role_other']);
     }
 
+    public function testCast_film_multiple_roles() {
+      $imdb = $this->getImdb('2015381');
+      $cast = $imdb->cast();
+      $castMember = $cast[13];
+      $this->assertEquals('0348231', $castMember['imdb']);
+      $this->assertEquals('Sean Gunn', $castMember['name']);
+      $this->assertEquals(null, $castMember['name_alias']);
+      $this->assertEquals('Kraglin / On Set Rocket', $castMember['role']);
+      $this->assertTrue($castMember['credited']);
+      $this->assertInternalType('array', $castMember['role_other']);
+      $this->assertCount(0, $castMember['role_other']);
+    }
+
     public function testCast_film_uncredited_and_other() {
       $imdb = $this->getImdb('2015381');
       $cast = $imdb->cast();
