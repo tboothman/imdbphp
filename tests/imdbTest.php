@@ -748,10 +748,10 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
 
       $this->assertEquals('Character error', $goofs[1]['type']);
-      $this->assertEquals('Morpheus specifies the human body generates 25,000 BTUs of body heat. The human body is constantly outputting heat into the environment so he should specify the rate of energy transfer rather than a total amount of energy being transferred. Or he should specify how much time it takes for a human body to output 25,000 BTUs in order for any claims, regarding how much energy is extracted from humans, to be meaningful.', $goofs[1]['content']);
+      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[1]['content']);
 
       $this->assertEquals('Character error', $goofs[2]['type']);
-      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[2]['content']);
+      $this->assertEquals('Morpheus specifies the human body generates 25,000 BTUs of body heat. The human body is constantly outputting heat into the environment so he should specify the rate of energy transfer rather than a total amount of energy being transferred. Or he should specify how much time it takes for a human body to output 25,000 BTUs in order for any claims, regarding how much energy is extracted from humans, to be meaningful.', $goofs[2]['content']);
 
       $this->assertEquals('Revealing mistakes', $goofs[102]['type']);
       $this->assertEquals("When Neo is being run through the agent training program with the woman in the red dress, Morpheus' sunglasses reflect Neo with a Desert Eagle pistol being held up by an Agent standing in an empty sound stage, not the busy city they're supposed to be in.", $goofs[102]['content']);
