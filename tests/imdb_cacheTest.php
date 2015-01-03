@@ -5,6 +5,26 @@ require_once dirname(__FILE__) . '/../imdb_logger.class.php';
 require_once dirname(__FILE__) . '/../mdb_config.class.php';
 
 class imdb_cacheTest extends PHPUnit_Framework_TestCase {
+  /**
+   * @expectedException imdb_exception
+   */
+  public function test_configured_directory_does_not_exist_causes_exception() {
+    $config = new mdb_config();
+    $config->usezip = true;
+    $config->cachedir = dirname(__FILE__).'/nonexistingfolder/';
+    new imdb_cache($config, new imdb_logger());
+  }
+
+  /**
+   * @expectedException imdb_exception
+   */
+  public function test_configured_directory_non_writeable_causes_exception() {
+    $config = new mdb_config();
+    $config->usezip = true;
+    $config->cachedir = dirname(__FILE__).'/cache_nonwriteable/';
+    new imdb_cache($config, new imdb_logger());
+  }
+
   public function test_set_get_zipped() {
     $config = new mdb_config();
     $config->usezip = true;

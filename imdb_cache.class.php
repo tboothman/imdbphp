@@ -1,8 +1,12 @@
 <?php
 
+require_once dirname(__FILE__)."/imdb_exception.class.php";
+
 /**
  * File caching
  * Caches files to disk in config->cachedir optionally gzipping if config->usezip
+ *
+ * Config keys used: cachedir cache_expire usezip converttozip
  */
 class imdb_cache {
 
@@ -19,6 +23,15 @@ class imdb_cache {
   public function __construct(mdb_config $config, imdb_logger $logger) {
     $this->config = $config;
     $this->logger = $logger;
+
+    if (!is_dir($this->config->cachedir)) {
+      $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+      throw new imdb_exception("[IMDbPHP][Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+    }
+    if (!is_writable($this->config->cachedir)) {
+      $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
+      throw new imdb_exception("[IMDbPHP][Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
+    }
   }
 
   /**
@@ -64,15 +77,6 @@ class imdb_cache {
   public function set($key, $value) {
     $cleanKey = $this->sanitiseKey($key);
 
-    if (!is_dir($this->config->cachedir)) {
-      $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
-      return false;
-    }
-    if (!is_writable($this->config->cachedir)) {
-      $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
-      return false;
-    }
-
     $fname = $this->config->cachedir . '/' . $cleanKey;
     $this->logger->debug("[Cache] Writing key [$key] to [$fname]");
     if ($this->config->usezip) {
@@ -96,25 +100,18 @@ class imdb_cache {
   public function purge() {
     $cacheDir = $this->config->cachedir;
     $this->logger->debug("[Cache] Purging old cache entries");
-    if (is_dir($cacheDir)) {
-      if (is_writable($cacheDir)) {
-        $thisdir = dir($cacheDir);
-        $now = time();
-        while ($file = $thisdir->read()) {
-          if ($file != "." && $file != "..") {
-            $fname = $cacheDir . $file;
-            if (is_dir($fname))
-              continue;
-            $mod = filemtime($fname);
-            if ($mod && ($now - $mod > $this->config->cache_expire))
-              unlink($fname);
-          }
-        }
-      } elseif (!empty($cacheDir)) {
-        $this->logger->critical("[Cache] Cache directory [$cacheDir] lacks write permission - purge aborted.");
+
+    $thisdir = dir($cacheDir);
+    $now = time();
+    while ($file = $thisdir->read()) {
+      if ($file != "." && $file != "..") {
+        $fname = $cacheDir . $file;
+        if (is_dir($fname))
+          continue;
+        $mod = filemtime($fname);
+        if ($mod && ($now - $mod > $this->config->cache_expire))
+          unlink($fname);
       }
-    } elseif (!empty($cacheDir)) {
-      $this->logger->critical("[Cache] Cache directory [$cacheDir] does not exist - purge aborted.");
     }
   }
 
