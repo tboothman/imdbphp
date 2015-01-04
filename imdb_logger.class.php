@@ -7,7 +7,6 @@
 class imdb_logger {
 
   protected $enabled;
-  private $context;
 
   public function __construct($enabled = true) {
     $this->enabled = $enabled;

@@ -26,11 +26,11 @@ class imdb_cache {
 
     if (!is_dir($this->config->cachedir)) {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
-      throw new imdb_exception("[IMDbPHP][Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+      throw new imdb_exception("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
     }
     if (!is_writable($this->config->cachedir)) {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
-      throw new imdb_exception("[IMDbPHP][Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
+      throw new imdb_exception("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
     }
   }
 
