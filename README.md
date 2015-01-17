@@ -15,7 +15,7 @@ Quick Start
 * Include the imdb class (It's in imdb.class.php). This is automatic if you use composer.
 * Get some data
 ```php
-$imdb = new \imdb('0335266');
+$imdb = new imdb('0335266');
 $rating = $imdb->rating();
 $plotOutline = $imdb->plotoutline();
 ```
@@ -38,12 +38,12 @@ Configuration
 
 imdbphp needs no configuration by default but can cache imdb lookups, store images and change languages if configured.
 
-Configuration is done by the `\mdb_config` class in mdb_config.class.php which has detailed explanations of all the config options available.
+Configuration is done by the `mdb_config` class in mdb_config.class.php which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
-$config = new \mdb_config();
+$config = new mdb_config();
 $config->language = 'de-DE';
-$imdb = new \imdb('0335266', $config);
+$imdb = new imdb('0335266', $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
 ```
@@ -57,13 +57,13 @@ Searching for a film
 
 ```php
 // include "imdbsearch.class.php"; // Load the class in if you're not using an autoloader
-$search = new \imdbsearch(); // Optional $config parameter
+$search = new imdbsearch(); // Optional $config parameter
 $results = $search->search('The Matrix', [imdbsearch::MOVIE]); // Optional second parameter restricts types returned
 
-// $results is an array of \imdb objects
+// $results is an array of imdb objects
 // The objects will have title, year and movietype available
 //  immediately, but any other data will have to be fetched from IMDb
-foreach ($results as $result) { /* @var $result \imdb */
+foreach ($results as $result) { /* @var $result imdb */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
 ```
@@ -72,12 +72,12 @@ Searching for a person
 ======================
 ```php
 // include "imdb_person_search.class.php"; // Load the class in if you're not using an autoloader
-$search = new \imdb_person_search(); // Optional $config parameter
+$search = new imdb_person_search(); // Optional $config parameter
 $results = $search->search('Forest Whitaker');
 
-// $results is an array of \imdb_person objects
+// $results is an array of imdb_person objects
 // The objects will have name available, everything else must be fetched from IMDb
-foreach ($results as $result) { /* @var $result \imdb_person */
+foreach ($results as $result) { /* @var $result imdb_person */
     echo $result->name();
 }
 ```
