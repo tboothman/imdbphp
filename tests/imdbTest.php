@@ -662,6 +662,12 @@ class imdbTest extends PHPUnit_Framework_TestCase {
             $imdb->writing());
     }
 
+    public function testWriting_tv() {
+      $imdb = $this->getImdb('0306414');
+      $credits = $imdb->writing();
+      $this->assertEquals(array('imdb' => '0800108', 'name' => 'David Simon', 'role' => '(creator) (60 episodes, 2002-2008)'), $credits[0]);
+    }
+
     public function testWriting() {
         //@TODO more
     }
