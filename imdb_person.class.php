@@ -212,8 +212,15 @@
             case 'producer' : $chname = 'Producer'; break;
           }
         }
+        
+        $addons = array();
+        if (preg_match_all("!\((.+)\)!", $chname, $addonMatches)) {
+          $addons = $addonMatches[1];
+          $chname = trim(preg_replace("!\((.+)\)!", '', $chname));
+        }
+
         if (!isset($mov[3])) $mov[3] = '';
-        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>$chname,"addons"=>trim($mov[3]));
+        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>trim($chname),"addons"=>$addons);
       }
     }
   }

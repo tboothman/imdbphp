@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(157, $result);
+    $this->assertCount(158, $result);
   }
 
   public function test_movies_actress() {
@@ -53,11 +53,11 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertInternalType('array', $result);
     $this->assertCount(3, $result);
     $this->assertEquals('2511906', $result[0]['mid']);
-    $this->assertEquals('Kyoshinhei Tôkyô ni arawaru', $result[0]['name']);
+    $this->assertEquals('Giant God Warrior Appears in Tokyo', $result[0]['name']);
     $this->assertEquals('2012', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('Giant robot', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array('voice'), $result[0]['addons']);
   }
 
   public function test_movies_producer() {
@@ -78,14 +78,14 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_director();
     $this->assertInternalType('array', $result);
-    $this->assertCount(25, $result);
+    $this->assertCount(26, $result);
     $this->assertEquals('2013293', $result[0]['mid']);
     $this->assertEquals('The Wind Rises', $result[0]['name']);
     $this->assertEquals('2013', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     //@TODO this says 'Director' .. doesn't seem right
     //$this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_soundtrack() {
@@ -99,7 +99,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     //@TODO where did 'lyrics: "Kon'iro no Uneri ga"' go?
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_crew() {
@@ -112,7 +112,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     //@TODO where did 'planning' go?
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_thanx() {
@@ -125,7 +125,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2011', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_self() {
@@ -138,7 +138,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2014', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('Himself', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_writer() {
@@ -152,7 +152,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     //@TODO (comic) / (screenplay)  ????
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_movies_archive() {
@@ -165,7 +165,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2009', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('Himself', $result[0]['chname']);
-    $this->assertEquals('', $result[0]['addons']);
+    $this->assertEquals(array(), $result[0]['addons']);
   }
 
   public function test_birthname() {
