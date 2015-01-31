@@ -2072,7 +2072,7 @@ class imdb extends movie_base {
               } else {
                 $desc = preg_replace('#<div class="award_detail_notes">.+?</div>#s', '', $desc);
                 $cat = trim(strip_tags($desc));
-                $people = [];
+                $people = array();
               }
               if ($compat) {
                 $this->awards[$festival]['entries'][] = array (
