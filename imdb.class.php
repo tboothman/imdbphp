@@ -1063,7 +1063,7 @@ class imdb extends movie_base {
    * @see used by the methods director, cast, writing, producer, composer
    */
   protected function get_table_rows( $html, $table_start ) {
-   if ($table_start=="Writing Credits") $row_s = strpos ( $html, ">".$table_start);
+   if ($table_start=="Writing Credits" || $table_start=="Series Writing Credits") $row_s = strpos ( $html, ">".$table_start);
    else $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
    $row_e = $row_s;
    if ( $row_s == 0 )  return FALSE;
@@ -1291,6 +1291,7 @@ class imdb extends movie_base {
     }
    $this->credits_writing = array();
    $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing Credits");
+   if ($writing_rows == '') $writing_rows = $this->get_table_rows($this->page["Credits"], "Series Writing Credits");
    for ( $i = 0; $i < count ($writing_rows); $i++){
      $wrt = array();
      if ( preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
