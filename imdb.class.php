@@ -1082,12 +1082,12 @@ class imdb extends movie_base {
    * @method protected get_table_rows_cast
    * @param string html
    * @param string table_start
-   * @return mixed rows (FALSE if table not found, array[0..n] of strings otherwise)
+   * @return array array[0..n] of strings
    * @see used by the method cast
    */
   protected function get_table_rows_cast( $html, $table_start, $class="nm" ) {
    $row_s = strpos ( $html, '<table class="cast_list">');
-   if ( $row_s == 0 )  return FALSE;
+   if ( $row_s == 0 )  return array();
    $endtable = strpos($html, "</table>", $row_s);
    $block = substr($html,$row_s,$endtable - $row_s);
    if (preg_match_all('!<tr.*?>(.*?)</tr>!ims',$block,$matches)) {
