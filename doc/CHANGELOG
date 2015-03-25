@@ -3,6 +3,13 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.5.0 (25.03.2015)
+* Changed `credits` in `imdb_person` to return an array for addons as the docblock states
+* Fixed `writing()` credits for tv show
+* Handle a title with no cast
+* Fix rating parsing when using european languages
+* Remove usage of short array syntax
+
 v2.4.1 (02.01.2015)
 -------------------
 + Add two extra fields to `cast()`. `credited` indicates whether the actor was credited for that role or not. `role_other` is an array of any other extra information put again the role, such as 'voice' or 'archive footage'
