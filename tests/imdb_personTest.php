@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(158, $result);
+    $this->assertCount(159, $result);
   }
 
   public function test_movies_actress() {
@@ -159,13 +159,21 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_archive();
     $this->assertInternalType('array', $result);
-    $this->assertCount(1, $result);
-    $this->assertEquals('0318251', $result[0]['mid']);
-    $this->assertEquals('Troldspejlet', $result[0]['name']);
-    $this->assertEquals('2009', $result[0]['year']);
+    $this->assertCount(2, $result);
+
+    $this->assertEquals('3674910', $result[0]['mid']);
+    $this->assertEquals('The Oscars', $result[0]['name']);
+    $this->assertEquals('2015', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
-    $this->assertEquals('Himself', $result[0]['chname']);
+    $this->assertEquals('Himself - Honorary Award', $result[0]['chname']);
     $this->assertEquals(array(), $result[0]['addons']);
+
+    $this->assertEquals('0318251', $result[1]['mid']);
+    $this->assertEquals('Troldspejlet', $result[1]['name']);
+    $this->assertEquals('2009', $result[1]['year']);
+    $this->assertEquals('', $result[1]['chid']);
+    $this->assertEquals('Himself', $result[1]['chname']);
+    $this->assertEquals(array(), $result[1]['addons']);
   }
 
   public function test_birthname() {
