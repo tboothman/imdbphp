@@ -762,7 +762,7 @@ class imdb extends movie_base {
       return false;
     }
     $path = $this->photodir.$this->imdbid()."${ext}.jpg";
-    if ( @fopen($path,"r")) return $this->photoroot.$this->imdbid()."${ext}.jpg";
+    if (file_exists($path)) return $this->photoroot.$this->imdbid()."${ext}.jpg";
     if (!is_writable($this->photodir)) {
       $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
       return false;
