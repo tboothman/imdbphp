@@ -355,6 +355,18 @@ class imdb extends movie_base {
     return $this->main_votes;
   }
 
+  /**
+   * Rating out of 100 on metacritic
+   * @return int|null
+   */
+  public function metacriticRating() {
+    $page = $this->getPage('Title');
+    if (preg_match('!\d+ review excerpts provided by Metacritic.com" > (\d+)/100!i', $page, $match)) {
+      return (int)$match[1];
+    }
+    return null;
+  }
+
  #------------------------------------------------------[ Movie Comment(s) ]---
   /** Get movie main comment (from title page)
    * @method comment
