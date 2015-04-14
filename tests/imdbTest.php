@@ -597,7 +597,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testCast_tv_episode_and_other_role_info() {
       $imdb = $this->getImdb('0306414');
       $cast = $imdb->cast();
-      $castMember = $cast[586];
+      $castMember = $cast[588];
 
       $this->assertEquals('0000738', $castMember['imdb']);
       $this->assertEquals('Muhammad Ali', $castMember['name']);
@@ -722,22 +722,22 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb('1027544');
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
-      $this->assertCount(2, $seasons);
-      $episode = $seasons[1][2];
+      $this->assertCount(3, $seasons);
+      $episode = $seasons[1][20];
 
-      $this->assertEquals('1878585', $episode['imdbid']);
-      $this->assertEquals("Roary Slips Up", $episode['title']);
+      $this->assertEquals('1956132', $episode['imdbid']);
+      $this->assertEquals("Mama Mia", $episode['title']);
       $this->assertEquals('', $episode['airdate']);
       $this->assertEquals("", $episode['plot']);
       $this->assertEquals(1, $episode['season']);
-      $this->assertEquals(2, $episode['episode']);
+      $this->assertEquals(20, $episode['episode']);
     }
 
     public function testEpisodes_returns_episodes_for_a_multiseason_show_with_empty_plots() {
       $imdb = $this->getImdb('1027544');
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
-      $this->assertCount(2, $seasons);
+      $this->assertCount(3, $seasons);
       $episode = $seasons[1][1];
 
       $this->assertEquals('1084805', $episode['imdbid']);
@@ -758,7 +758,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
-      $this->assertEquals(105, count($goofs));
+      $this->assertGreaterThan(103, count($goofs));
+      $this->assertLessThan(106, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
