@@ -970,8 +970,8 @@ class imdb extends movie_base {
   public function top250() {
     if ($this->main_top250 == -1) {
       $this->getPage("Title");
-      if (@preg_match('!<a href="[^"]*/chart/top\?tt(.*?)"><strong>Top 250 #(.*?)</a>!i',$this->page["Title"],$match)) {
-        $this->main_top250 = $match[2];
+      if (@preg_match('!<a href="[^"]*/chart/top\?tt.*><strong>Top 250 #(\d+)\s*</strong></a>!si',$this->page["Title"],$match)) {
+        $this->main_top250 = $match[1];
       } else {
         $this->main_top250 = 0;
       }
@@ -1503,7 +1503,7 @@ class imdb extends movie_base {
         $page = $this->getPage("Trailers");
         if (empty($page)) return array(); // no such page
         // due to site change, onsite / offsite trailers are mixed in on the same page
-        // following code does not weed out offsite trailers.  
+        // following code does not weed out offsite trailers.
         // Also $tag_s will be TRUE even if there are no trailers
         // old code -- $tag_s = strpos($this->page["Trailers"], '<div id="search-results">');
         $has_trailers = strpos($this->page["Trailers"], '<div id="search-results"><ol>');
