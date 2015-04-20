@@ -983,7 +983,7 @@ class imdb extends movie_base {
     if ($this->main_top250 == -1) {
       $this->getPage("Title");
       if (@preg_match('!<a href="[^"]*/chart/top\?tt.*><strong>Top 250 #(\d+)\s*</strong></a>!si',$this->page["Title"],$match)) {
-        $this->main_top250 = $match[1];
+        $this->main_top250 = (int)$match[1];
       } else {
         $this->main_top250 = 0;
       }
