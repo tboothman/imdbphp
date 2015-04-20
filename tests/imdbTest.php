@@ -450,7 +450,18 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testTop250() {
-        //@TODO
+      $imdb = $this->getImdb();
+      $top250 = $imdb->top250();
+      $this->assertInternalType('integer', $top250);
+      $this->assertGreaterThan(10, $top250);
+      $this->assertLessThan(25, $top250);
+    }
+
+    public function testTop250_returns_0_when_not_in_top_250() {
+      $imdb = $this->getImdb('1570728');
+      $top250 = $imdb->top250();
+      $this->assertInternalType('integer', $top250);
+      $this->assertEquals(0, $top250);
     }
 
     public function testPlot() {
