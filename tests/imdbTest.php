@@ -173,6 +173,16 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(null, $imdb->metacriticRating());
     }
 
+    public function testMetacriticNumReviews() {
+      $imdb = $this->getImdb();
+      $this->assertEquals(35, $imdb->metacriticNumReviews());
+    }
+
+    public function testMetacriticNumReviews_returns_null_when_no_rating() {
+      $imdb = $this->getImdb('0087544');
+      $this->assertEquals(null, $imdb->metacriticNumReviews());
+    }
+
     public function testComment() {
         //@TODO
     }

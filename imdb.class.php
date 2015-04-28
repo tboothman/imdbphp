@@ -367,6 +367,18 @@ class imdb extends movie_base {
     return null;
   }
 
+  /**
+   * Number of reviews on metacritic
+   * @return int|null
+   */
+  public function metacriticNumReviews() {
+    $page = $this->getPage('Title');
+    if (preg_match('!(\d+) review excerpts provided by Metacritic.com" >!i', $page, $match)) {
+      return (int)$match[1];
+    }
+    return null;
+  }
+
  #------------------------------------------------------[ Movie Comment(s) ]---
   /** Get movie main comment (from title page)
    * @method comment
