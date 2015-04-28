@@ -588,6 +588,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(0, $castMember['role_other']);
     }
 
+    private function findCastByImdbNo($cast, $imdbNo) {
+      foreach ($cast as $castMember) {
+        if ($castMember['imdb'] == $imdbNo) {
+          return $castMember;
+        }
+      }
+    }
+
     public function testCast_film_multiple_roles() {
       $imdb = $this->getImdb('2015381');
       $cast = $imdb->cast();
@@ -604,7 +612,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testCast_film_uncredited_and_other() {
       $imdb = $this->getImdb('2015381');
       $cast = $imdb->cast();
-      $castMember = $cast[86];
+      $castMember = $this->findCastByImdbNo($cast, '0001293');
       $this->assertEquals('0001293', $castMember['imdb']);
       $this->assertEquals('Seth Green', $castMember['name']);
       $this->assertEquals(null, $castMember['name_alias']);
@@ -618,7 +626,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testCast_tv_episode_and_other_role_info() {
       $imdb = $this->getImdb('0306414');
       $cast = $imdb->cast();
-      $castMember = $cast[588];
+      $castMember = $this->findCastByImdbNo($cast, '0000738');
 
       $this->assertEquals('0000738', $castMember['imdb']);
       $this->assertEquals('Muhammad Ali', $castMember['name']);
