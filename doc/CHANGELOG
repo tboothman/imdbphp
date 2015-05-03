@@ -3,7 +3,14 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.6.0 (03.05.2015)
+-------------------
++ Added ability to fetch metacritic rating and number of reviews. `imdb::metacriticRating()` and `imdb::metacriticNumReviews()`
++ An exception will be thrown if you have configured caching but the folder is not writeable. If you do not want caching `usecache` and `storecache` must be false.
+! Fix top250 rank parsing
+
 v2.5.0 (25.03.2015)
+-------------------
 * Changed `credits` in `imdb_person` to return an array for addons as the docblock states
 * Fixed `writing()` credits for tv show
 * Handle a title with no cast
