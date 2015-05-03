@@ -85,18 +85,10 @@ class imdb_page {
   }
 
   protected function getFromCache() {
-    if (!$this->config->usecache) {
-      return '';
-    }
-
     return $this->cache->get($this->getCacheKey());
   }
 
   protected function saveToCache() {
-    if (!$this->config->storecache) {
-      return;
-    }
-
     $this->cache->set($this->getCacheKey(), $this->pageString);
   }
 

@@ -5,6 +5,13 @@ require_once dirname(__FILE__) . '/../imdb_logger.class.php';
 require_once dirname(__FILE__) . '/../mdb_config.class.php';
 
 class imdb_cacheTest extends PHPUnit_Framework_TestCase {
+
+  private function getConfig() {
+    $config = new mdb_config();
+    $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+    return $config;
+  }
+
   /**
    * @expectedException imdb_exception
    */
@@ -25,10 +32,30 @@ class imdb_cacheTest extends PHPUnit_Framework_TestCase {
     new imdb_cache($config, new imdb_logger());
   }
 
+  public function test_get_returns_null_when_usecache_is_false() {
+    $config = $this->getConfig();
+    $cache = new imdb_cache($config, new imdb_logger());
+
+    $cache->set('usecacheTest', 'value');
+
+    $this->assertEquals('value', $cache->get('usecacheTest'));
+    $config->usecache = false;
+    $this->assertEquals(null, $cache->get('usecacheTest'));
+  }
+
+  public function test_set_does_not_cache_when_storecache_is_false() {
+    $config = $this->getConfig();
+    $config->storecache = false;
+    $cache = new imdb_cache($config, new imdb_logger());
+
+    $cache->set('storecacheTest', 'value');
+
+    $this->assertEquals(null, $cache->get('storecacheTest'));
+  }
+
   public function test_set_get_zipped() {
-    $config = new mdb_config();
+    $config = $this->getConfig();
     $config->usezip = true;
-    $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $cache = new imdb_cache($config, new imdb_logger());
 
     $setOk = $cache->set('test1', 'a value');
@@ -39,9 +66,8 @@ class imdb_cacheTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_set_get_notzipped() {
-    $config = new mdb_config();
+    $config = $this->getConfig();
     $config->usezip = false;
-    $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $cache = new imdb_cache($config, new imdb_logger());
 
     $setOk = $cache->set('test2', 'a value');

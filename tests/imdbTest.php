@@ -27,6 +27,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $imdb = new imdb('0133093', $config);
         $this->assertEquals('test.local', $imdb->imdbsite);
         $this->assertEquals('/somefolder', $imdb->cachedir);
+        $this->assertEquals(false, $imdb->storecache);
+        $this->assertEquals(false, $imdb->usecache);
     }
 
     // @TODO tests for other types

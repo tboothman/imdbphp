@@ -6,7 +6,7 @@ require_once dirname(__FILE__)."/imdb_exception.class.php";
  * File caching
  * Caches files to disk in config->cachedir optionally gzipping if config->usezip
  *
- * Config keys used: cachedir cache_expire usezip converttozip
+ * Config keys used: cachedir cache_expire usezip converttozip usecache storecache
  */
 class imdb_cache {
 
@@ -24,11 +24,11 @@ class imdb_cache {
     $this->config = $config;
     $this->logger = $logger;
 
-    if (!is_dir($this->config->cachedir)) {
+    if (($this->config->usecache || $this->config->storecache) && !is_dir($this->config->cachedir)) {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
       throw new imdb_exception("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
     }
-    if (!is_writable($this->config->cachedir)) {
+    if ($this->config->storecache && !is_writable($this->config->cachedir)) {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
       throw new imdb_exception("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
     }
@@ -37,15 +37,19 @@ class imdb_cache {
   /**
    * Get string value of $key from cache
    * @param string $key
-   * @return string|boolean false on failure / cache miss
+   * @return string|null null on failure / cache miss
    */
   public function get($key) {
+    if (!$this->config->usecache) {
+      return null;
+    }
+
     $cleanKey = $this->sanitiseKey($key);
 
     $fname = $this->config->cachedir . '/' . $cleanKey;
     if (!file_exists($fname)) {
       $this->logger->debug("[Cache] Cache miss for [$key]");
-      return false;
+      return null;
     }
     $this->logger->debug("[Cache] Cache hit for [$key]");
     if ($this->config->usezip) {
@@ -75,6 +79,10 @@ class imdb_cache {
    * @return bool successful?
    */
   public function set($key, $value) {
+    if (!$this->config->storecache) {
+      return false;
+    }
+
     $cleanKey = $this->sanitiseKey($key);
 
     $fname = $this->config->cachedir . '/' . $cleanKey;
