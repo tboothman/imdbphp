@@ -101,6 +101,21 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(2012, $firstResult->year());
   }
 
+  // https://github.com/tboothman/imdbphp/pull/24
+  // e.g. Home (II) (2015)
+  public function test_movies_with_duplicate_name_per_year_get_a_year() {
+    $search = $this->getimdbsearch();
+    $results = $search->search('Home 2015', [imdbsearch::MOVIE]);
+    $this->assertInternalType('array', $results);
+
+    /* @var $firstResult imdb */
+    $firstResult = $results[0];
+    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertEquals("2224026", $firstResult->imdbid());
+    $this->assertEquals("Home", $firstResult->title());
+    $this->assertEquals(2015, $firstResult->year());
+  }
+
   protected function getimdbsearch() {
     $config = new mdb_config();
     $config->language = 'en';
