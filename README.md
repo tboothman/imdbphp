@@ -50,7 +50,7 @@ $imdb->orig_title(); // Lost in Translation
 
 If you're using a git clone you might prefer to configure IMDbPHP by putting an ini file in the `conf` folder. `900_localconf.sample` has some sample settings.
 
-The cache folder is `./cache` by default. Create it and pages requested from imdb will be cached there to speed up future requests.
+The cache folder is `./cache` by default. Requests from imdb will be cached there for an hour (by default) to speed up future requests.
 
 Searching for a film
 ====================
