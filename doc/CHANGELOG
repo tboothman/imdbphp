@@ -3,6 +3,11 @@ $Id$
 History for IMDBPHP2
 ====================
 
+v2.6.1 (19.05.2015)
+-------------------
+! Fix year being missing when searching for films like "Home (II) (2015)"
+! Add a cache folder in the default location to stop exceptions with default config
+
 v2.6.0 (03.05.2015)
 -------------------
 + Added ability to fetch metacritic rating and number of reviews. `imdb::metacriticRating()` and `imdb::metacriticNumReviews()`
