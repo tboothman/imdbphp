@@ -315,13 +315,13 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
 
 
   protected function getimdb_person($id = '0594503') {
-    $config = new \ImdbPHP\Config();
+    $config = new \Imdb\Config();
     $config->language = 'en-GB';
     $config->imdbsite = 'www.imdb.com';
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $config->usezip = true;
     $config->cache_expire = 3600;
 
-    return new \ImdbPHP\Person($id, $config);
+    return new \Imdb\Person($id, $config);
   }
 }

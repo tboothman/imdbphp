@@ -1,6 +1,6 @@
 <?php
 
-namespace ImdbPHP;
+namespace Imdb;
 
 /**
  * Handles requesting urls, including the caching layer

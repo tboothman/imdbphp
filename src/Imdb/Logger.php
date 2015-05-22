@@ -1,6 +1,6 @@
 <?php
 
-namespace ImdbPHP;
+namespace Imdb;
 
 /**
  * Debug logging. Echos html to the page

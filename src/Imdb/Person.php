@@ -9,7 +9,7 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
-namespace ImdbPHP;
+namespace Imdb;
 
 /**
  * A person on IMDb

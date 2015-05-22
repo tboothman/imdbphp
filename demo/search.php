@@ -32,14 +32,14 @@ if (empty($_GET["name"])) {
 # Still here? Then we need to search for the movie:
 switch ($_GET["searchtype"]) {
   case "nm" :
-    $search = new \ImdbPHP\PersonSearch();
+    $search = new \Imdb\PersonSearch();
     $headname = "Person";
     $results = $search->search($_GET["name"]);
     break;
   default:
-    $search = new \ImdbPHP\TitleSearch();
+    $search = new \Imdb\TitleSearch();
     if ($_GET["searchtype"] == "episode")
-      $results = $search->search($_GET["name"], array(\ImdbPHP\TitleSearch::TV_EPISODE));
+      $results = $search->search($_GET["name"], array(\Imdb\TitleSearch::TV_EPISODE));
     else
       $results = $search->search($_GET["name"]);
     $headname = "Movie";

@@ -18,8 +18,8 @@ echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 echo "<HTML><HEAD>\n <TITLE>IMDBPHP Cache Contents</TITLE>\n";
 echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n";
 echo "</HEAD><BODY>\n";
-$imdb = new \ImdbPHP\Title('');
-$config = new \ImdbPHP\Config();
+$imdb = new \Imdb\Title('');
+$config = new \Imdb\Config();
 $movies = array();
 if (is_dir($config->cachedir)) {
   $files = glob($config->cachedir . 'title.tt*');

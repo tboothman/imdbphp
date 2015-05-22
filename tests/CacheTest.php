@@ -1,8 +1,8 @@
 <?php
 
-use ImdbPHP\Cache;
-use ImdbPHP\Config;
-use ImdbPHP\Logger;
+use Imdb\Cache;
+use Imdb\Config;
+use Imdb\Logger;
 
 class CacheTest extends PHPUnit_Framework_TestCase {
 
@@ -13,7 +13,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @expectedException \ImdbPHP\Exception
+   * @expectedException \Imdb\Exception
    */
   public function test_configured_directory_does_not_exist_causes_exception() {
     $config = new Config();
@@ -23,7 +23,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @expectedException \ImdbPHP\Exception
+   * @expectedException \Imdb\Exception
    */
   public function test_configured_directory_non_writeable_causes_exception() {
     $config = new Config();

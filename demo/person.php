@@ -15,7 +15,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $pid = $_GET["mid"];
   $engine = 'imdb';
 
-  $person = new \ImdbPHP\Person($_GET["mid"]);
+  $person = new \Imdb\Person($_GET["mid"]);
   $charset = "utf-8";
   $source  = "<B CLASS='active'>IMDB</B>";
 

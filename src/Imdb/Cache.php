@@ -1,6 +1,6 @@
 <?php
 
-namespace ImdbPHP;
+namespace Imdb;
 
 /**
  * File caching

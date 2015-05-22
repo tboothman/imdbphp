@@ -1,6 +1,6 @@
 <?php
 
-namespace ImdbPHP;
+namespace Imdb;
 
 /**
  * Exception thrown by the IMDbPHP library

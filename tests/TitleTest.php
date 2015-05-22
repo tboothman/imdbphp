@@ -22,8 +22,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    */
 
     public function testConstruct_from_ini_constructed_config() {
-        $config = new \ImdbPHP\Config(dirname(__FILE__) . '/resources/test.ini');
-        $imdb = new \ImdbPHP\Title('0133093', $config);
+        $config = new \Imdb\Config(dirname(__FILE__) . '/resources/test.ini');
+        $imdb = new \Imdb\Title('0133093', $config);
         $this->assertEquals('test.local', $imdb->imdbsite);
         $this->assertEquals('/somefolder', $imdb->cachedir);
         $this->assertEquals(false, $imdb->storecache);
@@ -1024,13 +1024,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
      * @return \imdb
      */
     protected function getImdb($imdbId = '0133093') {
-        $config = new \ImdbPHP\Config();
+        $config = new \Imdb\Config();
         $config->language = 'En';
         $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
         $config->debug = false;
-        $imdb = new \ImdbPHP\Title($imdbId, $config);
+        $imdb = new \Imdb\Title($imdbId, $config);
         return $imdb;
     }
 }

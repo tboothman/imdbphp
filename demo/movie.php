@@ -14,7 +14,7 @@ require __DIR__ . "/../vendor/autoload.php";
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $movieid = $_GET["mid"];
 
-  $movie = new \ImdbPHP\Title($_GET["mid"]);
+  $movie = new \Imdb\Title($_GET["mid"]);
   $charset = "utf8";
   $source  = "<B CLASS='active'>IMDB</B>";
 

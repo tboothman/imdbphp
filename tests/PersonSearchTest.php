@@ -1,8 +1,8 @@
 <?php
 
-use ImdbPHP\Config;
-use ImdbPHP\Person;
-use ImdbPHP\PersonSearch;
+use Imdb\Config;
+use Imdb\Person;
+use Imdb\PersonSearch;
 
 class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
   public function test_searching_for_a_specific_actor_returns_him() {
@@ -11,9 +11,9 @@ class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
 
     $this->assertInternalType('array', $results);
     //print_r($results);
-    /* @var $firstResult \ImdbPHP\Person */
+    /* @var $firstResult \Imdb\Person */
     $firstResult = $results[0];
-    $this->assertInstanceOf('\ImdbPHP\Person', $firstResult);
+    $this->assertInstanceOf('\Imdb\Person', $firstResult);
     // Break its imdbsite so it can't make any external requests. This ensures the search class added these properties
     $firstResult->imdbsite = '';
     $this->assertEquals("0001845", $firstResult->imdbid());
