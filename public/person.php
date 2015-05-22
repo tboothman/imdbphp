@@ -9,34 +9,28 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
- /* $Id$ */
+require __DIR__ . "/../vendor/autoload.php";
 
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $pid = $_GET["mid"];
-  if (isset($_GET['engine'])) $engine = $_GET['engine'];
-  else $engine = 'imdb';
+  $engine = 'imdb';
 
-  switch($engine) {
-    default:
-        require("imdb_person.class.php");
-        $person = new imdb_person($_GET["mid"]);
-        $charset = "utf-8";
-        $source  = "<B CLASS='active'>IMDB</B>";
-        break;
-  }
+  $person = new \ImdbPHP\Person($_GET["mid"]);
+  $charset = "utf-8";
+  $source  = "<B CLASS='active'>IMDB</B>";
 
   $person->setid ($pid);
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo "<HTML><HEAD>\n";
-  echo " <TITLE>".$person->name()." [IMDBPHP2 v".$person->version." Demo]</TITLE>\n";
+  echo " <TITLE>".$person->name()." [IMDBPHP v".$person->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
   echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Name
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo "[IMDBPHP2 v".$person->version." Demo] Details for " . $person->name();
+  echo "[IMDBPHP v".$person->version." Demo] Details for " . $person->name();
   echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
   echo "</TH></tr>\n";
   flush();
@@ -235,4 +229,3 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
 
   echo '</TABLE><BR>';
 }
-?>

@@ -10,7 +10,7 @@
  # ------------------------------------------------------------------------- #
  # Search for $name and display results                                      #
  #############################################################################
- # $Id$
+require __DIR__ . "/../vendor/autoload.php";
 
 $engine = "imdb";
 
@@ -32,16 +32,14 @@ if (empty($_GET["name"])) {
 # Still here? Then we need to search for the movie:
 switch ($_GET["searchtype"]) {
   case "nm" :
-    require_once("imdb_person_search.class.php");
-    $search = new imdbpsearch();
+    $search = new \ImdbPHP\PersonSearch();
     $headname = "Person";
     $results = $search->search($_GET["name"]);
     break;
   default:
-    require_once("imdbsearch.class.php");
-    $search = new imdbsearch();
+    $search = new \ImdbPHP\TitleSearch();
     if ($_GET["searchtype"] == "episode")
-      $results = $search->search($_GET["name"], array(imdbsearch::TV_EPISODE));
+      $results = $search->search($_GET["name"], array(\ImdbPHP\TitleSearch::TV_EPISODE));
     else
       $results = $search->search($_GET["name"]);
     $headname = "Movie";

@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__FILE__) . '/../imdb.class.php';
 
 class imdbTest extends PHPUnit_Framework_TestCase {
 
@@ -23,8 +22,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    */
 
     public function testConstruct_from_ini_constructed_config() {
-        $config = new mdb_config(dirname(__FILE__) . '/resources/test.ini');
-        $imdb = new imdb('0133093', $config);
+        $config = new \ImdbPHP\Config(dirname(__FILE__) . '/resources/test.ini');
+        $imdb = new \ImdbPHP\Title('0133093', $config);
         $this->assertEquals('test.local', $imdb->imdbsite);
         $this->assertEquals('/somefolder', $imdb->cachedir);
         $this->assertEquals(false, $imdb->storecache);
@@ -698,7 +697,10 @@ class imdbTest extends PHPUnit_Framework_TestCase {
                     'role' => '(comic)'),
                 array('imdb' => '0594503',
                     'name' => 'Hayao Miyazaki',
-                    'role' => '(screenplay)')
+                    'role' => '(screenplay)'),
+                array('imdb' => '0227187',
+                    'name' => 'David Schmoeller',
+                    'role' => '(english version) (english version)')
             ),
             $imdb->writing());
     }
@@ -744,7 +746,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('0977179', $lastEpisode['imdbid']);
       $this->assertEquals('-30-', $lastEpisode['title']);
       $this->assertEquals('9 Mar. 2008', $lastEpisode['airdate']);
-      $this->assertEquals("In the series finale, Carcetti maps out a damage-control scenario with the police brass in the wake of a startling revelation from Pearlman and Daniels. Their choice: clean up the mess...or hide the dirt.", $lastEpisode['plot']);
+      $this->assertEquals("Carcetti maps out a damage-control scenario with the police brass in the wake of a startling revelation from Pearlman and Daniels. Their choice: clean up the mess...or hide the dirt.", $lastEpisode['plot']);
       $this->assertEquals(5, $lastEpisode['season']);
       $this->assertEquals(10, $lastEpisode['episode']);
     }
@@ -890,7 +892,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
 
-      $this->assertCount(34, $awards);
+      $this->assertCount(35, $awards);
 
       $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
       $firstEntry = $scifiWritersAward['entries'][0];
@@ -1022,13 +1024,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
      * @return \imdb
      */
     protected function getImdb($imdbId = '0133093') {
-        $config = new mdb_config();
+        $config = new \ImdbPHP\Config();
         $config->language = 'En';
         $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
         $config->debug = false;
-        $imdb = new imdb($imdbId, $config);
+        $imdb = new \ImdbPHP\Title($imdbId, $config);
         return $imdb;
     }
 }

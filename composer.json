@@ -3,10 +3,10 @@
     "description": "Library for retrieving film and tv information from IMDb",
     "license": "GPL-2.0",
     "autoload": {
-        "classmap": [""]
+        "psr-0": { "": "src/" }
     },
     "require": {
-        "php": ">5.0"
+        "php": ">5.3"
     },
     "require-dev": {
         "phpunit/phpunit": ">3.7"

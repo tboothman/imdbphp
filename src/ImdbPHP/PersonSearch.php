@@ -1,28 +1,23 @@
 <?php
 
-require_once (dirname(__FILE__) . "/mdb_base.class.php");
-require_once (dirname(__FILE__) . "/imdb_person.class.php");
+namespace ImdbPHP;
 
-#==========================================[ The IMDB Person search class ]===
-/** Searching IMDB staff information
- * @package IMDB
+/**
+ * Search for people on IMDb
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright 2008-2009 by Itzchak Rehberg and IzzySoft
- * @version $Revision: 644 $ $Date: 2014-01-25 20:20:39 +0000 (Sat, 25 Jan 2014) $
  */
 
-class imdb_person_search extends mdb_base {
+class PersonSearch extends MdbBase {
 
   var $name = null;
   var $resu = array();
-  var $url = null;
-  var $last_results = 0;
 
   /**
    * Search for people on imdb who match $searchTerms
    * @method search
    * @param string $searchTerms
-   * @return array of imdb_person
+   * @return Person[]
    */
   public function search($searchTerms) {
     $this->setsearchname($searchTerms);
@@ -37,25 +32,12 @@ class imdb_person_search extends mdb_base {
    */
   public function setsearchname($name) {
     $this->name = $name;
-    $this->url = null;
-  }
-
-  /**
-   * Set the URL (overwrite default search URL and run your own)
-   *  This URL will be reset if you call the setsearchname() method
-   * @method seturl
-   * @param string URL to use
-   * @deprecated This will be dropped soon if nobody objects. Please check whether you're using it!
-   */
-  public function seturl($url) {
-    $this->url = $url;
   }
 
   /**
    * Reset search results
    * This empties the collected search results. Without calling this, every
    * new search appends its results to the ones collected by the previous search.
-   * @method reset
    */
   function reset() {
     $this->resu = array();
@@ -63,16 +45,15 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Setup search results
-   * @method results
    * @param optional string URL Replace search URL by your own
-   * @return array results array of objects (instances of the imdb_person class)
+   * @return Person[]
    */
   public function results($url = "") {
     if (empty($url)) {
         $url = $this->mkurl();
     }
 
-    $pageRequest = new imdb_page($url, $this, $this->cache, $this->logger);
+    $pageRequest = new Page($url, $this, $this->cache, $this->logger);
 
     $page = $pageRequest->get();
 
@@ -95,7 +76,7 @@ class imdb_person_search extends mdb_base {
       $mids_checked[] = $pid;
       $name = $matches[2][$i];
       $info = $matches[3][$i];
-      $resultPerson = imdb_person::fromSearchResults($pid, $name, $this);
+      $resultPerson = Person::fromSearchResults($pid, $name, $this);
       if (!empty($info)) {
         if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7}).*"\s*>(.*)</a>\s*\((\d{4})\)\)|Ui', $info, $match)) {
           $role = $match[1];
@@ -113,7 +94,6 @@ class imdb_person_search extends mdb_base {
 
   /**
    * Create the IMDB URL for the name search
-   * @method protected mkurl
    * @return string url
    */
   protected function mkurl() {
@@ -126,5 +106,3 @@ class imdb_person_search extends mdb_base {
   }
 
 }
-
-class imdbpsearch extends imdb_person_search {}

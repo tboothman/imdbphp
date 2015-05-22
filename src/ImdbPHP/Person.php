@@ -9,57 +9,26 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
- /* $Id$ */
+namespace ImdbPHP;
 
- require_once (dirname(__FILE__)."/person_base.class.php");
+/**
+ * A person on IMDb
+ * @author Izzy (izzysoft AT qumran DOT org)
+ * @copyright 2008 by Itzchak Rehberg and IzzySoft
+ */
+class Person extends MdbBase {
 
- #=================================================[ The IMDB Person class ]===
- /** Accessing IMDB staff information
-  * @package IMDB
-  * @class imdb_person
-  * @extends mdb_base
-  * @author Izzy (izzysoft AT qumran DOT org)
-  * @copyright 2008 by Itzchak Rehberg and IzzySoft
-  * @version $Revision$ $Date$
-  */
- class imdb_person extends person_base {
-
- #========================================================[ Common methods ]===
- #-------------------------------------------------------------[ Open Page ]---
-  /** Define page urls
-   * @method protected set_pagename
-   * @param string wt internal name of the page
-   * @return string urlname page URL
-   */
-  protected function set_pagename($wt) {
-   switch ($wt){
-    case "Name"        : $urlname="/"; break;
-    case "Bio"         : $urlname="/bio"; break;
-    case "Publicity"   : $urlname="/publicity"; break;
-    default            :
-      $this->page[$wt] = "unknown page identifier";
-      $this->debug_scalar("Unknown page identifier: $wt");
-      return false;
-   }
-   return $urlname;
-  }
-
-  protected function buildUrl($page) {
-    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->set_pagename($page);
-  }
-
-  public static function fromSearchResults($id, $name, mdb_config $config) {
-    $person = new imdb_person($id, $config);
+  public static function fromSearchResults($id, $name, Config $config) {
+    $person = new self($id, $config);
     $person->fullname = $name;
     return $person;
   }
 
- #-----------------------------------------------------------[ Constructor ]---
-  /** Initialize class
+  /**
    * @param string id IMDBID to use for data retrieval
-   * @param mdb_config $config OPTIONAL override default config
+   * @param Config $config OPTIONAL override default config
    */
-  function __construct($id, mdb_config $config = null) {
+  public function __construct($id, Config $config = null) {
     parent::__construct($config);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
@@ -458,9 +427,9 @@
  public function spouse() {
    if (empty($this->spouses)) {
      $this->getPage ("Bio");
-     $doc = new DOMDocument();
+     $doc = new \DOMDocument();
      @$doc->loadHTML($this->page["Bio"]);
-     $xp = new DOMXPath($doc);
+     $xp = new \DOMXPath($doc);
      $posters = array();
      $found = FALSE;
      if ($tab = $doc->getElementById('tableSpouses')) {
@@ -769,7 +738,7 @@
    * @param string name movie-name
    * @param integer year
    */
-  function setSearchDetails($role,$mid,$name,$year) {
+  public function setSearchDetails($role,$mid,$name,$year) {
     $this->SearchDetails = array("role"=>$role,"mid"=>$mid,"moviename"=>$name,"year"=>$year);
   }
   /** Get the search details
@@ -778,11 +747,73 @@
    * @method getSearchDetails
    * @return array SearchDetails (mid,name,role,moviename,year)
    */
-  function getSearchDetails() {
+  public function getSearchDetails() {
     return $this->SearchDetails;
+  }
+
+  protected function reset_vars() {
+   $this->page["Name"] = "";
+   $this->page["Bio"]  = "";
+   $this->page["Publicity"]  = "";
+
+   // "Name" page:
+   $this->main_photo      = "";
+   $this->fullname        = "";
+   $this->birthday        = array();
+   $this->deathday        = array();
+   $this->allfilms        = array();
+   $this->actressfilms    = array();
+   $this->actorsfilms     = array();
+   $this->producersfilms  = array();
+   $this->soundtrackfilms = array();
+   $this->directorsfilms  = array();
+   $this->crewsfilms      = array();
+   $this->thanxfilms      = array();
+   $this->writerfilms     = array();
+   $this->selffilms       = array();
+   $this->archivefilms    = array();
+
+   // "Bio" page:
+   $this->birth_name      = "";
+   $this->nick_name       = array();
+   $this->bodyheight      = array();
+   $this->spouses         = array();
+   $this->bio_bio         = array();
+   $this->bio_trivia      = array();
+   $this->bio_tm          = array();
+   $this->bio_salary      = array();
+
+   // "Publicity" page:
+   $this->pub_prints      = array();
+   $this->pub_movies      = array();
+   $this->pub_interviews  = array();
+   $this->pub_articles    = array();
+   $this->pub_pictorial   = array();
+   $this->pub_magcovers   = array();
+
+   // SearchDetails
+   $this->SearchDetails   = array();
+  }
+
+    /** Define page urls
+   * @param string wt internal name of the page
+   * @return string urlname page URL
+   */
+  protected function set_pagename($wt) {
+   switch ($wt){
+    case "Name"        : $urlname="/"; break;
+    case "Bio"         : $urlname="/bio"; break;
+    case "Publicity"   : $urlname="/publicity"; break;
+    default            :
+      $this->page[$wt] = "unknown page identifier";
+      $this->debug_scalar("Unknown page identifier: $wt");
+      return false;
+   }
+   return $urlname;
+  }
+  protected function buildUrl($page) {
+    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->set_pagename($page);
   }
 
  }
 
-// Some backwards compatibility
-require_once (dirname(__FILE__)."/imdb_person_search.class.php");

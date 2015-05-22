@@ -1,6 +1,8 @@
 <?php
 
-require_once dirname(__FILE__) . '/../imdb_person_search.class.php';
+use ImdbPHP\Config;
+use ImdbPHP\Person;
+use ImdbPHP\PersonSearch;
 
 class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
   public function test_searching_for_a_specific_actor_returns_him() {
@@ -9,9 +11,9 @@ class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
 
     $this->assertInternalType('array', $results);
     //print_r($results);
-    /* @var $firstResult imdb_person */
+    /* @var $firstResult \ImdbPHP\Person */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb_person', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Person', $firstResult);
     // Break its imdbsite so it can't make any external requests. This ensures the search class added these properties
     $firstResult->imdbsite = '';
     $this->assertEquals("0001845", $firstResult->imdbid());
@@ -19,14 +21,14 @@ class imdb_person_searchTest extends PHPUnit_Framework_TestCase {
   }
 
   protected function getimdbpersonsearch() {
-    $config = new mdb_config();
+    $config = new Config();
     $config->language = 'en';
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $config->usezip = true;
     $config->cache_expire = 3600;
     $config->debug = false;
 
-    $imdbsearch = new imdb_person_search($config);
+    $imdbsearch = new PersonSearch($config);
     return $imdbsearch;
   }
 

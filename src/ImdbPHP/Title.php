@@ -9,57 +9,223 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
- /* $Id$ */
+namespace ImdbPHP;
 
- require_once (dirname(__FILE__)."/movie_base.class.php");
-
- #=============================================================================
- #=================================================[ The IMDB class itself ]===
- #=============================================================================
- /** Accessing IMDB information
-  * @package IMDB
-  * @class imdb
-  * @extends movie_base
+ /**
+  * A title on IMDb
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
   * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
-  * @version $Revision$ $Date$
   */
-class imdb extends movie_base {
+class Title extends MdbBase {
+
+  protected $akas = array();
+  protected $awards = array();
+  protected $countries = array();
+  protected $castlist = array(); // pilot only
+  protected $crazy_credits = array();
+  protected $credits_cast = array();
+  protected $credits_composer = array();
+  protected $credits_director = array();
+  protected $credits_producer = array();
+  protected $credits_writing = array();
+  protected $extreviews = array();
+  protected $goofs = array();
+  protected $langs = array();
+  protected $langs_full = array();
+  protected $aspectratio = "";
+  protected $main_comment = "";
+  protected $main_genre = "";
+  protected $main_keywords = array();
+  protected $all_keywords = array();
+  protected $main_language = "";
+  protected $main_photo = "";
+  protected $main_thumb = "";
+  protected $main_pictures = array();
+  protected $main_plotoutline = "";
+  protected $main_rating = -1;
+  protected $main_runtime = "";
+  protected $main_movietype = "";
+  protected $main_title = "";
+  protected $original_title = "";
+  protected $main_votes = -1;
+  protected $main_year = -1;
+  protected $main_endyear = -1;
+  protected $main_yearspan = array();
+  protected $main_creator = array();
+  protected $main_tagline = "";
+  protected $main_storyline = "";
+  protected $main_prodnotes = array();
+  protected $main_movietypes = array();
+  protected $main_top250 = -1;
+  protected $moviecolors = array();
+  protected $movieconnections = array();
+  protected $moviegenres = array();
+  protected $moviequotes = array();
+  protected $movierecommendations = array();
+  protected $movieruntimes = array();
+  protected $mpaas = array();
+  protected $mpaas_hist = array();
+  protected $mpaa_justification = "";
+  protected $plot_plot = array();
+  protected $synopsis_wiki = "";
+  protected $release_info = array();
+  protected $seasoncount = -1;
+  protected $season_episodes = array();
+  protected $sound = array();
+  protected $soundtracks = array();
+  protected $split_comment = array();
+  protected $split_plot = array();
+  protected $taglines = array();
+  protected $trailers = array();
+  protected $video_sites = array();
+  protected $soundclip_sites = array();
+  protected $photo_sites = array();
+  protected $misc_sites = array();
+  protected $trivia = array();
+  protected $compcred_prod = array();
+  protected $compcred_dist = array();
+  protected $compcred_special = array();
+  protected $compcred_other = array();
+  protected $parental_guide = array();
+  protected $official_sites = array();
+  protected $locations = array();
 
   /**
-   * Create an imdb object populated with id, title, year
+   * Create an imdb object populated with id, title, year, and movie type
    * @param string $id imdb ID
    * @param string $title film title
    * @param int $year
    * @param string $type
-   * @param mdb_config $config
-   * @return imdb
+   * @param Config $config
+   * @return Title
    */
-  public static function fromSearchResult($id, $title, $year, $type, mdb_config $config = null) {
-    $imdb = new imdb($id, $config);
+  public static function fromSearchResult($id, $title, $year, $type, Config $config = null) {
+    $imdb = new Title($id, $config);
     $imdb->main_title = $title;
     $imdb->main_year = (int)$year;
     $imdb->main_movietype = $type;
     return $imdb;
   }
 
- #======================================================[ Common functions ]===
- #-----------------------------------------------------------[ Constructor ]---
-  /** Initialize the class
-   * @constructor imdb
+  /**
    * @param string $id IMDBID to use for data retrieval
-   * @param mdb_config $config OPTIONAL override default config
+   * @param Config $config OPTIONAL override default config
    */
-  function __construct($id, mdb_config $config = null) {
-    parent::__construct($id, $config);
-    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+  public function __construct($id, Config $config = null) {
+    parent::__construct($config);
     $this->setid($id);
+    $this->reset_vars(); //@TODO setting up variables that should be there initially anyway????
+  }
+
+  /**
+   * Reset all in object caching data e.g. page strings and parsed values
+   */
+  protected function reset_vars() {
+   $this->page["Title"] = "";
+   $this->page["TitleFoot"] = ""; // IMDB only, as part of info was outsourced
+   $this->page["Credits"] = "";
+   $this->page["CrazyCredits"] = "";
+   $this->page["Amazon"] = "";
+   $this->page["Goofs"] = "";
+   $this->page["Trivia"] = "";
+   $this->page["Plot"] = "";
+   $this->page["Synopsis"] = "";
+   $this->page["Comments"] = "";
+   $this->page["Quotes"] = "";
+   $this->page["Taglines"] = "";
+   $this->page["Plotoutline"] = "";
+   $this->page["Trivia"] = "";
+   $this->page["Directed"] = "";
+   $this->page["Episodes"] = "";
+   $this->page["Quotes"] = "";
+   $this->page["Trailers"] = "";
+   $this->page["MovieConnections"] = "";
+   $this->page["ExtReviews"] = "";
+   $this->page["ReleaseInfo"] = "";
+   $this->page["CompanyCredits"] = "";
+   $this->page["ParentalGuide"] = "";
+   $this->page["OfficialSites"] = "";
+   $this->page["Keywords"] = "";
+   $this->page["Awards"] = "";
+   $this->page["Locations"] = "";
+   $this->page["VideoSites"] = "";
+
+   $this->akas = array();
+   $this->awards = array();
+   $this->countries = array();
+   $this->castlist = array(); // pilot only
+   $this->crazy_credits = array();
+   $this->credits_cast = array();
+   $this->credits_composer = array();
+   $this->credits_director = array();
+   $this->credits_producer = array();
+   $this->credits_writing = array();
+   $this->extreviews = array();
+   $this->goofs = array();
+   $this->langs = array();
+   $this->langs_full = array();
+   $this->aspectratio = "";
+   $this->main_comment = "";
+   $this->main_genre = "";
+   $this->main_keywords = array();
+   $this->all_keywords = array();
+   $this->main_language = "";
+   $this->main_photo = "";
+   $this->main_thumb = "";
+   $this->main_pictures = array();
+   $this->main_plotoutline = "";
+   $this->main_rating = -1;
+   $this->main_runtime = "";
+   $this->main_movietype = "";
+   $this->main_title = "";
+   $this->original_title = "";
+   $this->main_votes = -1;
+   $this->main_year = -1;
+   $this->main_endyear = -1;
+   $this->main_yearspan = array();
+   $this->main_creator = array();
+   $this->main_tagline = "";
+   $this->main_storyline = "";
+   $this->main_prodnotes = array();
+   $this->main_movietypes = array();
+   $this->main_top250 = -1;
+   $this->moviecolors = array();
+   $this->movieconnections = array();
+   $this->moviegenres = array();
+   $this->moviequotes = array();
+   $this->movierecommendations = array();
+   $this->movieruntimes = array();
+   $this->mpaas = array();
+   $this->mpaas_hist = array();
+   $this->mpaa_justification = "";
+   $this->plot_plot = array();
+   $this->synopsis_wiki = "";
+   $this->release_info = array();
+   $this->seasoncount = -1;
+   $this->season_episodes = array();
+   $this->sound = array();
+   $this->soundtracks = array();
+   $this->split_comment = array();
+   $this->split_plot = array();
+   $this->taglines = array();
+   $this->trailers = array();
+   $this->video_sites = array();
+   $this->soundclip_sites = array();
+   $this->photo_sites = array();
+   $this->misc_sites = array();
+   $this->trivia = array();
+   $this->compcred_prod = array();
+   $this->compcred_dist = array();
+   $this->compcred_special = array();
+   $this->compcred_other = array();
+   $this->parental_guide = array();
+   $this->official_sites = array();
+   $this->locations = array();
   }
 
  #-------------------------------------------------------------[ Open Page ]---
   /** Define page urls
-   * @method protected set_pagename
    * @param string wt internal name of the page
    * @return string urlname page URL
    */
@@ -104,19 +270,16 @@ class imdb extends movie_base {
     return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->set_pagename($page);
   }
 
- #-----------------------------------------------[ URL to movies main page ]---
-  /** Set up the URL to the movie title page
-   * @method main_url
-   * @return string url full URL to the current movies main page
+  /**
+   * Get the URL for this title's page
+   * @return string
    */
   public function main_url(){
    return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
   }
 
- #======================================================[ Title page infos ]===
- #-------------------------------------------[ Movie title (name) and year ]---
-  /** Setup title and year properties
-   * @method protected title_year
+  /**
+   * Setup title and year properties
    */
   protected function title_year() {
     $this->getPage("Title");
@@ -750,7 +913,7 @@ class imdb extends movie_base {
       return false;
     }
 
-    $req = new MDB_Request($photo_url, $this);
+    $req = new Request($photo_url, $this);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
             strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||

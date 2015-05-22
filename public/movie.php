@@ -9,35 +9,27 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
- /* $Id$ */
+require __DIR__ . "/../vendor/autoload.php";
 
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $movieid = $_GET["mid"];
-  $engine  = $_GET["engine"];
 
-  switch($engine) {
-    default:
-        require("imdb.class.php");
-        $movie = new imdb($_GET["mid"]);
-        //$charset = "iso-8859-1";
-        $charset = "utf8";
-        $source  = "<B CLASS='active'>IMDB</B>";
-        break;
-  }
+  $movie = new \ImdbPHP\Title($_GET["mid"]);
+  $charset = "utf8";
+  $source  = "<B CLASS='active'>IMDB</B>";
 
-  $movie->setid ($movieid);
   $rows = 2; // count for the rowspan; init with photo + year
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo "<HTML><HEAD>\n";
-  echo " <TITLE>".$movie->title().' ('.$movie->year().") [IMDBPHP2 v".$movie->version." Demo]</TITLE>\n";
+  echo " <TITLE>".$movie->title().' ('.$movie->year().") [IMDBPHP v".$movie->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } b.active { color:#b00;background-color:#fff;text-decoration:underline;}</STYLE>\n";
   echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
   echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year
   echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo "[IMDBPHP2 v".$movie->version." Demo] Movie Details for '" . $movie->title()."' (".$movie->year().")";
+  echo "[IMDBPHP v".$movie->version." Demo] Movie Details for '" . $movie->title()."' (".$movie->year().")";
   echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
   echo "</TH></TR>\n";
   flush();
@@ -204,7 +196,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($director); $i++) {
       echo '<tr><td width=200>';
-      echo "<a href='person.php?engine=$engine&mid=".$director[$i]["imdb"]."'>";
+      echo "<a href='person.php?mid=".$director[$i]["imdb"]."'>";
       echo $director[$i]["name"].'</a></td><td>';
       echo $director[$i]["role"]."</td></tr>";
     }
@@ -219,7 +211,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($write); $i++) {
       echo '<tr><td width=200>';
-      echo "<a href='person.php?engine=$engine&mid=".$write[$i]["imdb"]."'>";
+      echo "<a href='person.php?mid=".$write[$i]["imdb"]."'>";
       echo $write[$i]["name"].'</a></td><td>';
       echo $write[$i]["role"]."</td></tr>";
     }
@@ -235,7 +227,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($produce); $i++) {
       echo '<tr><td width=200>';
-      echo "<a href='person.php?engine=$engine&mid=".$produce[$i]["imdb"]."'>";
+      echo "<a href='person.php?mid=".$produce[$i]["imdb"]."'>";
       echo $produce[$i]["name"].'</a></td><td>';
       echo $produce[$i]["role"]."</td></tr>";
     }
@@ -250,7 +242,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($compose); $i++) {
       echo '<tr><td width=200>';
-      echo "<a href='person.php?engine=$engine&mid=".$compose[$i]["imdb"]."'>";
+      echo "<a href='person.php?mid=".$compose[$i]["imdb"]."'>";
       echo $compose[$i]["name"]."</a></td></tr>";
     }
     echo "</table></td></tr>\n";
@@ -265,7 +257,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
     for ($i = 0; $i < count($cast); $i++) {
       echo '<tr><td width=200>';
-      echo "<a href='person.php?engine=$engine&mid=".$cast[$i]["imdb"]."'>";
+      echo "<a href='person.php?mid=".$cast[$i]["imdb"]."'>";
       echo $cast[$i]["name"].'</a></td><td>';
       echo $cast[$i]["role"]."</td></tr>";
     }
@@ -339,7 +331,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   if (!empty($quotes)) {
     ++$rows;
     echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
-    echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$quotes[0])."</td></tr>\n";
+    echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$quotes[0])."</td></tr>\n";
   }
 
   # Trailer
@@ -381,7 +373,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "There are $gc entries in the trivia list - like these:<br><ul>";
     for ($i=0;$i<5;++$i) {
       if (empty($trivia[$i])) break;
-      echo "<li>".preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$trivia[$i])."</li>";
+      echo "<li>".preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$trivia[$i])."</li>";
     }
     echo "</ul></td></tr>\n";
   }
@@ -395,8 +387,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     echo "There are $gc soundtracks listed - like these:<br>";
     echo "<table align='center' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Soundtrack</th><th style='background-color:#07f;'>Credit 1</th><th style='background-color:#07f;'>Credit 2</th></tr>";
     for ($i=0;$i<5;++$i) {
-      if (isset($soundtracks[$i]["credits"][0])) $credit1 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$soundtracks[$i]["credits"][0]['credit_to'])." (".$soundtracks[$i]["credits"][0]['desc'].")"; else $credit1 = '';
-      if (isset($soundtracks[$i]["credits"][1])) $credit2 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?engine=$engine&mid=\\1",$soundtracks[$i]["credits"][1]['credit_to'])." (".$soundtracks[$i]["credits"][1]['desc'].")"; else $credit2 = '';
+      if (isset($soundtracks[$i]["credits"][0])) $credit1 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtracks[$i]["credits"][0]['credit_to'])." (".$soundtracks[$i]["credits"][0]['desc'].")"; else $credit1 = '';
+      if (isset($soundtracks[$i]["credits"][1])) $credit2 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtracks[$i]["credits"][1]['credit_to'])." (".$soundtracks[$i]["credits"][1]['desc'].")"; else $credit2 = '';
       echo "<tr><td>".$soundtracks[$i]["soundtrack"]."</td><td>$credit1</td><td>$credit2</td></tr>";
     }
     echo "</table></td></tr>\n";

@@ -1,6 +1,8 @@
 <?php
 
-require_once dirname(__FILE__) . '/../imdbsearch.class.php';
+use ImdbPHP\Config;
+use ImdbPHP\Title;
+use ImdbPHP\TitleSearch;
 
 class imdbsearchTest extends PHPUnit_Framework_TestCase {
   public function test_searching_for_a_specific_film_returns_its_imdb_class_with_title_prepopulated() {
@@ -8,9 +10,9 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $results = $search->search('The Lord of the Rings: The Fellowship of the Ring');
 
     $this->assertInternalType('array', $results);
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     // Break its imdbsite so it can't make any external requests. This ensures the search class added these properties
     $firstResult->imdbsite = '';
     $this->assertEquals("0120737", $firstResult->imdbid());
@@ -20,19 +22,19 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_movie_returns_only_movies() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Bebop', [imdbsearch::MOVIE]);
+    $results = $search->search('Cowboy Bebop', [TitleSearch::MOVIE]);
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("0275277", $firstResult->imdbid());
     $this->assertEquals("Cowboy Bebop: The Movie", $firstResult->title());
     $this->assertEquals(2001, $firstResult->year());
 
-    /* @var $secondResult imdb */
+    /* @var $secondResult Title */
     $secondResult = $results[1];
-    $this->assertInstanceOf('imdb', $secondResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $secondResult);
     $this->assertEquals("1267295", $secondResult->imdbid());
     $this->assertEquals("Cowboy Bebop", $secondResult->title());
     $this->assertEquals(0, $secondResult->year());
@@ -40,13 +42,13 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_show_returns_only_tv() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Bebop', [imdbsearch::TV_SERIES]);
+    $results = $search->search('Cowboy Bebop', [TitleSearch::TV_SERIES]);
 
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("0213338", $firstResult->imdbid());
     $this->assertEquals("Cowboy Bebop", $firstResult->title());
     $this->assertEquals(1998, $firstResult->year());
@@ -54,13 +56,13 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_episode_returns_only_tv_episode() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Funk', [imdbsearch::TV_EPISODE]);
+    $results = $search->search('Cowboy Funk', [TitleSearch::TV_EPISODE]);
 
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("0618966", $firstResult->imdbid());
     $this->assertEquals("Cowboy Funk", $firstResult->title());
     $this->assertEquals(1999, $firstResult->year());
@@ -68,20 +70,20 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_game_returns_only_games() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Doom', [imdbsearch::GAME]);
+    $results = $search->search('Doom', [TitleSearch::GAME]);
 
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("0286598", $firstResult->imdbid());
     $this->assertEquals("Ultimate Doom", $firstResult->title());
     $this->assertEquals(1993, $firstResult->year());
 
-    /* @var $secondResult imdb */
+    /* @var $secondResult Title */
     $secondResult = $results[1];
-    $this->assertInstanceOf('imdb', $secondResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $secondResult);
     $this->assertEquals("0291868", $secondResult->imdbid());
     $this->assertEquals("Doom³", $secondResult->title());
     $this->assertEquals(2004, $secondResult->year());
@@ -89,13 +91,13 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_miniseries_returns_only_miniseries() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Hatfields & McCoys', [imdbsearch::TV_MINI_SERIES]);
+    $results = $search->search('Hatfields & McCoys', [TitleSearch::TV_MINI_SERIES]);
 
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("1985443", $firstResult->imdbid());
     $this->assertEquals("Hatfields & McCoys", $firstResult->title());
     $this->assertEquals(2012, $firstResult->year());
@@ -105,26 +107,26 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
   // e.g. Home (II) (2015)
   public function test_movies_with_duplicate_name_per_year_get_a_year() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Home 2015', [imdbsearch::MOVIE]);
+    $results = $search->search('Home 2015', [TitleSearch::MOVIE]);
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult imdb */
+    /* @var $firstResult Title */
     $firstResult = $results[0];
-    $this->assertInstanceOf('imdb', $firstResult);
+    $this->assertInstanceOf('\ImdbPHP\Title', $firstResult);
     $this->assertEquals("2224026", $firstResult->imdbid());
     $this->assertEquals("Home", $firstResult->title());
     $this->assertEquals(2015, $firstResult->year());
   }
 
   protected function getimdbsearch() {
-    $config = new mdb_config();
+    $config = new Config();
     $config->language = 'en';
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
     $config->usezip = true;
     $config->cache_expire = 3600;
     $config->debug = false;
 
-    $imdbsearch = new imdbsearch($config);
+    $imdbsearch = new TitleSearch($config);
     return $imdbsearch;
   }
 }
