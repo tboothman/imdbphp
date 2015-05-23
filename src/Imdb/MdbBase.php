@@ -19,14 +19,20 @@ namespace Imdb;
 class MdbBase extends Config {
   public $version = '2.6.1';
 
-  /**
-   * @deprecated since version 2.3.4
-   */
-  public $lastServerResponse;
-
-  protected $months = array("January"=>"01","February"=>"02","March"=>"03","April"=>"04",
-           "May"=>"05","June"=>"06","July"=>"07","August"=>"08","September"=>"09",
-           "October"=>"10","November"=>"11","December"=>"12");
+  protected $months = array(
+      "January" => "01",
+      "February" => "02",
+      "March" => "03",
+      "April" => "04",
+      "May" => "05",
+      "June" => "06",
+      "July" => "07",
+      "August" => "08",
+      "September" => "09",
+      "October" => "10",
+      "November" => "11",
+      "December" => "12"
+    );
 
   /**
    * @var Cache
@@ -38,11 +44,16 @@ class MdbBase extends Config {
    */
   protected $logger;
 
+  /**
+   * @var Config
+   */
+  protected $config;
+
   protected $page = array();
 
 
   /**
-   * @param object Config $config OPTIONAL override default config
+   * @param Config $config OPTIONAL override default config
    */
   public function __construct(Config $config = null) {
     parent::__construct();
@@ -53,16 +64,20 @@ class MdbBase extends Config {
       }
     }
 
+    $this->config = $config ?: $this;
     $this->logger = new Logger($this->debug);
-    $this->cache = new Cache($this, $this->logger);
+    $this->cache = new Cache($this->config, $this->logger);
 
-    if ($this->storecache && ($this->cache_expire > 0)) $this->cache->purge();
+    if ($this->storecache && ($this->cache_expire > 0)) {
+      $this->cache->purge();
+    }
   }
 
   /**
    * Setup class for a new IMDB id
-   * @method setid
    * @param string id IMDBID of the requested movie
+   * @TODO remove this / make it private
+   * @TODO allow numeric ids and coerce them into 7 digit strings
    */
   public function setid ($id) {
     if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
@@ -72,7 +87,6 @@ class MdbBase extends Config {
 
   /**
    * Retrieve the IMDB ID
-   * @method imdbid
    * @return string id IMDBID currently used
    */
   public function imdbid() {
@@ -92,7 +106,6 @@ class MdbBase extends Config {
 
   /**
    * Get numerical value for month name
-   * @method protected monthNo
    * @param string name name of month
    * @return integer month number
    */
@@ -101,16 +114,6 @@ class MdbBase extends Config {
   }
 
  #-------------------------------------------------------------[ Open Page ]---
-  /**
-   * Define page urls
-   * @method protected set_pagename
-   * @param string wt internal name of the page
-   * @return string urlname page URL
-   */
-  protected function set_pagename($wt) {
-   return false;
-  }
-
   /**
    * Get a page from IMDb, which will be cached in memory for repeated use
    * @param string $page Name of the page to retrieve e.g. Title, Credits
@@ -122,7 +125,7 @@ class MdbBase extends Config {
       return $this->page[$page];
     }
 
-    $pageRequest = new Page($this->buildUrl($page), $this, $this->cache, $this->logger);
+    $pageRequest = new Page($this->buildUrl($page), $this->config, $this->cache, $this->logger);
 
     $this->page[$page] = $pageRequest->get();
 
@@ -149,11 +152,9 @@ class MdbBase extends Config {
 
   /**
    * Reset page vars
-   * @method protected reset_vars
    */
   protected function reset_vars() {
     return;
   }
 
 }
-

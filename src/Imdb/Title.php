@@ -97,6 +97,33 @@ class Title extends MdbBase {
   protected $admissions = array();
   protected $filmingDates = array();
 
+  protected $pageUrls = array(
+      "Title" => "/",
+      "TitleFoot" => "/_ajax/iframe?component=footer",
+      "Credits" => "/fullcredits",
+      "CrazyCredits" => "/crazycredits",
+      "Plot" => "/plotsummary",
+      "Synopsis" => "/synopsis",
+      "Taglines" => "/taglines",
+      "Episodes" => "/episodes",
+      "Quotes" => "/quotes",
+      "Trailers" => "/trailers",
+      "VideoSites" => "/videosites",
+      "Goofs" => "/trivia?tab=gf",
+      "Trivia" => "/trivia",
+      "Soundtrack" => "/soundtrack",
+      "MovieConnections" => "/trivia?tab=mc",
+      "ExtReviews" => "/externalreviews",
+      "ReleaseInfo" => "/releaseinfo",
+      "CompanyCredits" => "/companycredits",
+      "ParentalGuide" => "/parentalguide",
+      "OfficialSites" => "/officialsites",
+      "Keywords" => "/keywords",
+      "Awards" => "/awards",
+      "Locations" => "/locations",
+      "BoxOffice" => "/business"
+  );
+
   /**
    * Create an imdb object populated with id, title, year, and movie type
    * @param string $id imdb ID
@@ -128,34 +155,7 @@ class Title extends MdbBase {
    * Reset all in object caching data e.g. page strings and parsed values
    */
   protected function reset_vars() {
-   $this->page["Title"] = "";
-   $this->page["TitleFoot"] = ""; // IMDB only, as part of info was outsourced
-   $this->page["Credits"] = "";
-   $this->page["CrazyCredits"] = "";
-   $this->page["Amazon"] = "";
-   $this->page["Goofs"] = "";
-   $this->page["Trivia"] = "";
-   $this->page["Plot"] = "";
-   $this->page["Synopsis"] = "";
-   $this->page["Comments"] = "";
-   $this->page["Quotes"] = "";
-   $this->page["Taglines"] = "";
-   $this->page["Plotoutline"] = "";
-   $this->page["Trivia"] = "";
-   $this->page["Directed"] = "";
-   $this->page["Episodes"] = "";
-   $this->page["Quotes"] = "";
-   $this->page["Trailers"] = "";
-   $this->page["MovieConnections"] = "";
-   $this->page["ExtReviews"] = "";
-   $this->page["ReleaseInfo"] = "";
-   $this->page["CompanyCredits"] = "";
-   $this->page["ParentalGuide"] = "";
-   $this->page["OfficialSites"] = "";
-   $this->page["Keywords"] = "";
-   $this->page["Awards"] = "";
-   $this->page["Locations"] = "";
-   $this->page["VideoSites"] = "";
+   $this->page = array();
 
    $this->akas = array();
    $this->awards = array();
@@ -237,50 +237,25 @@ class Title extends MdbBase {
   }
 
  #-------------------------------------------------------------[ Open Page ]---
-  /** Define page urls
-   * @param string wt internal name of the page
-   * @return string urlname page URL
-   */
-  protected function set_pagename($wt) {
-   switch ($wt){
-    case "Title"       : $urlname="/"; break;
-    case "TitleFoot"   : $urlname="/_ajax/iframe?component=footer"; break;
-    case "Credits"     : $urlname="/fullcredits"; break;
-    case "CrazyCredits": $urlname="/crazycredits"; break;
-    case "Plot"        : $urlname="/plotsummary"; break;
-    case "Synopsis"    : $urlname="/synopsis"; break;
-    case "Taglines"    : $urlname="/taglines"; break;
-    case "Episodes"    : $urlname="/episodes"; break;
-    case "Quotes"      : $urlname="/quotes"; break;
-    case "Trailers"    : $urlname="/trailers"; break;
-    case "VideoSites"  : $urlname="/videosites"; break;
-    case "Goofs"       : $urlname="/trivia?tab=gf"; break;
-    case "Trivia"      : $urlname="/trivia"; break;
-    case "Soundtrack"  : $urlname="/soundtrack"; break;
-    case "MovieConnections" : $urlname="/trivia?tab=mc"; break;
-    case "ExtReviews"  : $urlname="/externalreviews"; break;
-    case "ReleaseInfo" : $urlname="/releaseinfo"; break;
-    case "CompanyCredits" : $urlname="/companycredits"; break;
-    case "ParentalGuide"  : $urlname="/parentalguide"; break;
-    case "OfficialSites"  : $urlname="/officialsites"; break;
-    case "Keywords"       : $urlname="/keywords"; break;
-    case "Awards"      : $urlname="/awards"; break;
-    case "Locations"   : $urlname="/locations"; break;
-    case "BoxOffice"   : $urlname = "/business"; break;
-    default            :
-      if ( preg_match('!^Episodes-(\d+)$!',$wt,$match) ) {
-        $urlname = '/episodes?season='.$match[1];
-      } else {
-        $this->page[$wt] = "unknown page identifier";
-        $this->debug_scalar("Unknown page identifier: $wt");
-        return false;
-      }
-   }
-   return $urlname;
-  }
 
   protected function buildUrl($page) {
-    return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->set_pagename($page);
+    return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->getUrlSuffix($page);
+  }
+
+  /**
+   * @param string $pageName internal name of the page
+   * @return string
+   */
+  protected function getUrlSuffix($pageName) {
+    if (isset($this->pageUrls[$pageName])) {
+      return $this->pageUrls[$pageName];
+    }
+
+    if (preg_match('!^Episodes-(\d+)$!', $pageName, $match)) {
+      return '/episodes?season='.$match[1];
+    }
+
+    throw new \Exception("Could not find URL for page $pageName");
   }
 
   /**

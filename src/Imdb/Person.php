@@ -795,24 +795,22 @@ class Person extends MdbBase {
    $this->SearchDetails   = array();
   }
 
-    /** Define page urls
-   * @param string wt internal name of the page
-   * @return string urlname page URL
+  /**
+   * @param string $pageName internal name of the page
+   * @return string
    */
-  protected function set_pagename($wt) {
-   switch ($wt){
+  protected function getUrlSuffix($pageName) {
+   switch ($pageName) {
     case "Name"        : $urlname="/"; break;
     case "Bio"         : $urlname="/bio"; break;
     case "Publicity"   : $urlname="/publicity"; break;
     default            :
-      $this->page[$wt] = "unknown page identifier";
-      $this->debug_scalar("Unknown page identifier: $wt");
-      return false;
+      throw new \Exception("Could not find URL for page $pageName");
    }
    return $urlname;
   }
   protected function buildUrl($page) {
-    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->set_pagename($page);
+    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->getUrlSuffix($page);
   }
 
  }
