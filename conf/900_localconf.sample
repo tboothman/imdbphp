@@ -39,8 +39,6 @@ photoroot = './images/'
 imdb_img_url = './imgs/'
 
 [misc]
-; Try to recode all non-UTF-8 content to UTF-8?
-imdb_utf8recode = 0
 ; Enable debug mode?
 debug = 0
 

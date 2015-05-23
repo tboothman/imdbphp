@@ -129,15 +129,6 @@ class MdbBase extends Config {
 
     $this->page[$page] = $pageRequest->get();
 
-    // @TODO is this needed? is anything on imdb not utf8 encoded?
-    // Non ascii characters appear to be entity encoded anyway, so this would do nothing?
-    if ($this->imdb_utf8recode && function_exists('mb_detect_encoding')) {
-      $cur_encoding = mb_detect_encoding($this->page[$page]);
-      if (!($cur_encoding == "UTF-8" && mb_check_encoding($this->page[$page], "UTF-8"))) {
-        $this->page[$page] = utf8_encode($this->page[$page]);
-      }
-    }
-
     return $this->page[$page];
   }
 
