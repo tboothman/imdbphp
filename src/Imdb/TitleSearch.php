@@ -19,8 +19,8 @@ class TitleSearch extends MdbBase {
    * Search IMDb for titles matching $searchTerms
    * @param string $searchTerms
    * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
-   *                            The class constants MOVIE,GAME etc should be used e.g. [imdbsearch::MOVIE, imdbsearch::TV_SERIES]
-   * @param int $maxResults *optional* The maximum number of results to retrieve from IMDB. 0 for unlimited. Defaults to mdb_config::$maxresults
+   *                            The class constants MOVIE,GAME etc should be used e.g. [TitleSearch::MOVIE, TitleSearch::TV_SERIES]
+   * @param int $maxResults *optional* The maximum number of results to retrieve from IMDB. 0 for unlimited. Defaults to Config::$maxresults
    * @return Title[] array of Title objects
    */
   public function search($searchTerms, $wantedTypes = null, $maxResults = null) {
@@ -32,7 +32,7 @@ class TitleSearch extends MdbBase {
     }
 
     $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
-    $pageRequest = new Page($url, $this, $this->cache, $this->logger);
+    $pageRequest = new Page($url, $this->config, $this->cache, $this->logger);
 
     $page = $pageRequest->get();
 
