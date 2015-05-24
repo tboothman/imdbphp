@@ -137,7 +137,7 @@ class MdbBase extends Config {
    * @param string $page
    * @return string
    */
-  protected function buildUrl($page = null) {
+  protected function buildUrl($page) {
     return '';
   }
 

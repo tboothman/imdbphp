@@ -88,14 +88,14 @@ class Charts extends MdbBase {
 
   protected function getPage($page) {
     if (!$this->page) {
-      $req = new Request($this->buildUrl(), $this->config);
+      $req = new Request($this->buildUrl(''), $this->config);
       $req->sendRequest();
       $this->page = $req->getResponseBody();
     }
     return $this->page;
   }
 
-  protected function buildUrl($page = null) {
+  protected function buildUrl($page) {
     return "http://" . $this->config->imdbsite . "/chart/";
   }
 
