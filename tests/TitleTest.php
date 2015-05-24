@@ -1099,6 +1099,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('1998-03-14', $filmingDates['beginning']);
     $this->assertEquals('1998-09-01', $filmingDates['end']);
   }
+
+  public function test_videosites() {
+    $imdb = $this->getImdb();
+    $videoSites = $imdb->videosites();
+
+    $this->assertInternalType('array', $videoSites);
+    $this->assertGreaterThan(2, $videoSites);
+  }
     
     /**
      * Create an imdb object that uses cached pages

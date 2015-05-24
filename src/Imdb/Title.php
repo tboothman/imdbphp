@@ -148,7 +148,6 @@ class Title extends MdbBase {
   public function __construct($id, Config $config = null) {
     parent::__construct($config);
     $this->setid($id);
-    $this->reset_vars(); //@TODO setting up variables that should be there initially anyway????
   }
 
   /**
@@ -1711,8 +1710,10 @@ class Title extends MdbBase {
   * @return string url real-url
   */
  protected function convertIMDBtoRealURL($url) {
-   if (preg_match('/^http:\/\//', $url)) return $url;
-   $req = new MDB_Request("http://".$this->imdbsite.$url, $this);
+   if (preg_match('/^https?:\/\//', $url)) {
+     return $url;
+   }
+   $req = new Request("http://".$this->imdbsite.$url, $this->config);
    if ($req->sendRequest()!==FALSE) {
      $head = $req->getLastResponseHeaders();
      foreach ($head as $header) {
@@ -1737,13 +1738,13 @@ class Title extends MdbBase {
      if ( preg_match_all('!<li>(.+?)</li>!ims',$match[1],$matches) ) {
        $mc = count($matches[0]);
        for ($i=0;$i<$mc;++$i) {
-         if ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.*) \((?<type>.*?)\)</a>!',$matches[1][$i],$entry) ) {
+         if ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.*) \((?<type>.*?)\)</a>!s',$matches[1][$i],$entry) ) {
            $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>$entry['type'], 'desc'=>$entry['desc']);
-         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.+)</a>!s',$matches[1][$i],$entry) ) {
            $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>$entry['site'], 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
-         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<desc>.+)</a>!',$matches[1][$i],$entry) ) {
+         } elseif ( preg_match('!<a .*href="(?<url>.+?)".*?>(?<desc>.+)</a>!s',$matches[1][$i],$entry) ) {
            $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
            $res[] = array('site'=>'', 'url'=>$entry['url'], 'type'=>'', 'desc'=>$entry['desc']);
          }
