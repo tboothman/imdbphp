@@ -13,18 +13,14 @@
  # This program is free software; you can redistribute and/or modify it      #
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
- # $Id$
 
- require_once (dirname(__FILE__)."/imdb.class.php");
+namespace Imdb;
 
  #=================================================[ The IMDB Charts class ]===
  /** Obtaining the URL of the trailer Flash Movie
-  * @package IMDB
-  * @class imdb_trailers
   * @author Ricardo Silva (banzap) <banzap@gmail.com>
-  * @version $Revision$ $Date$
   */
- class imdb_trailers {
+ class Trailers {
 	var $page = "";
 	var $moviemazeurl = "http://www.moviemaze.de";
 	var $alltrailersurl = "http://www.alltrailers.net";
@@ -37,11 +33,10 @@
 
   /**
    *
-   * @param mdb_config $config OPTIONAL override default config
+   * @param Config $config OPTIONAL override default config
    */
-    public function __construct(mdb_config $config = null) {
-      $this->config = $config;
-      $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
+    public function __construct(Config $config = null) {
+      $this->config = $config ?: new Config();
     }
 		
    /** Retrieve trailer URLs from moviemaze.de
@@ -51,7 +46,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash or Quicktime)
     */
     function getFlashCodeMovieMaze($url){
-      $req = new MDB_Request($url, $this->config);
+      $req = new Request($url, $this->config);
       $req->sendRequest();
       $this->page=$req->getResponseBody();
       if($this->page=="" || $this->page==false) return false;
@@ -72,7 +67,7 @@
     */
     function getFlashCodeAllTrailers($url){
       if (strpos($url,"http://alltrailers")!==FALSE) $url = str_replace("http://","http://www.",$url);
-      $req = new MDB_Request($url, $this->config);
+      $req = new Request($url, $this->config);
       $req->sendRequest();
       $pattern = "'";
       $this->page=$req->getResponseBody();
@@ -93,7 +88,7 @@
     */
    function getImdbTrailers($url) {
      $url = str_replace("rg/VIDEO_TITLE/GALLERY/","",$url)."player";
-     $req = new MDB_Request($url, $this->config);
+     $req = new Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -109,7 +104,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getMoviePlayerTrailers($url) {
-     $req = new MDB_Request($url, $this->config);
+     $req = new Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -124,7 +119,7 @@
     * @return array [0..n] of array[url,format] of movie trailers (Flash)
     */
    function getAZMovieTrailers($url) {
-     $req = new MDB_Request($url, $this->config);
+     $req = new Request($url, $this->config);
      $req->sendRequest();
      $this->page=$req->getResponseBody();
      if($this->page=="" || $this->page==false) return false;
@@ -171,7 +166,7 @@
     * @return array [0..n] of array[url,format] of movie trailers
     */
    function getAllTrailers($mid) {
-     $movie = new imdb($mid, $this->config);
+     $movie = new \Imdb\Title($mid, $this->config);
      $arraytrailers = $movie->videosites();
      $list = array();
      foreach ($arraytrailers as $trail) {
@@ -181,7 +176,7 @@
          $tl = $this->getFlashCodeMovieMaze($trail['url']);
        elseif ( strpos($tmp,"alltrailers.net")!==FALSE)
          $tl = $this->getFlashCodeAllTrailers($trail['url']);
-       elseif ( strpos($url,"imdb.com/rg/VIDEO_TITLE/GALLERY")!==FALSE )
+       elseif ( strpos($tmp,"imdb.com/rg/video_title/gallery")!==FALSE )
          $tl = $this->getImdbTrailers($trail['url']);
        elseif ( strpos($tmp,"www.movieplayer.it")!==FALSE )
          $tl = $this->getMoviePlayerTrailers($trail['url']);
@@ -189,9 +184,10 @@
          $tl = $this->getAZMovieTrailers($trail['url']);
        elseif ( strpos($tmp,"youtube.com")!==FALSE)
          $tl = $this->getYoutubeTrailers($trail['url']);
-       if ( isset($tl) ) $list = array_merge($list,$tl);
+       if ( isset($tl) ) {
+         $list = array_merge($list,$tl);
+       }
      }
    	 return $list;
    }
  }
-
