@@ -14,6 +14,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $search->setYear(2000);
     $list = $search->search();
     $this->assertInternalType('array', $list);
+    $this->assertCount(50, $list);
   }
 
   public function test_episodes() {
@@ -21,6 +22,26 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $search->setTitleTypes([TitleSearchAdvanced::TV_EPISODE]);
     $list = $search->search();
     $this->assertInternalType('array', $list);
+    $this->assertCount(50, $list);
+  }
+
+  public function test_sort() {
+    $search = $this->getTitleSearchAdvanced();
+    $search->setSort(TitleSearchAdvanced::SORT_NUM_VOTES);
+    $search->setYear(2003);
+    $search->setTitleTypes([TitleSearchAdvanced::TV_EPISODE]);
+    $list = $search->search();
+
+    $this->assertInternalType('array', $list);
+    $this->assertCount(50, $list);
+
+    $firstResult = $list[0];
+
+    $this->assertInternalType('array', $firstResult);
+    $this->assertEquals('0303461', $firstResult['imdbid']);
+    $this->assertEquals('Firefly', $firstResult['title']);
+    $this->assertEquals('2002', $firstResult['year']);
+    $this->assertEquals('TV Series', $firstResult['type']);
   }
 
   protected function getTitleSearchAdvanced() {
