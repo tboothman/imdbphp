@@ -16,7 +16,8 @@
 
 namespace Imdb;
 
-/** Obtaining the information about Moviemeter Top 10 and Weekend box office of IMDB
+/**
+ * Obtaining the information about Moviemeter Top 10 and Weekend box office of IMDB
  * @author Ricardo Silva (banzap) <banzap@gmail.com>
  */
 class Charts extends MdbBase {
@@ -29,7 +30,7 @@ class Charts extends MdbBase {
    */
   public function getChartsTop10() {
     $matchinit = "IMDb MOVIEmeter";
-    $page = $this->getPage('Chart');
+    $page = $this->getPage();
     $offset = strpos($page, $matchinit);
     $res = array();
     for ($i = 0; $i < 10; $i++) {
@@ -54,7 +55,7 @@ class Charts extends MdbBase {
    * ]
    */
   public function getChartsBoxOffice() {
-    $page = $this->getPage('Chart');
+    $page = $this->getPage();
     $matchinit = '<h2>Top Box Office</h2>';
     $offset = strpos($page, $matchinit);
     $chart = array();
@@ -86,16 +87,7 @@ class Charts extends MdbBase {
     return $chart;
   }
 
-  protected function getPage($page) {
-    if (!$this->page) {
-      $req = new Request($this->buildUrl(''), $this->config);
-      $req->sendRequest();
-      $this->page = $req->getResponseBody();
-    }
-    return $this->page;
-  }
-
-  protected function buildUrl($page) {
+  protected function buildUrl($context = null) {
     return "http://" . $this->config->imdbsite . "/chart/";
   }
 

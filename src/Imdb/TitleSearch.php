@@ -31,10 +31,7 @@ class TitleSearch extends MdbBase {
       $maxResults = $this->maxresults;
     }
 
-    $url = "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
-    $pageRequest = new Page($url, $this->config, $this->cache, $this->logger);
-
-    $page = $pageRequest->get();
+    $page = $this->getPage($searchTerms);
 
     // Parse & filter results
     if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d]+\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<type>[^<]*)!ims', $page, $matches, PREG_SET_ORDER)) {
@@ -80,5 +77,9 @@ class TitleSearch extends MdbBase {
     } else {
       return self::MOVIE;
     }
+  }
+
+  protected function buildUrl($searchTerms = null) {
+    return "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
   }
 }

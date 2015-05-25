@@ -48,14 +48,8 @@ class PersonSearch extends MdbBase {
    * @param optional string URL Replace search URL by your own
    * @return Person[]
    */
-  public function results($url = "") {
-    if (empty($url)) {
-        $url = $this->mkurl();
-    }
-
-    $pageRequest = new Page($url, $this, $this->cache, $this->logger);
-
-    $page = $pageRequest->get();
+  public function results() {
+    $page = $this->getPage();
 
     if ($this->maxresults > 0)
       $maxresults = $this->maxresults;
@@ -96,7 +90,7 @@ class PersonSearch extends MdbBase {
    * Create the IMDB URL for the name search
    * @return string url
    */
-  protected function mkurl() {
+  protected function buildUrl($context = null) {
     $query = "&s=nm";
     if (!isset($this->maxresults))
       $this->maxresults = 20;

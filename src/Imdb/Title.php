@@ -237,7 +237,7 @@ class Title extends MdbBase {
 
  #-------------------------------------------------------------[ Open Page ]---
 
-  protected function buildUrl($page) {
+  protected function buildUrl($page = null) {
     return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->getUrlSuffix($page);
   }
 
@@ -2625,6 +2625,16 @@ class Title extends MdbBase {
       $this->filmingDates = $this->get_filmingDates($filmingDates);
     }
     return $this->filmingDates;
+  }
+
+  protected function getPage($page = null) {
+    if (!empty($this->page[$page])) {
+      return $this->page[$page];
+    }
+
+    $this->page[$page] = parent::getPage($page);
+
+    return $this->page[$page];
   }
 
 }

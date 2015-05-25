@@ -103,7 +103,7 @@ class TitleSearchAdvanced extends MdbBase {
     return $this->parse_results($page);
   }
 
-  protected function buildUrl($page) {
+  protected function buildUrl($context = null) {
     $queries = array();
 
     if ($this->titleTypes) {
@@ -127,11 +127,6 @@ class TitleSearchAdvanced extends MdbBase {
     }
 
     return "http://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
-  }
-
-  protected function getPage($page) {
-    $pageRequest = new Page($this->buildUrl(''), $this->config, $this->cache, $this->logger);
-    return $pageRequest->get();
   }
 
   /**

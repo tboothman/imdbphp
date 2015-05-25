@@ -49,6 +49,11 @@ class MdbBase extends Config {
    */
   protected $config;
 
+  /**
+   * @var Pages
+   */
+  protected $pages;
+
   protected $page = array();
 
 
@@ -67,6 +72,7 @@ class MdbBase extends Config {
     $this->config = $config ?: $this;
     $this->logger = new Logger($this->debug);
     $this->cache = new Cache($this->config, $this->logger);
+    $this->pages = new Pages($this->config, $this->cache, $this->logger);
 
     if ($this->storecache && ($this->cache_expire > 0)) {
       $this->cache->purge();
@@ -78,6 +84,7 @@ class MdbBase extends Config {
    * @param string id IMDBID of the requested movie
    * @TODO remove this / make it private
    * @TODO allow numeric ids and coerce them into 7 digit strings
+   * @TODO why is this in mdbbase when the base has no id ...
    */
   public function setid ($id) {
     if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
@@ -88,6 +95,7 @@ class MdbBase extends Config {
   /**
    * Retrieve the IMDB ID
    * @return string id IMDBID currently used
+   * @TODO why is this in mdbbase when the base has no id ...
    */
   public function imdbid() {
     return $this->imdbID;
@@ -113,31 +121,21 @@ class MdbBase extends Config {
     return @$this->months[$mon];
   }
 
- #-------------------------------------------------------------[ Open Page ]---
   /**
    * Get a page from IMDb, which will be cached in memory for repeated use
-   * @param string $page Name of the page to retrieve e.g. Title, Credits
+   * @param string $context Name of the page or some other context to build the URL with to retrieve the page
    * @return string
-   * @see mdb_base->set_pagename()
    */
-  protected function getPage($page) {
-    if (!empty($this->page[$page])) {
-      return $this->page[$page];
-    }
-
-    $pageRequest = new Page($this->buildUrl($page), $this->config, $this->cache, $this->logger);
-
-    $this->page[$page] = $pageRequest->get();
-
-    return $this->page[$page];
+  protected function getPage($context = null) {
+    return $this->pages->get($this->buildUrl($context));
   }
 
   /**
    * Overrideable method to build the URL used by getPage
-   * @param string $page
+   * @param string $context OPTIONAL
    * @return string
    */
-  protected function buildUrl($page) {
+  protected function buildUrl($context = null) {
     return '';
   }
 

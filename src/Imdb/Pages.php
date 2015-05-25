@@ -5,7 +5,7 @@ namespace Imdb;
 /**
  * Handles requesting urls, including the caching layer
  */
-class Page {
+class Pages {
 
   /**
    * @var Config
@@ -21,19 +21,15 @@ class Page {
    * @var Logger
    */
   protected $logger;
-  protected $pageString;
-  protected $url;
+  protected $pages = array();
   protected $name;
 
   /**
-   *
-   * @param string $url URL to retrieve
-   * @param mdb_config $config
-   * @param imdb_cache $cache
-   * @param imdb_logger $logger
+   * @param Config $config
+   * @param Cache $cache
+   * @param Logger $logger
    */
-  public function __construct($url, Config $config, Cache $cache, Logger $logger) {
-    $this->url = $url;
+  public function __construct(Config $config, Cache $cache, Logger $logger) {
     $this->config = $config;
     $this->cache = $cache;
     $this->logger = $logger;
@@ -44,18 +40,18 @@ class Page {
    * Caching will be used where possible
    * @return string
    */
-  public function get() {
-    if ($this->pageString) {
-      return $this->pageString;
+  public function get($url) {
+    if (!empty($this->pages[$url])) {
+      return $this->pages[$url];
     }
 
-    if ($this->pageString = $this->getFromCache()) {
-      return $this->pageString;
+    if ($this->pages[$url] = $this->getFromCache($url)) {
+      return $this->pages[$url];
     }
 
-    if ($this->pageString = $this->requestPage($this->url)) {
-      $this->saveToCache();
-      return $this->pageString;
+    if ($this->pages[$url] = $this->requestPage($url)) {
+      $this->saveToCache($url, $this->pages[$url]);
+      return $this->pages[$url];
     } else {
       // failed to get page
       return '';
@@ -86,16 +82,16 @@ class Page {
     }
   }
 
-  protected function getFromCache() {
-    return $this->cache->get($this->getCacheKey());
+  protected function getFromCache($url) {
+    return $this->cache->get($this->getCacheKey($url));
   }
 
-  protected function saveToCache() {
-    $this->cache->set($this->getCacheKey(), $this->pageString);
+  protected function saveToCache($url, $page) {
+    $this->cache->set($this->getCacheKey($url), $page);
   }
 
-  protected function getCacheKey() {
-    $urlParts = parse_url($this->url);
+  protected function getCacheKey($url) {
+    $urlParts = parse_url($url);
     $cacheKey = $urlParts['path'] . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '');
     return trim($cacheKey, '/');
   }

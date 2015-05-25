@@ -84,8 +84,8 @@ class Person extends MdbBase {
   }
 
 
-  /** Save the photo to disk
-   * @method savephoto
+  /**
+   * Save the photo to disk
    * @param string path where to store the file
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
@@ -95,7 +95,7 @@ class Person extends MdbBase {
   public function savephoto($path,$thumb=TRUE,$rerun=FALSE) {
     $photo_url = $this->photo ($thumb);
     if (!$photo_url) return FALSE;
-    $req = new MDB_Request($photo_url, $this);
+    $req = new Request($photo_url, $this->config);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"),'image/jpeg') === 0
       || strpos($req->getResponseHeader("Content-Type"),'image/gif') === 0
@@ -809,8 +809,18 @@ class Person extends MdbBase {
    }
    return $urlname;
   }
-  protected function buildUrl($page) {
+  protected function buildUrl($page = null) {
     return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->getUrlSuffix($page);
+  }
+
+  protected function getPage($page = null) {
+    if (!empty($this->page[$page])) {
+      return $this->page[$page];
+    }
+
+    $this->page[$page] = parent::getPage($page);
+
+    return $this->page[$page];
   }
 
  }
