@@ -10,15 +10,14 @@
  # ------------------------------------------------------------------------- #
  # Search for $name and display results                                      #
  #############################################################################
-require __DIR__ . "/../vendor/autoload.php";
-
-$engine = "imdb";
+ini_set('display_errors', 1);
+require __DIR__ . "/../bootstrap.php";
 
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   switch($_GET["searchtype"]) {
     case "nm" : header("Location: person.php?mid=".$_GET["mid"]); break;
-    default   : header("Location: movie.php?mid=".$_GET["mid"]."&engine=$engine"); break;
+    default   : header("Location: movie.php?mid=".$_GET["mid"]); break;
   }
   return;
 }
@@ -30,47 +29,47 @@ if (empty($_GET["name"])) {
 }
 
 # Still here? Then we need to search for the movie:
-switch ($_GET["searchtype"]) {
-  case "nm" :
-    $search = new \Imdb\PersonSearch();
-    $headname = "Person";
+if ($_GET['searchtype'] === 'nm') {
+  $headname = "Person";
+  $search = new \Imdb\PersonSearch();
+  $results = $search->search($_GET["name"]);
+} else {
+  $headname = "Movie";
+  $search = new \Imdb\TitleSearch();
+  if ($_GET["searchtype"] == "episode") {
+    $results = $search->search($_GET["name"], array(\Imdb\TitleSearch::TV_EPISODE));
+  } else {
     $results = $search->search($_GET["name"]);
-    break;
-  default:
-    $search = new \Imdb\TitleSearch();
-    if ($_GET["searchtype"] == "episode")
-      $results = $search->search($_GET["name"], array(\Imdb\TitleSearch::TV_EPISODE));
-    else
-      $results = $search->search($_GET["name"]);
-    $headname = "Movie";
-    break;
-}
-
-echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-echo "<HTML><HEAD>\n";
-echo " <TITLE>Performing search for '".$_GET["name"]."' [IMDBPHP2 v".$search->version."]</TITLE>\n";
-echo " <STYLE TYPE='text/css'>body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</STYLE>\n";
-echo "</HEAD><BODY>\n";
-$sname = htmlspecialchars($_GET['name']);
-echo "<H2>[IMDBPHP2 v".$search->version." Demo] Search results for '$sname':</H2>\n";
-echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
-   . " <TR><TH>$headname Details</TH><TH>IMDB</TH><TH>Moviepilot</TH></TR>";
-foreach ($results as $res) {
-  switch($_GET["searchtype"]) {
-    case "nm" :
-      $details = $res->getSearchDetails();
-      if (!empty($details)) {
-        $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
-      }
-      echo " <TR><TD><a href='person.php?mid=".$res->imdbid()."'>".$res->name()."</a>$hint</TD>"
-         . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/name/nm".$res->imdbid()."'>imdb page</a></TD></TR>\n";
-      break;
-    default   :
-      if (!isset($res->addon_info)) $res->addon_info = '';
-      echo " <TR><TD><a href='movie.php?mid=".$res->imdbid()."&engine=".$_GET["engine"]."'>".$res->title()." (".$res->year().") (".$res->movietype().")</a></TD>"
-         . "<TD ALIGN='center'><a href='http://".$search->imdbsite."/title/tt".$res->imdbid()."'>imdb page</a></TD>"
-         . "<TD ALIGN='center'><a href='http://www.moviepilot.de/movies/imdb-id-".(int)$res->imdbid()."'>pilot page</a></TD></TR>\n";
-      break;
   }
 }
-echo "</TABLE>\n</BODY></HTML>";
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Performing search for '<?php echo $_GET["name"] ?>' [IMDbPHP v<?php echo $search->version ?>]</title>
+    <style type="text/css">body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</style>
+  </head>
+  <body>
+    <h2>[IMDBPHP v<?php echo $search->version ?> Demo] Search results for '<?php echo $_GET["name"] ?>':</h2>
+    <table align="center" border="1" style="border-collapse:collapse;margin-top:20px;">
+      <tr><th><?php echo $headname ?> Details</th><th>IMDb</th></tr>
+      <?php foreach ($results as $res):
+        if ($_GET['searchtype'] === 'nm'):
+          $details = $res->getSearchDetails();
+          if (!empty($details)) {
+            $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
+          } ?>
+          <tr>
+            <td><a href="person.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->name() ?></a><?php echo $hint ?></td>
+            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb page</a></td>
+          </tr>
+        <?php else: ?>
+          <tr>
+            <td><a href="movie.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->title() ?> (<?php echo $res->year() ?>) (<?php echo $res->movietype() ?>)</a></td>
+            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb page</a></td>
+          </tr>
+        <?php endif ?>
+      <?php endforeach ?>
+    </table>
+  </body>
+</html>

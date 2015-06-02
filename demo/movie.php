@@ -15,7 +15,6 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $movieid = $_GET["mid"];
 
   $movie = new \Imdb\Title($_GET["mid"]);
-  $charset = "utf8";
   $source  = "<B CLASS='active'>IMDB</B>";
 
   $rows = 2; // count for the rowspan; init with photo + year
@@ -24,7 +23,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   echo "<HTML><HEAD>\n";
   echo " <TITLE>".$movie->title().' ('.$movie->year().") [IMDBPHP v".$movie->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } b.active { color:#b00;background-color:#fff;text-decoration:underline;}</STYLE>\n";
-  echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
+  echo " <META http-equiv='Content-Type' content='text/html; charset=utf8'>\n";
   echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Title & year

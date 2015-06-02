@@ -11,42 +11,50 @@
 # ------------------------------------------------------------------------- #
 # Show what we have in the Cache                                            #
 #############################################################################
+ini_set('display_errors', 1);
+require __DIR__ . "/../bootstrap.php";
 
-require __DIR__ . "/../vendor/autoload.php";
+use \Imdb\Title;
+use \Imdb\Config;
 
-echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-echo "<HTML><HEAD>\n <TITLE>IMDBPHP Cache Contents</TITLE>\n";
-echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; }</STYLE>\n";
-echo "</HEAD><BODY>\n";
-$imdb = new \Imdb\Title('');
-$config = new \Imdb\Config();
+$config = new Config();
 $movies = array();
 if (is_dir($config->cachedir)) {
   $files = glob($config->cachedir . 'title.tt*');
   foreach ($files as $file) {
-    if (preg_match('!^title\.tt(\d{7})!i', basename($file), $match)) {
-      $movies[] = array('imdbid' => $match[1], 'imdb' => 1);
+    if (preg_match('!^title\.tt(\d{7})$!i', basename($file), $match)) {
+      $movies[] = new Title($match[1]);
     }
   }
 }
+?>
 
-if (!empty($movies)) {
-  echo "<TABLE ALIGN='center' BORDER='1' STYLE='border-collapse:collapse;margin-top:20px;'>\n"
-  . " <TR><TH STYLE='background-color:#ffb000'>Movie</TH><TH STYLE='background-color:#ffb000'>IMDB</TH><TH STYLE='background-color:#ffb000'>MoviePilot</TR>\n";
-  foreach ($movies as $movie) {
-    $imdb->setid($movie['imdbid']);
-    $title = $imdb->title();
-    echo " <TR><TD>$title</TD><TD ALIGN='center'>";
-    // IMDB
-    if ($movie['imdb'])
-      echo "<a href='movie.php?mid=" . $movie['imdbid'] . "'>Cache</a> | ";
-    else
-      echo "Cache | ";
-    echo "<a href='http://us.imdb.com/title/tt" . $movie['imdbid'] . "'>Remote</TD><TD ALIGN='center'>";
-    // MoviePilot
-    echo "<a href='http://www.moviepilot.de/movies/imdb-id-" . (int) $movie['imdbid'] . "'>Remote</a></TD></TR>\n";
-  }
-  echo "</TABLE>\n";
-}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IMDbPHP Cache Contents</title>
+    <style type='text/css'>body,td,th { font-size:12px; }</style>
+  </head>
+  <body>
+    <?php if (empty($movies)): ?>
+      Nothing in cache
+    <?php else: ?>
+      <table align="center" border="1" cellpadding="3" style="border-collapse:collapse;margin-top:20px;">
+        <tr>
+          <th style="background-color:#FFB000">Movie</th>
+          <th style="background-color:#FFB000">IMDb</th>
+        </tr>
 
-echo "</BODY></HTML>";
+        <?php foreach ($movies as $movie): ?>
+        <tr>
+          <td><?php echo $movie->title() ?></td>
+          <td align="center">
+            <a href="movie.php?mid=<?php echo $movie->imdbid() ?>">Cache</a> |
+            <a href="<?php echo $movie->main_url() ?>">IMDb</a>
+          </td>
+        </tr>
+        <?php endforeach ?>
+      </table>
+    <?php endif ?>
+  </body>
+</html>
