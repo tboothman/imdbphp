@@ -900,7 +900,7 @@ class Title extends MdbBase {
       return false;
     }
 
-    $req = new Request($photo_url, $this);
+    $req = new Request($photo_url, $this->config);
     $req->sendRequest();
     if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
             strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
