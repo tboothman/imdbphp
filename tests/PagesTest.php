@@ -63,4 +63,37 @@ class PagesTest extends PHPUnit_Framework_TestCase {
     $result = $pages->get('/');
     $this->assertEquals('test', $result);
   }
+
+  /**
+   * @expectedException \Imdb\Exception\Http
+   */
+  public function testGetThrowsExceptionIfHttpFails() {
+    $cache = Mockery::mock('\Imdb\Cache', [
+        'get' => null,
+        'set' => true
+    ]);
+    $request = Mockery::mock([
+       'sendRequest' => false
+    ]);
+    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', [new Config(), $cache, new Logger()]);
+    $pages->shouldAllowMockingProtectedMethods();
+    $pages->shouldReceive('buildRequest')->once()->andReturn($request);
+    $pages->get('test');
+  }
+
+  public function testGetDoesNotThrowExceptionIfHttpFailsAndThrowHttpExceptionsIsFalse() {
+    $cache = Mockery::mock('\Imdb\Cache', [
+        'get' => null,
+        'set' => true
+    ]);
+    $request = Mockery::mock([
+       'sendRequest' => false
+    ]);
+    $config = new Config();
+    $config->throwHttpExceptions = false;
+    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', [$config, $cache, new Logger()]);
+    $pages->shouldAllowMockingProtectedMethods();
+    $pages->shouldReceive('buildRequest')->once()->andReturn($request);
+    $pages->get('test');
+  }
 }

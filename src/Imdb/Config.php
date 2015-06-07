@@ -107,6 +107,12 @@ class Config {
    */
   public $debug = false;
 
+  /**
+   * Throw exceptions when a request to fetch some content fails?
+   * @var boolean
+   */
+  public $throwHttpExceptions = true;
+
   #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
   /**
    * Limit for the result set of searches.

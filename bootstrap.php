@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/src/Imdb/Exception.php';
+require_once __DIR__ . '/src/Imdb/Exception/Http.php';
 require_once __DIR__ . '/src/Imdb/Config.php';
 require_once __DIR__ . '/src/Imdb/Logger.php';
 require_once __DIR__ . '/src/Imdb/Cache.php';

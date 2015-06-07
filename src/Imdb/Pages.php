@@ -62,13 +62,18 @@ class Pages {
    * Request the page from IMDb
    * @param $url
    * @return string Page html. Empty string on failure
+   * @throws Exception\Http
    */
   protected function requestPage($url) {
     $this->logger->info("[Page] Requesting [$url]");
-    $req = new Request($url, $this->config);
+    $req = $this->buildRequest($url);
     if (!$req->sendRequest()) {
       $this->logger->error("[Page] Failed to connect to server when requesting url [$url]");
-      return '';
+      if ($this->config->throwHttpExceptions) {
+        throw new Exception\Http("Failed to connect to server when requesting url [$url]");
+      } else {
+        return '';
+      }
     }
 
     if (200 == $req->getStatus()) {
@@ -78,7 +83,11 @@ class Pages {
         return $this->requestPage($redirectUrl);
     } else {
         $this->logger->error("[Page] Failed to retrieve url [{url}]. Response headers:{headers}", array('url' => $url, 'headers' => $req->getLastResponseHeaders()));
-        return '';
+        if ($this->config->throwHttpExceptions) {
+          throw new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
+        } else {
+          return '';
+        }
     }
   }
 
@@ -94,6 +103,10 @@ class Pages {
     $urlParts = parse_url($url);
     $cacheKey = $urlParts['path'] . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '');
     return trim($cacheKey, '/');
+  }
+
+  protected function buildRequest($url) {
+    return new Request($url, $this->config);
   }
 
 }
