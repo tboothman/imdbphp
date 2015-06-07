@@ -12,12 +12,12 @@ Quick Start
 
 * Include [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) using [composer](https://www.getcomposer.org), clone this repo or download the latest [release zip](https://github.com/tboothman/imdbphp/releases).
 * Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
-* Include the imdb class (It's in imdb.class.php). This is automatic if you use composer.
+* If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
 ```php
-$imdb = new imdb('0335266');
-$rating = $imdb->rating();
-$plotOutline = $imdb->plotoutline();
+$title = new \Imdb\Title('0335266');
+$rating = $title->rating();
+$plotOutline = $title->plotoutline();
 ```
 
 Installation
@@ -38,12 +38,12 @@ Configuration
 
 imdbphp needs no configuration by default but can cache imdb lookups, store images and change languages if configured.
 
-Configuration is done by the `mdb_config` class in mdb_config.class.php which has detailed explanations of all the config options available.
+Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
-$config = new mdb_config();
+$config = new \Imdb\Config();
 $config->language = 'de-DE';
-$imdb = new imdb('0335266', $config);
+$imdb = new \Imdb\Title('0335266', $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
 ```
@@ -56,14 +56,14 @@ Searching for a film
 ====================
 
 ```php
-// include "imdbsearch.class.php"; // Load the class in if you're not using an autoloader
-$search = new imdbsearch(); // Optional $config parameter
-$results = $search->search('The Matrix', [imdbsearch::MOVIE]); // Optional second parameter restricts types returned
+// include "bootstrap.php"; // Load the class in if you're not using an autoloader
+$search = new \Imdb\TitleSearch(); // Optional $config parameter
+$results = $search->search('The Matrix', [\Imdb\TitleSearch::MOVIE]); // Optional second parameter restricts types returned
 
-// $results is an array of imdb objects
+// $results is an array of Title objects
 // The objects will have title, year and movietype available
 //  immediately, but any other data will have to be fetched from IMDb
-foreach ($results as $result) { /* @var $result imdb */
+foreach ($results as $result) { /* @var $result \Imdb\Title */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
 ```
@@ -71,13 +71,13 @@ foreach ($results as $result) { /* @var $result imdb */
 Searching for a person
 ======================
 ```php
-// include "imdb_person_search.class.php"; // Load the class in if you're not using an autoloader
-$search = new imdb_person_search(); // Optional $config parameter
+// include "bootstrap.php"; // Load the class in if you're not using an autoloader
+$search = new \Imdb\PersonSearch(); // Optional $config parameter
 $results = $search->search('Forest Whitaker');
 
-// $results is an array of imdb_person objects
+// $results is an array of Person objects
 // The objects will have name available, everything else must be fetched from IMDb
-foreach ($results as $result) { /* @var $result imdb_person */
+foreach ($results as $result) { /* @var $result \Imdb\Person */
     echo $result->name();
 }
 ```

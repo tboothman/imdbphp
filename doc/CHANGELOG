@@ -1,7 +1,16 @@
-$Id$
 
-History for IMDBPHP2
+History for IMDBPHP
 ====================
+
+v3.0.0 (07.06.2015)
+--------------------
+! Started using namespaces
+! Moved demo site into its own folder
+! Changed return of Charts::getChartsBoxOffice
+! Changed interface for advanced title search
++ HTTP errors will now throw an exception of type Imdb\Exception\Http
+- Removed imdbXML, imdb_nowplaying
+- Removed config value imdb_utf8recode
 
 v2.6.1 (19.05.2015)
 -------------------
