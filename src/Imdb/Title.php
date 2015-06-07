@@ -276,14 +276,14 @@ class Title extends MdbBase {
         $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
         $this->main_endyear = $match['endyear'];
-        $this->main_title = $match['title'];
+        $this->main_title = htmlspecialchars_decode($match['title']);
       } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!',$ititle,$match)) {
         $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
         $this->main_endyear = $match['year'];
-        $this->main_title = $match['title'];
+        $this->main_title = htmlspecialchars_decode($match['title']);
       } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!',$this->page["Title"],$match)) { // not yet released, so no dates etc.
-        $this->main_title = $match['title'];
+        $this->main_title = htmlspecialchars_decode($match['title']);
         $this->main_year = '0';
         $this->main_endyear = '0';
       }

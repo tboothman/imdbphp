@@ -13,6 +13,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 2768262 = redirect to 2386868
    * 1899250 = Mr. Considerate. short, no poster
    * 0416449 = 300 (some multi bracket credits)
+   * 0103074 = Thelma & Louise (&amp; in title)
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -50,6 +51,11 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testTitle() {
         $imdb = $this->getImdb();
         $this->assertEquals('The Matrix', $imdb->title());
+    }
+
+    public function testTitle_removes_html_entities() {
+        $imdb = $this->getImdb('0103074');
+        $this->assertEquals('Thelma & Louise', $imdb->title());
     }
 
     //@TODO tests for titles with non ascii characters. Currently they're
