@@ -50,7 +50,12 @@ uninstall:
 	rmdir --ignore-fail-on-non-empty $(datadir)/images
 	rm -rf $(datadir)/demo
 	rm -rf $(datadir)/tests
-	rm -rf $(libdir)/src
+	rm -f  $(datadir)/bootstrap.php
+	rm -rf $(libdir)/Imdb
+	rm -rf $(libdir)/MoviePosterDb
+	rm -f  $(libdir)/BrowserEmulator.php
+	rm -f  $(libdir)/conf/900_localconf.sample
+	rmdir --ignore-fail-on-non-empty $(libdir)/conf
 	rmdir --ignore-fail-on-non-empty $(datadir)
 	rm -rf $(docdir)
 
