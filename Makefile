@@ -7,37 +7,50 @@ libdir=$(DESTDIR)/usr/share/php
 datarootdir=$(DESTDIR)$(prefix)/share
 datadir=$(datarootdir)/imdbphp
 docdir=$(datarootdir)/doc/imdbphp
-INSTALL=install
+INSTALL=install -p
 INSTALL_DATA=$(INSTALL) -m 644
 WEBROOT=$(DESTDIR)/var/www
 LINKTO=$(WEBROOT)/imdbphp
 
 install: installdirs
 	cp -pr doc/* $(docdir)
-	$(INSTALL_DATA) *.class.php $(libdir)
-	$(INSTALL_DATA) cache.php person.php imdbXML.php movie.php search.php *.html $(datadir)
+	cp -p README.md $(docdir)
+	$(INSTALL_DATA) src/*.php $(libdir)
+	$(INSTALL_DATA) src/Imdb/*.php $(libdir)/Imdb
+	$(INSTALL_DATA) src/Imdb/Exception/* $(libdir)/Imdb/Exception
+	$(INSTALL_DATA) src/MoviePosterDb/* $(libdir)/MoviePosterDb
+	$(INSTALL_DATA) demo/*.* $(datadir)/demo
+	$(INSTALL_DATA) demo/imgs/showtimes/*.* $(datadir)/demo/imgs/showtimes
 	$(INSTALL_DATA) conf/* $(libdir)/conf
-	$(INSTALL_DATA) test/* $(datadir)/test
+	$(INSTALL_DATA) tests/cache/.placeholder $(datadir)/tests/cache
+	$(INSTALL_DATA) tests/resources/* $(datadir)/tests/resources
+	$(INSTALL_DATA) tests/*.* $(datadir)/tests
+	$(INSTALL_DATA) tests/cache_nonwriteable $(datadir)/tests
+	$(INSTALL_DATA) bootstrap.php $(datadir)
 	if [ ! -e $(LINKTO) ]; then ln -s $(datadir) $(LINKTO); fi
 
 installdirs:
 	mkdir -p $(libdir)/conf
+	mkdir -p $(libdir)/Imdb/Exception
+	mkdir -p $(libdir)/MoviePosterDb
 	mkdir -p $(datadir)/cache
+	mkdir -p $(datadir)/demo
 	mkdir -p $(datadir)/images
-	mkdir -p $(datadir)/test
+	mkdir -p $(datadir)/tests/cache
+	mkdir -p $(datadir)/tests/resources
+	mkdir -p $(datadir)/demo/imgs/showtimes
 	chmod 0777 $(datadir)/cache $(datadir)/images
-	mkdir -p $(docdir)/apidoc/Api
 	mkdir -p $(libdir)
+	mkdir -p $(docdir)
 	if [ ! -d $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
 
 uninstall:
 	if [ "`readlink $(LINKTO)`" = "$(datadir)" ]; then rm -f $(LINKTO); fi
 	rmdir --ignore-fail-on-non-empty $(datadir)/cache
 	rmdir --ignore-fail-on-non-empty $(datadir)/images
-	rm -f $(datadir)/*.html
-	rm -f $(datadir)/*.php
-	rm -rf $(datadir)/test
-	rm -f $(libdir)/browseremulator.class.php $(libdir)/imdb_movielist.class.php $(libdir)/imdbsearch.class.php $(libdir)/mdb_config.class.php $(libdir)/movieposterdb.class.php $(libdir)/pilotsearch.class.php $(libdir)/imdb_charts.class.php $(libdir)/imdb_nowplaying.class.php $(libdir)/imdb_trailers.class.php $(libdir)/mdb_request.class.php $(libdir)/person_base.class.php $(libdir)/imdb.class.php $(libdir)/imdb_person.class.php $(libdir)/mdb_base.class.php $(libdir)/movie_base.class.php $(libdir)/pilot.class.php $(libdir)/pilot_person.class.php
+	rm -rf $(datadir)/demo
+	rm -rf $(datadir)/tests
+	rm -rf $(libdir)/src
 	rmdir --ignore-fail-on-non-empty $(datadir)
 	rm -rf $(docdir)
 
