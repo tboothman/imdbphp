@@ -9,7 +9,7 @@
  # under the terms of the GNU General Public License (see doc/LICENSE)       #
  #############################################################################
 
-require __DIR__ . "/../vendor/autoload.php";
+require __DIR__ . "/../bootstrap.php";
 
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $movieid = $_GET["mid"];
