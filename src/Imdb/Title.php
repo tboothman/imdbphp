@@ -575,9 +575,9 @@ class Title extends MdbBase {
     if (empty($this->movierecommendations)) {
       $this->getPage("Title");
       if ( $this->page["Title"] == "cannot open page" ) return $this->movierecommendations; // no such page
-      $doc = new DOMDocument();
+      $doc = new \DOMDocument();
       @$doc->loadHTML($this->page["Title"]);
-      $xp = new DOMXPath($doc);
+      $xp = new \DOMXPath($doc);
       $posters = array();
       $cells = $xp->query("//div[@id=\"title_recs\"]/div[@class=\"rec_overviews\"]/div[@class=\"rec_overview\"]/div[@class=\"rec_details\"]");
       foreach ($cells as $cell) {
