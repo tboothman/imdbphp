@@ -199,7 +199,16 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovie_recommendations() {
-        //@TODO
+        $imdb = $this->getImdb();
+        $recommendations = $imdb->movie_recommendations();
+        $this->assertInternalType('array', $recommendations);
+        $this->assertCount(12, $recommendations);
+
+        $firstRecommendation = $recommendations[0];
+        $this->assertInternalType('array', $firstRecommendation);
+        $this->assertTrue(strlen($firstRecommendation['title']) > 0); // title
+        $this->assertTrue(strlen($firstRecommendation['imdbid']) === 7); // imdb number
+        $this->assertTrue(strlen($firstRecommendation['year']) === 4); // year
     }
 
     public function testKeywords() {
