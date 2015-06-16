@@ -669,7 +669,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2008, $firstCast['role_end_year']);
         $this->assertInternalType('array', $firstCast['role_other']);
         $this->assertCount(0, $firstCast['role_other']);
-        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg', $firstCast['thumb']);
+        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_UY44_CR0,0,32,44_AL_.jpg', $firstCast['thumb']);
         $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg', $firstCast['photo']);
     }
 
