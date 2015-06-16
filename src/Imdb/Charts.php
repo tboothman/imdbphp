@@ -58,16 +58,24 @@ class Charts extends MdbBase {
     $page = $this->getPage();
     $matchinit = '<h2>Top Box Office</h2>';
     $offset = strpos($page, $matchinit);
+    $end = strpos($page, 'See more box office results at BoxOfficeMojo.com');
     $chart = array();
-    for ($i = 0; $i < 10; $i++) {
+    while (true) {
       $title = array();
 
       //mid
       $pattern = "#<a\s+href=\"/title/tt(\d+)#";
       $matches = null;
       preg_match($pattern, $page, $matches, PREG_OFFSET_CAPTURE, $offset);
+      if (!isset($matches[0][0])) {
+        break;
+      }
       $title['id'] = substr($matches[0][0], 18, 7);
       $offset = $matches[0][1] + 10;
+
+      if ($offset > $end) {
+        break;
+      }
 
       //weekend
       $moneyPattern = "/[\$£]([\d\.]+)M/";

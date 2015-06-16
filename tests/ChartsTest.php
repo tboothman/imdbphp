@@ -20,12 +20,12 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase {
     $boxOffice = $charts->getChartsBoxOffice();
 
     $this->assertInternalType('array', $boxOffice);
-    $this->assertCount(10, $boxOffice);
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertInternalType('array', $boxOffice[$i]);
-      $this->assertCount(3, $boxOffice[$i]);
-      $this->assertTrue(is_numeric($boxOffice[$i]['weekend']));
-      $this->assertTrue(is_numeric($boxOffice[$i]['gross']));
+    $this->assertTrue(count($boxOffice) >= 9);
+    foreach ($boxOffice as $film) {
+      $this->assertInternalType('array', $film);
+      $this->assertCount(3, $film);
+      $this->assertTrue(is_numeric($film['weekend']));
+      $this->assertTrue(is_numeric($film['gross']));
     }
   }
 }
