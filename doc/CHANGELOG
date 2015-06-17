@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v3.0.1 (17.06.2015)
+-------------------
+! Fix Title::movie_recommendations() (DOMDocument was not namespace scoped properly)
+! Fix Charts::getChartsBoxOffice() if there are less than 10 films
+! Updated makefile to deal with the new file structure
+
 v3.0.0 (07.06.2015)
 --------------------
 ! Started using namespaces
