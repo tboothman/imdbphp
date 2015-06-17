@@ -10,7 +10,6 @@
  # ------------------------------------------------------------------------- #
  # Search for $name and display results                                      #
  #############################################################################
-ini_set('display_errors', 1);
 require __DIR__ . "/../bootstrap.php";
 
 # If MID has been explicitly given, we don't need to search:
