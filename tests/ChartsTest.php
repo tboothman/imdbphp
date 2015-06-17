@@ -21,6 +21,7 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase {
 
     $this->assertInternalType('array', $boxOffice);
     $this->assertTrue(count($boxOffice) >= 9);
+    $this->assertTrue(count($boxOffice) < 11);
     foreach ($boxOffice as $film) {
       $this->assertInternalType('array', $film);
       $this->assertCount(3, $film);
