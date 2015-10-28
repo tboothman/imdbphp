@@ -1144,7 +1144,7 @@ class Title extends MdbBase {
   public function top250() {
     if ($this->main_top250 == -1) {
       $this->getPage("Title");
-      if (@preg_match('!<a href="[^"]*/chart/top\?tt.*><strong>Top 250 #(\d+)\s*</strong></a>!si',$this->page["Title"],$match)) {
+      if (@preg_match('!<a href="[^"]*/chart/top.*>\s*Top Rated Movies #(\d+)\s*</a>!si',$this->page["Title"],$match)) {
         $this->main_top250 = (int)$match[1];
       } else {
         $this->main_top250 = 0;
