@@ -585,6 +585,9 @@ class Title extends MdbBase {
         $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
         $movie['imdbid'] = $ref[1];
         preg_match('!(\d+)!',$cell->getElementsByTagName('span')->item(0)->nodeValue,$ref);
+        if (!isset($ref[1])) {
+          preg_match('!(\d+)!',$cell->getElementsByTagName('span')->item(1)->nodeValue,$ref);
+        }
         $movie['year'] = $ref[1];
         $this->movierecommendations[] = $movie;
       }

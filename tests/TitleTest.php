@@ -199,16 +199,17 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovie_recommendations() {
-        $imdb = $this->getImdb();
+        $imdb = $this->getImdb('1576699'); // Mirrors 2 has a recommendation of mirrors 1 which has an I inbetween its name and year
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
         $this->assertCount(12, $recommendations);
 
-        $firstRecommendation = $recommendations[0];
-        $this->assertInternalType('array', $firstRecommendation);
-        $this->assertTrue(strlen($firstRecommendation['title']) > 0); // title
-        $this->assertTrue(strlen($firstRecommendation['imdbid']) === 7); // imdb number
-        $this->assertTrue(strlen($firstRecommendation['year']) === 4); // year
+        foreach ($recommendations as $recommendation) {
+          $this->assertInternalType('array', $recommendation);
+          $this->assertTrue(strlen($recommendation['title']) > 0); // title
+          $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
+          $this->assertTrue(strlen($recommendation['year']) === 4); // year
+        }
     }
 
     public function testKeywords() {
