@@ -824,6 +824,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 //      $this->assertEquals("When Neo is being run through the agent training program with the woman in the red dress, Morpheus' sunglasses reflect Neo with a Desert Eagle pistol being held up by an Agent standing in an empty sound stage, not the busy city they're supposed to be in.", $goofs[102]['content']);
     }
 
+    public function testQuotes() {
+      $imdb = $this->getImdb();
+      $quotes = $imdb->quotes();
+
+      $this->assertGreaterThan(100, count($quotes));
+    }
+
     public function testSoundtrack_nosoundtracks() {
         $imdb = $this->getImdb('0087544');
         $result = $imdb->soundtrack();

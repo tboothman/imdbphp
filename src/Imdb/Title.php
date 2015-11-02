@@ -1653,11 +1653,15 @@ class Title extends MdbBase {
   public function quotes() {
     if ( empty($this->moviequotes) ) {
       $page = $this->getPage("Quotes");
-      if (empty($page)) return array(); // no such page
-      if (preg_match_all('!class="quote soda (odd|even)"\s*><p>\s*(.*?)\s*</p>\s*<div class=!ims',str_replace("\n"," ",$this->page["Quotes"]),$matches))
-        foreach ($matches[2] as $match) {
-          $this->moviequotes[] = "<p>".str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match))."</p>";
+      if (empty($page)) {
+        return array();
+      }
+
+      if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', str_replace("\n"," ",$page), $matches)) {
+        foreach ($matches[1] as $match) {
+          $this->moviequotes[] = str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match));
         }
+      }
     }
     return $this->moviequotes;
   }
