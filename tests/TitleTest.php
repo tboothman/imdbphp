@@ -14,6 +14,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 1899250 = Mr. Considerate. short, no poster
    * 0416449 = 300 (some multi bracket credits)
    * 0103074 = Thelma & Louise (&amp; in title)
+   * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -231,7 +232,6 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(in_array('English', $languages));
         $this->assertTrue(in_array('French', $languages));
         $this->assertTrue(in_array('Vietnamese', $languages));
-        $this->assertTrue(in_array('Khmer', $languages));
     }
 
     public function testLanguages_nolanguage() {
@@ -345,7 +345,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPlotoutline_nooutline() {
-      $imdb = $this->getImdb('1027544');
+      $imdb = $this->getImdb('0133096');
       $outline = $imdb->plotoutline();
       $this->assertEquals('', $outline);
     }
@@ -808,7 +808,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
       $this->assertGreaterThan(103, count($goofs));
-      $this->assertLessThan(106, count($goofs));
+      $this->assertLessThan(115, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
@@ -817,7 +817,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[1]['content']);
 
       $this->assertEquals('Character error', $goofs[3]['type']);
-      $this->assertEquals('Morpheus specifies the human body generates 25,000 BTUs of body heat. The human body is constantly outputting heat into the environment so he should specify the rate of energy transfer rather than a total amount of energy being transferred. Or he should specify how much time it takes for a human body to output 25,000 BTUs in order for any claims, regarding how much energy is extracted from humans, to be meaningful.', $goofs[3]['content']);
+      $this->assertEquals('The name of the software company Neo works at is spelled' . "\n" . '&quot;METACORTEX&quot; on the outside of the building, but a sign inside the building has it spelled &quot;META CORTECHS&quot;. Featurettes suggest that the name was changed to avoid an expensive legal issue; evidently one of the signs was missed.', $goofs[3]['content']);
 
       // This fails all the time. Pick a better film for this?
 //      $this->assertEquals('Revealing mistakes', $goofs[102]['type']);
