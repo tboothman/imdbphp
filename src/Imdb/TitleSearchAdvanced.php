@@ -157,7 +157,7 @@ class TitleSearchAdvanced extends MdbBase {
       $year = $match[1];
       $mtype = $match[2] ? : 'Feature Film';
       $is_serial = strpos(strtolower($mtype), 'tv series') !== false;
-      if ($is_serial && strpos($serdet->item($i)->nodeValue, 'Episode') !== false) {
+      if ($is_serial && strpos($serdet->item($i)->nodeValue, 'Episode:') !== false) {
         preg_match('!\((\d{4})\)!', $serdet->item($i)->nodeValue, $match);
         $ep_year = $match[1];
         $episodeTitleNode = $serdet->item($i)->getElementsByTagName('a')->item(0);
