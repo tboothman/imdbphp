@@ -19,7 +19,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
     $config = new Config();
     $config->usezip = true;
     $config->cachedir = dirname(__FILE__).'/nonexistingfolder/';
-    new Cache($config, new Logger());
+    new Cache($config, new Logger(false));
   }
 
   /**
@@ -29,12 +29,12 @@ class CacheTest extends PHPUnit_Framework_TestCase {
     $config = new Config();
     $config->usezip = true;
     $config->cachedir = dirname(__FILE__).'/cache_nonwriteable/';
-    new Cache($config, new Logger());
+    new Cache($config, new Logger(false));
   }
 
   public function test_get_returns_null_when_usecache_is_false() {
     $config = $this->getConfig();
-    $cache = new Cache($config, new Logger());
+    $cache = new Cache($config, new Logger(false));
 
     $cache->set('usecacheTest', 'value');
 
@@ -46,7 +46,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   public function test_set_does_not_cache_when_storecache_is_false() {
     $config = $this->getConfig();
     $config->storecache = false;
-    $cache = new Cache($config, new Logger());
+    $cache = new Cache($config, new Logger(false));
 
     $cache->set('storecacheTest', 'value');
 
@@ -56,7 +56,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   public function test_set_get_zipped() {
     $config = $this->getConfig();
     $config->usezip = true;
-    $cache = new Cache($config, new Logger());
+    $cache = new Cache($config, new Logger(false));
 
     $setOk = $cache->set('test1', 'a value');
     $this->assertTrue($setOk);
@@ -68,7 +68,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   public function test_set_get_notzipped() {
     $config = $this->getConfig();
     $config->usezip = false;
-    $cache = new Cache($config, new Logger());
+    $cache = new Cache($config, new Logger(false));
 
     $setOk = $cache->set('test2', 'a value');
     $this->assertTrue($setOk);
@@ -86,7 +86,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
     $config->cachedir = $path . '/';
     $config->cache_expire = 1000;
 
-    $cache = new Cache($config, new Logger());
+    $cache = new Cache($config, new Logger(false));
     touch("$path/test-old", time()-1002);
     touch("$path/test-new");
 
