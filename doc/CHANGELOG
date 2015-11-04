@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v3.0.2 (04.11.2015)
+-------------------
+! Fix `Title::top250()` (caused by imdb change)
+! Fix `Title::quotes()` (caused by imdb change)
+! Fix `Title::movie_recommendations()` when a title has a special version number in its name
+
 v3.0.1 (17.06.2015)
 -------------------
 ! Fix Title::movie_recommendations() (DOMDocument was not namespace scoped properly)
