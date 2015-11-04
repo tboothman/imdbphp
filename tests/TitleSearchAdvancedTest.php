@@ -23,6 +23,14 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $list = $search->search();
     $this->assertInternalType('array', $list);
     $this->assertCount(50, $list);
+
+    foreach ($list as $result) {
+      $this->assertNotEmpty($result['title']);
+      $this->assertEquals('TV Series', $result['type']);
+      $this->assertTrue($result['serial']);
+      $this->assertNotEmpty($result['episode_title']);
+      $this->assertNotEmpty($result['episode_imdbid']);
+    }
   }
 
   public function test_sort() {

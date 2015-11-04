@@ -157,17 +157,20 @@ class TitleSearchAdvanced extends MdbBase {
       $year = $match[1];
       $mtype = $match[2] ? : 'Feature Film';
       $is_serial = strpos(strtolower($mtype), 'tv series') !== false;
+      $ep_year = '';
+      $ep_id = 0;
+      $ep_name = '';
+
       if ($is_serial && strpos($serdet->item($i)->nodeValue, 'Episode:') !== false) {
         preg_match('!\((\d{4})\)!', $serdet->item($i)->nodeValue, $match);
-        $ep_year = $match[1];
+        if (isset($match[1])) {
+          $ep_year = $match[1];
+        }
+
         $episodeTitleNode = $serdet->item($i)->getElementsByTagName('a')->item(0);
         preg_match('!(\d{7})!', $episodeTitleNode->getAttribute('href'), $match);
         $ep_id = $match[1];
         $ep_name = trim($episodeTitleNode->nodeValue);
-      } else {
-        $ep_year = '';
-        $ep_id = 0;
-        $ep_name = '';
       }
       $ret[] = array('imdbid' => $id, 'title' => $title, 'year' => $year, 'type' => $mtype, 'serial' => $is_serial, 'episode_imdbid' => $ep_id, 'episode_title' => $ep_name, 'episode_year' => $ep_year);
     }
