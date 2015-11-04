@@ -96,7 +96,15 @@ class TitleSearchAdvanced extends MdbBase {
   /**
    * Perform the search
    * @return array
-   * array('imdbid' => $id, 'title' => $title, 'year' => $year, 'type' => $mtype, 'serial' => $is_serial, 'episode_imdbid' => $ep_id, 'episode_title' => $ep_name, 'episode_year' => $ep_year)
+   * array('imdbid' => $id,
+   *  'title' => $title,
+   *  'year' => $year,
+   *  'type' => $mtype,              e.g. 'TV Series', 'Feature Film' ..
+   *  'serial' => $is_serial,        Is it a TV Series?
+   *  'episode_imdbid' => $ep_id,    If the search found an episode it will show as type TV Series but have episode information too
+   *  'episode_title' => $ep_name,   As above. The title of the episode
+   *  'episode_year' => $ep_year     As above. The year of the episode
+   * )
    */
   public function search() {
     $page = $this->getPage('');
@@ -139,7 +147,6 @@ class TitleSearchAdvanced extends MdbBase {
     $titles = $xp->query("//div[@id='main']/table/tr/td[3]/a");
     $details = $xp->query("//div[@id='main']/table/tr/td[3]/span[2]");
     $serdet = $xp->query("//div[@id='main']/table/tr/td[3]/span[3]");
-    $serref = $xp->query("//div[@id='main']/table/tr/td[3]/span[3]/a");
     $nodecount = $titles->length;
     $ret = array();
     for ($i = 0; $i < $nodecount;  ++$i) {
@@ -150,12 +157,13 @@ class TitleSearchAdvanced extends MdbBase {
       $year = $match[1];
       $mtype = $match[2] ? : 'Feature Film';
       $is_serial = strpos(strtolower($mtype), 'tv series') !== false;
-      if ($is_serial) {
+      if ($is_serial && strpos($serdet->item($i)->nodeValue, 'Episode') !== false) {
         preg_match('!\((\d{4})\)!', $serdet->item($i)->nodeValue, $match);
         $ep_year = $match[1];
-        preg_match('!(\d{7})!', $serref->item($i)->getAttribute('href'), $match);
+        $episodeTitleNode = $serdet->item($i)->getElementsByTagName('a')->item(0);
+        preg_match('!(\d{7})!', $episodeTitleNode->getAttribute('href'), $match);
         $ep_id = $match[1];
-        $ep_name = trim($serref->item($i)->nodeValue);
+        $ep_name = trim($episodeTitleNode->nodeValue);
       } else {
         $ep_year = '';
         $ep_id = 0;
