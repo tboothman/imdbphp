@@ -56,6 +56,7 @@ class MdbBase extends Config {
 
   protected $page = array();
 
+  protected $imdbID;
 
   /**
    * @param Config $config OPTIONAL override default config
