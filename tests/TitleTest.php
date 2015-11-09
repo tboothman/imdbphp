@@ -1130,6 +1130,20 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     $this->assertInternalType('array', $videoSites);
     $this->assertGreaterThan(2, $videoSites);
   }
+
+  public function test_alternateversion() {
+    $imdb = $this->getImdb();
+    $alternateVersions = $imdb->alternateVersions();
+
+    $this->assertGreaterThan(7, count($alternateVersions));
+    $this->assertLessThan(12, count($alternateVersions));
+
+    $this->assertEquals($alternateVersions[0], "Because 'The Matrix' was filmed in Australia the Region 4 (Australia) DVD release includes a more comprehensive Australian based list of credits.");
+
+    foreach ($alternateVersions as $alternateVersion) {
+      $this->assertNotEmpty($alternateVersion);
+    }
+  }
     
     /**
      * Create an imdb object that uses cached pages

@@ -96,32 +96,33 @@ class Title extends MdbBase {
   protected $weekendGross = array();
   protected $admissions = array();
   protected $filmingDates = array();
+  protected $moviealternateversions = array();
 
   protected $pageUrls = array(
-      "Title" => "/",
-      "TitleFoot" => "/_ajax/iframe?component=footer",
-      "Credits" => "/fullcredits",
+      "AlternateVersions" => '/alternateversions',
+      "Awards" => "/awards",
+      "BoxOffice" => "/business",
+      "CompanyCredits" => "/companycredits",
       "CrazyCredits" => "/crazycredits",
+      "Credits" => "/fullcredits",
+      "Episodes" => "/episodes",
+      "ExtReviews" => "/externalreviews",
+      "Goofs" => "/trivia?tab=gf",
+      "Keywords" => "/keywords",
+      "Locations" => "/locations",
+      "MovieConnections" => "/trivia?tab=mc",
+      "OfficialSites" => "/officialsites",
+      "ParentalGuide" => "/parentalguide",
       "Plot" => "/plotsummary",
+      "Quotes" => "/quotes",
+      "ReleaseInfo" => "/releaseinfo",
+      "Soundtrack" => "/soundtrack",
       "Synopsis" => "/synopsis",
       "Taglines" => "/taglines",
-      "Episodes" => "/episodes",
-      "Quotes" => "/quotes",
+      "Title" => "/",
       "Trailers" => "/trailers",
-      "VideoSites" => "/videosites",
-      "Goofs" => "/trivia?tab=gf",
       "Trivia" => "/trivia",
-      "Soundtrack" => "/soundtrack",
-      "MovieConnections" => "/trivia?tab=mc",
-      "ExtReviews" => "/externalreviews",
-      "ReleaseInfo" => "/releaseinfo",
-      "CompanyCredits" => "/companycredits",
-      "ParentalGuide" => "/parentalguide",
-      "OfficialSites" => "/officialsites",
-      "Keywords" => "/keywords",
-      "Awards" => "/awards",
-      "Locations" => "/locations",
-      "BoxOffice" => "/business"
+      "VideoSites" => "/videosites",
   );
 
   /**
@@ -233,6 +234,7 @@ class Title extends MdbBase {
    $this->weekendGross = array();
    $this->admissions = array();
    $this->filmingDates = array();
+   $this->moviealternateversions = array();
   }
 
  #-------------------------------------------------------------[ Open Page ]---
@@ -2632,6 +2634,23 @@ class Title extends MdbBase {
       $this->filmingDates = $this->get_filmingDates($filmingDates);
     }
     return $this->filmingDates;
+  }
+
+  /**
+   * Get the Alternate Versions for a given movie
+   * @return array Alternate Version (array[0..n] of string)
+   * @see IMDB page /alternateversions
+   */
+  public function alternateVersions() {
+    if (empty($this->moviealternateversions)) {
+      $page = $this->getPage('AlternateVersions');
+      if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', str_replace("\n", " ", $page), $matches)) {
+        foreach ($matches[2] as $match) {
+          $this->moviealternateversions[] = trim($match);
+        }
+      }
+    }
+    return $this->moviealternateversions;
   }
 
   protected function getPage($page = null) {
