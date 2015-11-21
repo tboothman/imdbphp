@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v3.1.0 (21.11.2015)
+-------------------
++ Add `Title::alternateVersions()`
+! Fix advanced search when results contain an episode with no year
+! Fix gross() when no country is year is specified by imdb
+
 v3.0.2 (04.11.2015)
 -------------------
 ! Fix `Title::top250()` (caused by imdb change)
