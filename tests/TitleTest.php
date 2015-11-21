@@ -1080,6 +1080,22 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('1999-08-29', $secondItem['date']);
   }
 
+  public function test_gross_no_year() {
+    $budget = $this->getImdb('0058150');
+    $gross = $budget->gross();
+    $this->assertInternalType('array', $gross);
+
+    $firstItem = $gross[0];
+    $this->assertEquals('$51,081,062', $firstItem['value']);
+    $this->assertEquals('USA', $firstItem['country']);
+    $this->assertEquals(null, $firstItem['date']);
+
+    $secondItem = $gross[1];
+    $this->assertEquals('$73,800,000', $secondItem['value']);
+    $this->assertEquals('Worldwide', $secondItem['country']);
+    $this->assertEquals(null, $secondItem['date']);
+  }
+
   public function test_weekendGross_multiple() {
     $budget = $this->getImdb();
     $weekendGross = $budget->weekendGross();

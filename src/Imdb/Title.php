@@ -2406,6 +2406,7 @@ class Title extends MdbBase {
      if (@preg_match("!(.*?)\)\s*!ims",$gr[1],$country))
        $gr[1] = str_replace($country,"",$gr[1]);
 
+     $dateValue = null;
      // Tries to extract the date
      if (@preg_match("!\((.*?)\)\s*!ims",$gr[1],$date))
        if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$date[1],$dayMonth))
@@ -2427,12 +2428,20 @@ class Title extends MdbBase {
      $i++;
    }
    return $result;
- } // End of get_gross
+ }
 
-
- /** Get gross budget
+  /**
+   * Gross takings by country and date (usually per week for recent films)
    * @return array[0..n] of array[value,country,date]
-   * @see IMDB page / (TitlePage)
+   * e.g.
+   * [
+   *   [
+   *     'value' => '$171,479,930', // US/UK formatted currency string
+   *     'country' => 'USA', // Full country name such as Netherlands, Italy, UK
+   *     'date' => '1999-09-26' // Can be null if no date is on IMDb
+   *   ]
+   * ]
+   * @see IMDB page /business
    * @TODO fix 'value' field .. "&#163;3,384,948" isn't good enough
    */
   public function gross() {
@@ -2445,8 +2454,7 @@ class Title extends MdbBase {
     return $this->gross;
   }
 
-
- #-------------------------------------------------[ Weekend Gross ]---
+  #-------------------------------------------------[ Weekend Gross ]---
  /** Get weekend gross budget
   * @param ref string listweekendGross
   * @return array[0..n] of array[value,country,date,nbScreens]
