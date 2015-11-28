@@ -1164,7 +1164,6 @@ class imdbTest extends PHPUnit_Framework_TestCase {
   public function test_alternateversions_no_alternate_versions() {
     $imdb = $this->getImdb('0056592');
     $alternateVersions = $imdb->alternateVersions();
-    print_r($alternateVersions);
 
     $this->assertCount(0, $alternateVersions);
   }

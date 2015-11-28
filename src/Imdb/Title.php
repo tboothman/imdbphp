@@ -2657,9 +2657,9 @@ class Title extends MdbBase {
         return array();
       }
 
-      if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', str_replace("\n", " ", $page), $matches)) {
+      if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', $page, $matches)) {
         foreach ($matches[2] as $match) {
-          $this->moviealternateversions[] = trim($match);
+          $this->moviealternateversions[] = trim(str_replace("\n", " ", $match));
         }
       }
     }
