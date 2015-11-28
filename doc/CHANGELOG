@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v3.1.1 (28.22.2015)
+-------------------
+! Fix Title::alternateVersions() returning some junk html if there were no alternate versions
+
 v3.1.0 (21.11.2015)
 -------------------
 + Add `Title::alternateVersions()`
