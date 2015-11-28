@@ -808,7 +808,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
       $this->assertGreaterThan(103, count($goofs));
-      $this->assertLessThan(115, count($goofs));
+      $this->assertLessThan(118, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
