@@ -2652,6 +2652,11 @@ class Title extends MdbBase {
   public function alternateVersions() {
     if (empty($this->moviealternateversions)) {
       $page = $this->getPage('AlternateVersions');
+
+      if (false !== strpos($page, 'id="no_content"')) {
+        return array();
+      }
+
       if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', str_replace("\n", " ", $page), $matches)) {
         foreach ($matches[2] as $match) {
           $this->moviealternateversions[] = trim($match);

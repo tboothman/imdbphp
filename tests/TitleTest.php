@@ -1147,7 +1147,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     $this->assertGreaterThan(2, $videoSites);
   }
 
-  public function test_alternateversion() {
+  public function test_alternateversions() {
     $imdb = $this->getImdb();
     $alternateVersions = $imdb->alternateVersions();
 
@@ -1159,6 +1159,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     foreach ($alternateVersions as $alternateVersion) {
       $this->assertNotEmpty($alternateVersion);
     }
+  }
+
+  public function test_alternateversions_no_alternate_versions() {
+    $imdb = $this->getImdb('0056592');
+    $alternateVersions = $imdb->alternateVersions();
+    print_r($alternateVersions);
+
+    $this->assertCount(0, $alternateVersions);
   }
     
     /**
