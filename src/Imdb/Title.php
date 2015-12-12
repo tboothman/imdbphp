@@ -289,7 +289,9 @@ class Title extends MdbBase {
         $this->main_year = '0';
         $this->main_endyear = '0';
       }
-      if(preg_match('!class="title-extra" itemprop="name"\s*>\s*"?(.*?)"?\s*<i>!s',$this->page["Title"],$otitle)) $this->original_title = trim($otitle[1]);
+      if (preg_match('!class="originalTitle">(.+?)<span!s', $this->page["Title"], $otitle)) {
+        $this->original_title = trim($otitle[1]);
+      }
       if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
       if ($this->main_year=="????") $this->main_year = "";
     }
