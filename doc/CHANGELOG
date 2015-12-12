@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v3.1.2 (12.12.2015)
+-------------------
+! Fix Title::orig_title() which broke due a site change
+
 v3.1.1 (28.22.2015)
 -------------------
 ! Fix Title::alternateVersions() returning some junk html if there were no alternate versions
