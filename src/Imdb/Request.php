@@ -38,6 +38,9 @@ class Request extends \BrowserEmulator {
       $this->addHeaderLine('User-Agent', $iconf->force_agent);
     if ($iconf->language)
       $this->addHeaderLine('Accept-Language', $iconf->language);
+
+    // Hack us into a session that uses the new layout
+    $this->addHeaderLine('Cookie', "session-id=477-7065933-2802665; session-id-time=1607695465");
   }
 
   /**
