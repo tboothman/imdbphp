@@ -469,22 +469,24 @@ class Title extends MdbBase {
   }
 
  #----------------------------------------------------------[ Movie Rating ]---
-  /** Setup votes
-   * @method protected rate_vote
+  /**
+   * Setup votes
    */
   protected function rate_vote() {
-    $this->getPage("Title");
-    if (preg_match('!<span itemprop="ratingValue">(\d{1,2}[\.,]\d)!i',$this->page["Title"],$match)){
+    $page = $this->getPage("Title");
+
+    if (preg_match('!itemprop="ratingValue">(\d{1,2}[\.,]\d)!i', $page, $match)) {
       $rating = str_replace(',', '.', $match[1]);
       $this->main_rating = $rating;
     } else {
       $this->main_rating = 0;
     }
-    if (preg_match('!<span itemprop="ratingCount">([\d\.,]+)</span!i',$this->page["Title"],$match)){
-        $votes = str_replace(array('.', ','), '', $match[1]);
-        $this->main_votes = (int)$votes;
-    }else{
-        $this->main_votes = 0;
+
+    if (preg_match('!itemprop="ratingCount">([\d\.,]+)</span!i', $page, $match)) {
+      $votes = str_replace(array('.', ','), '', $match[1]);
+      $this->main_votes = (int)$votes;
+    } else {
+      $this->main_votes = 0;
     }
   }
 
@@ -515,7 +517,7 @@ class Title extends MdbBase {
    */
   public function metacriticRating() {
     $page = $this->getPage('Title');
-    if (preg_match('!\d+ review excerpts provided by Metacritic.com" > (\d+)/100!i', $page, $match)) {
+    if (preg_match('!"metacriticScore.+>\n.+?(\d+)!im', $page, $match)) {
       return (int)$match[1];
     }
     return null;
@@ -523,13 +525,10 @@ class Title extends MdbBase {
 
   /**
    * Number of reviews on metacritic
-   * @return int|null
+   * @return null
+   * @deprecated since version 3.1.3
    */
   public function metacriticNumReviews() {
-    $page = $this->getPage('Title');
-    if (preg_match('!(\d+) review excerpts provided by Metacritic.com" >!i', $page, $match)) {
-      return (int)$match[1];
-    }
     return null;
   }
 
