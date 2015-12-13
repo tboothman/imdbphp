@@ -480,7 +480,7 @@ class Title extends MdbBase {
     } else {
       $this->main_rating = 0;
     }
-    if (preg_match('!<span itemprop="ratingCount">([\d\.,]+)</span!i',$this->page["Title"],$match)){
+    if (preg_match('!<span class="small" itemprop="ratingCount">([\d\.,]+)</span!i',$this->page["Title"],$match)){
         $votes = str_replace(array('.', ','), '', $match[1]);
         $this->main_votes = (int)$votes;
     }else{
