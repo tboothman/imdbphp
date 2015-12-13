@@ -818,20 +818,15 @@ class Title extends MdbBase {
    */
   public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
-      $this->getPage("Title");
-      if (preg_match('!<span class="rating-rating">.*?<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
-        $this->main_plotoutline = trim($match[1]);
-      } elseif (preg_match('!<span class="rating-rating">.*?(<p>.*?)\s*<div!ims',$this->page['Title'],$match)) {
-        $this->main_plotoutline = trim($match[1]);
-      } elseif (preg_match('!<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
+      $page = $this->getPage("Title");
+      if (preg_match('!itemprop="description">\s*(.*?)\s*</div>!ims', $page, $match)) {
         $this->main_plotoutline = trim($match[1]);
       } elseif($fallback) {
         $this->main_plotoutline = $this->storyline();
       }
-      if ( preg_match('!<p>\s*(<p>.*</p>)\s*$!ims',$this->main_plotoutline,$tmp) ) $this->main_plotoutline = $tmp[1];
     }
     $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i','',$this->main_plotoutline);
-    $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', $this->main_plotoutline);
+    $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>&nbsp;&raquo;#', '', $this->main_plotoutline);
     return $this->main_plotoutline;
   }
 
