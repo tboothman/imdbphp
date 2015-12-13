@@ -368,7 +368,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testPhoto_thumb() {
         $imdb = $this->getImdb();
         // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTkxNDYxOTA4M15BMl5BanBnXkFtZTgwNTk0NzQxMTE@._V1_SX214_AL_.jpg', $imdb->photo(true));
+        $this->assertEquals('http://ia.media-imdb.com/images/M/MV5BMTkxNDYxOTA4M15BMl5BanBnXkFtZTgwNTk0NzQxMTE@._V1_UX182_CR0,0,182,268_AL_.jpg', $imdb->photo(true));
     }
 
     public function testSavephoto() {
