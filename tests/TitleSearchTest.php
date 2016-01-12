@@ -82,7 +82,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(1993, $firstResult->year());
 
     /* @var $secondResult Title */
-    $secondResult = $results[1];
+    $secondResult = $results[2];
     $this->assertInstanceOf('\Imdb\Title', $secondResult);
     $this->assertEquals("0291868", $secondResult->imdbid());
     $this->assertEquals("Doom³", $secondResult->title());

@@ -813,8 +813,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
 
-      $this->assertEquals('Character error', $goofs[1]['type']);
-      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[1]['content']);
+      $this->assertEquals('Character error', $goofs[2]['type']);
+      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[2]['content']);
 
       $this->assertEquals('Character error', $goofs[3]['type']);
       $this->assertEquals('The name of the software company Neo works at is spelled' . "\n" . '&quot;METACORTEX&quot; on the outside of the building, but a sign inside the building has it spelled &quot;META CORTECHS&quot;. Featurettes suggest that the name was changed to avoid an expensive legal issue; evidently one of the signs was missed.', $goofs[3]['content']);
@@ -915,7 +915,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
 
-      $this->assertCount(35, $awards);
+      $this->assertCount(37, $awards);
 
       $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
       $firstEntry = $scifiWritersAward['entries'][0];
