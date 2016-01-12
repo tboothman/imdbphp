@@ -2,6 +2,9 @@
 History for IMDBPHP
 ====================
 
+v3.1.4 (12.01.2015)
+! Undo changes since 3.1.1 as the new site layout no longer exists
+
 v3.1.3 (13.12.2015)
 ! Fix `Title::photo()`, `Title::rating()`, `Title::metacriticRating()`, `Title::plotoutline()`
 - Depricate `Title::metacriticNumReviews()` as it's no longer on the page. The method is still there but will always return null
