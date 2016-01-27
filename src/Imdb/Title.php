@@ -289,7 +289,9 @@ class Title extends MdbBase {
         $this->main_year = '0';
         $this->main_endyear = '0';
       }
-      if(preg_match('!class="title-extra" itemprop="name"\s*>\s*"?(.*?)"?\s*<i>!s',$this->page["Title"],$otitle)) $this->original_title = trim($otitle[1]);
+      if (preg_match('!class="originalTitle">(.+?)<span!s', $this->page["Title"], $otitle)) {
+        $this->original_title = trim($otitle[1]);
+      }
       if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
       if ($this->main_year=="????") $this->main_year = "";
     }
@@ -467,22 +469,24 @@ class Title extends MdbBase {
   }
 
  #----------------------------------------------------------[ Movie Rating ]---
-  /** Setup votes
-   * @method protected rate_vote
+  /**
+   * Setup votes
    */
   protected function rate_vote() {
-    $this->getPage("Title");
-    if (preg_match('!<span itemprop="ratingValue">(\d{1,2}[\.,]\d)!i',$this->page["Title"],$match)){
+    $page = $this->getPage("Title");
+
+    if (preg_match('!itemprop="ratingValue">(\d{1,2}[\.,]\d)!i', $page, $match)) {
       $rating = str_replace(',', '.', $match[1]);
       $this->main_rating = $rating;
     } else {
       $this->main_rating = 0;
     }
-    if (preg_match('!<span itemprop="ratingCount">([\d\.,]+)</span!i',$this->page["Title"],$match)){
-        $votes = str_replace(array('.', ','), '', $match[1]);
-        $this->main_votes = (int)$votes;
-    }else{
-        $this->main_votes = 0;
+
+    if (preg_match('!itemprop="ratingCount">([\d\.,]+)</span!i', $page, $match)) {
+      $votes = str_replace(array('.', ','), '', $match[1]);
+      $this->main_votes = (int)$votes;
+    } else {
+      $this->main_votes = 0;
     }
   }
 
@@ -513,7 +517,7 @@ class Title extends MdbBase {
    */
   public function metacriticRating() {
     $page = $this->getPage('Title');
-    if (preg_match('!\d+ review excerpts provided by Metacritic.com" > (\d+)/100!i', $page, $match)) {
+    if (preg_match('!"metacriticScore.+>\n.+?(\d+)!im', $page, $match)) {
       return (int)$match[1];
     }
     return null;
@@ -521,13 +525,10 @@ class Title extends MdbBase {
 
   /**
    * Number of reviews on metacritic
-   * @return int|null
+   * @return null
+   * @deprecated since version 3.1.3
    */
   public function metacriticNumReviews() {
-    $page = $this->getPage('Title');
-    if (preg_match('!(\d+) review excerpts provided by Metacritic.com" >!i', $page, $match)) {
-      return (int)$match[1];
-    }
     return null;
   }
 
@@ -817,20 +818,15 @@ class Title extends MdbBase {
    */
   public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
-      $this->getPage("Title");
-      if (preg_match('!<span class="rating-rating">.*?<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
-        $this->main_plotoutline = trim($match[1]);
-      } elseif (preg_match('!<span class="rating-rating">.*?(<p>.*?)\s*<div!ims',$this->page['Title'],$match)) {
-        $this->main_plotoutline = trim($match[1]);
-      } elseif (preg_match('!<p itemprop="description">\s*(.*?)\s*</p>!ims',$this->page['Title'],$match)) {
+      $page = $this->getPage("Title");
+      if (preg_match('!itemprop="description">\s*(.*?)\s*</div>!ims', $page, $match)) {
         $this->main_plotoutline = trim($match[1]);
       } elseif($fallback) {
         $this->main_plotoutline = $this->storyline();
       }
-      if ( preg_match('!<p>\s*(<p>.*</p>)\s*$!ims',$this->main_plotoutline,$tmp) ) $this->main_plotoutline = $tmp[1];
     }
     $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i','',$this->main_plotoutline);
-    $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', $this->main_plotoutline);
+    $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>&nbsp;&raquo;#', '', $this->main_plotoutline);
     return $this->main_plotoutline;
   }
 
@@ -865,7 +861,7 @@ class Title extends MdbBase {
    */
   protected function thumbphoto() {
     $this->getPage("Title");
-    preg_match('!id="img_primary">.*?<img [^>]+src="(.+?)".*?<td id="overview-top"!ims',$this->page["Title"],$match);
+    preg_match('!<img [^>]+src="([^"]+)"[^>]+itemprop="image" />!ims',$this->page["Title"],$match);
     if (empty($match[1])) return FALSE;
     $this->main_thumb = $match[1];
     if ( preg_match('|(.*\._V1).*|iUs',$match[1],$mo) ) {
