@@ -2,6 +2,9 @@
 History for IMDBPHP
 ====================
 
+v3.1.5 (27.01.2015)
+! Add new site layout parsing back in
+
 v3.1.4 (12.01.2015)
 ! Undo changes since 3.1.1 as the new site layout no longer exists
 
