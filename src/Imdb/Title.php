@@ -1669,15 +1669,17 @@ class Title extends MdbBase {
    * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
    */
   public function episodes() {
-    if ( !$this->is_serial() && !$this->seasons() ) return $this->season_episodes;
-    if ( empty($this->season_episodes) ) {
-      if ( !$this->seasons() ) {
+    if (!$this->is_serial() && !$this->seasons()) {
+        return array();
+    }
+
+    if (empty($this->season_episodes)) {
+      if (!$this->seasons()) {
         $ser = $this->get_episode_details();
-        $tid = $this->imdbID;
-        if (isset($ser['imdbid'])) $this->imdbID = $ser['imdbid'];
-        else return $this->season_episodes;
-      } else {
-        $tid = $this->imdbID;
+        if (isset($ser['imdbid'])) {
+          $show = new Title($ser['imdbid'], $this->config);
+          return $this->season_episodes = $show->episodes();
+        } else return array();
       }
       $page = $this->getPage("Episodes");
       if (empty($page)) return $this->season_episodes; // no such page
@@ -1706,7 +1708,6 @@ class Title extends MdbBase {
           }
         }
       }
-      $this->imdbID = $tid;
     }
     return $this->season_episodes;
   }

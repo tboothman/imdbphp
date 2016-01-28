@@ -83,11 +83,9 @@ class MdbBase extends Config {
   /**
    * Setup class for a new IMDB id
    * @param string id IMDBID of the requested movie
-   * @TODO remove this / make it private
    * @TODO allow numeric ids and coerce them into 7 digit strings
-   * @TODO why is this in mdbbase when the base has no id ...
    */
-  public function setid ($id) {
+  protected function setid ($id) {
     if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
     $this->imdbID = $id;
     $this->reset_vars();
@@ -96,7 +94,6 @@ class MdbBase extends Config {
   /**
    * Retrieve the IMDB ID
    * @return string id IMDBID currently used
-   * @TODO why is this in mdbbase when the base has no id ...
    */
   public function imdbid() {
     return $this->imdbID;
