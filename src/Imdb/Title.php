@@ -30,6 +30,11 @@ class Title extends MdbBase {
   const VIDEO = 'Video';
   const SHORT = 'Short';
 
+  /**
+   * @var string 7 digit identifier for this title
+   */
+  protected $imdbID;
+
   protected $akas = array();
   protected $awards = array();
   protected $countries = array();
@@ -157,7 +162,7 @@ class Title extends MdbBase {
   }
 
   /**
-   * @param string $id IMDBID to use for data retrieval
+   * @param string $id IMDb ID. e.g. 285331 for http://www.imdb.com/title/tt0285331/
    * @param Config $config OPTIONAL override default config
    */
   public function __construct($id, Config $config = null) {
@@ -166,89 +171,17 @@ class Title extends MdbBase {
   }
 
   /**
-   * Reset all in object caching data e.g. page strings and parsed values
+   * Set and validate the IMDb ID
+   * @param string id IMDb ID
    */
-  protected function reset_vars() {
-   $this->page = array();
-
-   $this->akas = array();
-   $this->awards = array();
-   $this->countries = array();
-   $this->castlist = array(); // pilot only
-   $this->crazy_credits = array();
-   $this->credits_cast = array();
-   $this->credits_composer = array();
-   $this->credits_director = array();
-   $this->credits_producer = array();
-   $this->credits_writing = array();
-   $this->extreviews = array();
-   $this->goofs = array();
-   $this->langs = array();
-   $this->langs_full = array();
-   $this->aspectratio = "";
-   $this->main_comment = "";
-   $this->main_genre = "";
-   $this->main_keywords = array();
-   $this->all_keywords = array();
-   $this->main_language = "";
-   $this->main_photo = "";
-   $this->main_thumb = "";
-   $this->main_pictures = array();
-   $this->main_plotoutline = "";
-   $this->main_rating = -1;
-   $this->main_runtime = "";
-   $this->main_movietype = "";
-   $this->main_title = "";
-   $this->original_title = "";
-   $this->main_votes = -1;
-   $this->main_year = -1;
-   $this->main_endyear = -1;
-   $this->main_yearspan = array();
-   $this->main_creator = array();
-   $this->main_tagline = "";
-   $this->main_storyline = "";
-   $this->main_prodnotes = array();
-   $this->main_movietypes = array();
-   $this->main_top250 = -1;
-   $this->moviecolors = array();
-   $this->movieconnections = array();
-   $this->moviegenres = array();
-   $this->moviequotes = array();
-   $this->movierecommendations = array();
-   $this->movieruntimes = array();
-   $this->mpaas = array();
-   $this->mpaas_hist = array();
-   $this->mpaa_justification = "";
-   $this->plot_plot = array();
-   $this->synopsis_wiki = "";
-   $this->release_info = array();
-   $this->seasoncount = -1;
-   $this->season_episodes = array();
-   $this->sound = array();
-   $this->soundtracks = array();
-   $this->split_comment = array();
-   $this->split_plot = array();
-   $this->taglines = array();
-   $this->trailers = array();
-   $this->video_sites = array();
-   $this->soundclip_sites = array();
-   $this->photo_sites = array();
-   $this->misc_sites = array();
-   $this->trivia = array();
-   $this->compcred_prod = array();
-   $this->compcred_dist = array();
-   $this->compcred_special = array();
-   $this->compcred_other = array();
-   $this->parental_guide = array();
-   $this->official_sites = array();
-   $this->locations = array();
-   $this->budget = null;
-   $this->openingWeekend = array();
-   $this->gross = array();
-   $this->weekendGross = array();
-   $this->admissions = array();
-   $this->filmingDates = array();
-   $this->moviealternateversions = array();
+  protected function setid ($id) {
+    if (is_numeric($id)) {
+      $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
+    } elseif (preg_match("/tt(\d{7})/", $id, $matches)) {
+      $this->imdbID = $matches[1];
+    } else {
+      $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
+    }
   }
 
  #-------------------------------------------------------------[ Open Page ]---
