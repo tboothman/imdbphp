@@ -315,8 +315,24 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         //@TODO
     }
 
+    public function testGet_episode_details_does_nothing_for_a_film() {
+      $imdb = $this->getImdb();
+      $episodeDetails = $imdb->get_episode_details();
+      $this->assertInternalType('array', $episodeDetails);
+      $this->assertCount(0, $episodeDetails);
+    }
+
     public function testGet_episode_details() {
-        //@TODO
+      $imdb = $this->getImdb('0579539');
+      $episodeDetails = $imdb->get_episode_details();
+      $this->assertEquals(array (
+        'imdbid' => '0303461',
+        'seriestitle' => 'Firefly',
+        'episodetitle' => 'The Train Job',
+        'season' => 1,
+        'episode' => 1,
+        'airdate' => '2002-09-20',
+      ), $episodeDetails);
     }
 
     // Finds outline in the itemprop="description" section nexto the poster
@@ -1166,7 +1182,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     /**
      * Create an imdb object that uses cached pages
      * The matrix by default
-     * @return \imdb
+     * @return \Imdb\Title
      */
     protected function getImdb($imdbId = '0133093') {
         $config = new \Imdb\Config();

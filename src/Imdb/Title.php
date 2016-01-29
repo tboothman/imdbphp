@@ -97,6 +97,9 @@ class Title extends MdbBase {
   protected $admissions = array();
   protected $filmingDates = array();
   protected $moviealternateversions = array();
+  protected $isSerial = null;
+  protected $episodeSeason = null;
+  protected $episodeEpisode = null;
 
   protected $pageUrls = array(
       "AlternateVersions" => '/alternateversions',
@@ -773,37 +776,119 @@ class Title extends MdbBase {
     return $this->seasoncount;
   }
 
- #-----------------------------------------------[ Is it part of a serial? ]---
-  /** Try to figure out if this is a movie or a serie
-   * @method is_serial
+  /**
+   * Is this title serialised (a tv show)?
+   * This could be the show page or an episode
    * @return boolean
    * @see IMDB page / (TitlePage)
    */
   public function is_serial() {
-    $this->getPage("Title");
-    preg_match('|href="/title/tt\d{7}/episodes\?|i',$this->page["Title"],$matches);
-    return preg_match('|href="/title/tt\d{7}/episodes\?|i',$this->page["Title"],$matches);
+    if (isset($this->isSerial)) {
+      return $this->isSerial;
+    }
+
+    return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7}/episodes\?|i', $this->getPage("Title"));
   }
 
- #------------------------------------[ Provide "Uplink" info for episodes ]---
-  /** If it is an episode, we may want to now to know where it belongs to
+  // @TODO do this properly and make this public. Perhaps it could just come from self::movietype() ?
+  protected function isEpisode() {
+    return $this->is_serial();
+  }
+
+  /**
+   * Title of the episode
+   * @return string
+   */
+  public function episodeTitle() {
+    if (!$this->isEpisode()) return "";
+
+    $page = $this->getPage("Title");
+
+    if (preg_match("@<h1 itemprop=\"name\" class=\"\">(.+?)</h1>@", $page, $matches)) {
+       return trim(str_replace('&nbsp;', ' ', $matches[1]));
+    }
+    return "";
+  }
+
+  private function populateEpisodeSeasonEpisode() {
+    if (!isset($this->episodeEpisode) || !isset($this->episodeSeason)) {
+      if (preg_match("@<div class=\"bp_heading\">Season (\d+) <span class=\"ghost\">\|</span> Episode (\d+)</div>@", $this->getPage("Title"), $matches)) {
+        $this->episodeSeason = (int)$matches[1];
+        $this->episodeEpisode = (int)$matches[2];
+      } else {
+        $this->episodeSeason = 0;
+        $this->episodeEpisode = 0;
+      }
+    }
+  }
+
+  /**
+   * @return int 0 if not available
+   */
+  public function episodeSeason() {
+    if (!$this->isEpisode()) return null;
+
+    $this->populateEpisodeSeasonEpisode();
+
+    return $this->episodeSeason;
+  }
+
+  /**
+   * @return int 0 if not available
+   */
+  public function episodeEpisode() {
+    if (!$this->isEpisode()) return null;
+
+    $this->populateEpisodeSeasonEpisode();
+
+    return $this->episodeEpisode;
+  }
+
+  /**
+   * The date when this episode aired for the first time
+   * @return string An ISO 8601 date e.g. 2015-01-01. Will be an empty string if not available
+   */
+  public function episodeAirDate() {
+    if (!$this->isEpisode()) return "";
+
+    $page = $this->getPage("Title");
+
+    if (preg_match("@<meta itemprop=\"datePublished\" content=\"([\d\-]+)\" />@", $page, $matches)) {
+      return $matches[1];
+    }
+    return "";
+  }
+
+  /**
+   * Extra information about this episode (if this title is an episode)
    * @method get_episode_details
-   * @return array [imdbid,seriestitle,series_prodtime,episodetitle,season,episode]
+   * @return array [imdbid,seriestitle,episodetitle,season,episode,airdate]
+   * e.g.
+   * <pre>
+   * array (
+      'imdbid'       => '0303461',      // ImdbID of the show
+      'seriestitle'  => 'Firefly',      // Title of the show
+      'episodetitle' => 'The Train Job',// Title of this episode
+      'season'       => 1,
+      'episode'      => 1,
+      'airdate'      => '2002-09-20',
+      )
+   * </pre>
    * @see IMDB page / (TitlePage)
-   * @brief based on an idea of lennert, see ticket:263
-   * @version series_prodtime is no longer available due to IMDB site changes, see ticket:281
    */
   public function get_episode_details() {
-    if (!$this->is_serial()) return array(); // not an episode
-    $this->getPage("Title");
-    $preg = '!<h2 class="tv_header">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})/.*?"\s*>\s*(?<seriestitle>.+?)</a>:\s*'
-          . '<span class="nobr">\s*Season\s+(?<season>\d+),\s+Episode\s+(?<episode>\d+)\s*</span>\s*'
-          . '</h2>\s*<h1 class="header">\s*'
-          . '(?<episodetitle>.+?)\s*<span class="nobr">\s*\((?<airdate>.+?)\)\s*</span>!ims';
-    if ( preg_match($preg, $this->page["Title"], $match) ) {
-      $info = array("imdbid"=>$match['seriesimdbid'], "seriestitle"=>$match['seriestitle'], "series_prodtime"=>'', "episodetitle"=>strip_tags($match['episodetitle']),
-                    "season"=>$match['season'], "episode"=>$match['episode'], "airdate"=>$match['airdate']);
-      return $info;
+    if (!$this->isEpisode()) return array();
+    $seriesRegex = '!<div class="titleParent">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})[^"]+"\s*title="(?<seriestitle>[^"]+)"!ims';
+
+    if (preg_match($seriesRegex, $this->getPage("Title"), $match)) {
+      return array(
+        "imdbid" => $match['seriesimdbid'],
+        "seriestitle" => $match['seriestitle'],
+        "episodetitle" => $this->episodeTitle(),
+        "season" => $this->episodeSeason(),
+        "episode" => $this->episodeEpisode(),
+        "airdate" => $this->episodeAirDate()
+      );
     } else {
       return array(); // no success
     }
