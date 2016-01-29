@@ -820,14 +820,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
       $this->assertCount(3, $seasons);
-      $episode = $seasons[1][1];
+      $episode = $seasons[1][2];
 
-      $this->assertEquals('1084805', $episode['imdbid']);
-      $this->assertEquals("Roary's First Day", $episode['title']);
-      $this->assertEquals('7 May 2007', $episode['airdate']);
+      $this->assertEquals('1878585', $episode['imdbid']);
+      $this->assertEquals("Roary Slips Up", $episode['title']);
+      $this->assertEquals('2007', $episode['airdate']);
       $this->assertEquals("", $episode['plot']);
       $this->assertEquals(1, $episode['season']);
-      $this->assertEquals(1, $episode['episode']);
+      $this->assertEquals(2, $episode['episode']);
     }
 
     // @TODO should it? this alters the imdb object to be the show rather than the episode .. could mess someone up
@@ -841,7 +841,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
       $this->assertGreaterThan(103, count($goofs));
-      $this->assertLessThan(118, count($goofs));
+      $this->assertLessThan(120, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
