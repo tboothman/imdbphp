@@ -34,6 +34,21 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(false, $imdb->usecache);
     }
 
+    public function test_constructor_with_integer_imdbid_is_coerced_to_7_digit_number() {
+      $imdb = new \Imdb\Title(133093);
+      $this->assertEquals('0133093', $imdb->imdbid());
+    }
+
+    public function test_constructor_with_ttxxxxxxx_is_coerced_to_7_digit_number() {
+      $imdb = new \Imdb\Title('tt0133093');
+      $this->assertEquals('0133093', $imdb->imdbid());
+    }
+
+    public function test_constructor_with_url_is_coerced_to_7_digit_number() {
+      $imdb = new \Imdb\Title('http://www.imdb.com/title/tt0133093/');
+      $this->assertEquals('0133093', $imdb->imdbid());
+    }
+
     // @TODO tests for other types
     public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
