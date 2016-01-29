@@ -20,6 +20,8 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 1286039 = Stargate Universe (multiple creators)
    * 1027544 = Roary the Racing Car (TV show, almost everything missing)
    *
+   * 0579539 = A TV episode (train job, firefly)
+   *
    * 0284717 = Crociati (tv movie, see full summary...)
    */
 
@@ -313,6 +315,26 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
     public function testIs_serial() {
         //@TODO
+    }
+
+    public function testEpisodeTitle() {
+      $imdb = $this->getImdb('0579539');
+      $this->assertEquals('The Train Job', $imdb->episodeTitle());
+    }
+
+    public function testEpisodeSeason() {
+      $imdb = $this->getImdb('0579539');
+      $this->assertEquals(1, $imdb->episodeSeason());
+    }
+
+    public function testEpisodeEpisode() {
+      $imdb = $this->getImdb('0579539');
+      $this->assertEquals(1, $imdb->episodeEpisode());
+    }
+
+    public function testEpisodeAirDate() {
+      $imdb = $this->getImdb('0579539');
+      $this->assertEquals('2002-09-20', $imdb->episodeAirDate());
     }
 
     public function testGet_episode_details_does_nothing_for_a_film() {
