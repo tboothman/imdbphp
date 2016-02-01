@@ -84,7 +84,9 @@ class Pages {
     } else {
         $this->logger->error("[Page] Failed to retrieve url [{url}]. Response headers:{headers}", array('url' => $url, 'headers' => $req->getLastResponseHeaders()));
         if ($this->config->throwHttpExceptions) {
-          throw new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
+          $exception = new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
+          $exception->HTTPStatusCode = $req->getStatus();
+          throw new $exception;
         } else {
           return '';
         }
