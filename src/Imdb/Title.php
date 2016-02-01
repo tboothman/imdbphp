@@ -826,7 +826,7 @@ class Title extends MdbBase {
    * @return int 0 if not available
    */
   public function episodeSeason() {
-    if (!$this->isEpisode()) return null;
+    if (!$this->isEpisode()) return 0;
 
     $this->populateEpisodeSeasonEpisode();
 
@@ -837,7 +837,7 @@ class Title extends MdbBase {
    * @return int 0 if not available
    */
   public function episodeEpisode() {
-    if (!$this->isEpisode()) return null;
+    if (!$this->isEpisode()) return 0;
 
     $this->populateEpisodeSeasonEpisode();
 
