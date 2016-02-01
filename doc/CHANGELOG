@@ -2,16 +2,16 @@
 History for IMDBPHP
 ====================
 
-v3.2.0 (01.02.2015)
+v3.2.0 (01.02.2016)
 -------------------
 ! Fix `Title::get_episode_details()` which broke in the imdb redesign.
 + Add `Title::episodeTitle()`, `Title::episodeSeason()`, `Title::episodeEpisode()`, `Title::episodeAirDate()` which add more information for episodes of a tv show.
 + `Exception\Http` now has a `HTTPStatusCode` field.
 
-v3.1.5 (27.01.2015)
+v3.1.5 (27.01.2016)
 ! Add new site layout parsing back in
 
-v3.1.4 (12.01.2015)
+v3.1.4 (12.01.2016)
 ! Undo changes since 3.1.1 as the new site layout no longer exists
 
 v3.1.3 (13.12.2015)
