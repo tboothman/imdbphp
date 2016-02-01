@@ -36,6 +36,44 @@ class Person extends MdbBase {
     'Video documentary' => Title::VIDEO
   );
 
+  // "Name" page:
+  protected $main_photo      = "";
+  protected $fullname        = "";
+  protected $birthday        = array();
+  protected $deathday        = array();
+  protected $allfilms        = array();
+  protected $actressfilms    = array();
+  protected $actorsfilms     = array();
+  protected $producersfilms  = array();
+  protected $soundtrackfilms = array();
+  protected $directorsfilms  = array();
+  protected $crewsfilms      = array();
+  protected $thanxfilms      = array();
+  protected $writerfilms     = array();
+  protected $selffilms       = array();
+  protected $archivefilms    = array();
+
+    // "Bio" page:
+  protected $birth_name      = "";
+  protected $nick_name       = array();
+  protected $bodyheight      = array();
+  protected $spouses         = array();
+  protected $bio_bio         = array();
+  protected $bio_trivia      = array();
+  protected $bio_tm          = array();
+  protected $bio_salary      = array();
+
+    // "Publicity" page:
+  protected $pub_prints      = array();
+  protected $pub_movies      = array();
+  protected $pub_interviews  = array();
+  protected $pub_articles    = array();
+  protected $pub_pictorial   = array();
+  protected $pub_magcovers   = array();
+
+    // SearchDetails
+  protected $SearchDetails   = array();
+
   public static function fromSearchResults($id, $name, Config $config) {
     $person = new self($id, $config);
     $person->fullname = $name;
@@ -50,6 +88,14 @@ class Person extends MdbBase {
     parent::__construct($config);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
+  }
+
+  /**
+   * Retrieve the IMDB ID
+   * @return string id IMDBID currently used
+   */
+  public function imdbid() {
+    return $this->imdbID;
   }
 
  #-----------------------------------------------[ URL to person main page ]---
@@ -775,50 +821,6 @@ class Person extends MdbBase {
    */
   public function getSearchDetails() {
     return $this->SearchDetails;
-  }
-
-  protected function reset_vars() {
-   $this->page["Name"] = "";
-   $this->page["Bio"]  = "";
-   $this->page["Publicity"]  = "";
-
-   // "Name" page:
-   $this->main_photo      = "";
-   $this->fullname        = "";
-   $this->birthday        = array();
-   $this->deathday        = array();
-   $this->allfilms        = array();
-   $this->actressfilms    = array();
-   $this->actorsfilms     = array();
-   $this->producersfilms  = array();
-   $this->soundtrackfilms = array();
-   $this->directorsfilms  = array();
-   $this->crewsfilms      = array();
-   $this->thanxfilms      = array();
-   $this->writerfilms     = array();
-   $this->selffilms       = array();
-   $this->archivefilms    = array();
-
-   // "Bio" page:
-   $this->birth_name      = "";
-   $this->nick_name       = array();
-   $this->bodyheight      = array();
-   $this->spouses         = array();
-   $this->bio_bio         = array();
-   $this->bio_trivia      = array();
-   $this->bio_tm          = array();
-   $this->bio_salary      = array();
-
-   // "Publicity" page:
-   $this->pub_prints      = array();
-   $this->pub_movies      = array();
-   $this->pub_interviews  = array();
-   $this->pub_articles    = array();
-   $this->pub_pictorial   = array();
-   $this->pub_magcovers   = array();
-
-   // SearchDetails
-   $this->SearchDetails   = array();
   }
 
   /**
