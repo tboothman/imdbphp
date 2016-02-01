@@ -23,13 +23,15 @@ class Movie extends \Imdb\MdbBase {
 
   protected $image_exts = array('jpg', 'png', 'gif', 'bmp');
 
+  protected $langs = array();
+
   /**
    * @param string id IMDBID to use for data retrieval
+   * @param Config $config OPTIONAL override default config
    */
   public function __construct($id, Config $config = null) {
     parent::__construct($config);
     $this->setid($id);
-    $this->reset_lang();
   }
 
   /**

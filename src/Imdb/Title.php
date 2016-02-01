@@ -30,11 +30,6 @@ class Title extends MdbBase {
   const VIDEO = 'Video';
   const SHORT = 'Short';
 
-  /**
-   * @var string 7 digit identifier for this title
-   */
-  protected $imdbID;
-
   protected $akas = array();
   protected $awards = array();
   protected $countries = array();
@@ -168,20 +163,6 @@ class Title extends MdbBase {
   public function __construct($id, Config $config = null) {
     parent::__construct($config);
     $this->setid($id);
-  }
-
-  /**
-   * Set and validate the IMDb ID
-   * @param string id IMDb ID
-   */
-  protected function setid ($id) {
-    if (is_numeric($id)) {
-      $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
-    } elseif (preg_match("/tt(\d{7})/", $id, $matches)) {
-      $this->imdbID = $matches[1];
-    } else {
-      $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
-    }
   }
 
  #-------------------------------------------------------------[ Open Page ]---

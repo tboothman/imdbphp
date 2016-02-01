@@ -56,6 +56,9 @@ class MdbBase extends Config {
 
   protected $page = array();
 
+  /**
+   * @var string 7 digit identifier for this person
+   */
   protected $imdbID;
 
   /**
@@ -81,14 +84,17 @@ class MdbBase extends Config {
   }
 
   /**
-   * Setup class for a new IMDB id
-   * @param string id IMDBID of the requested movie
-   * @TODO allow numeric ids and coerce them into 7 digit strings
+   * Set and validate the IMDb ID
+   * @param string id IMDb ID
    */
   protected function setid ($id) {
-    if (!preg_match("/^\d{7}$/",$id)) $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
-    $this->imdbID = $id;
-    $this->reset_vars();
+    if (is_numeric($id)) {
+      $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
+    } elseif (preg_match("/(?:nm|tt)(\d{7})/", $id, $matches)) {
+      $this->imdbID = $matches[1];
+    } else {
+      $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
+    }
   }
 
   /**
@@ -135,13 +141,6 @@ class MdbBase extends Config {
    */
   protected function buildUrl($context = null) {
     return '';
-  }
-
-  /**
-   * Reset page vars
-   */
-  protected function reset_vars() {
-    return;
   }
 
 }
