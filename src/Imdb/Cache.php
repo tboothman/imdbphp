@@ -112,7 +112,7 @@ class Cache {
     $thisdir = dir($cacheDir);
     $now = time();
     while ($file = $thisdir->read()) {
-      if ($file != "." && $file != "..") {
+      if ($file != "." && $file != ".." && $file != ".placeholder") {
         $fname = $cacheDir . $file;
         if (is_dir($fname))
           continue;
