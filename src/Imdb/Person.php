@@ -210,28 +210,27 @@ class Person extends MdbBase {
     return $this->allfilms;
   }
 
-  /** Get actress filmography
-   * @method movies_actress
-   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
-   *         the character IMDB ID, chname the character name, and addons an
-   *         array of additional remarks (the things in parenthesis)
-   * @see IMDB person page / (Main page)
-   */
-  public function movies_actress() {
-     if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
-     return $this->actressfilms;
-   }
-
-  /** Get actors filmography
-   * @method movies_actor
+  /**
+   * Get an actor or actress' filmography
    * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
    */
   public function movies_actor() {
-    if (empty($this->actorsfilms)) $this->filmograf($this->actorsfilms,"actor");
+    if (empty($this->actorsfilms)) {
+      $this->filmograf($this->actorsfilms, "actor");
+      $this->filmograf($this->actorsfilms, "actress");
+    }
     return $this->actorsfilms;
+  }
+
+  /**
+   * @deprecated Use self::movies_actor() instead
+   */
+  public function movies_actress() {
+    if (empty($this->actressfilms)) $this->filmograf($this->actressfilms,"actress");
+    return $this->actressfilms;
   }
 
   /** Get producers filmography

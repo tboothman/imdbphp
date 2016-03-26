@@ -43,8 +43,6 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertCount(0, $result);
   }
 
-  //@TODO test with an actress
-
   public function test_movies_actor() {
     $search = $this->getimdb_person();
     $result = $search->movies_actor();
