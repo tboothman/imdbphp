@@ -77,6 +77,12 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('House-hunting', $result[2]['name']);
     $this->assertEquals('2006', $result[2]['year']);
     $this->assertEquals(Title::SHORT, $result[2]['title_type']);
+
+    // 'Documentary' mapped to Movie
+    $this->assertEquals('0094345', $result[10]['mid']);
+    $this->assertEquals('The Story of Yanagawa\'s Canals', $result[10]['name']);
+    $this->assertEquals('1987', $result[10]['year']);
+    $this->assertEquals(Title::MOVIE, $result[10]['title_type']);
   }
 
   public function test_movies_director() {

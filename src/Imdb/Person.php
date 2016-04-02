@@ -17,6 +17,24 @@ namespace Imdb;
  * @copyright 2008 by Itzchak Rehberg and IzzySoft
  */
 class Person extends MdbBase {
+  
+  protected $titleTypeMap = array(
+    Title::MOVIE => Title::MOVIE,
+    Title::TV_SERIES => Title::TV_SERIES,
+    Title::TV_EPISODE => Title::TV_EPISODE,
+    Title::TV_MINI_SERIES => Title::TV_MINI_SERIES,
+    Title::TV_MOVIE => Title::TV_MOVIE,
+    Title::TV_SPECIAL => Title::TV_SPECIAL,
+    Title::TV_SHORT => Title::TV_SHORT,
+    Title::GAME => Title::GAME,
+    Title::VIDEO => Title::VIDEO,
+    Title::SHORT => Title::SHORT,
+    'Documentary' => Title::MOVIE,
+    'TV Movie documentary' => Title::TV_MOVIE,
+    'TV Series documentary' => Title::TV_SERIES,
+    'Video documentary short' => Title::VIDEO,
+    'Video documentary' => Title::VIDEO
+  );
 
   public static function fromSearchResults($id, $name, Config $config) {
     $person = new self($id, $config);
@@ -184,8 +202,11 @@ class Person extends MdbBase {
         }
 
         if (preg_match("!\(([^\)]+)\)!", $mov[3], $typeMatch)) {
-          if (in_array($typeMatch[1], array(Title::MOVIE, Title::TV_SERIES, Title::TV_EPISODE, Title::TV_MINI_SERIES, Title::TV_MOVIE, Title::TV_SPECIAL, Title::TV_SHORT, Title::GAME, Title::VIDEO, Title::SHORT))) {
-            $type = $typeMatch[1];
+          foreach ($this->titleTypeMap as $originalType => $trueType) {
+            if ($typeMatch[1] == $originalType) {
+              $type = $trueType;
+              break;
+            }
           }
         }
 
