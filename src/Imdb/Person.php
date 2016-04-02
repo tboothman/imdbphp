@@ -146,7 +146,7 @@ class Person extends MdbBase {
   /** Get filmography
    * @method protected filmograf
    * @param ref array where to store the filmography
-   * @param string type Which filmografie to retrieve ("actor",)
+   * @param string type Which filmografie to retrieve ("actor","producer")
    */
   protected function filmograf(&$res,$type) {
     $this->getPage("Name");
@@ -161,9 +161,10 @@ class Person extends MdbBase {
     }
     if ( !empty($match) && preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*</div!ims',$match[1],$matches)) {
       $mc = count($matches[0]);
-      $year = '';
       for ($i=0;$i<$mc;++$i) {
-        if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>(.*?)!ims',$matches[1][$i],$mov) ) continue;
+        $year = '';
+        $type = Title::MOVIE;
+        if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>\n?(.*)!ims', $matches[1][$i], $mov) ) continue;
         if ( preg_match('!<br/>\s*([^>]+)\s*</div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
         $char = array();
         if (preg_match('!<span class="year_column">[^<]*(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
@@ -181,15 +182,20 @@ class Person extends MdbBase {
             case 'producer' : $chname = 'Producer'; break;
           }
         }
-        
+
+        if (preg_match("!\(([^\)]+)\)!", $mov[3], $typeMatch)) {
+          if (in_array($typeMatch[1], array(Title::MOVIE, Title::TV_SERIES, Title::TV_EPISODE, Title::TV_MINI_SERIES, Title::TV_MOVIE, Title::TV_SPECIAL, Title::TV_SHORT, Title::GAME, Title::VIDEO, Title::SHORT))) {
+            $type = $typeMatch[1];
+          }
+        }
+
         $addons = array();
         if (preg_match_all("!\((.+)\)!", $chname, $addonMatches)) {
           $addons = $addonMatches[1];
           $chname = trim(preg_replace("!\((.+)\)!", '', $chname));
         }
 
-        if (!isset($mov[3])) $mov[3] = '';
-        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"chid"=>$chid,"chname"=>trim($chname),"addons"=>$addons);
+        $res[] = array("mid"=>$mov[1],"name"=>$mov[2],"year"=>$year,"title_type" => $type,"chid"=>$chid,"chname"=>trim($chname),"addons"=>$addons);
       }
     }
   }
@@ -200,7 +206,7 @@ class Person extends MdbBase {
    *  contain duplicates if there are categories and a movie is listed in more
    *  than one of them
    * @method movies_all
-   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   * @return array array[0..n][mid,name,year,title_type,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
@@ -212,7 +218,7 @@ class Person extends MdbBase {
 
   /**
    * Get an actor or actress' filmography
-   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   * @return array array[0..n][mid,name,year,title_type,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)
@@ -235,7 +241,7 @@ class Person extends MdbBase {
 
   /** Get producers filmography
    * @method movies_producer
-   * @return array array[0..n][mid,name,year,chid,chname,addons], where chid is
+   * @return array array[0..n][mid,name,year,title_type,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
    * @see IMDB person page / (Main page)

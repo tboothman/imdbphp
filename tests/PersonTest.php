@@ -1,5 +1,7 @@
 <?php
 
+use \Imdb\Title;
+
 class imdb_personTest extends PHPUnit_Framework_TestCase {
   public function test_constructor() {
     $search = $this->getimdb_person();
@@ -51,6 +53,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2511906', $result[0]['mid']);
     $this->assertEquals('Giant God Warrior Appears in Tokyo', $result[0]['name']);
     $this->assertEquals('2012', $result[0]['year']);
+    $this->assertEquals(Title::SHORT, $result[0]['title_type']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('Giant robot', $result[0]['chname']);
     $this->assertEquals(array('voice'), $result[0]['addons']);
@@ -64,10 +67,16 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('1568921', $result[0]['mid']);
     $this->assertEquals('Arrietty', $result[0]['name']);
     $this->assertEquals('2010', $result[0]['year']);
+    $this->assertEquals(Title::MOVIE, $result[0]['title_type']);
     //@TODO 'chname' as 'Producer' is surely wrong, it should be executive producer or nothing
 //    $this->assertEquals('', $result[0]['chid']);
 //    $this->assertEquals('', $result[0]['chname']);
 //    $this->assertEquals('', $result[0]['addons']);
+
+    $this->assertEquals('0756260', $result[2]['mid']);
+    $this->assertEquals('House-hunting', $result[2]['name']);
+    $this->assertEquals('2006', $result[2]['year']);
+    $this->assertEquals(Title::SHORT, $result[2]['title_type']);
   }
 
   public function test_movies_director() {
@@ -78,10 +87,27 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2013293', $result[0]['mid']);
     $this->assertEquals('The Wind Rises', $result[0]['name']);
     $this->assertEquals('2013', $result[0]['year']);
+    $this->assertEquals(\Imdb\Title::MOVIE, $result[0]['title_type']);
     $this->assertEquals('', $result[0]['chid']);
     //@TODO this says 'Director' .. doesn't seem right
     //$this->assertEquals('', $result[0]['chname']);
     $this->assertEquals(array(), $result[0]['addons']);
+
+    // Short
+    $this->assertEquals('1857816', $result[1]['mid']);
+    $this->assertEquals('Mr. Dough and the Egg Princess', $result[1]['name']);
+    $this->assertEquals('2010', $result[1]['year']);
+    $this->assertEquals(\Imdb\Title::SHORT, $result[1]['title_type']);
+    $this->assertEquals('', $result[1]['chid']);
+    $this->assertEquals(array(), $result[1]['addons']);
+
+    // TV Series
+    $this->assertEquals('0088109', $result[18]['mid']);
+    $this->assertEquals('Sherlock Hound', $result[18]['name']);
+    $this->assertEquals('', $result[18]['year']);
+    $this->assertEquals(\Imdb\Title::TV_SERIES, $result[18]['title_type']);
+    $this->assertEquals('', $result[18]['chid']);
+    $this->assertEquals(array(), $result[18]['addons']);
   }
 
   public function test_movies_soundtrack() {

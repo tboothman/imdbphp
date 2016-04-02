@@ -19,6 +19,17 @@ namespace Imdb;
   */
 class Title extends MdbBase {
 
+  const MOVIE = 'Movie';
+  const TV_SERIES = 'TV Series';
+  const TV_EPISODE = 'TV Episode';
+  const TV_MINI_SERIES = 'TV Mini-Series';
+  const TV_MOVIE = 'TV Movie';
+  const TV_SPECIAL = 'TV Special';
+  const TV_SHORT = 'TV Short';
+  const GAME = 'Video Game';
+  const VIDEO = 'Video';
+  const SHORT = 'Short';
+
   protected $akas = array();
   protected $awards = array();
   protected $countries = array();
