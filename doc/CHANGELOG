@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v3.3.0 (17.04.2016)
+-------------------
++ Merge `\Imdb\Person::movie_actor` and `\Imdb\Person::movie_actress` into `\Imdb\Person::movie_actor`. It was a confusing seperation that I doubt any library users cared about.
++ Add 'title_type' to filmography results in `\Imdb\Person`
++ Add the demo/images folder to the git repo.
+
 v3.2.0 (01.02.2016)
 -------------------
 ! Fix `Title::get_episode_details()` which broke in the imdb redesign.

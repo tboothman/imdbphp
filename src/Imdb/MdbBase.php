@@ -17,7 +17,7 @@ namespace Imdb;
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class MdbBase extends Config {
-  public $version = '3.2.0';
+  public $version = '3.3.0';
 
   protected $months = array(
       "January" => "01",
