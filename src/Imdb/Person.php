@@ -167,14 +167,14 @@ class Person extends MdbBase {
    * @param string type Which filmografie to retrieve ("actor","producer")
    */
   protected function filmograf(&$res,$type) {
-    $this->getPage("Name");
-    preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi",$this->page["Name"],$match);
-    if (empty($type)) $match[1] = $this->page["Name"];
+    $page = $this->getPage("Name");
+    preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi", $page, $match);
+    if (empty($type)) $match[1] = $page;
     elseif (empty($match[1])) {
-      $pos   = strpos($this->page['Name'],'<a name="'.ucfirst($type).'"');
+      $pos   = strpos($page,'<a name="'.ucfirst($type).'"');
       if ($pos) {
-        $epos  = strpos($this->page['Name'],'<div id=',$pos);
-        $match[1] = substr($this->page['Name'],$pos,$epos-$pos);
+        $epos  = strpos($page,'<div id=',$pos);
+        $match[1] = substr($page,$pos,$epos-$pos);
       }
     }
     if ( !empty($match) && preg_match_all('!<div class="filmo-row.*?>\s*(.*?)\s*</div!ims',$match[1],$matches)) {
