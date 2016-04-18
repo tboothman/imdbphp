@@ -2018,7 +2018,7 @@ class Title extends MdbBase {
       $this->debug_object($matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
-        $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-10); // isolate imdb id from url
+        $mid = substr($matches[1][$i],9,strlen($matches[1][$i])-8); // isolate imdb id from url
         $arr[] = array("mid"=>$mid, "name"=>$matches[2][$i], "year"=>$matches[3][$i], "comment"=>trim($matches[5][$i]));
       }
     }
