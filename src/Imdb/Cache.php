@@ -88,9 +88,9 @@ class Cache {
     $fname = $this->config->cachedir . '/' . $cleanKey;
     $this->logger->debug("[Cache] Writing key [$key] to [$fname]");
     if ($this->config->usezip) {
-      $fp = gzopen($fname, "w");
-      gzputs($fp, $value);
-      gzclose($fp);
+      $fp = @gzopen($fname, "w");
+      @gzputs($fp, $value);
+      @gzclose($fp);
     } else { // no zip
       $this->logger->debug("[Cache] Writing $fname");
       file_put_contents($fname, $value);
@@ -116,7 +116,7 @@ class Cache {
         $fname = $cacheDir . $file;
         if (is_dir($fname))
           continue;
-        $mod = filemtime($fname);
+        $mod = @filemtime($fname);
         if ($mod && ($now - $mod > $this->config->cache_expire))
           unlink($fname);
       }
