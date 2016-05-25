@@ -106,7 +106,7 @@ class Cache {
    * @TODO add a limit on how frequently a purge can occur
    */
   public function purge() {
-    $cacheDir = $this->config->cachedir;
+    $cacheDir = $this->config->cachedir . '/';
     $this->logger->debug("[Cache] Purging old cache entries");
 
     $thisdir = dir($cacheDir);
