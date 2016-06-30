@@ -111,7 +111,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertInternalType('array', $results);
 
     /* @var $firstResult Title */
-    $firstResult = $results[2];
+    $firstResult = $results[1];
     $this->assertInstanceOf('\Imdb\Title', $firstResult);
     $this->assertEquals("2224026", $firstResult->imdbid());
     $this->assertEquals("Home", $firstResult->title());

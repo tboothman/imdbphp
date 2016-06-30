@@ -428,7 +428,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
     public function testCountry() {
         $imdb = $this->getImdb();
-        $this->assertEquals(array('USA', 'Australia'), $imdb->country());
+        $this->assertEquals(array('USA'), $imdb->country());
     }
 
     public function testCountry_nocountries() {
@@ -677,23 +677,6 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('voice', $castMember['role_other'][0]);
     }
 
-    public function testCast_tv_episode_and_other_role_info() {
-      $imdb = $this->getImdb('0306414');
-      $cast = $imdb->cast();
-      $castMember = $this->findCastByImdbNo($cast, '0000738');
-
-      $this->assertEquals('0000738', $castMember['imdb']);
-      $this->assertEquals('Muhammad Ali', $castMember['name']);
-      $this->assertFalse($castMember['credited']);
-      $this->assertEquals("Himself", $castMember['role']);
-      $this->assertEquals(1, $castMember['role_episodes']);
-      $this->assertEquals(2004, $castMember['role_start_year']);
-      $this->assertEquals(2004, $castMember['role_end_year']);
-      $this->assertInternalType('array', $castMember['role_other']);
-      $this->assertCount(1, $castMember['role_other']);
-      $this->assertEquals('archive footage', $castMember['role_other'][0]);
-    }
-
     public function testCast_tv_multi_episode_multi_year() {
         $imdb = $this->getImdb('0306414');
         $cast = $imdb->cast();
@@ -713,15 +696,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
     public function testCast_tv_multi_episode_one_year() {
         $imdb = $this->getImdb('0306414');
-        $cast = $imdb->cast();
-        $castMember = $cast[62];
+        $castMember = $this->findCastByImdbNo($imdb->cast(), '1370480');
 
-        $this->assertEquals('0430107', $castMember['imdb']);
-        $this->assertEquals('Michael B. Jordan', $castMember['name']);
-        $this->assertEquals("Wallace", $castMember['role']);
-        $this->assertEquals(13, $castMember['role_episodes']);
-        $this->assertEquals(2002, $castMember['role_start_year']);
-        $this->assertEquals(2002, $castMember['role_end_year']);
+        $this->assertEquals('1370480', $castMember['imdb']);
+        $this->assertEquals('Dan DeLuca', $castMember['name']);
+        $this->assertEquals("David Parenti", $castMember['role']);
+        $this->assertEquals(11, $castMember['role_episodes']);
+        $this->assertEquals(2006, $castMember['role_start_year']);
+        $this->assertEquals(2006, $castMember['role_end_year']);
         $this->assertInternalType('array', $castMember['role_other']);
         $this->assertCount(0, $castMember['role_other']);
     }
@@ -751,9 +733,15 @@ class imdbTest extends PHPUnit_Framework_TestCase {
                 array('imdb' => '0594503',
                     'name' => 'Hayao Miyazaki',
                     'role' => '(screenplay)'),
+                array('imdb' => '1248358',
+                    'name' => 'Donald H. Hewitt',
+                    'role' => '(english version) (english version)'),
                 array('imdb' => '0227187',
-                    'name' => 'David Schmoeller',
-                    'role' => '(english version) (english version)')
+                  'name' => 'David Schmoeller',
+                  'role' => '(english version) (english version) (uncredited)'),
+                array('imdb' => '0411872',
+                  'name' => 'Kazunori Itô',
+                  'role' => '(first draft) (uncredited)')
             ),
             $imdb->writing());
     }
@@ -845,7 +833,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
       $this->assertGreaterThan(103, count($goofs));
-      $this->assertLessThan(120, count($goofs));
+      $this->assertLessThan(130, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
@@ -869,7 +857,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSoundtrack_nosoundtracks() {
-        $imdb = $this->getImdb('0087544');
+        $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }

@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(158, $result);
+    $this->assertCount(162, $result);
   }
 
   public function test_movies_actress() {
@@ -89,7 +89,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_director();
     $this->assertInternalType('array', $result);
-    $this->assertCount(26, $result);
+    $this->assertCount(27, $result);
     $this->assertEquals('2013293', $result[0]['mid']);
     $this->assertEquals('The Wind Rises', $result[0]['name']);
     $this->assertEquals('2013', $result[0]['year']);
@@ -108,12 +108,12 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(), $result[1]['addons']);
 
     // TV Series
-    $this->assertEquals('0088109', $result[18]['mid']);
-    $this->assertEquals('Sherlock Hound', $result[18]['name']);
-    $this->assertEquals('', $result[18]['year']);
-    $this->assertEquals(\Imdb\Title::TV_SERIES, $result[18]['title_type']);
-    $this->assertEquals('', $result[18]['chid']);
-    $this->assertEquals(array(), $result[18]['addons']);
+    $this->assertEquals('0088109', $result[19]['mid']);
+    $this->assertEquals('Sherlock Hound', $result[19]['name']);
+    $this->assertEquals('', $result[19]['year']);
+    $this->assertEquals(\Imdb\Title::TV_SERIES, $result[19]['title_type']);
+    $this->assertEquals('', $result[19]['chid']);
+    $this->assertEquals(array(), $result[19]['addons']);
   }
 
   public function test_movies_soundtrack() {
@@ -173,7 +173,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_writer();
     $this->assertInternalType('array', $result);
-    $this->assertCount(34, $result);
+    $this->assertCount(37, $result);
     $this->assertEquals('2013293', $result[0]['mid']);
     $this->assertEquals('The Wind Rises', $result[0]['name']);
     $this->assertEquals('2013', $result[0]['year']);
@@ -190,7 +190,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertCount(2, $result);
 
     $this->assertEquals('3674910', $result[0]['mid']);
-    $this->assertEquals('The Oscars', $result[0]['name']);
+    $this->assertEquals('The 87th Annual Academy Awards', $result[0]['name']);
     $this->assertEquals('2015', $result[0]['year']);
     $this->assertEquals('', $result[0]['chid']);
     $this->assertEquals('Himself - Honorary Award', $result[0]['chname']);
