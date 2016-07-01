@@ -110,6 +110,10 @@ class Cache {
    * @TODO add a limit on how frequently a purge can occur
    */
   public function purge() {
+    if (!$this->config->storecache || $this->config->cache_expire == 0) {
+      return;
+    }
+
     $cacheDir = $this->config->cachedir;
     $this->logger->debug("[Cache] Purging old cache entries");
 

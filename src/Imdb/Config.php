@@ -69,6 +69,7 @@ class Config {
   /**
    * Cache expiration - cache files older than this value (in seconds) will
    * be automatically deleted.
+   * If 0 cache will never expire
    * @var integer
    */
   public $cache_expire = 604800;

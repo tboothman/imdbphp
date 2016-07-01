@@ -80,9 +80,7 @@ class MdbBase extends Config implements LoggerAwareInterface {
     $this->cache = new Cache($this->config, $this->logger);
     $this->pages = new Pages($this->config, $this->cache, $this->logger);
 
-    if ($this->storecache && ($this->cache_expire > 0)) {
-      $this->cache->purge();
-    }
+    $this->cache->purge();
   }
 
   /**
