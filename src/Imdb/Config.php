@@ -77,7 +77,7 @@ class Config {
    * be automatically deleted.
    * @var integer
    */
-  public $cache_expire = 3600;
+  public $cache_expire = 604800;
 
   /**
    * Where to store images retrieved from the IMDB site by the method photo_localurl().
