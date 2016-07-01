@@ -1,6 +1,7 @@
 <?php
 
 namespace Imdb;
+use Psr\Log\LoggerInterface;
 
 /**
  * File caching
@@ -16,11 +17,11 @@ class Cache {
   protected $config;
 
   /**
-   * @var Logger
+   * @var LoggerInterface
    */
   protected $logger;
 
-  public function __construct(Config $config, Logger $logger) {
+  public function __construct(Config $config, LoggerInterface $logger) {
     $this->config = $config;
     $this->logger = $logger;
 

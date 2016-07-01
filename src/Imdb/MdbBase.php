@@ -9,6 +9,8 @@
  #############################################################################
 
 namespace Imdb;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Accessing Movie information
@@ -16,7 +18,7 @@ namespace Imdb;
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
-class MdbBase extends Config {
+class MdbBase extends Config implements LoggerAwareInterface {
   public $version = '3.3.0';
 
   protected $months = array(
@@ -40,7 +42,7 @@ class MdbBase extends Config {
   protected $cache;
 
   /**
-   * @var Logger
+   * @var LoggerInterface
    */
   protected $logger;
 
@@ -84,6 +86,23 @@ class MdbBase extends Config {
   }
 
   /**
+   * Retrieve the IMDB ID
+   * @return string id IMDBID currently used
+   */
+  public function imdbid() {
+    return $this->imdbID;
+  }
+
+  /**
+   * Replace the default logger with your own
+   * @param LoggerInterface $logger
+   * @see \Imdb\Logger
+   */
+  public function setLogger(LoggerInterface $logger) {
+    $this->logger = $logger;
+  }
+
+  /**
    * Set and validate the IMDb ID
    * @param string id IMDb ID
    */
@@ -95,14 +114,6 @@ class MdbBase extends Config {
     } else {
       $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
     }
-  }
-
-  /**
-   * Retrieve the IMDB ID
-   * @return string id IMDBID currently used
-   */
-  public function imdbid() {
-    return $this->imdbID;
   }
 
  #---------------------------------------------------------[ Debug helpers ]---

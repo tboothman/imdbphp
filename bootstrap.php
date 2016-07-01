@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/src/Psr/Log/LoggerInterface.php';
+require_once __DIR__ . '/src/Psr/Log/LoggerAwareInterface.php';
 require_once __DIR__ . '/src/Imdb/Exception.php';
 require_once __DIR__ . '/src/Imdb/Exception/Http.php';
 require_once __DIR__ . '/src/Imdb/Config.php';

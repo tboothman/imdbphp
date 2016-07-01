@@ -1,13 +1,12 @@
 <?php
 
 namespace Imdb;
+use Psr\Log\LoggerInterface;
 
 /**
  * Debug logging. Echos html to the page
- * Complies with PSR-3
- * @TODO include psr3 and implement
  */
-class Logger {
+class Logger implements LoggerInterface {
 
   protected $enabled;
 
