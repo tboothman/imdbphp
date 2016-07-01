@@ -108,13 +108,6 @@ class Config {
   public $throwHttpExceptions = true;
 
   #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
-  /**
-   * Limit for the result set of searches.
-   * Use 0 for no limit, or the number of maximum entries you wish. Default
-   * (when commented out) is 20.
-   * @var integer
-   */
-  public $maxresults = 20;
 
   /**
    * Set the default user agent (if none is detected)
