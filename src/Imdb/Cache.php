@@ -25,8 +25,11 @@ class Cache {
     $this->logger = $logger;
 
     if (($this->config->usecache || $this->config->storecache) && !is_dir($this->config->cachedir)) {
-      $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
-      throw new Exception("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+      @mkdir($this->config->cachedir, 0600, true);
+      if (!is_dir($this->config->cachedir)) {
+        $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+        throw new Exception("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
+      }
     }
     if ($this->config->storecache && !is_writable($this->config->cachedir)) {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");

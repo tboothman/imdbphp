@@ -15,11 +15,23 @@ class CacheTest extends PHPUnit_Framework_TestCase {
   /**
    * @expectedException \Imdb\Exception
    */
-  public function test_configured_directory_does_not_exist_causes_exception() {
+  public function test_configured_directory_does_not_exist_and_cannot_be_created_causes_exception() {
     $config = new Config();
     $config->usezip = true;
-    $config->cachedir = dirname(__FILE__).'/nonexistingfolder/';
+    $config->cachedir = dirname(__FILE__).'/cache_nonwriteable/nonnonexistingfolder/';
     new Cache($config, new Logger(false));
+  }
+
+  public function test_cache_folder_created_if_not_exist() {
+    $config = new Config();
+    $cacheDir = dirname(__FILE__).'/nonexistingfolder/';
+    $config->cachedir = $cacheDir;
+    $cache = new Cache($config, new Logger(false));
+    $cache->set('test', 'string');
+
+    $this->assertTrue(is_dir($cacheDir) && is_writable($cacheDir));
+    array_map('unlink', glob("$cacheDir/*"));
+    rmdir($cacheDir);
   }
 
   /**
