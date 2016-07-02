@@ -10,7 +10,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
 
   public function test_by_language_year() {
     $search = $this->getTitleSearchAdvanced();
-    $search->setLanguages(['en']);
+    $search->setLanguages(array('en'));
     $search->setYear(2000);
     $list = $search->search();
     $this->assertInternalType('array', $list);
@@ -19,7 +19,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
 
   public function test_episodes() {
     $search = $this->getTitleSearchAdvanced();
-    $search->setTitleTypes([TitleSearchAdvanced::TV_EPISODE]);
+    $search->setTitleTypes(array(TitleSearchAdvanced::TV_EPISODE));
     $list = $search->search();
     $this->assertInternalType('array', $list);
     $this->assertCount(50, $list);
@@ -37,7 +37,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $search = $this->getTitleSearchAdvanced();
     $search->setSort(TitleSearchAdvanced::SORT_NUM_VOTES);
     $search->setYear(2003);
-    $search->setTitleTypes([TitleSearchAdvanced::TV_EPISODE]);
+    $search->setTitleTypes(array(TitleSearchAdvanced::TV_EPISODE));
     $list = $search->search();
 
     $this->assertInternalType('array', $list);

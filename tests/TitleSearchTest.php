@@ -22,7 +22,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_movie_returns_only_movies() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Bebop', [TitleSearch::MOVIE]);
+    $results = $search->search('Cowboy Bebop', array(TitleSearch::MOVIE));
     $this->assertInternalType('array', $results);
 
     /* @var $firstResult Title */
@@ -42,7 +42,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_show_returns_only_tv() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Bebop', [TitleSearch::TV_SERIES]);
+    $results = $search->search('Cowboy Bebop', array(TitleSearch::TV_SERIES));
 
     $this->assertInternalType('array', $results);
 
@@ -56,7 +56,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_episode_returns_only_tv_episode() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Cowboy Funk', [TitleSearch::TV_EPISODE]);
+    $results = $search->search('Cowboy Funk', array(TitleSearch::TV_EPISODE));
 
     $this->assertInternalType('array', $results);
 
@@ -70,7 +70,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_game_returns_only_games() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Doom', [TitleSearch::GAME]);
+    $results = $search->search('Doom', array(TitleSearch::GAME));
 
     $this->assertInternalType('array', $results);
 
@@ -91,7 +91,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
 
   public function test_searching_for_a_tv_miniseries_returns_only_miniseries() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Hatfields & McCoys', [TitleSearch::TV_MINI_SERIES]);
+    $results = $search->search('Hatfields & McCoys', array(TitleSearch::TV_MINI_SERIES));
 
     $this->assertInternalType('array', $results);
 
@@ -107,7 +107,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
   // e.g. Home (II) (2015)
   public function test_movies_with_duplicate_name_per_year_get_a_year() {
     $search = $this->getimdbsearch();
-    $results = $search->search('Home 2015', [TitleSearch::MOVIE]);
+    $results = $search->search('Home 2015', array(TitleSearch::MOVIE));
     $this->assertInternalType('array', $results);
 
     /* @var $firstResult Title */

@@ -11,9 +11,9 @@ class PagesTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetRetrievesFromCache() {
-    $cache = Mockery::mock('\Imdb\Cache', [
+    $cache = Mockery::mock('\Imdb\Cache', array(
         'get' => 'test'
-    ]);
+    ));
 
     $pages = new Pages(new Config(), $cache, new Logger(false));
 
@@ -38,11 +38,11 @@ class PagesTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetMakesRequestIfNotInCache() {
-    $cache = Mockery::mock('\Imdb\Cache', [
+    $cache = Mockery::mock('\Imdb\Cache', array(
         'get' => null,
         'set' => true
-    ]);
-    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', [new Config(), $cache, new Logger(false)]);
+    ));
+    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array(new Config(), $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
     $pages->shouldReceive('requestPage')->once()->andReturn('test');
 
@@ -56,7 +56,7 @@ class PagesTest extends PHPUnit_Framework_TestCase {
     $cache->shouldReceive('get')->once()->andReturn('test');
     $cache->shouldReceive('set')->with('test')->once()->andReturn(true);
 
-    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', [new Config(), $cache, new Logger(false)]);
+    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array(new Config(), $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
     $pages->shouldReceive('requestPage')->once()->andReturn('test');
 
@@ -68,30 +68,30 @@ class PagesTest extends PHPUnit_Framework_TestCase {
    * @expectedException \Imdb\Exception\Http
    */
   public function testGetThrowsExceptionIfHttpFails() {
-    $cache = Mockery::mock('\Imdb\Cache', [
+    $cache = Mockery::mock('\Imdb\Cache', array(
         'get' => null,
         'set' => true
-    ]);
-    $request = Mockery::mock([
+    ));
+    $request = Mockery::mock(array(
        'sendRequest' => false
-    ]);
-    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', [new Config(), $cache, new Logger(false)]);
+    ));
+    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', array(new Config(), $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
     $pages->shouldReceive('buildRequest')->once()->andReturn($request);
     $pages->get('test');
   }
 
   public function testGetDoesNotThrowExceptionIfHttpFailsAndThrowHttpExceptionsIsFalse() {
-    $cache = Mockery::mock('\Imdb\Cache', [
+    $cache = Mockery::mock('\Imdb\Cache', array(
         'get' => null,
         'set' => true
-    ]);
-    $request = Mockery::mock([
+    ));
+    $request = Mockery::mock(array(
        'sendRequest' => false
-    ]);
+    ));
     $config = new Config();
     $config->throwHttpExceptions = false;
-    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', [$config, $cache, new Logger(false)]);
+    $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', array($config, $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
     $pages->shouldReceive('buildRequest')->once()->andReturn($request);
     $pages->get('test');
