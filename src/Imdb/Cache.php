@@ -26,7 +26,7 @@ class Cache {
     $this->logger = $logger;
 
     if (($this->config->usecache || $this->config->storecache) && !is_dir($this->config->cachedir)) {
-      @mkdir($this->config->cachedir, 0600, true);
+      @mkdir($this->config->cachedir, 0700, true);
       if (!is_dir($this->config->cachedir)) {
         $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
         throw new Exception("[Cache] Configured cache directory [{$this->config->cachedir}] does not exist!");
