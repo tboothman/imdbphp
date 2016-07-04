@@ -3,10 +3,17 @@
     "description": "Library for retrieving film and tv information from IMDb",
     "license": "GPL-2.0",
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-0": {
+            "BrowserEmulator": "src/"
+        },
+        "psr-4": {
+            "Imdb\\": "src/Imdb",
+            "MoviePosterDb\\": "src/MoviePosterDb"
+        }
     },
     "require": {
-        "php": ">5.3"
+        "php": ">5.3",
+        "psr/log": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~3.7",
