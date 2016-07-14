@@ -1,15 +1,15 @@
 <?php
- #############################################################################
- # PHP MovieAPI                                          (c) Itzchak Rehberg #
- # written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
- # http://www.izzysoft.de/                                                   #
- # ------------------------------------------------------------------------- #
- # This program is free software; you can redistribute and/or modify it      #
- # under the terms of the GNU General Public License (see doc/LICENSE)       #
- #############################################################################
+#############################################################################
+# PHP MovieAPI                                          (c) Itzchak Rehberg #
+# written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
+# http://www.izzysoft.de/                                                   #
+# ------------------------------------------------------------------------- #
+# This program is free software; you can redistribute and/or modify it      #
+# under the terms of the GNU General Public License (see doc/LICENSE)       #
+#############################################################################
 
 namespace Imdb;
-use Psr\Log\LoggerAwareInterface;
+
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,26 +18,26 @@ use Psr\Log\LoggerInterface;
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
-class MdbBase extends Config implements LoggerAwareInterface {
+class MdbBase extends Config {
   public $version = '3.3.0';
 
   protected $months = array(
-      "January" => "01",
-      "February" => "02",
-      "March" => "03",
-      "April" => "04",
-      "May" => "05",
-      "June" => "06",
-      "July" => "07",
-      "August" => "08",
-      "September" => "09",
-      "October" => "10",
-      "November" => "11",
-      "December" => "12"
-    );
+    "January" => "01",
+    "February" => "02",
+    "March" => "03",
+    "April" => "04",
+    "May" => "05",
+    "June" => "06",
+    "July" => "07",
+    "August" => "08",
+    "September" => "09",
+    "October" => "10",
+    "November" => "11",
+    "December" => "12"
+  );
 
   /**
-   * @var Cache
+   * @var CacheInterface
    */
   protected $cache;
 
@@ -76,8 +76,8 @@ class MdbBase extends Config implements LoggerAwareInterface {
     }
 
     $this->config = $config ?: $this;
-    $this->logger = new Logger($this->debug);
-    $this->cache = new Cache($this->config, $this->logger);
+    $this->logger = empty($this->config->logtype) ? new Logger($this->debug) : new $this->config->logtype($this->config);
+    $this->cache = empty($this->config->cachetype) ? new Cache($this->config, $this->logger) : new $this->config->cachetype($this->config, $this->logger);
     $this->pages = new Pages($this->config, $this->cache, $this->logger);
 
     $this->cache->purge();
@@ -92,19 +92,10 @@ class MdbBase extends Config implements LoggerAwareInterface {
   }
 
   /**
-   * Replace the default logger with your own
-   * @param LoggerInterface $logger
-   * @see \Imdb\Logger
-   */
-  public function setLogger(LoggerInterface $logger) {
-    $this->logger = $logger;
-  }
-
-  /**
    * Set and validate the IMDb ID
    * @param string id IMDb ID
    */
-  protected function setid ($id) {
+  protected function setid($id) {
     if (is_numeric($id)) {
       $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
     } elseif (preg_match("/(?:nm|tt)(\d{7})/", $id, $matches)) {
@@ -114,13 +105,15 @@ class MdbBase extends Config implements LoggerAwareInterface {
     }
   }
 
- #---------------------------------------------------------[ Debug helpers ]---
+  #---------------------------------------------------------[ Debug helpers ]---
   protected function debug_scalar($scalar) {
     $this->logger->error($scalar);
   }
+
   protected function debug_object($object) {
     $this->logger->error('{object}', array('object' => $object));
   }
+
   protected function debug_html($html) {
     $this->logger->error(htmlentities($html));
   }

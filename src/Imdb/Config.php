@@ -36,6 +36,20 @@ class Config {
   public $imdbsite = "www.imdb.com";
 
   /**
+   * Set the log type. If empty default logger will be used.
+   * If this option is specified, it must be a class name which implements LoggerInterface.
+   * @var string
+   */
+  public $logtype = "";
+
+  /**
+   * Set the cache type. If empty default file cache will be used.
+   * If this option is specified, it must be a class name which implements CacheInterface.
+   * @var string
+   */
+  public $cachetype = "";
+
+  /**
    * Directory to store the cache files. This must be writable by the web
    * server. It doesn't need to be under documentroot.
    * @var string
@@ -138,7 +152,7 @@ class Config {
     } else {
       $ini_files = glob(dirname(__FILE__) . '/../../conf/*.ini');
     }
-    
+
     if (is_array($ini_files)) {
       foreach ($ini_files as $file) {
         $ini = parse_ini_file($file);
