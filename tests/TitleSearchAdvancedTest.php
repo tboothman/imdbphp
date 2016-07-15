@@ -60,6 +60,6 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $config->usezip = true;
     $config->cache_expire = 3600;
 
-    return new TitleSearchAdvanced();
+    return new TitleSearchAdvanced($config);
   }
 }
