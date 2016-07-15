@@ -64,7 +64,7 @@ class PersonSearch extends MdbBase {
       $mids_checked[] = $pid;
       $name = $matches[2][$i];
       $info = $matches[3][$i];
-      $resultPerson = Person::fromSearchResults($pid, $name, $this);
+      $resultPerson = Person::fromSearchResults($pid, $name, $this, $this->logger, $this->cache);
       if (!empty($info)) {
         if (preg_match('|<small>\((.*),\s*<a href="/title/tt(\d{7}).*"\s*>(.*)</a>\s*\((\d{4})\)\)|Ui', $info, $match)) {
           $role = $match[1];

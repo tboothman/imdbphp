@@ -9,7 +9,6 @@
  #############################################################################
 
 namespace Imdb;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
-class MdbBase extends Config implements LoggerAwareInterface {
+class MdbBase extends Config {
   public $version = '3.3.0';
 
   protected $months = array(
@@ -37,7 +36,7 @@ class MdbBase extends Config implements LoggerAwareInterface {
     );
 
   /**
-   * @var Cache
+   * @var CacheInterface
    */
   protected $cache;
 
@@ -65,8 +64,10 @@ class MdbBase extends Config implements LoggerAwareInterface {
 
   /**
    * @param Config $config OPTIONAL override default config
+   * @param LoggerInterface $logger OPTIONAL override default logger
+   * @param CacheInterface $cache OPTIONAL override default cache
    */
-  public function __construct(Config $config = null) {
+  public function __construct(Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     parent::__construct();
 
     if ($config) {
@@ -76,8 +77,8 @@ class MdbBase extends Config implements LoggerAwareInterface {
     }
 
     $this->config = $config ?: $this;
-    $this->logger = new Logger($this->debug);
-    $this->cache = new Cache($this->config, $this->logger);
+    $this->logger = empty($logger) ? new Logger($this->debug) : $logger;
+    $this->cache = empty($cache) ? new Cache($this->config, $this->logger) : $cache;
     $this->pages = new Pages($this->config, $this->cache, $this->logger);
 
     $this->cache->purge();

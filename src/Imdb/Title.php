@@ -10,6 +10,7 @@
  #############################################################################
 
 namespace Imdb;
+use Psr\Log\LoggerInterface;
 
  /**
   * A title on IMDb
@@ -146,10 +147,12 @@ class Title extends MdbBase {
    * @param int $year
    * @param string $type
    * @param Config $config
+   * @param LoggerInterface $logger OPTIONAL override default logger
+   * @param CacheInterface $cache OPTIONAL override default cache
    * @return Title
    */
-  public static function fromSearchResult($id, $title, $year, $type, Config $config = null) {
-    $imdb = new Title($id, $config);
+  public static function fromSearchResult($id, $title, $year, $type, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
+    $imdb = new Title($id, $config, $logger, $cache);
     $imdb->main_title = $title;
     $imdb->main_year = (int)$year;
     $imdb->main_movietype = $type;
@@ -159,9 +162,11 @@ class Title extends MdbBase {
   /**
    * @param string $id IMDb ID. e.g. 285331 for http://www.imdb.com/title/tt0285331/
    * @param Config $config OPTIONAL override default config
+   * @param LoggerInterface $logger OPTIONAL override default logger
+   * @param CacheInterface $cache OPTIONAL override default cache
    */
-  public function __construct($id, Config $config = null) {
-    parent::__construct($config);
+  public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
+    parent::__construct($config, $logger, $cache);
     $this->setid($id);
   }
 
