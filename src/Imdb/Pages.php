@@ -1,6 +1,7 @@
 <?php
 
 namespace Imdb;
+
 use Psr\Log\LoggerInterface;
 
 /**
@@ -14,7 +15,7 @@ class Pages {
   protected $config;
 
   /**
-   * @var Cache
+   * @var CacheInterface
    */
   protected $cache;
 
@@ -22,15 +23,16 @@ class Pages {
    * @var LoggerInterface
    */
   protected $logger;
+
   protected $pages = array();
   protected $name;
 
   /**
    * @param Config $config
-   * @param Cache $cache
+   * @param CacheInterface $cache
    * @param LoggerInterface $logger
    */
-  public function __construct(Config $config, Cache $cache, LoggerInterface $logger) {
+  public function __construct(Config $config, CacheInterface $cache, LoggerInterface $logger) {
     $this->config = $config;
     $this->cache = $cache;
     $this->logger = $logger;
