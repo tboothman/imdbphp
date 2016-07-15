@@ -1611,6 +1611,7 @@ class Title extends MdbBase {
           $ec = count($eps[0]);
           for ($ep=0; $ep<$ec; ++$ep) {
             $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($eps['plot'][$ep]));
+            $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims', '', $plot);
             $this->season_episodes[$s][$eps['episodeNumber'][$ep]] = array(
               'imdbid'  => $eps['imdbid'][$ep],
               'title'   => trim($eps['title'][$ep]),
