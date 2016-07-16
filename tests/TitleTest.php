@@ -15,6 +15,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 0416449 = 300 (some multi bracket credits)
    * 0103074 = Thelma & Louise (&amp; in title)
    * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
+   * 3110958 = Now You See Me 2 -- Testing german language
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -74,6 +75,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testTitle_removes_html_entities() {
         $imdb = $this->getImdb('0103074');
         $this->assertEquals('Thelma & Louise', $imdb->title());
+    }
+
+    public function testTitle_different_language() {
+      $config = new \Imdb\Config();
+      $config->language = 'de-de';
+      $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+      $title = new \Imdb\Title(3110958, $config);
+      $this->assertEquals('Die Unfassbaren 2', $title->title());
     }
 
     //@TODO tests for titles with non ascii characters. Currently they're
@@ -1207,7 +1216,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
     $this->assertCount(0, $alternateVersions);
   }
-    
+
     /**
      * Create an imdb object that uses cached pages
      * The matrix by default
