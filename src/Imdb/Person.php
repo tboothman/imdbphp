@@ -75,7 +75,7 @@ class Person extends MdbBase {
     // SearchDetails
   protected $SearchDetails   = array();
 
-  public static function fromSearchResults($id, $name, Config $config, LoggerInterface $logger, CacheInterface $cache) {
+  public static function fromSearchResults($id, $name, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     $person = new self($id, $config, $logger, $cache);
     $person->fullname = $name;
     return $person;

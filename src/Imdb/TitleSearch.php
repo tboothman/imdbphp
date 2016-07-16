@@ -36,7 +36,7 @@ class TitleSearch extends MdbBase {
           continue;
         }
 
-        $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type, $this, $this->logger, $this->cache);
+        $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type, $this->config, $this->logger, $this->cache);
       }
     }
 
