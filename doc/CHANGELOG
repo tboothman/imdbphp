@@ -2,6 +2,21 @@
 History for IMDBPHP
 ====================
 
+v4.0.1 (17.07.2016)
+-------------------
+! Remove the new text imdb added for empty episode plots in `Title::episodes()`
+
+v4.0.0 (05.07.2016)
+-------------------
+- Removed `\Imdb\Title::setId()` and `\Imdb\Person::setid()`. Allowing the ID to be mutated was odd functionality and there were almost certainly some bugs if you did it.
++ IMDb IDs can now be integers, 7 digit padded numbers, URLs, or tt0000000 formatted.
+* Try to create the cache folder if it does not exist.
++ Add ability to replace inbuilt logger. Added the PSR-3 LoggerAwareInterface to all classes and made the logger PSR-3 compatible.
+! Increase the default page cache time from 1 hour to 1 week
+* Change the default domain for imdb to www.imdb.com instead of akas.imdb.com as akas no longer returns titles in english or returns more results for akas.
+- Remove the maxResults config key. It had no effect on the search requested from IMDb only limited the results returned from the search.
+- Removed the old broken trailers class
+
 v3.3.0 (17.04.2016)
 -------------------
 + Merge `\Imdb\Person::movie_actor` and `\Imdb\Person::movie_actress` into `\Imdb\Person::movie_actor`. It was a confusing seperation that I doubt any library users cared about.

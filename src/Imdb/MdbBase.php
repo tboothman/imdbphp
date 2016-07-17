@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class MdbBase extends Config implements LoggerAwareInterface {
-  public $version = '3.3.0';
+  public $version = '4.0.1';
 
   protected $months = array(
       "January" => "01",
