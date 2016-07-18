@@ -93,15 +93,6 @@ class MdbBase extends Config implements LoggerAwareInterface {
   }
 
   /**
-   * Replace the default logger with your own
-   * @param LoggerInterface $logger
-   * @see \Imdb\Logger
-   */
-  public function setLogger(LoggerInterface $logger) {
-    $this->logger = $logger;
-  }
-
-  /**
    * Set and validate the IMDb ID
    * @param string id IMDb ID
    */
