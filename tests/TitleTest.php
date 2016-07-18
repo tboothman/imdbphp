@@ -50,6 +50,25 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('0133093', $imdb->imdbid());
     }
 
+    public function test_constructor_with_custom_logger() {
+      $logger = \Mockery::mock('\Psr\Log\LoggerInterface', function($mock) {
+        $mock->shouldReceive('debug');
+        $mock->shouldReceive('error');
+      });
+      $imdb = new \Imdb\Title('some rubbish', null, $logger);
+      \Mockery::close(); // Assert that the mocked object was called as expected
+    }
+
+    public function test_constructor_with_custom_cache() {
+      $cache = \Mockery::mock('\Imdb\CacheInterface', function($mock) {
+        $mock->shouldReceive('get')->andReturn('test');
+        $mock->shouldReceive('purge');
+      });
+      $imdb = new \Imdb\Title('', null, null, $cache);
+      $imdb->title();
+      \Mockery::close();
+    }
+
     // @TODO tests for other types
     public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
