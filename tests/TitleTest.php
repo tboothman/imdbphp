@@ -983,7 +983,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
 
-      $this->assertCount(38, $awards);
+      $this->assertCount(37, $awards);
 
       $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
       $firstEntry = $scifiWritersAward['entries'][0];
