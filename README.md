@@ -15,7 +15,7 @@ Quick Start
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
 ```php
-$title = new \Imdb\Title('0335266');
+$title = new \Imdb\Title(335266);
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
 ```
@@ -43,7 +43,7 @@ You can alter the config by creating the object, modifying its properties then p
 ```php
 $config = new \Imdb\Config();
 $config->language = 'de-DE';
-$imdb = new \Imdb\Title('0335266', $config);
+$imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
 ```
