@@ -15,6 +15,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
    * 0416449 = 300 (some multi bracket credits)
    * 0103074 = Thelma & Louise (&amp; in title)
    * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
+   * 3110958 = Now You See Me 2 -- Testing german language
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -49,6 +50,25 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('0133093', $imdb->imdbid());
     }
 
+    public function test_constructor_with_custom_logger() {
+      $logger = \Mockery::mock('\Psr\Log\LoggerInterface', function($mock) {
+        $mock->shouldReceive('debug');
+        $mock->shouldReceive('error');
+      });
+      $imdb = new \Imdb\Title('some rubbish', null, $logger);
+      \Mockery::close(); // Assert that the mocked object was called as expected
+    }
+
+    public function test_constructor_with_custom_cache() {
+      $cache = \Mockery::mock('\Imdb\CacheInterface', function($mock) {
+        $mock->shouldReceive('get')->andReturn('test');
+        $mock->shouldReceive('purge');
+      });
+      $imdb = new \Imdb\Title('', null, null, $cache);
+      $imdb->title();
+      \Mockery::close();
+    }
+
     // @TODO tests for other types
     public function testMovietype_on_movie() {
         $imdb = $this->getImdb();
@@ -74,6 +94,14 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testTitle_removes_html_entities() {
         $imdb = $this->getImdb('0103074');
         $this->assertEquals('Thelma & Louise', $imdb->title());
+    }
+
+    public function testTitle_different_language() {
+      $config = new \Imdb\Config();
+      $config->language = 'de-de';
+      $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+      $title = new \Imdb\Title(3110958, $config);
+      $this->assertEquals('Die Unfassbaren 2', $title->title());
     }
 
     //@TODO tests for titles with non ascii characters. Currently they're
@@ -955,7 +983,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
 
-      $this->assertCount(38, $awards);
+      $this->assertCount(37, $awards);
 
       $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
       $firstEntry = $scifiWritersAward['entries'][0];
@@ -1207,7 +1235,7 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 
     $this->assertCount(0, $alternateVersions);
   }
-    
+
     /**
      * Create an imdb object that uses cached pages
      * The matrix by default

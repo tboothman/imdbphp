@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v4.1.0 (21.07.2016)
+-------------------
+- Remove LoggerAwareInterface
++ Add ability to replace cache and the logger via the constructor
+
 v4.0.1 (17.07.2016)
 -------------------
 ! Remove the new text imdb added for empty episode plots in `Title::episodes()`

@@ -22,22 +22,19 @@ class Request extends \BrowserEmulator {
   /**
    * No need to call this.
    * @param string $url URL to open
-   * @param Config $iconf Optionally pass in the Config object to use
+   * @param Config $config Optionally pass in the Config object to use
    */
-  public function __construct($url, Config $iconf = null) {
+  public function __construct($url, Config $config) {
     parent::__construct();
 
     $this->urltoopen = $url;
-    if (!$iconf){
-      $iconf = new Config();
-    }
 
-    $this->addHeaderLine('Referer', 'http://' . $iconf->imdbsite . '/');
+    $this->addHeaderLine('Referer', 'http://' . $config->imdbsite . '/');
 
-    if ($iconf->force_agent)
-      $this->addHeaderLine('User-Agent', $iconf->force_agent);
-    if ($iconf->language)
-      $this->addHeaderLine('Accept-Language', $iconf->language);
+    if ($config->force_agent)
+      $this->addHeaderLine('User-Agent', $config->force_agent);
+    if ($config->language)
+      $this->addHeaderLine('Accept-Language', $config->language);
   }
 
   /**

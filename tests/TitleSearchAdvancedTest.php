@@ -57,9 +57,9 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $config->language = 'en-GB';
     $config->imdbsite = 'www.imdb.com';
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
-    $config->usezip = true;
+    $config->usezip = false;
     $config->cache_expire = 3600;
 
-    return new TitleSearchAdvanced();
+    return new TitleSearchAdvanced($config);
   }
 }

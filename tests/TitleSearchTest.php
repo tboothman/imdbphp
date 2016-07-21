@@ -122,7 +122,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $config = new Config();
     $config->language = 'en';
     $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
-    $config->usezip = true;
+    $config->usezip = false;
     $config->cache_expire = 3600;
     $config->debug = false;
 

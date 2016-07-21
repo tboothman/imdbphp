@@ -10,6 +10,7 @@
  #############################################################################
 
 namespace Imdb;
+use Psr\Log\LoggerInterface;
 
 /**
  * A person on IMDb
@@ -74,8 +75,8 @@ class Person extends MdbBase {
     // SearchDetails
   protected $SearchDetails   = array();
 
-  public static function fromSearchResults($id, $name, Config $config) {
-    $person = new self($id, $config);
+  public static function fromSearchResults($id, $name, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
+    $person = new self($id, $config, $logger, $cache);
     $person->fullname = $name;
     return $person;
   }
@@ -83,9 +84,11 @@ class Person extends MdbBase {
   /**
    * @param string id IMDBID to use for data retrieval
    * @param Config $config OPTIONAL override default config
+   * @param LoggerInterface $logger OPTIONAL override default logger
+   * @param CacheInterface $cache OPTIONAL override default cache
    */
-  public function __construct($id, Config $config = null) {
-    parent::__construct($config);
+  public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
+    parent::__construct($config, $logger, $cache);
     $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
   }

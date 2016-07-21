@@ -4,7 +4,7 @@ use Imdb\Charts;
 
 class imdb_chartsTest extends PHPUnit_Framework_TestCase {
   public function test_getChartsTop10() {
-    $charts = new Charts();
+    $charts = $this->getCharts();
     $moviemeter = $charts->getChartsTop10();
 
     $this->assertInternalType('array', $moviemeter);
@@ -16,7 +16,7 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_getChartsBoxOffice() {
-    $charts = new Charts();
+    $charts = $this->getCharts();
     $boxOffice = $charts->getChartsBoxOffice();
 
     $this->assertInternalType('array', $boxOffice);
@@ -28,5 +28,16 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase {
       $this->assertTrue(is_numeric($film['weekend']));
       $this->assertTrue(is_numeric($film['gross']));
     }
+  }
+
+  protected function getCharts() {
+    $config = new \Imdb\Config();
+    $config->language = 'en-GB';
+    $config->imdbsite = 'www.imdb.com';
+    $config->cachedir = realpath(dirname(__FILE__).'/cache') . '/';
+    $config->usezip = false;
+    $config->cache_expire = 3600;
+
+    return new Charts($config);
   }
 }
