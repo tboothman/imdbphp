@@ -144,34 +144,41 @@ class TitleSearchAdvanced extends MdbBase {
     $doc = new \DOMDocument();
     @$doc->loadHTML($page);
     $xp = new \DOMXPath($doc);
-    $titles = $xp->query("//div[@id='main']/table/tr/td[3]/a");
-    $details = $xp->query("//div[@id='main']/table/tr/td[3]/span[2]");
-    $serdet = $xp->query("//div[@id='main']/table/tr/td[3]/span[3]");
-    $nodecount = $titles->length;
+    $resultSections = $xp->query("//div[@class='article']//div[@class='lister-item mode-advanced']");
+
     $ret = array();
-    for ($i = 0; $i < $nodecount;  ++$i) {
-      preg_match('|(\d{7})/$|', $titles->item($i)->getAttribute('href'), $match);
+    foreach ($resultSections as $resultSection) {
+      $titleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(0);
+      $title = trim($titleElement->nodeValue);
+      preg_match('/tt(\d{7})/', $titleElement->getAttribute('href'), $match);
       $id = $match[1];
-      $title = trim($titles->item($i)->nodeValue);
-      preg_match('!\((\d+)\s*(.*?)\)!', $details->item($i)->nodeValue, $match);
-      $year = $match[1];
-      $mtype = $match[2] ? : 'Feature Film';
-      $is_serial = strpos(strtolower($mtype), 'tv series') !== false;
-      $ep_year = '';
-      $ep_id = 0;
-      $ep_name = '';
+      $ep_id = null;
+      $ep_name = null;
+      $ep_year = null;
 
-      if ($is_serial && strpos($serdet->item($i)->nodeValue, 'Episode:') !== false) {
-        preg_match('!\((\d{4})\)!', $serdet->item($i)->nodeValue, $match);
-        if (isset($match[1])) {
-          $ep_year = $match[1];
+      $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
+      if (preg_match('/\((\d+)–.+\)/', $yearString, $match)) {
+        $year = $match[1];
+        $mtype = 'TV Series';
+        $is_serial = true;
+
+        $episodeTitleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(1);
+        if ($episodeTitleElement) {
+          $ep_name = $episodeTitleElement->nodeValue;
+          preg_match('/tt(\d{7})/', $episodeTitleElement->getAttribute('href'), $match);
+          $ep_id = $match[1];
+          $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(1)->nodeValue;
+          if ($yearString) {
+            $ep_year = trim($yearString, '() ');
+          }
         }
-
-        $episodeTitleNode = $serdet->item($i)->getElementsByTagName('a')->item(0);
-        preg_match('!(\d{7})!', $episodeTitleNode->getAttribute('href'), $match);
-        $ep_id = $match[1];
-        $ep_name = trim($episodeTitleNode->nodeValue);
+      } else {
+        preg_match('!\((\d+)\s*(.*?)\)!', $yearString, $match);
+        $year = $match[1];
+        $mtype = $match[2] ? : 'Feature Film';
+        $is_serial = false;
       }
+
       $ret[] = array('imdbid' => $id, 'title' => $title, 'year' => $year, 'type' => $mtype, 'serial' => $is_serial, 'episode_imdbid' => $ep_id, 'episode_title' => $ep_name, 'episode_year' => $ep_year);
     }
     return $ret;

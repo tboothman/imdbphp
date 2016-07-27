@@ -50,6 +50,20 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Firefly', $firstResult['title']);
     $this->assertEquals('2002', $firstResult['year']);
     $this->assertEquals('TV Series', $firstResult['type']);
+    $this->assertEquals('0579540', $firstResult['episode_imdbid']);
+    $this->assertEquals('Trash', $firstResult['episode_title']);
+    $this->assertEquals(2003, $firstResult['episode_year']);
+
+    $secondResult = $list[1];
+
+    $this->assertInternalType('array', $secondResult);
+    $this->assertEquals('0303461', $secondResult['imdbid']);
+    $this->assertEquals('Firefly', $secondResult['title']);
+    $this->assertEquals('2002', $secondResult['year']);
+    $this->assertEquals('TV Series', $secondResult['type']);
+    $this->assertEquals('0579538', $secondResult['episode_imdbid']);
+    $this->assertEquals('The Message', $secondResult['episode_title']);
+    $this->assertEquals(2003, $secondResult['episode_year']);
   }
 
   protected function getTitleSearchAdvanced() {
