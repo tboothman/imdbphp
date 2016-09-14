@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v4.1.1 (14.09.2016)
+-------------------
+! Fixed `Title::savephoto()`, which broke due to imdb moving their images be served with SSL
+! Fixed `Title::country()` and `Title::language()` and `Title::languages()`
+! Fixed `\Imdb\TitleSearchAdvanced`, which stopped working due to a redesign
+
 v4.1.0 (21.07.2016)
 -------------------
 - Remove LoggerAwareInterface
