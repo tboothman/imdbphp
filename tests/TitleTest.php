@@ -802,6 +802,27 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     public function testProducer() {
         //@TODO
     }
+
+  public function testComposer_movie() {
+    $imdb = $this->getImdb();
+    $composers = $imdb->composer();
+    $this->assertCount(1, $composers);
+    $this->assertEquals(array('imdb' => '0204485','name' => 'Don Davis', 'role' => null), $composers[0]);
+  }
+
+  public function testComposer_series() {
+    $imdb = $this->getImdb('1286039');
+    $composers = $imdb->composer();
+    $this->assertCount(1, $composers);
+    $this->assertEquals(array('imdb' => '0006107', 'name' => 'Joel Goldsmith', 'role' => '(40 episodes, 2009-2011)'), $composers[0]);
+  }
+
+  public function testComposer_none() {
+    // The wire has 'Series Music Department' but no 'Series Music by' section so returns no results
+    $imdb = $this->getImdb('0306414');
+    $composers = $imdb->composer();
+    $this->assertCount(0, $composers);
+  }
     
     // @TODO Stopped writing out tests for all functions here .. there are plenty more
 
