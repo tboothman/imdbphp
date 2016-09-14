@@ -916,25 +916,18 @@ class Title extends MdbBase {
       return false;
     }
 
-    $req = new Request($photo_url, $this->config);
-    $req->sendRequest();
-    if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
-            strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
-            strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
-      $fp = $req->getResponseBody();
-    } else {
-      $ctype = $req->getResponseHeader("Content-Type");
-      $this->debug_scalar("<BR>*photoerror* at " . __FILE__ . " line " . __LINE__ . ": " . $photo_url . ": Content Type is '$ctype'<BR>");
-      if (substr($ctype, 0, 4) == 'text')
-        $this->debug_scalar("Details: <PRE>" . $req->getResponseBody() . "</PRE>\n");
+    $image = @file_get_contents($photo_url);
+    if (!$image) {
+      $this->logger->warning("Failed to fetch image [$photo_url]");
       return false;
     }
+
     $fp2 = fopen($path, "w");
-    if ((!$fp) || (!$fp2)) {
-      $this->debug_scalar("image error at " . __FILE__ . " line " . __LINE__ . "...<BR>");
+    if (!$fp2) {
+      $this->logger->warning("Failed to open [$path] for writing  at " . __FILE__ . " line " . __LINE__ . "...<BR>");
       return false;
     }
-    fputs($fp2, $fp);
+    fputs($fp2, $image);
     return true;
   }
 
