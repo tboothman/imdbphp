@@ -1003,7 +1003,7 @@ class Title extends MdbBase {
    if (empty($this->countries)) {
     $this->getPage("Title");
     $this->countries = array();
-    if (preg_match_all('!/country/.+?\s.+?>(.*?)<\/a!m',$this->page["Title"],$matches))
+    if (preg_match_all('!/search/title\?countries=.+?\s.+?>(.*?)<!m',$this->page["Title"],$matches))
       for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
    }
    return $this->countries;
