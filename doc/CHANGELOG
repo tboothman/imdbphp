@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v5.0.0 (16.10.2016)
+-------------------
+! Started using curl for all http(s) requests.
+! Fixed `Title::composer()` for TV shows
+
 v4.1.1 (14.09.2016)
 -------------------
 ! Fixed `Title::savephoto()`, which broke due to imdb moving their images be served with SSL
