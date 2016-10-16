@@ -7,7 +7,6 @@ require_once __DIR__ . '/src/Imdb/Logger.php';
 require_once __DIR__ . '/src/Imdb/CacheInterface.php';
 require_once __DIR__ . '/src/Imdb/CacheBase.php';
 require_once __DIR__ . '/src/Imdb/Cache.php';
-require_once __DIR__ . '/src/BrowserEmulator.php';
 require_once __DIR__ . '/src/Imdb/Request.php';
 require_once __DIR__ . '/src/Imdb/Pages.php';
 require_once __DIR__ . '/src/Imdb/MdbBase.php';

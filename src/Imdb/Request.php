@@ -17,34 +17,56 @@ namespace Imdb;
  * Here we emulate a browser accessing the IMDB site. You don't need to
  * call any of its method directly - they are rather used by the IMDB classes.
  */
-class Request extends \BrowserEmulator {
+class Request {
+  private $ch;
+  private $urltoopen;
+  private $page;
+  private $requestHeaders = array();
+  private $responseHeaders = array();
+  private $config;
 
   /**
    * No need to call this.
    * @param string $url URL to open
-   * @param Config $config Optionally pass in the Config object to use
+   * @param Config $config The Config object to use
    */
   public function __construct($url, Config $config) {
-    parent::__construct();
+    $this->config = $config;
+    $this->ch = curl_init($url);
+    curl_setopt($this->ch, CURLOPT_ENCODING, "");
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callback_CURLOPT_HEADERFUNCTION"));
 
     $this->urltoopen = $url;
 
     $this->addHeaderLine('Referer', 'http://' . $config->imdbsite . '/');
 
     if ($config->force_agent)
-      $this->addHeaderLine('User-Agent', $config->force_agent);
+      curl_setopt($this->ch, CURLOPT_USERAGENT, $config->force_agent);
+    else
+      curl_setopt($this->ch, CURLOPT_USERAGENT, $config->default_agent);
     if ($config->language)
       $this->addHeaderLine('Accept-Language', $config->language);
+  }
+
+  public function addHeaderLine ($name, $value) {
+    $this->requestHeaders[] = "$name: $value";
   }
 
   /**
    * Send a request to the movie site
    * @return boolean success
+   * @throws Exception\Http
    */
   public function sendRequest() {
-    $this->fpopened = $this->fopen($this->urltoopen);
-    if ($this->fpopened !== false)
+    $this->responseHeaders = array();
+    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
+    $this->page = curl_exec($this->ch);
+    if ($this->page !== false)
       return true;
+    if ($this->config->throwHttpExceptions) {
+      throw new Exception\Http("Failed fetch url [$this->urltoopen] ".curl_error($this->ch));
+    }
     return false;
   }
 
@@ -53,13 +75,7 @@ class Request extends \BrowserEmulator {
    * @return string page
    */
   public function getResponseBody() {
-    $page = "";
-    if ($this->fpopened === FALSE)
-      return $page;
-    while (!feof($this->fpopened)) {
-      $page .= fread($this->fpopened, 1024);
-    }
-    return $page;
+    return $this->page;
   }
 
   /**
@@ -68,6 +84,7 @@ class Request extends \BrowserEmulator {
    */
   public function setURL($url) {
     $this->urltoopen = $url;
+    curl_setopt($this->ch, CURLOPT_URL, $url);
   }
 
   /**
@@ -123,5 +140,17 @@ class Request extends \BrowserEmulator {
         return $target;
       }
     }
+  }
+
+  public function getLastResponseHeaders() {
+    return $this->responseHeaders;
+  }
+
+  private function callback_CURLOPT_HEADERFUNCTION ($ch, $str) {
+    $len = strlen($str);
+    if ($len) {
+      $this->responseHeaders[] = $str;
+    }
+    return $len;
   }
 }

@@ -23,8 +23,8 @@ class Config {
   /**
    * Set the language Imdb will use for titles
    * Any valid language code can be used here (e.g. en-US, de, pt-BR).
-   * If this option is specified, the Accept-Language header with this value
-   * will be included in the requests.
+   * If this option is specified, a Accept-Language header with this value
+   * will be included in requests to IMDb.
    * @var string
    */
   public $language = "";
@@ -36,14 +36,14 @@ class Config {
   public $imdbsite = "www.imdb.com";
 
   /**
-   * Directory to store the cache files. This must be writable by the web
+   * Directory to store cached pages. This must be writable by the web
    * server. It doesn't need to be under documentroot.
    * @var string
    */
   public $cachedir = './cache/';
 
   /**
-   * Use a cached page to retrieve the information if available?
+   * Use cached pages if available?
    * @var boolean
    */
   public $usecache = true;
@@ -67,9 +67,9 @@ class Config {
   public $converttozip = true;
 
   /**
-   * Cache expiration - cache files older than this value (in seconds) will
+   * Cache expiration time - cached pages older than this value (in seconds) will
    * be automatically deleted.
-   * If 0 cache will never expire
+   * If 0 cached pages will never expire
    * @var integer
    */
   public $cache_expire = 604800;

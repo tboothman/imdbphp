@@ -916,9 +916,17 @@ class Title extends MdbBase {
       return false;
     }
 
-    $image = @file_get_contents($photo_url);
-    if (!$image) {
-      $this->logger->warning("Failed to fetch image [$photo_url]");
+    $req = new Request($photo_url, $this->config);
+    $req->sendRequest();
+    if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
+      strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
+      strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
+      $image = $req->getResponseBody();
+    } else {
+      $ctype = $req->getResponseHeader("Content-Type");
+      $this->debug_scalar("*photoerror* at " . __FILE__ . " line " . __LINE__ . ": " . $photo_url . ": Content Type is '$ctype'");
+      if (substr($ctype, 0, 4) == 'text')
+        $this->debug_scalar("Details: <PRE>" . $req->getResponseBody() . "</PRE>\n");
       return false;
     }
 
