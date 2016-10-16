@@ -779,9 +779,6 @@ class imdbTest extends PHPUnit_Framework_TestCase {
                 array('imdb' => '1248358',
                     'name' => 'Donald H. Hewitt',
                     'role' => '(english version) (english version)'),
-                array('imdb' => '0227187',
-                  'name' => 'David Schmoeller',
-                  'role' => '(english version) (english version) (uncredited)'),
                 array('imdb' => '0411872',
                   'name' => 'Kazunori Itô',
                   'role' => '(first draft) (uncredited)')
