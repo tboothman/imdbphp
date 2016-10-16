@@ -916,7 +916,15 @@ class Title extends MdbBase {
       return false;
     }
 
-    $image = @file_get_contents($photo_url);
+    if(function_exists('curl_version')) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $photo_url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $image = curl_exec($ch);
+      curl_close($ch);
+    } else {
+      $image = @file_get_contents($photo_url);
+    }
     if (!$image) {
       $this->logger->warning("Failed to fetch image [$photo_url]");
       return false;
