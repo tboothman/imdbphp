@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(162, $result);
+    $this->assertCount(165, $result);
   }
 
   public function test_movies_actress() {
@@ -108,19 +108,19 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(), $result[1]['addons']);
 
     // TV Series
-    $this->assertEquals('0088109', $result[19]['mid']);
-    $this->assertEquals('Sherlock Hound', $result[19]['name']);
-    $this->assertEquals('', $result[19]['year']);
-    $this->assertEquals(\Imdb\Title::TV_SERIES, $result[19]['title_type']);
-    $this->assertEquals('', $result[19]['chid']);
-    $this->assertEquals(array(), $result[19]['addons']);
+    $this->assertEquals('0088109', $result[18]['mid']);
+    $this->assertEquals('Sherlock Hound', $result[18]['name']);
+    $this->assertEquals('', $result[18]['year']);
+    $this->assertEquals(\Imdb\Title::TV_SERIES, $result[18]['title_type']);
+    $this->assertEquals('', $result[18]['chid']);
+    $this->assertEquals(array(), $result[18]['addons']);
   }
 
   public function test_movies_soundtrack() {
     $search = $this->getimdb_person();
     $result = $search->movies_soundtrack();
     $this->assertInternalType('array', $result);
-    $this->assertCount(3, $result);
+    $this->assertCount(4, $result);
     $this->assertEquals('1798188', $result[0]['mid']);
     $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
     $this->assertEquals('2011', $result[0]['year']);
@@ -160,13 +160,14 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_self();
     $this->assertInternalType('array', $result);
-    $this->assertCount(22, $result);
-    $this->assertEquals('1095875', $result[0]['mid']);
-    $this->assertEquals('Jônetsu tairiku', $result[0]['name']);
-    $this->assertEquals('2014', $result[0]['year']);
-    $this->assertEquals('', $result[0]['chid']);
-    $this->assertEquals('Himself', $result[0]['chname']);
-    $this->assertEquals(array(), $result[0]['addons']);
+    $this->assertCount(24, $result);
+    $movie = $result[1];
+    $this->assertEquals('1095875', $movie['mid']);
+    $this->assertEquals('Jônetsu tairiku', $movie['name']);
+    $this->assertEquals('2014', $movie['year']);
+    $this->assertEquals('', $movie['chid']);
+    $this->assertEquals('Himself', $movie['chname']);
+    $this->assertEquals(array(), $movie['addons']);
   }
 
   public function test_movies_writer() {

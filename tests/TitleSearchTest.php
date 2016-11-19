@@ -82,7 +82,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(2016, $firstResult->year());
 
     /* @var $secondResult Title */
-    $secondResult = $results[2];
+    $secondResult = $results[1];
     $this->assertInstanceOf('\Imdb\Title', $secondResult);
     $this->assertEquals("0291868", $secondResult->imdbid());
     $this->assertEquals("Doom³", $secondResult->title());
@@ -111,7 +111,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertInternalType('array', $results);
 
     /* @var $firstResult Title */
-    $firstResult = $results[1];
+    $firstResult = $results[0];
     $this->assertInstanceOf('\Imdb\Title', $firstResult);
     $this->assertEquals("2224026", $firstResult->imdbid());
     $this->assertEquals("Home", $firstResult->title());
