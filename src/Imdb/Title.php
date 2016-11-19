@@ -137,7 +137,7 @@ class Title extends MdbBase {
       "Title" => "/",
       "Trailers" => "/trailers",
       "Trivia" => "/trivia",
-      "VideoSites" => "/videosites",
+      "VideoSites" => "/externalsites",
   );
 
   /**
