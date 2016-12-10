@@ -243,7 +243,11 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb('1576699'); // Mirrors 2 has a recommendation of mirrors 1 which has an I inbetween its name and year
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
-        $this->assertCount(9, $recommendations);
+
+        $recommendation = $recommendations[0];
+        $this->assertEquals("Mirrors", $recommendation['title']);
+        $this->assertEquals("0790686", $recommendation['imdbid']);
+        $this->assertEquals(2008, $recommendation['year']);
 
         foreach ($recommendations as $recommendation) {
           $this->assertInternalType('array', $recommendation);
