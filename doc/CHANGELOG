@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v5.0.1 (10.12.2016)
+-------------------
+! Fixed `Title::country()` and `Title::language()` and `Title::languages()`
+
 v5.0.0 (16.10.2016)
 -------------------
 ! Started using curl for all http(s) requests.
