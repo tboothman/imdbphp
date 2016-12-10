@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(165, $result);
+    $this->assertCount(164, $result);
   }
 
   public function test_movies_actress() {
@@ -89,7 +89,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_director();
     $this->assertInternalType('array', $result);
-    $this->assertCount(27, $result);
+    $this->assertCount(26, $result);
     $this->assertEquals('2013293', $result[0]['mid']);
     $this->assertEquals('The Wind Rises', $result[0]['name']);
     $this->assertEquals('2013', $result[0]['year']);

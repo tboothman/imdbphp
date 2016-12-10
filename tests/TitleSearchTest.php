@@ -4,7 +4,7 @@ use Imdb\Config;
 use Imdb\Title;
 use Imdb\TitleSearch;
 
-class imdbsearchTest extends PHPUnit_Framework_TestCase {
+class TitleSearchTest extends PHPUnit_Framework_TestCase {
   public function test_searching_for_a_specific_film_returns_its_imdb_class_with_title_prepopulated() {
     $search = $this->getimdbsearch();
     $results = $search->search('The Lord of the Rings: The Fellowship of the Ring');
@@ -80,13 +80,6 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals("1799527", $firstResult->imdbid());
     $this->assertEquals("Doom", $firstResult->title());
     $this->assertEquals(2016, $firstResult->year());
-
-    /* @var $secondResult Title */
-    $secondResult = $results[1];
-    $this->assertInstanceOf('\Imdb\Title', $secondResult);
-    $this->assertEquals("0291868", $secondResult->imdbid());
-    $this->assertEquals("Doom³", $secondResult->title());
-    $this->assertEquals(2004, $secondResult->year());
   }
 
   public function test_searching_for_a_tv_miniseries_returns_only_miniseries() {
@@ -111,7 +104,7 @@ class imdbsearchTest extends PHPUnit_Framework_TestCase {
     $this->assertInternalType('array', $results);
 
     /* @var $firstResult Title */
-    $firstResult = $results[0];
+    $firstResult = $results[1];
     $this->assertInstanceOf('\Imdb\Title', $firstResult);
     $this->assertEquals("2224026", $firstResult->imdbid());
     $this->assertEquals("Home", $firstResult->title());

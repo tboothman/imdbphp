@@ -486,25 +486,21 @@ class imdbTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Kaze no tani no Naushika', $akas[0]['title']);
         $this->assertEquals('original title', $akas[0]['comments'][0]);
 
-        //No country or comments (Should this really be included?)
-        $this->assertEquals('Kaze no tani no Nausicaa', $akas[1]['title']);
-        $this->assertEmpty($akas[2]['comments']);
-
         // Country, no comment
-        $this->assertEquals('Nausicaä del Valle del Viento', $akas[2]['title']);
-        $this->assertEquals('Argentina', $akas[2]['country']);
-        $this->assertEmpty($akas[2]['comments']);
+        $this->assertEquals('Nausicaä del Valle del Viento', $akas[1]['title']);
+        $this->assertEquals('Argentina', $akas[1]['country']);
+        $this->assertEmpty($akas[1]['comments']);
 
         // Country with comment
-        $this->assertEquals('Наусика от Долината на вятъра', $akas[3]['title']);
-        $this->assertEquals('Bulgaria', $akas[3]['country']);
-        $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
+        $this->assertEquals('Наусика от Долината на вятъра', $akas[2]['title']);
+        $this->assertEquals('Bulgaria', $akas[2]['country']);
+        $this->assertEquals('Bulgarian title', $akas[2]['comments'][0]);
 
         // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[5]['title']);
-        $this->assertEquals('Switzerland', $akas[5]['country']);
-        $this->assertEquals('DVD title', $akas[5]['comments'][0]);
-        $this->assertEquals('German title', $akas[5]['comments'][1]);
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[4]['title']);
+        $this->assertEquals('Switzerland', $akas[4]['country']);
+        $this->assertEquals('DVD title', $akas[4]['comments'][0]);
+        $this->assertEquals('German title', $akas[4]['comments'][1]);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas() {
