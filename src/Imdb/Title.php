@@ -568,17 +568,16 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function languages() {
-   if (empty($this->langs)) {
-    $this->getPage("Title");
-    if (preg_match_all('!href="/search/title\?.+?languages=([^&]*?).+?"[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m',$this->page["Title"],$matches)) {
-      $this->langs = $matches[2];
-      $mc = count($matches[2]);
-      for ($i=0;$i<$mc;$i++) {
-        $this->langs_full[] = array('name'=>$matches[2][$i],'code'=>$matches[1][$i],'comment'=>$matches[4][$i]);
+    if (empty($this->langs)) {
+      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*?).+?"[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
+        $this->langs = $matches[2];
+        $mc = count($matches[2]);
+        for ($i = 0; $i < $mc; $i++) {
+          $this->langs_full[] = array('name' => $matches[2][$i], 'code' => $matches[1][$i], 'comment' => $matches[4][$i]);
+        }
       }
     }
-   }
-   return $this->langs;
+    return $this->langs;
   }
 
   /** Get all languages this movie is available in, including details
@@ -587,7 +586,9 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function languages_detailed() {
-    if (empty($this->langs_full)) $foo = $this->languages();
+    if (empty($this->langs_full)) {
+      $this->languages();
+    }
     return $this->langs_full;
   }
 
@@ -999,13 +1000,12 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function country() {
-   if (empty($this->countries)) {
-    $this->getPage("Title");
-    $this->countries = array();
-    if (preg_match_all('!/search/title\?countries=.+?\s.+?>(.*?)<!m',$this->page["Title"],$matches))
-      for ($i=0;$i<count($matches[0]);++$i) $this->countries[$i] = $matches[1][$i];
-   }
-   return $this->countries;
+    if (empty($this->countries)) {
+      if (preg_match_all('!/search/title\?country_of_origin=.+?\s.+?>(.*?)<!m', $this->getPage("Title"), $matches)) {
+        $this->countries = $matches[1];
+      }
+    }
+    return $this->countries;
   }
 
 
