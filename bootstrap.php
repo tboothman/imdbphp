@@ -16,4 +16,3 @@ require_once __DIR__ . '/src/Imdb/PersonSearch.php';
 require_once __DIR__ . '/src/Imdb/Title.php';
 require_once __DIR__ . '/src/Imdb/TitleSearch.php';
 require_once __DIR__ . '/src/Imdb/TitleSearchAdvanced.php';
-require_once __DIR__ . '/src/MoviePosterDb/Movie.php';
