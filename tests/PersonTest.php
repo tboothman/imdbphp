@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(164, $result);
+    $this->assertCount(165, $result);
   }
 
   public function test_movies_actress() {
@@ -147,13 +147,13 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_thanx();
     $this->assertInternalType('array', $result);
-    $this->assertCount(3, $result);
-    $this->assertEquals('1957945', $result[0]['mid']);
-    $this->assertEquals('La Luna', $result[0]['name']);
-    $this->assertEquals('2011', $result[0]['year']);
-    $this->assertEquals('', $result[0]['chid']);
-    $this->assertEquals('', $result[0]['chname']);
-    $this->assertEquals(array(), $result[0]['addons']);
+    $this->assertCount(4, $result);
+    $this->assertEquals('1957945', $result[1]['mid']);
+    $this->assertEquals('La Luna', $result[1]['name']);
+    $this->assertEquals('2011', $result[1]['year']);
+    $this->assertEquals('', $result[1]['chid']);
+    $this->assertEquals('', $result[1]['chname']);
+    $this->assertEquals(array(), $result[1]['addons']);
   }
 
   public function test_movies_self() {
