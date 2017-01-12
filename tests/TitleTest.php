@@ -946,6 +946,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
     }
 
+    public function test_locations() {
+      $imdb = $this->getImdb(107290);
+      $locations = $imdb->locations();
+      $this->assertCount(17, $locations);
+      $this->assertEquals('Kualoa Ranch - 49560 Kamehameha Highway, Ka`a`awa, O\'ahu, Hawaii, USA', $locations[3]);
+    }
+
     public function test_title_redirects_are_followed() {
         $imdb = $this->getImdb('2768262');
         $this->assertEquals('The Battle of the Sexes', $imdb->title());
