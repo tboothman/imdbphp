@@ -1575,7 +1575,7 @@ class Title extends MdbBase {
     if (empty($this->crazy_credits)) {
       if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', $this->getPage("CrazyCredits"), $matches)) {
         foreach ($matches[1] as $credit) {
-          $this->crazy_credits[] = strip_tags(trim($credit));
+          $this->crazy_credits[] = trim(strip_tags($credit));
         }
       }
     }
