@@ -1566,16 +1566,17 @@ class Title extends MdbBase {
 
  #====================================================[ /crazycredits page ]===
  #----------------------------------------------------[ CrazyCredits Array ]---
-  /** Get the Crazy Credits
-   * @method crazy_credits
-   * @return array crazy_credits (array[0..n] of string)
+  /**
+   * Get the Crazy Credits
+   * @return string[]
    * @see IMDB page /crazycredits
    */
   public function crazy_credits() {
     if (empty($this->crazy_credits)) {
-      $this->getPage("CrazyCredits");
-      if ( preg_match_all('!<div id="cz.+?>(.+?)</span\s*>\s*<span class="linksoda">!ims',$this->page["CrazyCredits"],$matches) ) {
-        $this->crazy_credits = $matches[1];
+      if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', $this->getPage("CrazyCredits"), $matches)) {
+        foreach ($matches[1] as $credit) {
+          $this->crazy_credits[] = strip_tags(trim($credit));
+        }
       }
     }
     return $this->crazy_credits;

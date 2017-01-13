@@ -820,6 +820,13 @@ class imdbTest extends PHPUnit_Framework_TestCase {
     $composers = $imdb->composer();
     $this->assertCount(0, $composers);
   }
+
+  public function testCrazy_credits() {
+      $imdb = $this->getImdb();
+      $credits = $imdb->crazy_credits();
+      $this->assertCount(3, $credits);
+      $this->assertEquals('At the end of all the credits, the URL for the (now defunct) website of the film is given, www.whatisthematrix.com, along with a password, \'steak\'. There\'s a \'secret\' link on the page that requests a password.', $credits[0]);
+  }
     
     // @TODO Stopped writing out tests for all functions here .. there are plenty more
 
