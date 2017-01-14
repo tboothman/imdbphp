@@ -3,12 +3,8 @@
     "description": "Library for retrieving film and tv information from IMDb",
     "license": "GPL-2.0",
     "autoload": {
-        "psr-0": {
-            "BrowserEmulator": "src/"
-        },
         "psr-4": {
-            "Imdb\\": "src/Imdb",
-            "MoviePosterDb\\": "src/MoviePosterDb"
+            "Imdb\\": "src/Imdb"
         }
     },
     "require": {
