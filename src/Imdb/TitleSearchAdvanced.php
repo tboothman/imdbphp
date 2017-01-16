@@ -142,7 +142,7 @@ class TitleSearchAdvanced extends MdbBase {
    */
   protected function parse_results($page) {
     $doc = new \DOMDocument();
-    @$doc->loadHTML($page);
+    @$doc->loadHTML('<?xml encoding="UTF-8">'.$page);
     $xp = new \DOMXPath($doc);
     $resultSections = $xp->query("//div[@class='article']//div[@class='lister-item mode-advanced']");
 
@@ -157,7 +157,7 @@ class TitleSearchAdvanced extends MdbBase {
       $ep_year = null;
 
       $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
-      if (preg_match('/\((\d+)–.+\)/', $yearString, $match)) {
+      if (preg_match('/\((\d+)\x{2013}.+\)/u', $yearString, $match)) {
         $year = $match[1];
         $mtype = 'TV Series';
         $is_serial = true;
@@ -173,7 +173,7 @@ class TitleSearchAdvanced extends MdbBase {
           }
         }
       } else {
-        preg_match('!\((\d+)\s*(.*?)\)!', $yearString, $match);
+        preg_match('/\((\d+)\s*(.*?)\)/', $yearString, $match);
         $year = $match[1];
         $mtype = $match[2] ? : 'Feature Film';
         $is_serial = false;
