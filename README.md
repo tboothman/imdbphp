@@ -27,10 +27,13 @@ This library scrapes imdb.com so changes their site can cause parts of this libr
 
 For notifications of new releases try [Sibbell](https://sibbell.com)
 
+Install the files:
 * [Composer](https://www.getcomposer.org) (recommended). Include the [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) package.
 * Git clone. Checkout the latest release tag.
 * [APT/RPM/ARK packages](http://apt.izzysoft.de/). Updated soon after a release.
 * [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
+
+Install/enable the curl PHP extension
 
 
 Configuration
@@ -81,3 +84,24 @@ foreach ($results as $result) { /* @var $result \Imdb\Person */
     echo $result->name();
 }
 ```
+
+Demo site
+=========
+The demo site gives you a quick way to make sure everything's working, some sample code and lets you easily see some of the available data.
+
+From the demo folder in the root of this repository start up php's inbuilt webserver and browse to [http://localhost:8000]()
+
+`php -S localhost:8000`
+
+
+Gotchas / Help
+==============
+SSL certificate problem: unable to get local issuer certificate
+---------------------------------------------------------------
+The curl library hasn't come bundled with the root SSL certificates. You'll need to set them up:
+1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)
+2. Store it somewhere in your computer.
+`C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem`
+3. Open your php.ini and add the following under [curl]
+`curl.cainfo = "C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem"`
+4. Restart your webserver
