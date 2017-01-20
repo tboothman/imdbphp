@@ -929,6 +929,46 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertGreaterThan(100, count($quotes));
     }
 
+    public function testTrailers_all() {
+      $imdb = $this->getImdb(2395427);
+      $trailers = $imdb->trailers(true);
+
+      $this->assertCount(6, $trailers);
+
+      $this->assertEquals(array(
+        "title" => "New Trailer",
+        "url" => "http://www.imdb.com/video/imdb/vi1071951385",
+        "resolution" => "HD",
+        "lang" => "",
+        "restful_url" => ""
+      ), $trailers[0]);
+
+      $this->assertEquals(array(
+        "title" => "TV Spot #1",
+        "url" => "http://www.imdb.com/video/imdb/vi1077521945",
+        "resolution" => "SD",
+        "lang" => "",
+        "restful_url" => ""
+      ), $trailers[1]);
+    }
+
+    public function testTrailers_urlonly() {
+      $imdb = $this->getImdb(2395427);
+      $trailers = $imdb->trailers(false);
+
+      $this->assertCount(6, $trailers);
+
+      $this->assertEquals("http://www.imdb.com/video/imdb/vi1071951385", $trailers[0]);
+      $this->assertEquals("http://www.imdb.com/video/imdb/vi1077521945", $trailers[1]);
+    }
+
+    public function testTrailers_no_trailers() {
+      $imdb = $this->getImdb(1027544);
+      $trailers = $imdb->trailers();
+
+      $this->assertCount(0, $trailers);
+    }
+
     public function testSoundtrack_nosoundtracks() {
         $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
