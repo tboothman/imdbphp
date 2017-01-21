@@ -1690,11 +1690,10 @@ class Title extends MdbBase {
   /**
    * Get the trailer URLs for a given movie
    * @param boolean $full Retrieve all available data (TRUE), or stay compatible with previous IMDBPHP versions (FALSE, Default)
-   * @param boolean $all  Fetch all trailers (including off-site ones)? Default: True
    * @return mixed trailers either array[0..n] of string ($full=FALSE), or array[0..n] of array[lang,title,url,restful_url,resolution] ($full=TRUE)
    * @see IMDB page /trailers
    */
-  public function trailers($full = false, $all = true)
+  public function trailers($full = false)
   {
     if (empty($this->trailers)) {
       $page = $this->getPage("Trailers");
@@ -1711,10 +1710,6 @@ class Title extends MdbBase {
           $url = "http://" . $this->imdbsite . $titleNode->getAttribute('href');
           $imageUrl = $trailerNode->getElementsByTagName('img')->item(0)->getAttribute('loadlate');
           $res = (strpos($imageUrl, 'HDIcon') !== FALSE) ? 'HD' : 'SD';
-
-          if (!$all && preg_match('@/video/imdblink@', $url)) {
-            continue;
-          }
 
           if ($full) {
             $this->trailers[] = array('title' => $title, 'url' => $url, 'resolution' => $res, 'lang' => '', 'restful_url' => '');
