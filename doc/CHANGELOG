@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v5.0.3 (21.01.2017)
+-------------------
+! Fix `Title::locations()`, `Title::crazy_credits()` and `Title::trailers()`. None were returning any results.
+! Fixed TitleSearchAdvanced when it received TV results on linux. It wasn't using UTF-8 so the hyphen between start and end year was showing an odd character in the results.
+- Dropped the second (completely ineffective) parameter to `Title::trailers()`
+
 v5.0.1 (10.12.2016)
 -------------------
 ! Fixed `Title::country()` and `Title::language()` and `Title::languages()`
