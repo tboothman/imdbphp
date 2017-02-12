@@ -225,29 +225,30 @@ class Title extends MdbBase {
       if (preg_match('!class="originalTitle">(.+?)<span!s', $this->page["Title"], $otitle)) {
         $this->original_title = trim($otitle[1]);
       }
-      if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
       if ($this->main_year=="????") $this->main_year = "";
     }
   }
 
   /** Get movie type
    * @method movietype
-   * @return string movietype (TV Series, Movie, ...)
+   * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, Video Game, TV Short, Video)
    * @see IMDB page / (TitlePage)
    * @brief This is faster than movietypes() as it is retrieved already together with the title.
    *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.
    */
-  public function movietype() {
-    if ( empty($this->main_movietype) ) {
-      if ( empty($this->main_title) ) $this->title_year(); // in case title was not yet parsed; it might already contain the movietype
-      if ( !empty($this->main_movietype) ) return $this->main_movietype; // done already
-      $this->getPage("Title");
-      if ( preg_match('!<h1 class="header"[^>]*>.+</h1>\s*<div class="infobar">\s*([\w\s]+)!ims', $this->page["Title"],$match) ) {
+  public function movietype()
+  {
+    if (empty($this->main_movietype)) {
+      if (empty($this->main_title)) $this->title_year(); // Most types are shown in the <title> tag
+      if (!empty($this->main_movietype)) {
+        return $this->main_movietype;
+      }
+      // Some types aren't shown in the page title (e.g. TV Special) but are mentioned nexto the release date
+      if (preg_match('/title="See more release dates" >([^\d\(]+)/', $this->getPage("Title"), $match)) {
         $this->main_movietype = trim($match[1]);
       }
-      $this->debug_object($match);
+      if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
     }
-    if ( empty($this->main_movietype) ) $this->main_movietype = 'Movie';
     return $this->main_movietype;
   }
 

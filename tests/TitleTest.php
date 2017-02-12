@@ -16,6 +16,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 0103074 = Thelma & Louise (&amp; in title)
    * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
    * 3110958 = Now You See Me 2 -- Testing german language
+   * 107290 = Jurassic Park (location with interesting characters)
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -24,6 +25,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 0579539 = A TV episode (train job, firefly)
    *
    * 0284717 = Crociati (tv movie, see full summary...)
+   *
+   * 1799527 = DOOM (2016) Video Game
    */
 
     public function testConstruct_from_ini_constructed_config() {
@@ -81,9 +84,23 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovietype_on_tvMovie() {
-      // @todo I would've thought this should be TV Movie but it's actually Movie
-//        $imdb = $this->getImdb("284717");
-//        $this->assertEquals('TV Movie', $imdb->movietype());
+      $imdb = $this->getImdb("284717");
+      $this->assertEquals('TV Movie', $imdb->movietype());
+    }
+
+    public function testMovietype_on_tvSpecial() {
+      $imdb = $this->getImdb("5258960");
+      $this->assertEquals('TV Special', $imdb->movietype());
+    }
+
+    public function testMovietype_on_tvEpisode() {
+      $imdb = $this->getImdb("0579539");
+      $this->assertEquals('TV Episode', $imdb->movietype());
+    }
+
+    public function testMovietype_on_videoGame() {
+      $imdb = $this->getImdb("1799527");
+      $this->assertEquals('Video Game', $imdb->movietype());
     }
 
     public function testTitle() {
