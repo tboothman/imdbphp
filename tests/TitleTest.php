@@ -193,7 +193,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testAspect_ratio_missing() {
-        // @TODO
+      $imdb = $this->getImdb(1027544);
+      $this->assertEquals('', $imdb->aspect_ratio());
     }
 
     public function testRating() {

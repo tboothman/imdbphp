@@ -387,16 +387,17 @@ class Title extends MdbBase {
   }
 
   #----------------------------------------------------------[ Aspect Ratio ]---
-  /** Aspect Ratio of movie screen
-   * @method aspect_ratio
-   * @return string ratio
+  /**
+   * Aspect Ratio of movie screen
+   * @return string ratio e.g. "2.35 : 1" or "" if there is no aspect ratio on imdb
    * @see IMDB page / (TitlePage)
    */
   public function aspect_ratio() {
     if (empty($this->aspectratio)) {
-      $this->getPage("Title");
-      preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s+</div>!ims',$this->page["Title"],$match);
-      $this->aspectratio = $match[1];
+      $page = $this->getPage("Title");
+      if (preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s+</div>!ims', $page, $match)) {
+        $this->aspectratio = $match[1];
+      }
     }
     return $this->aspectratio;
   }
