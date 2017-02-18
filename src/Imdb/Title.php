@@ -185,7 +185,7 @@ class Title extends MdbBase {
       return $this->pageUrls[$pageName];
     }
 
-    if (preg_match('!^Episodes-(\d+)$!', $pageName, $match)) {
+    if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
       return '/episodes?season='.$match[1];
     }
 
@@ -1603,29 +1603,35 @@ class Title extends MdbBase {
       }
       $page = $this->getPage("Episodes");
       if (empty($page)) return $this->season_episodes; // no such page
-      if ( preg_match('!<select id="bySeason"(.*?)</select!ims',$this->page["Episodes"],$match) ) {
-        preg_match_all('!<option\s+(selected="selected" |)value="(\d+)">!i',$match[1],$matches);
+      if ( preg_match('!<select id="bySeason"(.*?)</select!ims',$page,$match) ) {
+        preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i',$match[1],$matches);
         for ($i=0;$i<count($matches[0]);++$i) {
           $s = $matches[2][$i];
-          $this->getPage("Episodes-$s");
-          if (empty($this->page["Episodes-$s"])) continue; // no such page
-          $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>\d+)"/>\s*'
+          $page = $this->getPage("Episodes-$s");
+          if (empty($page)) continue; // no such page
+          $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                 . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                 . '.+?\shref="/title/tt(?<imdbid>\d{7})/.+?"\s+title="(?<title>.+?)"\s+itemprop="name"'
                 . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
-          preg_match_all($preg,$this->page["Episodes-$s"],$eps);
-          $ec = count($eps[0]);
-          for ($ep=0; $ep<$ec; ++$ep) {
-            $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($eps['plot'][$ep]));
+          preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
+          foreach ($eps as $ep) {
+            $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
             $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims', '', $plot);
-            $this->season_episodes[$s][$eps['episodeNumber'][$ep]] = array(
-              'imdbid'  => $eps['imdbid'][$ep],
-              'title'   => trim($eps['title'][$ep]),
-              'airdate' => $eps['airdate'][$ep],
+
+            $episode = array(
+              'imdbid'  => $ep['imdbid'],
+              'title'   => trim($ep['title']),
+              'airdate' => $ep['airdate'],
               'plot'    => $plot,
               'season'  => $s,
-              'episode' => $eps['episodeNumber'][$ep]
+              'episode' => $ep['episodeNumber']
             );
+
+            if ($ep['episodeNumber'] == -1) {
+              $this->season_episodes[$s][] = $episode;
+            } else {
+              $this->season_episodes[$s][$ep['episodeNumber']] = $episode;
+            }
           }
         }
       }

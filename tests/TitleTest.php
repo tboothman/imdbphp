@@ -895,7 +895,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb('1027544');
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
-      $this->assertCount(3, $seasons);
+      $this->assertCount(4, $seasons);
       $episode = $seasons[1][20];
 
       $this->assertEquals('1956132', $episode['imdbid']);
@@ -910,7 +910,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb('1027544');
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
-      $this->assertCount(3, $seasons);
+      $this->assertCount(4, $seasons);
       $episode = $seasons[1][2];
 
       $this->assertEquals('1878585', $episode['imdbid']);
@@ -919,6 +919,23 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals("", $episode['plot']);
       $this->assertEquals(1, $episode['season']);
       $this->assertEquals(2, $episode['episode']);
+    }
+
+    public function testEpisodes_returns_unknown_season_episodes() {
+      $imdb = $this->getImdb('1027544');
+      $seasons = $imdb->episodes();
+
+      $this->assertInternalType('array', $seasons);
+      $this->assertCount(4, $seasons);
+
+      $episode = $seasons[-1][0];
+
+      $this->assertEquals('1981928', $episode['imdbid']);
+      $this->assertEquals("Rules Are Rules", $episode['title']);
+      $this->assertEquals('9 Sep. 2010', $episode['airdate']);
+      $this->assertEquals("", $episode['plot']);
+      $this->assertEquals(-1, $episode['season']);
+      $this->assertEquals(-1, $episode['episode']);
     }
 
     // @TODO should it? this alters the imdb object to be the show rather than the episode .. could mess someone up
