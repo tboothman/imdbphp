@@ -504,19 +504,16 @@ class Title extends MdbBase {
   }
 
  #-------------------------------------------------------[ Recommendations ]---
-  /** Get recommended movies (People who liked this...also liked)
-   * @method movie_recommendations
-   * @return array recommendations (array[title,imdbid,year])
+  /**
+   * Get recommended movies (People who liked this...also liked)
+   * @return array recommendations (array[imdbid,title,year])
    * @see IMDB page / (TitlePage)
    */
   public function movie_recommendations() {
     if (empty($this->movierecommendations)) {
-      $this->getPage("Title");
-      if ( $this->page["Title"] == "cannot open page" ) return $this->movierecommendations; // no such page
       $doc = new \DOMDocument();
-      @$doc->loadHTML($this->page["Title"]);
+      @$doc->loadHTML($this->getPage("Title"));
       $xp = new \DOMXPath($doc);
-      $posters = array();
       $cells = $xp->query("//div[@id=\"title_recs\"]/div[@class=\"rec_overviews\"]/div[@class=\"rec_overview\"]/div[@class=\"rec_details\"]");
       foreach ($cells as $cell) {
         preg_match('!tt(\d+)!',$cell->getElementsByTagName('a')->item(0)->getAttribute('href'),$ref);
