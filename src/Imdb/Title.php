@@ -1152,16 +1152,15 @@ class Title extends MdbBase {
   }
 
  #----------------------------------------------[ Position in the "Top250" ]---
-  /** Find the position of a movie in the top 250 ranked movies
-   * @method top250
-   * @return int position a number between 1..250 if the movie is listed, 0 otherwise
+  /**
+   * Find the position of a movie or tv show in the top 250 ranked movies or tv shows
+   * @return int position a number between 1..250 if ranked, 0 otherwise
    * @author abe
    * @see http://projects.izzysoft.de/trac/imdbphp/ticket/117
    */
   public function top250() {
     if ($this->main_top250 == -1) {
-      $this->getPage("Title");
-      if (@preg_match('!<a href="[^"]*/chart/top.*>\s*Top Rated Movies #(\d+)\s*</a>!si',$this->page["Title"],$match)) {
+      if (@preg_match('!<a href="[^"]*/chart/top.*>\s*Top Rated (?:Movies|TV) #(\d+)\s*</a>!si', $this->getPage("Title"), $match)) {
         $this->main_top250 = (int)$match[1];
       } else {
         $this->main_top250 = 0;

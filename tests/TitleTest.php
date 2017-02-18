@@ -578,6 +578,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertLessThan(25, $top250);
     }
 
+  public function testTop250_tv() {
+    $imdb = $this->getImdb(306414);
+    $top250 = $imdb->top250();
+    $this->assertInternalType('integer', $top250);
+    $this->assertGreaterThan(1, $top250);
+    $this->assertLessThan(20, $top250);
+  }
+
     public function testTop250_returns_0_when_not_in_top_250() {
       $imdb = $this->getImdb('1570728');
       $top250 = $imdb->top250();
