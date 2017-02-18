@@ -33,7 +33,9 @@ Install the files:
 * [APT/RPM/ARK packages](http://apt.izzysoft.de/). Updated soon after a release.
 * [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
 
-Install/enable the curl PHP extension
+### Requirements
+* PHP >= 5.3
+* PHP Curl extension
 
 
 Configuration
