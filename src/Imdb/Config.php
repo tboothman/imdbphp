@@ -21,7 +21,7 @@ namespace Imdb;
 class Config {
 
   /**
-   * Set the language Imdb will use for titles
+   * Set the language Imdb will use for titles, and some other localised data (e.g. tv episode air dates)
    * Any valid language code can be used here (e.g. en-US, de, pt-BR).
    * If this option is specified, a Accept-Language header with this value
    * will be included in requests to IMDb.

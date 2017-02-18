@@ -1070,10 +1070,10 @@ class Title extends MdbBase {
   }
 
  #-------------------------------------------------------[ MPAA / PG / FSK ]---
-  /** Get the MPAA data (also known as PG or FSK)
-   * @method mpaa
-   * @return array mpaa (array[country]=rating)
-   * @see IMDB page / (TitlePage)
+  /**
+   * Get the MPAA rating / Parental Guidance / Age rating for this title by country
+   * @return array [country => rating]
+   * @see IMDB Parental Guidance page / (parentalguide)
    */
   public function mpaa() {
    if (empty($this->mpaas)) {
