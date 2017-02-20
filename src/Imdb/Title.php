@@ -1498,34 +1498,44 @@ class Title extends MdbBase {
   }
 
  #-------------------------------------------------------------[ Producers ]---
-  /** Obtain the producer(s)
-   * @method producer
+  /**
+   * Obtain the producer(s)
    * @return array producer (array[0..n] of arrays[imdb,name,role])
+   * e.g.
+   * Array (
+   *  'imdb' => '0905152'
+   *  'name' => 'Lilly Wachowski'
+   *  'role' => 'executive producer' // Can be null if no role is given
+   * )
    * @see IMDB page /fullcredits
    */
-  public function producer() {
-    if (empty($this->credits_producer)) {
-      $page = $this->getPage("Credits");
-      if (empty($page)) {
-        return array(); // no such page
+  public function producer()
+  {
+    if (!empty($this->credits_producer)) {
+      return $this->credits_producer;
+    }
+    $producerRows = $this->get_table_rows($this->getPage("Credits"), "Produced by");
+    if (!$producerRows) {
+      $producerRows = $this->get_table_rows($this->getPage("Credits"), "Series Produced by");
+    }
+    foreach ($producerRows as $producerRow) {
+      $cells = $this->get_row_cels($producerRow);
+      if (count($cells) > 2) {
+        if (isset($cells[2])) {
+          $role = trim(strip_tags($cells[2]));
+          $role = preg_replace('/ \(as .+\)$/', '', $role);
+        } else {
+          $role = null;
+        }
+
+        $this->credits_producer[] = array(
+          'imdb' => $this->get_imdbname($cells[0]),
+          'name' => trim(strip_tags($cells[0])),
+          'role' => $role ?: null
+        );
       }
     }
-   $this->credits_producer = array();
-   $producer_rows = $this->get_table_rows($this->page["Credits"], "Produced by");
-   for ( $i = 0; $i < count ($producer_rows); $i++){
-    $cels = $this->get_row_cels ($producer_rows[$i]);
-    if ( count ( $cels) > 2){
-     $wrt = array();
-     $wrt["imdb"] = $this->get_imdbname($cels[0]);
-     $wrt["name"] = trim(strip_tags($cels[0]));
-     if (isset($cels[2])) $role = trim(strip_tags($cels[2]));
-     else $role = "";
-     if ( $role == "") $wrt["role"] = NULL;
-     else $wrt["role"] = $role;
-     $this->credits_producer[$i] = $wrt;
-    }
-   }
-   return $this->credits_producer;
+    return $this->credits_producer;
   }
 
  #-------------------------------------------------------------[ Composers ]---

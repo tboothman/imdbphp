@@ -827,9 +827,36 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         //@TODO more
     }
 
-    public function testProducer() {
-        //@TODO
-    }
+  public function testProducer() {
+    $imdb = $this->getImdb();
+    $producers = $imdb->producer();
+    $this->assertCount(10, $producers);
+
+    $this->assertEquals(array(
+      'imdb' => '0075732',
+      'name' => 'Bruce Berman',
+      'role' => 'executive producer'
+    ), $producers[0]);
+
+    // Trims (As Larry Wachowski) from the end of the role
+    $this->assertEquals(array(
+      'imdb' => '0905152',
+      'name' => 'Lilly Wachowski',
+      'role' => 'executive producer'
+    ), $producers[9]);
+  }
+
+  public function testProducer_series() {
+    $imdb = $this->getImdb(306414);
+    $producers = $imdb->producer();
+    $this->assertCount(11, $producers);
+
+    $this->assertEquals(array(
+      'imdb' => '0861769',
+      'name' => 'Karen L. Thorson',
+      'role' => 'producer / co-producer (60 episodes, 2002-2008)'
+    ), $producers[0]);
+  }
 
   public function testComposer_movie() {
     $imdb = $this->getImdb();
