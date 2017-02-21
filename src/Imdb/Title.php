@@ -1243,23 +1243,20 @@ class Title extends MdbBase {
 
  #=====================================================[ /fullcredits page ]===
  #-----------------------------------------------------[ Helper: TableRows ]---
-  /** Get rows for a given table on the page
-   * @method protected get_table_rows
+  /**
+   * Get rows for a given table on the page
    * @param string html
    * @param string table_start
-   * @return array|false rows (FALSE if table not found, array[0..n] of strings otherwise)
+   * @return array rows array[0..n] of strings
    * @see used by the methods director, cast, writing, producer, composer
    */
   protected function get_table_rows( $html, $table_start ) {
    if ($table_start=="Writing Credits" || $table_start=="Series Writing Credits") $row_s = strpos ( $html, ">".$table_start);
    else $row_s = strpos ( $html, ">".$table_start."&nbsp;<");
-   $row_e = $row_s;
-   if ( $row_s == 0 )  return FALSE;
+   if ( $row_s == 0 ) return array();
    $endtable = strpos($html, "</table>", $row_s);
    $block = substr($html,$row_s,$endtable - $row_s);
    if (preg_match_all('!<tr>(.+?)</tr>!ims',$block,$matches)) {
-     $mc = count($matches[1]);
-     /* for ($i=0;$i<$mc;++$i) if ( strncmp( trim($matches[1][$i]), "<td valign=",10) == 0 ) $rows[] = $matches[1][$i]; */
      $rows = $matches[1];
    }
    return $rows;
@@ -1308,31 +1305,37 @@ class Title extends MdbBase {
   }
 
  #-------------------------------------------------------------[ Directors ]---
-  /** Get the director(s) of the movie
-   * @method director
+  /**
+   * Get the director(s) of the movie
    * @return array director (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
-  public function director() {
-   if (empty($this->credits_director)) {
-    $this->getPage("Credits");
-    if ( $this->page["Credits"] == "cannot open page" ) return array(); // no such page
-   }
-   $director_rows = $this->get_table_rows($this->page["Credits"], "Directed by");
-   if($director_rows==null) $director_rows = $this->get_table_rows($this->page["Credits"], "Series Directed by");
-   for ( $i = 0; $i < count ($director_rows); $i++){
-    $cels = $this->get_row_cels ($director_rows[$i]);
-    if (!isset ($cels[0])) return array();
-    $dir = array();
-    $dir["imdb"] = $this->get_imdbname($cels[0]);
-    $dir["name"] = trim(strip_tags($cels[0]));
-    if (isset($cels[2])) $role = trim(strip_tags($cels[2]));
-    else $role = "";
-    if ( $role == "") $dir["role"] = NULL;
-    else $dir["role"] = $role;
-    $this->credits_director[$i] = $dir;
-   }
-   return $this->credits_director;
+  public function director()
+  {
+    if (!empty($this->credits_director)) {
+      return $this->credits_director;
+    }
+    $directorRows = $this->get_table_rows($this->getPage('Credits'), "Directed by");
+    if (!$directorRows) {
+      $directorRows = $this->get_table_rows($this->getPage('Credits'), "Series Directed by");
+    }
+    foreach ($directorRows as $directorRow) {
+      $cells = $this->get_row_cels($directorRow);
+      if (isset($cells[0])) {
+        if (isset($cells[2])) {
+          $role = trim(strip_tags($cells[2]));
+        } else {
+          $role = null;
+        }
+
+        $this->credits_director[] = array(
+          'imdb' => $this->get_imdbname($cells[0]),
+          'name' => trim(strip_tags($cells[0])),
+          'role' => $role ?: null
+        );
+      }
+    }
+    return $this->credits_director;
   }
 
  #----------------------------------------------------------------[ Actors ]---
@@ -1551,9 +1554,6 @@ class Title extends MdbBase {
     $composer_rows = $this->get_table_rows($this->getPage('Credits'), "Music by");
     if (!$composer_rows) {
       $composer_rows = $this->get_table_rows($this->getPage('Credits'), "Series Music by");
-    }
-    if (!$composer_rows) {
-      return array();
     }
     foreach ($composer_rows as $composer_row) {
       $composer = array();
