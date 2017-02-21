@@ -27,6 +27,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 0284717 = Crociati (tv movie, see full summary...)
    *
    * 1799527 = DOOM (2016) Video Game
+   *
+   * 0314979 = Battlestar Galactica (Tv Miniseries / no end date)
    */
 
     public function testConstruct_from_ini_constructed_config() {
@@ -96,6 +98,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testMovietype_on_tvEpisode() {
       $imdb = $this->getImdb("0579539");
       $this->assertEquals('TV Episode', $imdb->movietype());
+    }
+
+    public function testMovietype_on_TVMiniseries() {
+      $imdb = $this->getImdb("0314979");
+      $this->assertEquals('TV Mini-Series', $imdb->movietype());
     }
 
     public function testMovietype_on_videoGame() {

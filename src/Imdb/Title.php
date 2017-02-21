@@ -231,7 +231,7 @@ class Title extends MdbBase {
 
   /** Get movie type
    * @method movietype
-   * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, Video Game, TV Short, Video)
+   * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini-Series, Video Game, TV Short, Video)
    * @see IMDB page / (TitlePage)
    * @brief This is faster than movietypes() as it is retrieved already together with the title.
    *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.
@@ -243,9 +243,9 @@ class Title extends MdbBase {
       if (!empty($this->main_movietype)) {
         return $this->main_movietype;
       }
-      // Some types aren't shown in the page title (e.g. TV Special) but are mentioned nexto the release date
-      if (preg_match('/title="See more release dates" >([^\d\(]+)/', $this->getPage("Title"), $match)) {
-        $this->main_movietype = trim($match[1]);
+      // TV Special isn't shown in the page title but is mentioned next to the release date
+      if (preg_match('/title="See more release dates" >TV Special/', $this->getPage("Title"), $match)) {
+        $this->main_movietype = 'TV Special';
       }
       if (empty($this->main_movietype)) $this->main_movietype = 'Movie';
     }
