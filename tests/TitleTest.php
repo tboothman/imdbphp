@@ -29,6 +29,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 1799527 = DOOM (2016) Video Game
    *
    * 0314979 = Battlestar Galactica (Tv Miniseries / no end date)
+   *
+   * 149937 = Bottom Live (Video)
    */
 
     public function testConstruct_from_ini_constructed_config() {
@@ -108,6 +110,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testMovietype_on_videoGame() {
       $imdb = $this->getImdb("1799527");
       $this->assertEquals('Video Game', $imdb->movietype());
+    }
+
+    public function testMovieType_on_video() {
+      $imdb = $this->getImdb(149937);
+      $this->assertEquals('Video', $imdb->movietype());
     }
 
     public function testTitle() {
@@ -833,6 +840,13 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testWriting() {
         //@TODO more
     }
+
+  public function testProducer_no_producers() {
+    $imdb = $this->getImdb(149937);
+    $producers = $imdb->producer();
+    $this->assertInternalType('array', $producers);
+    $this->assertCount(0, $producers);
+  }
 
   public function testProducer() {
     $imdb = $this->getImdb();
