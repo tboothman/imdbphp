@@ -2,13 +2,18 @@
 History for IMDBPHP
 ====================
 
+v5.1.1 (21.02.2017)
+-------------------
+! Fix `Title::movietype()` randomly returning a month rather than a movie type (caused by v5.1.0)
+! Stop `Title::producer()` erroring when there are no producers.
+
 v5.1.0 (20.02.2017)
 -------------------
-! Fix `Title::movietype()` so it can return 'TV Special' #83
-+ Return top 250 TV ranking in `Title::top250()` for a TV show, as well as the top 250 for films #80
-+ Allow for unknown seasons in `Title::episodes()`. Both season and episodes can now be -1 (unknown) #43
-+ Allow series producers in `Title::producer()` #85
-! Stop `Title::aspect_ratio()` using undefined index when no aspect ratio exists #82
+! Fix `Title::movietype()` so it can return 'TV Special'
++ Return top 250 TV ranking in `Title::top250()` for a TV show, as well as the top 250 for films
++ Allow for unknown seasons in `Title::episodes()`. Both season and episodes can now be -1 (unknown)
++ Allow series producers in `Title::producer()`
+! Stop `Title::aspect_ratio()` using undefined index when no aspect ratio exists
 
 v5.0.3 (21.01.2017)
 -------------------
