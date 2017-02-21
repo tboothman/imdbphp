@@ -1247,7 +1247,7 @@ class Title extends MdbBase {
    * Get rows for a given table on the page
    * @param string html
    * @param string table_start
-   * @return array rows array[0..n] of strings
+   * @return string[] Contents of each row of the table
    * @see used by the methods director, cast, writing, producer, composer
    */
   protected function get_table_rows( $html, $table_start ) {
