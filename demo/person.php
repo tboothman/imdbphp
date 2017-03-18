@@ -15,14 +15,13 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
   $engine = 'imdb';
 
   $person = new \Imdb\Person($_GET["mid"]);
-  $charset = "utf-8";
   $source  = "<B CLASS='active'>IMDB</B>";
 
   echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   echo "<HTML><HEAD>\n";
   echo " <TITLE>".$person->name()." [IMDBPHP v".$person->version." Demo]</TITLE>\n";
   echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>\n";
-  echo " <META http-equiv='Content-Type' content='text/html; charset=$charset'>\n";
+  echo " <META http-equiv='Content-Type' content='text/html; charset=utf-8'>\n";
   echo "</HEAD>\n<BODY>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
 
   # Name

@@ -81,7 +81,7 @@ $search = new \Imdb\PersonSearch(); // Optional $config parameter
 $results = $search->search('Forest Whitaker');
 
 // $results is an array of Person objects
-// The objects will have name available, everything else must be fetched from IMDb
+// The objects will have name and imdbid available, everything else must be fetched from IMDb
 foreach ($results as $result) { /* @var $result \Imdb\Person */
     echo $result->name();
 }
