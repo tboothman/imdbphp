@@ -11,6 +11,7 @@
  # Search for $name and display results                                      #
  #############################################################################
 require __DIR__ . "/../bootstrap.php";
+require "inc.php";
 
 # If MID has been explicitly given, we don't need to search:
 if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
@@ -45,11 +46,11 @@ if ($_GET['searchtype'] === 'nm') {
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Performing search for '<?php echo $_GET["name"] ?>' [IMDbPHP v<?php echo $search->version ?>]</title>
+    <title>Performing search for '<?php echo esc($_GET["name"]) ?>' [IMDbPHP v<?php echo $search->version ?>]</title>
     <style type="text/css">body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</style>
   </head>
   <body>
-    <h2>[IMDBPHP v<?php echo $search->version ?> Demo] Search results for '<?php echo $_GET["name"] ?>':</h2>
+    <h2>[IMDBPHP v<?php echo $search->version ?> Demo] Search results for '<?php echo esc($_GET["name"]) ?>':</h2>
     <table align="center" border="1" style="border-collapse:collapse;margin-top:20px;">
       <tr><th><?php echo $headname ?> Details</th><th>IMDb</th></tr>
       <?php foreach ($results as $res):
