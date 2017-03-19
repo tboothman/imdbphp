@@ -268,7 +268,7 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function orig_title() {
-    if ($this->main_title == "") $this->title_year();
+    if ($this->original_title == "") $this->title_year();
     return $this->original_title;
   }
 
