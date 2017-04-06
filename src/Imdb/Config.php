@@ -109,7 +109,40 @@ class Config {
   public $throwHttpExceptions = true;
 
   #--------------------------------------------------=[ TWEAKING OPTIONS ]=--
-
+ 
+  /**
+   * Enable HTTP-Proxy support
+   * @var bool
+   */
+  public $use_proxy = false;
+  
+  /**
+   * Set hostname of HTTP-Proxy
+   * @var string
+   */
+  public $proxy_host = null;
+  
+  /**
+   * Set port on which HTTP-Proxy is listening
+   * @var int
+   */
+  public $proxy_port = null;
+  
+  /**
+   * Set username for authentication against HTTP-Proxy, if the proxy requires login.
+   * Only basic authentication is supported.
+   * Otherwise leave at default value
+   * @var string
+   */
+  public $proxy_user = null;
+  
+  /**
+   * Set password for authentication against HTTP-Proxy, if the proxy requires login.
+   * Otherwise leave at default value
+   * @var string
+   */
+  public $proxy_pw = '';
+  
   /**
    * Set the default user agent (if none is detected)
    * @var string
