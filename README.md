@@ -35,7 +35,7 @@ Install the files:
 
 ### Requirements
 * PHP >= 5.3
-* PHP Curl extension
+* PHP cURL extension
 
 
 Configuration
@@ -47,7 +47,7 @@ Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
 $config = new \Imdb\Config();
-$config->language = 'de-DE';
+$config->language = 'de-DE,de';
 $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
@@ -63,11 +63,11 @@ Searching for a film
 ```php
 // include "bootstrap.php"; // Load the class in if you're not using an autoloader
 $search = new \Imdb\TitleSearch(); // Optional $config parameter
-$results = $search->search('The Matrix', [\Imdb\TitleSearch::MOVIE]); // Optional second parameter restricts types returned
+$results = $search->search('The Matrix', array(\Imdb\TitleSearch::MOVIE)); // Optional second parameter restricts types returned
 
 // $results is an array of Title objects
 // The objects will have title, year and movietype available
-//  immediately, but any other data will have to be fetched from IMDb
+// immediately, but any other data will have to be fetched from IMDb
 foreach ($results as $result) { /* @var $result \Imdb\Title */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
@@ -100,14 +100,14 @@ Gotchas / Help
 ==============
 SSL certificate problem: unable to get local issuer certificate
 ---------------------------------------------------------------
-###Windows
-The curl library either hasn't come bundled with the root SSL certificates or they're out of date. You'll need to set them up:
-1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)
-2. Store it somewhere in your computer.
-`C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem`
-3. Open your php.ini and add the following under [curl]
-`curl.cainfo = "C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem"`
-4. Restart your webserver
-###Linux
-Curl uses the certificate authority file that's part of linux by default, which must be out of date.
+### Windows
+The cURL library either hasn't come bundled with the root SSL certificates or they're out of date. You'll need to set them up:
+1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)  
+2. Store it somewhere in your computer.  
+`C:\php\extras\ssl\cacert.pem`  
+3. Open your php.ini and add the following under [curl]  
+`curl.cainfo = "C:\php\extras\ssl\cacert.pem"`  
+4. Restart your webserver  
+### Linux
+Curl uses the certificate authority file that's part of linux by default, which must be out of date. 
 Look for instructions for your OS to update the CA file or update your distro.
