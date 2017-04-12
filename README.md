@@ -105,9 +105,9 @@ The cURL library either hasn't come bundled with the root SSL certificates or th
 1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)  
 2. Store it somewhere in your computer.  
 `C:\php\extras\ssl\cacert.pem`  
-3. Open your php.ini and add the following under [curl]  
+3. Open your php.ini and add the following under `[curl]`  
 `curl.cainfo = "C:\php\extras\ssl\cacert.pem"`  
-4. Restart your webserver  
+4. Restart your webserver.  
 ### Linux
-Curl uses the certificate authority file that's part of linux by default, which must be out of date. 
+cURL uses the certificate authority file that's part of linux by default, which must be out of date. 
 Look for instructions for your OS to update the CA file or update your distro.
