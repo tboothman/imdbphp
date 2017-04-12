@@ -1,0 +1,26 @@
+body,td,th { font-size:12px; font-family:sans-serif; }
+body { margin: 20px auto; }
+h2 { font-size: 18px; font-weight: normal; padding: 10px; background-color: #f1f1f1; border-bottom: 1px solid #bdbdbd; border-top: 1px solid #bdbdbd;}
+h2 span { text-decoration:underline; }
+table { border-collapse:collapse; margin: 0 auto; }
+td,th { border: 1px solid black; }
+th { padding: 5px; background-color:#FFB000; }
+input:focus,select:focus { outline: none; }
+input[type="text"],select { border: none; }
+select { width: 100%; }
+a { text-decoration: none; }
+a:link { color: #1a0dab; }
+a:hover { text-decoration: underline; }
+a:visited { color: #609; }
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-jusitfy { text-align: justify; }
+.p-5 { padding: 5px; }
+.p-10 { padding: 10px; }
+.pl-10 { padding-left: 10px; }
+.pr-10 { padding-right: 10px; }
+.bb-none { border-bottom-color: transparent; }
+.table { max-width: 1000px;}
+.table td { padding: 5px; }
+.table tr:nth-child(odd) {background-color: #f2f2f2}
