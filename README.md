@@ -47,7 +47,7 @@ Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
 $config = new \Imdb\Config();
-$config->language = 'de-DE,de';
+$config->language = 'de-DE,de,en';
 $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
@@ -111,3 +111,21 @@ The cURL library either hasn't come bundled with the root SSL certificates or th
 ### Linux
 cURL uses the certificate authority file that's part of linux by default, which must be out of date. 
 Look for instructions for your OS to update the CA file or update your distro.
+
+Configure languages
+---------------------------------------------------------------
+Sometimes IMDb gets unsure that the specified language are correct, if you only specify your unique language and territory code (de-DE). In the example below, you can find that we have chosen to include `de-DE (German, Germany)`, `de (German)` and `en (English)`. If IMDb can’t find anything matching German, Germany, you will get German results instead or English if there are no German translation.
+```php
+$config = new \Imdb\Config();
+$config->language = 'de-DE,de,en';
+$imdb = new \Imdb\Title(335266, $config);
+$imdb->title(); // Lost in Translation - Zwischen den Welten
+$imdb->orig_title(); // Lost in Translation
+```
+Please use The Unicode Consortium [Langugage-Territory Information](http://www.unicode.org/cldr/charts/latest/supplemental/language_territory_information.html) database for finding your unique language and territory code.
+
+| Langauge | Code | Territory   | Code |
+| -------- | ---- | ----------- | ---- |
+| German   | de   | Germany {O} | DE   |
+
+After you have found your unique language and territory code you will need to combine them. Start with language code (de), add a separator (-) and at last your territory code (DE); `de-DE`. Now include your language code (de); `de-DE,de`. And the last step add English (en); `de-DE,de,en`.
