@@ -10,6 +10,7 @@
  # ------------------------------------------------------------------------- #
  # Search for $name and display results                                      #
  #############################################################################
+
 require __DIR__ . "/../bootstrap.php";
 require "inc.php";
 
@@ -46,8 +47,9 @@ if ($_GET['searchtype'] === 'nm') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>Performing search for "<?php echo esc($_GET["name"]) ?>" - IMDbPHP</title>
     <link rel="stylesheet" href="style.css">
   </head>

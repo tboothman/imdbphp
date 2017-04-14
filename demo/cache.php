@@ -10,6 +10,7 @@
 # ------------------------------------------------------------------------- #
 # Show what we have in the Cache                                            #
 #############################################################################
+
 require __DIR__ . "/../bootstrap.php";
 
 use \Imdb\Title;
@@ -28,8 +29,9 @@ if (is_dir($config->cachedir)) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>IMDbPHP Cache Contents</title>
     <link rel="stylesheet" href="style.css">
   </head>
