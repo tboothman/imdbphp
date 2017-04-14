@@ -60,17 +60,18 @@ if ($_GET['searchtype'] === 'nm') {
       <?php foreach ($results as $res):
         if ($_GET['searchtype'] === 'nm'):
           $details = $res->getSearchDetails();
+          $hint = '';
           if (!empty($details)) {
             $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
           } ?>
           <tr>
             <td><a href="person.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->name() ?></a><?php echo $hint ?></td>
-            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
+            <td><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
           </tr>
         <?php else: ?>
           <tr>
             <td><a href="movie.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->title() ?> (<?php echo $res->year() ?>) (<?php echo $res->movietype() ?>)</a></td>
-            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
+            <td><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
           </tr>
         <?php endif ?>
       <?php endforeach ?>
