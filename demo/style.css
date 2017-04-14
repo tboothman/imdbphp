@@ -5,6 +5,8 @@ h2 span { text-decoration:underline; }
 table { border-collapse:collapse; margin: 0 auto; }
 td,th { border: 1px solid black; }
 th { padding: 5px; background-color:#FFB000; }
+table table { background-color:#ddd; margin: 0;  }
+table table th { background-color:#07f; color: #fff; }
 input:focus,select:focus { outline: none; }
 input[type="text"],select { border: none; }
 select { width: 100%; }
@@ -20,7 +22,14 @@ a:visited { color: #609; }
 .p-10 { padding: 10px; }
 .pl-10 { padding-left: 10px; }
 .pr-10 { padding-right: 10px; }
+.mb-10 { margin-bottom: 10px; }
 .bb-none { border-bottom-color: transparent; }
 .table { max-width: 1000px;}
-.table td { padding: 5px; }
+.table td { padding: 5px; vertical-align: top; }
+.mw-120 { min-width: 120px; }
+.mw-200 { min-width: 200px; }
 .table tr:nth-child(odd) {background-color: #f2f2f2}
+.pull-right { float: right; }
+.move-container { position: relative; }
+.move-right { position: absolute; right: 0; }
+.photo img { width: 195px; border-radius: 3px; box-shadow: 0 1px 5px #000; }
