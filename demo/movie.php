@@ -12,9 +12,9 @@
 require __DIR__ . "/../bootstrap.php";
 
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
-  $movieid = $_GET["mid"];
-
-  $movie = new \Imdb\Title($_GET["mid"]);
+  $config = new \Imdb\Config();
+  $config->language = 'en-US,en';
+  $movie = new \Imdb\Title($_GET["mid"],$config);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
     <?php # Title & year ?>
     <h2 class="text-center"><?php echo $movie->title().' ('.$movie->year().')' ?></h2>
       <?php # Photo ?>
-      <div class="photo text-center">
+      <div class="photo mb-10 text-center">
         <?php
           if (($photo_url = $movie->photo_localurl() ) != FALSE) {
             echo '<img src="'.$photo_url.'" alt="Cover">';
@@ -51,7 +51,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($aka)) {
         ?>
         <tr>
-          <td><b>Also known as:</td>
+          <td><b>Also known as:</b></td>
           <td>
             <table>
               <tr>
@@ -106,7 +106,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($ser)) {
         ?>
         <tr>
-          <td><b>Series Details:</b></td>
+          <td><b>Episode Details:</b></td>
           <td><?php echo $ser['seriestitle'].' | Season '.$ser['season'].', Episode '.$ser['episode'].", Airdate ".$ser['airdate'] ?></td>
         </tr>
         <?php } ?>
@@ -133,18 +133,34 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         $mpaa = $movie->mpaa();
         if (!empty($mpaa)) {
           $mpar = $movie->mpaa_reason();
-          if (empty($mpar)) {
-            echo '<tr><td><b>MPAA:</b></td><td>';
-          } else {
-            echo '<tr><td rowspan="2"><b>MPAA:</b></td><td>';
-          }
-          echo "<table><tr><th>Country</th><th>Rating</th></tr>";
-          foreach ($mpaa as $key=>$mpaa) {
-            echo "<tr><td>$key</td><td>$mpaa</td></tr>";
-          }
-          echo "</table></td></tr>\n";
-          if (!empty($mpar)) {
-            echo "<tr><td>$mpar</td></tr>\n";
+          if (empty($mpar)) { ?>
+          <tr>
+            <td><b>MPAA:</b></td>
+            <td>
+          <?php } else { ?>
+            <tr>
+              <td rowspan="2"><b>MPAA:</b></td>
+              <td>
+          <?php } ?>
+                <table>
+                  <tr>
+                    <th>Country</th>
+                    <th>Rating</th>
+                  </tr>
+                  <?php foreach ($mpaa as $key=>$mpaa) { ?>
+                    <tr>
+                      <td><?php echo $key ?></td>
+                      <td><?php echo $mpaa ?></td>
+                    </tr>
+                  <?php } ?>
+                </table>
+              </td>
+            </tr>
+          <?php if (!empty($mpar)) { ?>
+            <tr>
+              <td><?php echo $mpar ?></td>
+            </tr>
+          <?php
           }
         }
         ?>
@@ -194,7 +210,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         <?php } ?>
         
         <?php
-        # Genres
+        # Genre
         $genre = $movie->genre();
         if (!empty($genre)) {
         ?>
@@ -255,7 +271,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($director)) {
         ?>
         <tr>
-          <td><b>Director:</td>
+          <td><b>Director:</b></td>
           <td>
             <table>
               <tr>
@@ -279,7 +295,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($write)) {
         ?>
         <tr>
-          <td><b>Writing By:</td>
+          <td><b>Writing By:</b></td>
           <td>
             <table>
               <tr>
@@ -303,7 +319,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($produce)) {
         ?>
         <tr>
-          <td><b>Produced By:</td>
+          <td><b>Produced By:</b></td>
           <td>
             <table>
               <tr>
@@ -327,7 +343,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($compose)) {
         ?>
         <tr>
-          <td><b>Music:</td>
+          <td><b>Music:</b></td>
           <td>
             <table>
               <tr>
@@ -351,7 +367,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($cast)) {
         ?>
         <tr>
-          <td><b>Cast:</td>
+          <td><b>Cast:</b></td>
           <td>
             <table>
               <tr>
@@ -512,17 +528,25 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         <?php
         # Trivia
         $trivia = $movie->trivia();
-        $gc     = count($trivia);
-        if ($gc > 0) {
+        $tc     = count($trivia);
+        if ($tc > 0) {
         ?>
         <tr>
           <td><b>Trivia:</b></td>
           <td>
-            There are <?php echo $gc ?> entries in the trivia list - like these:
+            There are <?php echo $tc ?> entries in the trivia list - like these:
             <ul>
-              <?php for($i=0;$i<5;++$i) { ?>
+              <?php
+                for($i=0;$i<5;++$i) {
+                if (empty($trivia[$i])) break;
+              ?>
               <li>
-                <?php echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})/","person.php?mid=\\1",$trivia[$i]) ?>
+                <?php
+                $t = $trivia[$i];
+                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/name\/nm(\d{7})/','person.php?mid=\\1',$t);
+                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/title\/tt(\d{7})/','movie.php?mid=\\1',$t);
+                echo $t;
+                ?>
               </li>
               <?php } ?>
             </ul>
@@ -533,13 +557,13 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         <?php
         # Soundtracks
         $soundtracks = $movie->soundtrack();
-        $gc = count($soundtracks);
-        if ($gc > 0) {
+        $sc = count($soundtracks);
+        if ($sc > 0) {
         ?>
         <tr>
-          <td><b>Soundtracks:</td>
+          <td><b>Soundtracks:</b></td>
           <td>
-            There are <?php echo $gc ?> soundtracks listed - like these:<br>
+            There are <?php echo $sc ?> soundtracks listed - like these:<br>
             <table>
               <tr>
                 <th class="mw-200">Soundtrack</th>
