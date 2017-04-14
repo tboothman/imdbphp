@@ -1607,7 +1607,7 @@ class Title extends MdbBase {
       if (!$this->seasons()) {
         $ser = $this->get_episode_details();
         if (isset($ser['imdbid'])) {
-          $show = new Title($ser['imdbid'], $this->config);
+          $show = new Title($ser['imdbid']);
           return $this->season_episodes = $show->episodes();
         } else return array();
       }
