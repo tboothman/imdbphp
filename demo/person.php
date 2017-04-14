@@ -401,6 +401,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         </tr>
         <?php } ?>
       </table>
+    <p class="text-center"><a href="index.html">Go back</a></p>
   </body>
 </html>
 <?php
