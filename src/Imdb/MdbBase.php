@@ -71,8 +71,10 @@ class MdbBase extends Config {
     parent::__construct();
 
     if ($config) {
-      foreach ($config as $key => $value) {
-        $this->$key = $value;
+      foreach (array("language","imdbsite","cachedir","usecache","storecache","usezip","converttozip","cache_expire",
+                 "photodir","photoroot","imdb_img_url","debug","throwHttpExceptions","use_proxy",
+                 "proxy_host","proxy_port","proxy_user","proxy_pw","default_agent","force_agent") as $key) {
+        $this->$key = $config->$key;
       }
     }
 

@@ -999,11 +999,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertGreaterThan(103, count($goofs));
       $this->assertLessThan(130, count($goofs));
 
-      $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
-      $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
+      $this->assertEquals('Audio/visual unsynchronised', $goofs[1]['type']);
+      $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[1]['content']);
 
-      $this->assertEquals('Character error', $goofs[2]['type']);
-      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[2]['content']);
+      $this->assertEquals('Character error', $goofs[4]['type']);
+      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[4]['content']);
 
       $this->assertEquals('Character error', $goofs[3]['type']);
       $this->assertEquals("The streets all have Chicago street names (as observed in Trivia section), including Balbo Avenue. This street name is spelled correctly on signs in the subway station where Neo fights Agent Smith, but Tank directs Trinity and Neo to go to &quot;Balboa&quot; (as in <a href=\"http://www.imdb.com/title/tt0075148/\">Rocky</a>). The DVD captions of Tank's dialogue also show it as &quot;Balboa.&quot;", $goofs[3]['content']);

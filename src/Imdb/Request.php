@@ -37,6 +37,20 @@ class Request {
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callback_CURLOPT_HEADERFUNCTION"));
 
+    //use HTTP-Proxy
+    if( $config->use_proxy === true )
+    {
+        curl_setopt($this->ch, CURLOPT_PROXY, $config->proxy_host);
+        curl_setopt($this->ch, CURLOPT_PROXYPORT, $config->proxy_port);
+        
+        //Login credentials set?
+        if( !empty($config->proxy_user) && !empty($config->proxy_pw) )
+        {
+            curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($this->ch, CURLOPT_PROXYUSERPWD, $config->proxy_user.':'.$config->proxy_pw);
+        }
+    }
+    
     $this->urltoopen = $url;
 
     $this->addHeaderLine('Referer', 'http://' . $config->imdbsite . '/');

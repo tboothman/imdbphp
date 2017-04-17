@@ -35,7 +35,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(165, $result);
+    $this->assertCount(166, $result);
   }
 
   public function test_movies_actress() {
@@ -160,7 +160,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $search = $this->getimdb_person();
     $result = $search->movies_self();
     $this->assertInternalType('array', $result);
-    $this->assertCount(24, $result);
+    $this->assertCount(25, $result);
     $movie = $result[1];
     $this->assertEquals('1095875', $movie['mid']);
     $this->assertEquals('Jônetsu tairiku', $movie['name']);
