@@ -35,7 +35,7 @@ Install the files:
 
 ### Requirements
 * PHP >= 5.3
-* PHP Curl extension
+* PHP cURL extension
 
 
 Configuration
@@ -47,7 +47,7 @@ Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
 ```php
 $config = new \Imdb\Config();
-$config->language = 'de-DE';
+$config->language = 'de-DE,de,en';
 $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
@@ -63,11 +63,11 @@ Searching for a film
 ```php
 // include "bootstrap.php"; // Load the class in if you're not using an autoloader
 $search = new \Imdb\TitleSearch(); // Optional $config parameter
-$results = $search->search('The Matrix', [\Imdb\TitleSearch::MOVIE]); // Optional second parameter restricts types returned
+$results = $search->search('The Matrix', array(\Imdb\TitleSearch::MOVIE)); // Optional second parameter restricts types returned
 
 // $results is an array of Title objects
 // The objects will have title, year and movietype available
-//  immediately, but any other data will have to be fetched from IMDb
+// immediately, but any other data will have to be fetched from IMDb
 foreach ($results as $result) { /* @var $result \Imdb\Title */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
@@ -100,14 +100,32 @@ Gotchas / Help
 ==============
 SSL certificate problem: unable to get local issuer certificate
 ---------------------------------------------------------------
-###Windows
-The curl library either hasn't come bundled with the root SSL certificates or they're out of date. You'll need to set them up:
-1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)
-2. Store it somewhere in your computer.
-`C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem`
-3. Open your php.ini and add the following under [curl]
-`curl.cainfo = "C:\wamp64\bin\php\php7.0.10\extras\ssl\cacert.pem"`
-4. Restart your webserver
-###Linux
-Curl uses the certificate authority file that's part of linux by default, which must be out of date.
+### Windows
+The cURL library either hasn't come bundled with the root SSL certificates or they're out of date. You'll need to set them up:
+1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)  
+2. Store it somewhere in your computer.  
+`C:\php\extras\ssl\cacert.pem`  
+3. Open your php.ini and add the following under `[curl]`  
+`curl.cainfo = "C:\php\extras\ssl\cacert.pem"`  
+4. Restart your webserver.  
+### Linux
+cURL uses the certificate authority file that's part of linux by default, which must be out of date. 
 Look for instructions for your OS to update the CA file or update your distro.
+
+Configure languages
+---------------------------------------------------------------
+Sometimes IMDb gets unsure that the specified language are correct, if you only specify your unique language and territory code (de-DE). In the example below, you can find that we have chosen to include `de-DE (German, Germany)`, `de (German)` and `en (English)`. If IMDb can’t find anything matching German, Germany, you will get German results instead or English if there are no German translation.
+```php
+$config = new \Imdb\Config();
+$config->language = 'de-DE,de,en';
+$imdb = new \Imdb\Title(335266, $config);
+$imdb->title(); // Lost in Translation - Zwischen den Welten
+$imdb->orig_title(); // Lost in Translation
+```
+Please use The Unicode Consortium [Langugage-Territory Information](http://www.unicode.org/cldr/charts/latest/supplemental/language_territory_information.html) database for finding your unique language and territory code.
+
+| Langauge | Code | Territory   | Code |
+| -------- | ---- | ----------- | ---- |
+| German   | de   | Germany {O} | DE   |
+
+After you have found your unique language and territory code you will need to combine them. Start with language code (de), add a separator (-) and at last your territory code (DE); `de-DE`. Now include your language code (de); `de-DE,de`. And the last step add English (en); `de-DE,de,en`.

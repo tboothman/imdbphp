@@ -12,392 +12,580 @@
 require __DIR__ . "/../bootstrap.php";
 
 if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
-  $movieid = $_GET["mid"];
-
-  $movie = new \Imdb\Title($_GET["mid"]);
-  $source  = "<B CLASS='active'>IMDB</B>";
-
-  $rows = 2; // count for the rowspan; init with photo + year
-
-  echo "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
-  echo "<HTML><HEAD>\n";
-  echo " <TITLE>".$movie->title().' ('.$movie->year().") [IMDBPHP v".$movie->version." Demo]</TITLE>\n";
-  echo " <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; } b.active { color:#b00;background-color:#fff;text-decoration:underline;}</STYLE>\n";
-  echo " <META http-equiv='Content-Type' content='text/html; charset=utf8'>\n";
-  echo "</HEAD>\n<BODY ONLOAD='fix_colspan()'>\n<TABLE BORDER='1' ALIGN='center' STYLE='border-collapse:collapse'>";
-
-  # Title & year
-  echo '<TR><TH COLSPAN="3" STYLE="background-color:#ffb000">';
-  echo "[IMDBPHP v".$movie->version." Demo] Movie Details for '" . $movie->title()."' (".$movie->year().")";
-  echo "<SPAN STYLE='float:right;text-align:right;display:inline !important;font-size:75%;'>Source: [$source]</SPAN>";
-  echo "</TH></TR>\n";
-  flush();
-
-  # Photo
-  echo '<TR><TD id="photocol" rowspan="29" valign="top">';
-  if (($photo_url = $movie->photo_localurl() ) != FALSE) {
-    echo '<img src="'.$photo_url.'" alt="Cover">';
-  } else {
-    echo "No photo available";
-  }
-
-  # AKAs
-  $aka = $movie->alsoknow();
-  $cc  = count($aka);
-  if (!empty($aka)) {
-    echo '</TD><TD valign=top width=120><b>Also known as:</b> </td><td>';
-    foreach ( $aka as $ak){
-      echo $ak["title"];
-      if (!empty($ak["year"])) echo " ".$ak["year"];
-      echo  " =&gt; ".$ak["country"];
-      if (empty($ak["lang"])) { if (!empty($ak["comment"])) echo " (".$ak["comment"].")"; }
-      else {
-        if (!empty($ak["comment"])) echo ", ".$ak["comment"];
-        echo " [".$ak["lang"]."]";
-      }
-      echo "<BR>";
-    }
-    echo "</td></tr>\n";
-    flush();
-  }
-
-  # Movie Type
-  ++$rows;
-  echo '<TR><TD><B>Type:</B></TD><TD>'.$movie->movietype()."</TD></TR>\n";
-
-  # Keywords
-  $keywords = $movie->keywords();
-  if ( !empty($keywords) ) {
-    ++$rows;
-    echo '<TR><TD><B>Keywords:</B></TD><TD>'.implode(', ',$keywords)."</TD></TR>\n";
-  }
-
-  # Seasons
-  if ( $movie->seasons() != 0 ) {
-    ++$rows;
-    echo '<TR><TD><B>Seasons:</B></TD><TD>'.$movie->seasons()."</TD></TR>\n";
-    flush();
-  }
-
-  # Episode Details
-  $ser = $movie->get_episode_details();
-  if (!empty($ser)) {
-    ++$rows;
-    echo '<TR><TD><B>Series Details:</B></TD><TD>'.$ser['seriestitle'].' Season '.$ser['season'].', Episode '.$ser['episode'].", Airdate ".$ser['airdate']."</TD></TR>\n";
-  }
-
-  # Year & runtime
-  echo '<TR><TD><B>Year:</B></TD><TD>'.$movie->year().'</TD></TR>';
-  $runtime = $movie->runtime();
-  if (!empty($runtime)) {
-    ++$rows;
-    echo "<TR><TD valign=top><B>Runtime:</b></TD><TD>$runtime minutes</TD></TR>\n";
-  }
-  flush();
-
-  # MPAA
-  $mpaa = $movie->mpaa();
-  if (!empty($mpaa)) {
-    ++$rows;
-    $mpar = $movie->mpaa_reason();
-    if (empty($mpar)) echo '<TR><TD><B>MPAA:</b></TD><TD>';
-    else echo '<TR><TD rowspan="2"><B>MPAA:</b></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Country</th><th style='background-color:#07f;'>Rating</th></tr>";
-    foreach ($mpaa as $key=>$mpaa) {
-      echo "<tr><td>$key</td><td>$mpaa</td></tr>";
-    }
-    echo "</table></TD></TR>\n";
-    if (!empty($mpar)) {
-      ++$rows;
-      echo "<TR><TD>$mpar</TD></TR>\n";
-    }
-  }
-
-  # Ratings and votes
-  $ratv = $movie->rating();
-  if (!empty($ratv)) { echo "<TR><TD><B>Rating:</b></TD><TD>$ratv</TD></TR>\n"; ++$rows; }
-  $ratv = $movie->votes();
-  if (!empty($ratv)) { echo "<TR><TD><B>Votes:</B></TD><TD>$ratv</TD></TR>\n"; ++$rows; }
-  flush();
-
-  # Languages
-  $languages = $movie->languages();
-  if (!empty($languages)) {
-    ++$rows;
-    echo '<TR><TD><B>Languages:</B></TD><TD>';
-    for ($i = 0; $i + 1 < count($languages); $i++) {
-      echo $languages[$i].', ';
-    }
-    echo $languages[$i]."</TD></TR>\n";
-  }
-  flush();
-
-  # Country
-  $country = $movie->country();
-  if (!empty($country)) {
-    ++$rows;
-    echo '<TR><TD><B>Country:</B></TD><TD>';
-    for ($i = 0; $i + 1 < count($country); $i++) {
-      echo $country[$i].', ';
-    }
-    echo $country[$i]."</TD></TR>\n";
-  }
-
-  # Genres
-  $genre = $movie->genre();
-  if (!empty($genre)) { echo "<TR><TD><B>Genre:</B></TD><TD>$genre</TD></TR>\n"; ++$rows; }
-
-  $gen = $movie->genres();
-  if (!empty($gen)) {
-    ++$rows;
-    echo '<TR><TD><B>All Genres:</B></TD><TD>';
-    for ($i = 0; $i + 1 < count($gen); $i++) {
-      echo $gen[$i].', ';
-    }
-    echo $gen[$i]."</TD></TR>\n";
-  }
-
-  # Colors
-  $col = $movie->colors();
-  if (!empty($col)) {
-    ++$rows;
-    echo '<TR><TD><B>Colors:</B></TD><TD>';
-    for ($i = 0; $i + 1 < count($col); $i++) {
-      echo $col[$i].', ';
-    }
-    echo $col[$i]."</TD></TR>\n";
-  }
-  flush();
-
-  # Sound
-  $sound = $movie->sound ();
-  if (!empty($sound)) {
-    ++$rows;
-    echo '<TR><TD><B>Sound:</B></TD><TD>';
-    for ($i = 0; $i + 1 < count($sound); $i++) {
-      echo $sound[$i].', ';
-    }
-    echo $sound[$i]."</TD></TR>\n";
-  }
-
-  $tagline = $movie->tagline();
-  if (!empty($tagline)) {
-    ++$rows;
-    echo "<TR><TD valign='top'><B>Tagline:</B></TD><TD>$tagline</TD></TR>\n";
-  }
-
-  #==[ Staff ]==
-  # director(s)
-  $director = $movie->director();
-  if (!empty($director)) {
-    ++$rows;
-    echo '<TR><TD valign=top><B>Director:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
-    for ($i = 0; $i < count($director); $i++) {
-      echo '<tr><td width=200>';
-      echo "<a href='person.php?mid=".$director[$i]["imdb"]."'>";
-      echo $director[$i]["name"].'</a></td><td>';
-      echo $director[$i]["role"]."</td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-
-  # Story
-  $write = $movie->writing();
-  if (!empty($write)) {
-    ++$rows;
-    echo '<TR><TD valign=top><B>Writing By:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
-    for ($i = 0; $i < count($write); $i++) {
-      echo '<tr><td width=200>';
-      echo "<a href='person.php?mid=".$write[$i]["imdb"]."'>";
-      echo $write[$i]["name"].'</a></td><td>';
-      echo $write[$i]["role"]."</td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-  flush();
-
-  # Producer
-  $produce = $movie->producer();
-  if (!empty($produce)) {
-    ++$rows;
-    echo '<TR><TD valign=top><B>Produced By:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
-    for ($i = 0; $i < count($produce); $i++) {
-      echo '<tr><td width=200>';
-      echo "<a href='person.php?mid=".$produce[$i]["imdb"]."'>";
-      echo $produce[$i]["name"].'</a></td><td>';
-      echo $produce[$i]["role"]."</td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-
-  # Music
-  $compose = $movie->composer();
-  if (!empty($compose)) {
-    ++$rows;
-    echo '<TR><TD valign=top><B>Music:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Name</th><th style='background-color:#07f;'>Role</th></tr>";
-    for ($i = 0; $i < count($compose); $i++) {
-      echo '<tr><td width=200>';
-      echo "<a href='person.php?mid=".$compose[$i]["imdb"]."'>";
-      echo $compose[$i]["name"]."</a></td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-  flush();
-
-  # Cast
-  $cast = $movie->cast();
-  if (!empty($cast)) {
-    ++$rows;
-    echo '<TR><TD valign=top><B>Cast:</B></TD><TD>';
-    echo "<table align='left' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Actor</th><th style='background-color:#07f;'>Role</th></tr>";
-    for ($i = 0; $i < count($cast); $i++) {
-      echo '<tr><td width=200>';
-      echo "<a href='person.php?mid=".$cast[$i]["imdb"]."'>";
-      echo $cast[$i]["name"].'</a></td><td>';
-      echo $cast[$i]["role"]."</td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-  flush();
-
-  # Plot outline & plot
-  $plotoutline = $movie->plotoutline();
-  if (!empty($plotoutline)) {
-    ++$rows;
-    echo "<tr><td valign='top'><b>Plot Outline:</b></td><td>$plotoutline</td></tr>\n";
-  }
-
-  $plot = $movie->plot();
-  if (!empty($plot)) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Plot:</b></td><td><ul>';
-    for ($i = 0; $i < count($plot); $i++) {
-      echo "<li>".$plot[$i]."</li>\n";
-    }
-    echo "</ul></td></tr>\n";
-  }
-  flush();
-
-  # Taglines
-  $taglines = $movie->taglines();
-  if (!empty($taglines)) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Taglines:</b></td><td><ul>';
-    for ($i = 0; $i < count($taglines); $i++) {
-      echo "<li>".$taglines[$i]."</li>\n";
-    }
-    echo "</ul></td></tr>\n";
-  }
-
-  # Seasons
-  if ( $movie->is_serial() || $movie->seasons() ) {
-    ++$rows;
-    $episodes = $movie->episodes();
-    echo '<tr><td valign=top><b>Episodes:</b></td><td>';
-    foreach ( $episodes as $season => $ep ) {
-      foreach ( $ep as $episodedata ) {
-        echo '<b>Season '.$episodedata['season'].', Episode '.$episodedata['episode'].': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>';
-      }
-    }
-    echo "</td></tr>\n";
-  }
-
-  # Locations
-  $locs = $movie->locations();
-  if (!empty($locs)) {
-    ++$rows;
-    echo '<tr><td valign="top"><b>Filming Locations:</b></td><td><ul>';
-    foreach ($locs as $loc) {
-      if ( empty($loc['url']) ) echo '<li>'.$loc['name'].'</li>';
-      else echo '<li><a href="http://'.$movie->imdbsite.$loc['url'].'">'.$loc['name'].'</a></li>';
-    }
-    echo "</ul></td></tr>\n";
-  }
-
-  # Selected User Comment
-  $comment = $movie->comment();
-  if (!empty($comment)) {
-    ++$rows;
-    echo "<tr><td valign='top'><b>User Comments:</b></td><td>$comment</td></tr>\n";
-  }
-
-  # Quotes
-  $quotes = $movie->quotes();
-  if (!empty($quotes)) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Movie Quotes:</b></td><td>';
-    echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$quotes[0])."</td></tr>\n";
-  }
-
-  # Trailer
-  $trailers = $movie->trailers(TRUE);
-  if (!empty($trailers)) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Trailers:</b></td><td>';
-    for ($i=0;$i<count($trailers);++$i) {
-      if (!empty($trailers[$i]['url'])) echo "<a href='".$trailers[$i]['url']."'>".$trailers[$i]['title']."</a><br>\n";
-    }
-    echo "</td></tr>\n";
-  }
-
-  # Crazy Credits
-  $crazy = $movie->crazy_credits();
-  $cc    = count($crazy);
-  if ($cc) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Crazy Credits:</b></td><td>';
-    echo "We know about $cc <i>Crazy Credits</i>. One of them reads:<br>$crazy[0]</td></tr>\n";
-  }
-
-  # Goofs
-  $goofs = $movie->goofs();
-  $gc    = count($goofs);
-  if ($gc > 0) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Goofs:</b></td><td>';
-    echo "We know about $gc goofs. Here comes one of them:<br>";
-    echo "<b>".$goofs[0]["type"]."</b> ".$goofs[0]["content"]."</td></tr>\n";
-  }
-
-  # Trivia
-  $trivia = $movie->trivia();
-  $gc     = count($trivia);
-  if ($gc > 0) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Trivia:</b></td><td>';
-    echo "There are $gc entries in the trivia list - like these:<br><ul>";
-    for ($i=0;$i<5;++$i) {
-      if (empty($trivia[$i])) break;
-      echo "<li>".preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$trivia[$i])."</li>";
-    }
-    echo "</ul></td></tr>\n";
-  }
-
-  # Soundtracks
-  $soundtracks = $movie->soundtrack();
-  $gc = count($soundtracks);
-  if ($gc > 0) {
-    ++$rows;
-    echo '<tr><td valign=top><b>Soundtracks:</b></td><td>';
-    echo "There are $gc soundtracks listed - like these:<br>";
-    echo "<table align='center' border='1' style='border-collapse:collapse;background-color:#ddd;'><tr><th style='background-color:#07f;'>Soundtrack</th><th style='background-color:#07f;'>Credit 1</th><th style='background-color:#07f;'>Credit 2</th></tr>";
-    foreach ($soundtracks as $soundtrack) {
-      if (isset($soundtrack["credits"][0])) $credit1 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][0]['credit_to'])." (".$soundtrack["credits"][0]['desc'].")"; else $credit1 = '';
-      if (isset($soundtrack["credits"][1])) $credit2 = preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][1]['credit_to'])." (".$soundtrack["credits"][1]['desc'].")"; else $credit2 = '';
-      echo "<tr><td>".$soundtrack["soundtrack"]."</td><td>$credit1</td><td>$credit2</td></tr>";
-    }
-    echo "</table></td></tr>\n";
-  }
-
-  echo "</TABLE><BR>\n";
-  echo "<SCRIPT TYPE='text/javascript'>// <!--\n";
-  echo "  function fix_colspan() {\n";
-  echo "    document.getElementById('photocol').rowSpan = '$rows';\n";
-  echo "  }\n//-->\n</SCRIPT>\n";
-  echo "</BODY></HTML>";
-}
+  $config = new \Imdb\Config();
+  $config->language = 'en-US,en';
+  $movie = new \Imdb\Title($_GET["mid"],$config);
 ?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><?php echo $movie->title().' ('.$movie->year().')' ?> - IMDbPHP</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <?php # Title & year ?>
+    <h2 class="text-center"><?php echo $movie->title().' ('.$movie->year().')' ?></h2>
+      <?php # Photo ?>
+      <div class="photo mb-10 text-center">
+        <?php
+          if (($photo_url = $movie->photo_localurl() ) != FALSE) {
+            echo '<img src="'.$photo_url.'" alt="Cover">';
+          } else {
+            echo "No photo available";
+          }
+        ?>
+      </div>
+      <table class="table">
+        <tr>
+          <th colspan="2" class="move-container">
+            Movie Details
+            <span class="move-right pr-10">Source: [<a href="<?php echo $movie->main_url() ?>">IMDb</a>]</span>
+          </th>
+        </tr>
+        
+        <?php
+        # AKAs
+        $aka = $movie->alsoknow();
+        $cc  = count($aka);
+        if (!empty($aka)) {
+        ?>
+        <tr>
+          <td><b>Also known as:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Country</th>
+                <th>Comment</th>
+              </tr>
+              <?php foreach ( $aka as $ak) { ?>
+                <tr>
+                  <td><?php echo $ak["title"] ?></td>
+                  <td><?php echo $ak["year"] ?></td>
+                  <td><?php echo $ak["country"] ?></td>
+                  <td><?php echo $ak["comment"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php # Movie Type ?>
+        <tr>
+          <td class="mw-120"><b>Type:</b></td>
+          <td><?php echo $movie->movietype() ?></td>
+        </tr>
+        
+        <?php
+        # Keywords
+        $keywords = $movie->keywords();
+        if ( !empty($keywords) ) {
+        ?>
+        <tr>
+          <td><b>Keywords:</b></td>
+          <td><?php echo implode(', ',$keywords) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Seasons
+        if ( $movie->seasons() != 0 ) {
+        ?>
+        <tr>
+          <td><b>Seasons:</b></td>
+          <td><?php echo $movie->seasons() ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Episode Details
+        $ser = $movie->get_episode_details();
+        if (!empty($ser)) {
+        ?>
+        <tr>
+          <td><b>Episode Details:</b></td>
+          <td><?php echo $ser['seriestitle'].' | Season '.$ser['season'].', Episode '.$ser['episode'].", Airdate ".$ser['airdate'] ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php # Year ?>
+        <tr>
+          <td><b>Year:</b></td>
+          <td><?php echo $movie->year() ?></td>
+        </tr>
+        
+        <?php
+        # Runtime
+        $runtime = $movie->runtime();
+        if (!empty($runtime)) {
+        ?>
+        <tr>
+          <td><b>Runtime:</b></td>
+          <td><?php echo $runtime; ?> minutes</td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # MPAA
+        $mpaa = $movie->mpaa();
+        if (!empty($mpaa)) {
+          $mpar = $movie->mpaa_reason();
+          if (empty($mpar)) { ?>
+          <tr>
+            <td><b>MPAA:</b></td>
+            <td>
+          <?php } else { ?>
+            <tr>
+              <td rowspan="2"><b>MPAA:</b></td>
+              <td>
+          <?php } ?>
+                <table>
+                  <tr>
+                    <th>Country</th>
+                    <th>Rating</th>
+                  </tr>
+                  <?php foreach ($mpaa as $key=>$mpaa) { ?>
+                    <tr>
+                      <td><?php echo $key ?></td>
+                      <td><?php echo $mpaa ?></td>
+                    </tr>
+                  <?php } ?>
+                </table>
+              </td>
+            </tr>
+          <?php if (!empty($mpar)) { ?>
+            <tr>
+              <td><?php echo $mpar ?></td>
+            </tr>
+          <?php
+          }
+        }
+        ?>
+        
+        <?php
+        # Ratings
+        $ratv = $movie->rating();
+        if (!empty($ratv)) {
+        ?>
+        <tr>
+          <td><b>Rating:</b></td>
+          <td><?php echo $ratv; ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Votes
+        $ratv = $movie->votes();
+        if (!empty($ratv)) {
+        ?>
+        <tr>
+          <td><b>Votes:</b></td>
+          <td><?php echo $ratv; ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Languages
+        $languages = $movie->languages();
+        if (!empty($languages)) {
+        ?>
+        <tr>
+          <td><b>Languages:</b></td>
+          <td><?php echo implode(', ',$languages) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Country
+        $country = $movie->country();
+        if (!empty($country)) {
+        ?>
+        <tr>
+          <td><b>Country:</b></td>
+          <td><?php echo implode(', ',$country) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Genre
+        $genre = $movie->genre();
+        if (!empty($genre)) {
+        ?>
+        <tr>
+          <td><b>Genre:</b></td>
+          <td><?php echo $genre ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # All Genres
+        $gen = $movie->genres();
+        if (!empty($gen)) {
+        ?>
+        <tr>
+          <td><b>All Genres:</b></td>
+          <td><?php echo implode(', ',$gen) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Colors
+        $col = $movie->colors();
+        if (!empty($col)) {
+        ?>
+        <tr>
+          <td><b>Colors:</b></td>
+          <td><?php echo implode(', ',$col) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Sound
+        $sound = $movie->sound ();
+        if (!empty($sound)) {
+        ?>
+        <tr>
+          <td><b>Sound:</b></td>
+          <td><?php echo implode(', ',$sound) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Tagline
+        $tagline = $movie->tagline();
+        if (!empty($tagline)) {
+        ?>
+        <tr>
+          <td><b>Tagline:</b></td>
+          <td><?php echo $tagline ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        #==[ Staff ]==
+        # director(s)
+        $director = $movie->director();
+        if (!empty($director)) {
+        ?>
+        <tr>
+          <td><b>Director:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th class="mw-200">Name</th>
+                <th class="mw-200">Role</th>
+              </tr>
+              <?php foreach ( $director as $d) { ?>
+                <tr>
+                  <td><a href="person.php?mid=<?php echo $d["imdb"] ?>"><?php echo $d["name"] ?></a></td>
+                  <td><?php echo $d["role"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Story
+        $write = $movie->writing();
+        if (!empty($write)) {
+        ?>
+        <tr>
+          <td><b>Writing By:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th class="mw-200">Name</th>
+                <th class="mw-200">Role</th>
+              </tr>
+              <?php foreach ( $write as $w) { ?>
+                <tr>
+                  <td><a href="person.php?mid=<?php echo $w["imdb"] ?>"><?php echo $w["name"] ?></a></td>
+                  <td><?php echo $w["role"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Producer
+        $produce = $movie->producer();
+        if (!empty($produce)) {
+        ?>
+        <tr>
+          <td><b>Produced By:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th class="mw-200">Name</th>
+                <th class="mw-200">Role</th>
+              </tr>
+              <?php foreach ( $produce as $p) { ?>
+                <tr>
+                  <td><a href="person.php?mid=<?php echo $p["imdb"] ?>"><?php echo $p["name"] ?></a></td>
+                  <td><?php echo $p["role"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Music
+        $compose = $movie->composer();
+        if (!empty($compose)) {
+        ?>
+        <tr>
+          <td><b>Music:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th class="mw-200">Name</th>
+                <th class="mw-200">Role</th>
+              </tr>
+              <?php foreach ( $compose as $c) { ?>
+                <tr>
+                  <td><a href="person.php?mid=<?php echo $c["imdb"] ?>"><?php echo $c["name"] ?></a></td>
+                  <td><?php echo $c["role"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Cast
+        $cast = $movie->cast();
+        if (!empty($cast)) {
+        ?>
+        <tr>
+          <td><b>Cast:</b></td>
+          <td>
+            <table>
+              <tr>
+                <th class="mw-200">Name</th>
+                <th class="mw-200">Role</th>
+              </tr>
+              <?php foreach ( $cast as $c) { ?>
+                <tr>
+                  <td><a href="person.php?mid=<?php echo $c["imdb"] ?>"><?php echo $c["name"] ?></a></td>
+                  <td><?php echo $c["role"] ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Plot outline
+        $plotoutline = $movie->plotoutline();
+        if (!empty($plotoutline)) {
+        ?>
+        <tr>
+          <td><b>Plot Outline:</b></td>
+          <td><?php echo $plotoutline ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Plot
+        $plot = $movie->plot();
+        if (!empty($plot)) {
+        ?>
+        <tr>
+          <td><b>Plot:</b></td>
+          <td><ul>
+          <?php foreach($plot as $p) { ?>
+            <li><?php echo $p ?></li>
+          <?php } ?>
+          </ul></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Taglines
+        $taglines = $movie->taglines();
+        if (!empty($taglines)) {
+        ?>
+        <tr>
+          <td><b>Taglines:</b></td>
+          <td><ul>
+          <?php foreach($taglines as $t) { ?>
+            <li><?php echo $t ?></li>
+          <?php } ?>
+          </ul></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Episodes
+        if ( $movie->is_serial() || $movie->seasons() ) {
+        $episodes = $movie->episodes();
+        ?>
+        <tr>
+          <td><b>Episodes:</b></td>
+          <td>
+          <?php
+          foreach ( $episodes as $season => $ep ) {
+            foreach ( $ep as $episodedata ) {
+              echo '<b>Season '.$episodedata['season'].', Episode '.$episodedata['episode'].': <a href="'.$_SERVER["PHP_SELF"].'?mid='.$episodedata['imdbid'].'">'.$episodedata['title'].'</a></b> (<b>Original Air Date: '.$episodedata['airdate'].'</b>)<br>'.$episodedata['plot'].'<br/><br/>'."\n";
+            }
+          }
+          ?>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Locations
+        $locs = $movie->locations();
+        if (!empty($locs)) {
+        ?>
+        <tr>
+          <td><b>Filming Locations:</b></td>
+          <td><?php echo implode(', ',$locs) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Selected User Comment
+        $comment = $movie->comment();
+        if (!empty($comment)) {
+        ?>
+        <tr>
+          <td><b>User Comments:</b></td>
+          <td><?php echo $comment ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Quotes
+        $quotes = $movie->quotes();
+        if (!empty($quotes)) {
+        ?>
+        <tr>
+          <td><b>Movie Quotes:</b></td>
+          <td><?php echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\/(\?ref_=tt_trv_qu)?/","person.php?mid=\\1",$quotes[0]) ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Trailer
+        $trailers = $movie->trailers(TRUE);
+        if (!empty($trailers)) {
+        ?>
+        <tr>
+          <td><b>Trailers:</b></td>
+          <td>
+          <?php
+            foreach($trailers as $t) {
+              if(!empty($t['url'])) { ?>
+                <a href="<?php echo $t['url'] ?>"><?php echo $t['title'] ?></a><br>
+              <?php
+              }
+            }
+          ?>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Crazy Credits
+        $crazy = $movie->crazy_credits();
+        $cc    = count($crazy);
+        if ($cc) {
+        ?>
+        <tr>
+          <td><b>Crazy Credits:</b></td>
+          <td>We know about <?php echo $cc ?> <i>Crazy Credits</i>. One of them reads:<br><?php echo $crazy[0] ?></td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Goofs
+        $goofs = $movie->goofs();
+        $gc    = count($goofs);
+        if ($gc) {
+        ?>
+        <tr>
+          <td><b>Goofs:</b></td>
+          <td>
+            We know about <?php echo $gc ?> <i>Goofs</i>. Here comes one of them:<br>
+            <b><?php echo $goofs[0]["type"] ?></b> <?php echo $goofs[0]["content"] ?>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Trivia
+        $trivia = $movie->trivia();
+        $tc     = count($trivia);
+        if ($tc > 0) {
+        ?>
+        <tr>
+          <td><b>Trivia:</b></td>
+          <td>
+            There are <?php echo $tc ?> entries in the trivia list - like these:
+            <ul>
+              <?php
+                for($i=0;$i<5;++$i) {
+                if (empty($trivia[$i])) break;
+              ?>
+              <li>
+                <?php
+                $t = $trivia[$i];
+                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/name\/nm(\d{7})/','person.php?mid=\\1',$t);
+                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/title\/tt(\d{7})/','movie.php?mid=\\1',$t);
+                echo $t;
+                ?>
+              </li>
+              <?php } ?>
+            </ul>
+          </td>
+        </tr>
+        <?php } ?>
+        
+        <?php
+        # Soundtracks
+        $soundtracks = $movie->soundtrack();
+        $sc = count($soundtracks);
+        if ($sc > 0) {
+        ?>
+        <tr>
+          <td><b>Soundtracks:</b></td>
+          <td>
+            There are <?php echo $sc ?> soundtracks listed - like these:<br>
+            <table>
+              <tr>
+                <th class="mw-200">Soundtrack</th>
+                <th class="mw-200">Credit 1</th>
+                <th class="mw-200">Credit 2</th>
+              </tr>
+              <?php foreach ( $soundtracks as $soundtrack) { 
+                $credit1 = isset($soundtrack["credits"][0]) ? preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][0]['credit_to'])." (".$soundtrack["credits"][0]['desc'].")" : '';
+                $credit2 = isset($soundtrack["credits"][1]) ? preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][1]['credit_to'])." (".$soundtrack["credits"][1]['desc'].")" : '';
+              ?>
+                <tr>
+                  <td><?php echo $soundtrack["soundtrack"] ?></td>
+                  <td><?php echo $credit1 ?></td>
+                  <td><?php echo $credit2 ?></td>
+                </tr>
+              <?php } ?>
+            </table>
+          </td>
+        </tr>
+        <?php } ?>
+      </table>
+    <p class="text-center"><a href="index.html">Go back</a></p>
+  </body>
+</html>
+<?php } ?>

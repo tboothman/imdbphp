@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>IMDbPHP movie search</title>
-    <style type="text/css">body,td,th { font-size:12px; font-family:sans-serif; }</style>
+    <meta charset="utf-8">
+    <title>IMDbPHP - Movie Search</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <h2 class="text-center">Movie Search</h2>
     <form action="search.php" method="get">
-      <table align="center" style="margin-top:20px;border-collapse:collapse;" border="1">
-        <tr><th colspan="2" style="background-color:#FFB000">IMDbPHP Movie Search</th></tr>
+      <table>
+        <tr><th colspan="2">IMDbPHP</th></tr>
         <tr>
-          <td align="right" style="padding-right:10px;padding-left:10px;">Name:<br>Type:</td>
+          <td class="bb-none text-right pl-10 pr-10">Name:</td>
           <td>
             <input type="text" name="name" size="30" maxlength="50"><br>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-right pl-10 pr-10">Type:</td>
+          <td>
             <select name="searchtype">
               <option value="movie">Movie</option>
               <option value="episode">Episode</option>
@@ -20,12 +27,12 @@
           </td>
         </tr>
         <tr>
-          <td align="right" style="padding-right:10px;padding-left:10px;">or IMDb ID:</td>
-          <td><input type="text" name="mid"  size="30" maxlength="7"></td>
+          <td class="text-right pl-10 pr-10">or IMDb ID:</td>
+          <td><input type="text" name="mid" size="30" maxlength="9"></td>
         </tr>
-        <tr><td colspan="2" align="center"><input type="submit" value="search"></td></tr>
+        <tr><td colspan="2" class="text-center"><input type="submit" value="search"></td></tr>
       </table>
     </form>
-    <p align="center"><a href="cache.php">View movies in cache</a></p>
+    <p class="text-center"><a href="cache.php">View movies in cache</a></p>
   </body>
 </html>

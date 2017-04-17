@@ -10,14 +10,16 @@
  # ------------------------------------------------------------------------- #
  # Search for $name and display results                                      #
  #############################################################################
+
 require __DIR__ . "/../bootstrap.php";
 require "inc.php";
 
 # If MID has been explicitly given, we don't need to search:
-if (!empty($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
-  switch($_GET["searchtype"]) {
-    case "nm" : header("Location: person.php?mid=".$_GET["mid"]); break;
-    default   : header("Location: movie.php?mid=".$_GET["mid"]); break;
+if (!empty($_GET["mid"]) && preg_match('/^(tt|nm|)([0-9]+)$/',$_GET["mid"],$matches)) {
+  $searchtype = !empty($matches[1]) ? $matches[1] : $_GET["searchtype"];
+  switch($searchtype) {
+    case "nm" : header("Location: person.php?mid=".$matches[2]); break;
+    default   : header("Location: movie.php?mid=".$matches[2]); break;
   }
   return;
 }
@@ -43,33 +45,37 @@ if ($_GET['searchtype'] === 'nm') {
   }
 }
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Performing search for '<?php echo esc($_GET["name"]) ?>' [IMDbPHP v<?php echo $search->version ?>]</title>
-    <style type="text/css">body,td,th,h2 { font-size:12px; font-family:sans-serif; } th { background-color:#ffb000; } h2 { text-align:center; font-size:15px; margin-top: 20px; margin-bottom:0; }</style>
+    <meta charset="utf-8">
+    <title>Performing search for "<?php echo esc($_GET["name"]) ?>" - IMDbPHP</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h2>[IMDBPHP v<?php echo $search->version ?> Demo] Search results for '<?php echo esc($_GET["name"]) ?>':</h2>
-    <table align="center" border="1" style="border-collapse:collapse;margin-top:20px;">
+    <h2 class="text-center">Search results for <span><?php echo esc($_GET["name"]) ?></span>:</h2>
+    <table class="table">
       <tr><th><?php echo $headname ?> Details</th><th>IMDb</th></tr>
       <?php foreach ($results as $res):
         if ($_GET['searchtype'] === 'nm'):
           $details = $res->getSearchDetails();
+          $hint = '';
           if (!empty($details)) {
             $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
           } ?>
           <tr>
             <td><a href="person.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->name() ?></a><?php echo $hint ?></td>
-            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb page</a></td>
+            <td><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
           </tr>
         <?php else: ?>
           <tr>
             <td><a href="movie.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->title() ?> (<?php echo $res->year() ?>) (<?php echo $res->movietype() ?>)</a></td>
-            <td align="center"><a href="<?php echo $res->main_url() ?>">IMDb page</a></td>
+            <td><a href="<?php echo $res->main_url() ?>">IMDb</a></td>
           </tr>
         <?php endif ?>
       <?php endforeach ?>
     </table>
+	<p class="text-center"><a href="index.html">Go back</a></p>
   </body>
 </html>

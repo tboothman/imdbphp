@@ -1,5 +1,4 @@
 <?php
-
 #############################################################################
 # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
@@ -11,6 +10,7 @@
 # ------------------------------------------------------------------------- #
 # Show what we have in the Cache                                            #
 #############################################################################
+
 require __DIR__ . "/../bootstrap.php";
 
 use \Imdb\Title;
@@ -29,25 +29,26 @@ if (is_dir($config->cachedir)) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>IMDbPHP Cache Contents</title>
-    <style type='text/css'>body,td,th { font-size:12px; }</style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <?php if (empty($movies)): ?>
-      Nothing in cache
+      <h2 class="text-center">Nothing in cache</h2>
     <?php else: ?>
-      <table align="center" border="1" cellpadding="3" style="border-collapse:collapse;margin-top:20px;">
+	  <h2 class="text-center">Cache Contents</h2>
+      <table class="table">
         <tr>
-          <th style="background-color:#FFB000">Movie</th>
-          <th style="background-color:#FFB000">IMDb</th>
+          <th>Movie</th>
+          <th>IMDb</th>
         </tr>
-
         <?php foreach ($movies as $movie): ?>
         <tr>
           <td><?php echo $movie->title() ?></td>
-          <td align="center">
+          <td class="text-center">
             <a href="movie.php?mid=<?php echo $movie->imdbid() ?>">Cache</a> |
             <a href="<?php echo $movie->main_url() ?>">IMDb</a>
           </td>
@@ -55,5 +56,6 @@ if (is_dir($config->cachedir)) {
         <?php endforeach ?>
       </table>
     <?php endif ?>
+	<p class="text-center"><a href="index.html">Go back</a></p>
   </body>
 </html>
