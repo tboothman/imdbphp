@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v5.2.0 (19.04.2017)
+-------------------
++ Add support for using http proxies to fetch from IMDb
+! Fix `Title::orig_title()` always being empty if the Title was created from a search
+! Improve the look and the coding of the demo pages
+
 v5.1.1 (21.02.2017)
 -------------------
 ! Fix `Title::movietype()` randomly returning a month rather than a movie type (caused by v5.1.0)
