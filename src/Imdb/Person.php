@@ -67,6 +67,7 @@ class Person extends MdbBase {
     // "Publicity" page:
   protected $pub_prints      = array();
   protected $pub_movies      = array();
+  protected $pub_portraits   = array();
   protected $pub_interviews  = array();
   protected $pub_articles    = array();
   protected $pub_pictorial   = array();
@@ -659,19 +660,20 @@ class Person extends MdbBase {
    *         where "place" refers to the place of publication, and "url" is a link to the ISBN
    * @see IMDB person page /publicity
    */
-  public function pubprints() {
+  public function pubprints()
+  {
     if (empty($this->pub_prints)) {
-      $this->getPage("Publicity");
-      $pos_s = strpos($this->page["Publicity"],"<h5>Biography (print)</h5>");
-      $pos_e = strpos($this->page["Publicity"],"<br",$pos_s);
-      $block = substr($this->page["Publicity"],$pos_s,$pos_e - $pos_s);
-      $arr = explode("<p>",$block);
+      $page = $this->getPage("Publicity");
+      $pos_s = strpos($page, "<h4 class=\"li_group\">Print Biographies (");
+      $pos_e = strpos($page, "</table", $pos_s);
+      $block = substr($page, $pos_s, $pos_e - $pos_s);
+      $arr = explode("<td", $block);
       $pc = count($arr);
-      for ($i=1;$i<$pc;++$i) {
-        if (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.|)\s*ISBN\s*<a href="(.*)">(.*)<\/a>/iU',$arr[$i],$match)) {
-          $this->pub_prints[] = array("author"=>$match[1],"title"=>$match[2],"place"=>trim($match[4]),"publisher"=>trim($match[6]),"year"=>$match[8],"isbn"=>$match[10],"url"=>$match[9]);
-        } elseif (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.)/iU',$arr[$i],$match)) {
-          $this->pub_prints[] = array("author"=>$match[1],"title"=>$match[2],"place"=>trim($match[4]),"publisher"=>trim($match[6]),"year"=>$match[8],"isbn"=>"","url"=>"");
+      for ($i = 1; $i < $pc; ++$i) {
+        if (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.|)\s*ISBN\s*<a href="(.*)">(.*)<\/a>/iU', $arr[$i], $match)) {
+          $this->pub_prints[] = array("author" => $match[1], "title" => htmlspecialchars_decode($match[2]), "place" => trim($match[4]), "publisher" => htmlspecialchars_decode(trim($match[6])), "year" => $match[8], "isbn" => $match[10], "url" => $match[9]);
+        } elseif (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.)/iU', $arr[$i], $match)) {
+          $this->pub_prints[] = array("author" => $match[1], "title" => htmlspecialchars_decode($match[2]), "place" => trim($match[4]), "publisher" => htmlspecialchars_decode(trim($match[6])), "year" => $match[8], "isbn" => "", "url" => "");
         }
       }
     }
@@ -680,26 +682,25 @@ class Person extends MdbBase {
 
  #----------------------------------------------[ Helper for movie parsing ]---
   /** Parse movie helper
-   * @method protected parsepubmovies
    * @param ref array res where to store the results
    * @param string page name of the page
    * @param string header header of the block on the IMDB site
    * @brief helper to pubmovies() and portrayedmovies()
    */
-  protected function parsepubmovies(&$res,$page,$header) {
-    $this->getPage($page);
-    $pos_s = strpos($this->page[$page],"<h5>$header</h5>");
-    $pos_e = strpos($this->page[$page],"<h5",$pos_s+5);
-    $skip  = strlen($header)+9;
-    $block = substr($this->page[$page],$pos_s+$skip,$pos_e - $pos_s -$skip);
-    $arr = explode("<br/><br/>",$block);
+  protected function parsepubmovies(&$res, $header) {
+    $page = $this->getPage("Publicity");
+    $pos_s = strpos($page, "<h4 class=\"li_group\">$header (");
+    $pos_e = strpos($page, "<h4", $pos_s + 5);
+    $skip = strlen($header) + 9;
+    $block = substr($page, $pos_s + $skip, $pos_e - $pos_s - $skip);
+    $arr = explode("<li", $block);
     $pc = count($arr);
-    for ($i=0;$i<$pc;++$i) {
-      if (preg_match('/href="\/title\/tt(\d+)\/">(.*)<\/a>\s*(\((\d+)\)|)/',$arr[$i],$match)) {
-        $res[] = array("imdb"=>$match[1],"name"=>$match[2],"year"=>$match[4]);
+    for ($i = 0; $i < $pc; ++$i) {
+      if (preg_match('/href="\/title\/tt(\d+)\/">(.*)<\/a>\s*(\((\d+)\)|)/', $arr[$i], $match)) {
+        $res[] = array("imdb" => $match[1], "name" => $match[2], "year" => $match[4]);
       }
     }
- }
+  }
 
  #----------------------------------------------------[ Biographical movies ]---
   /** Biographical Movies
@@ -708,7 +709,7 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function pubmovies() {
-    if (empty($this->pub_movies)) $this->parsepubmovies($this->pub_movies,"Publicity","Biographical movies");
+    if (empty($this->pub_movies)) $this->parsepubmovies($this->pub_movies,"Film Biographies");
     return $this->pub_movies;
   }
 
@@ -719,38 +720,40 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function pubportraits() {
-    if (empty($this->pub_portraits)) $this->parsepubmovies($this->pub_portraits,"Publicity","Portrayed in");
+    if (empty($this->pub_portraits)) $this->parsepubmovies($this->pub_portraits,"Portrayals");
     return $this->pub_portraits;
   }
 
  #--------------------------------------------[ Helper for Article parsing ]---
-  /** Helper for article parsing
-   * @method protected parsearticles
-   * @param ref array res where to store the results
-   * @param string page name of the page
+  /**
+   * Helper for article parsing
    * @param string title title of the block
+   * @return array
    * @brief used by interviews(), articles(), pictorials(), magcovers()
    * @see IMDB person page /publicity
    */
-  protected function parsearticles(&$res,$page,$title) {
-    $this->getPage($page);
-    $pos_s = strpos($this->page[$page],"<h5>$title</h5>");
-    if ( $pos_s === FALSE ) { $res = array(); return; }
-    $pos_e = strpos($this->page[$page],"</table",$pos_s);
-    $block = substr($this->page[$page],$pos_s,$pos_e-$pos_s);
-    @preg_match_all("|<tr>(.*)</tr>|iU",$block,$matches); // get the rows
-    $lc = count($matches[0]);
-    for ($i=0;$i<$lc;++$i) {
-      if (@preg_match('|<td.*?>(.*?)</td><td.*?>(.*?)</td>|ms',$matches[1][$i],$match)) {
-        @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i',$match[2],$dat);
-        $datum = array("day"=>$dat[1],"month"=>trim($dat[2]),"mon"=>$this->monthNo(trim($dat[2])),"year"=>trim($dat[3]),"full"=>$dat[0]);
-        if (strlen($dat[0])) $match[2] = trim(substr($match[2],strlen($dat[0])+1));
-        @preg_match('|<a name="author">(.*?)</a>|ims',$match[2],$author);
-        if (!empty($author) && strlen($author[0])) $match[2] = trim(str_replace(', by: '.$author[0],'',$match[2]));
+  protected function parsearticles($title) {
+    $page = $this->getPage("Publicity");
+    $pos_s = strpos($page, "<h4 class=\"li_group\">$title (");
+    if ($pos_s === false) {
+      return array();
+    }
+    $pos_e = strpos($page, "</table", $pos_s);
+    $block = substr($page, $pos_s, $pos_e - $pos_s);
+    @preg_match_all("|<tr(.*)</tr>|ims", $block, $matches); // get the rows
+    $res = array();
+    foreach ($matches[0] as $row) {
+      if (@preg_match('|<td.*?>(.*?)</td>.*<td.*?>(.*?)</td>|ms', $row, $match)) {
+        @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i', $match[2], $dat);
+        $datum = array("day" => $dat[1], "month" => trim($dat[2]), "mon" => $this->monthNo(trim($dat[2])), "year" => trim($dat[3]), "full" => trim($dat[0]));
+        if (strlen($dat[0])) $match[2] = trim(substr($match[2], strlen($dat[0]) + 1));
+        @preg_match('|<a name="author">(.*?)</a>|ims', $match[2], $author);
+        if (!empty($author) && strlen($author[0])) $match[2] = trim(str_replace(', by: ' . $author[0], '', $match[2]));
         if (!empty($author)) $resauthor = $author[1]; else $resauthor = '';
-        $res[] = array("inturl"=>'',"name"=>$match[1],"date"=>$datum,"details"=>trim($match[2]),"auturl"=>'',"author"=>$resauthor);
+        $res[] = array("inturl" => '', "name" => trim(strip_tags($match[1])), "date" => $datum, "details" => trim($match[2]), "auturl" => '', "author" => $resauthor);
       }
     }
+    return $res;
   }
 
  #-------------------------------------------------------------[ Interviews ]---
@@ -762,7 +765,9 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function interviews() {
-    if (empty($this->pub_interviews)) $this->parsearticles($this->pub_interviews,"Publicity","Interview");
+    if (empty($this->pub_interviews)) {
+      $this->pub_interviews = $this->parsearticles("Interviews");
+    }
     return $this->pub_interviews;
   }
 
@@ -775,7 +780,9 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function articles() {
-    if (empty($this->pub_articles)) $this->parsearticles($this->pub_articles,"Publicity","Article");
+    if (empty($this->pub_articles)) {
+      $this->pub_articles = $this->parsearticles("Articles");
+    }
     return $this->pub_articles;
   }
 
@@ -788,7 +795,9 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function pictorials() {
-    if (empty($this->pub_pictorials)) $this->parsearticles($this->pub_pictorials,"Publicity","Pictorial");
+    if (empty($this->pub_pictorials)) {
+      $this->pub_pictorials = $this->parsearticles("Pictorials");
+    }
     return $this->pub_pictorials;
   }
 
@@ -801,7 +810,9 @@ class Person extends MdbBase {
    * @see IMDB person page /publicity
    */
   public function magcovers() {
-    if (empty($this->pub_magcovers)) $this->parsearticles($this->pub_magcovers,"Publicity","Magazine cover photo");
+    if (empty($this->pub_magcovers)) {
+      $this->pub_magcovers = $this->parsearticles("Magazine Covers");
+    }
     return $this->pub_magcovers;
   }
 

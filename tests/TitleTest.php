@@ -272,14 +272,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovie_recommendations() {
-        $imdb = $this->getImdb('1576699'); // Mirrors 2 has a recommendation of mirrors 1 which has an I inbetween its name and year
+        $imdb = $this->getImdb();
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
 
         $recommendation = $recommendations[0];
-        $this->assertEquals("Mirrors", $recommendation['title']);
-        $this->assertEquals("0790686", $recommendation['imdbid']);
-        $this->assertEquals(2008, $recommendation['year']);
+        $this->assertEquals("Inception", $recommendation['title']);
+        $this->assertEquals("1375666", $recommendation['imdbid']);
+        $this->assertEquals(2010, $recommendation['year']);
 
         foreach ($recommendations as $recommendation) {
           $this->assertInternalType('array', $recommendation);
@@ -1003,10 +1003,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[1]['content']);
 
       $this->assertEquals('Character error', $goofs[4]['type']);
-      $this->assertEquals("The doorknob at the Oracle's apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[4]['content']);
+      $this->assertEquals("The doorknob at the Oracle&#39;s apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[4]['content']);
 
       $this->assertEquals('Character error', $goofs[3]['type']);
-      $this->assertEquals("The streets all have Chicago street names (as observed in Trivia section), including Balbo Avenue. This street name is spelled correctly on signs in the subway station where Neo fights Agent Smith, but Tank directs Trinity and Neo to go to &quot;Balboa&quot; (as in <a href=\"http://www.imdb.com/title/tt0075148/\">Rocky</a>). The DVD captions of Tank's dialogue also show it as &quot;Balboa.&quot;", $goofs[3]['content']);
+      $this->assertEquals("The streets all have Chicago street names (as observed in Trivia section), including Balbo Avenue. This street name is spelled correctly on signs in the subway station where Neo fights Agent Smith, but Tank directs Trinity and Neo to go to &quot;Balboa&quot; (as in <a href=\"http://www.imdb.com/title/tt0075148/\">Rocky</a>). The DVD captions of Tank&#39;s dialogue also show it as &quot;Balboa.&quot;", $goofs[3]['content']);
 
       // This fails all the time. Pick a better film for this?
 //      $this->assertEquals('Revealing mistakes', $goofs[102]['type']);
@@ -1092,8 +1092,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function test_locations() {
       $imdb = $this->getImdb(107290);
       $locations = $imdb->locations();
-      $this->assertCount(17, $locations);
-      $this->assertEquals('Kualoa Ranch - 49560 Kamehameha Highway, Ka`a`awa, O\'ahu, Hawaii, USA', $locations[3]);
+      $this->assertCount(18, $locations);
+      $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[4]);
     }
 
     public function test_title_redirects_are_followed() {
@@ -1151,7 +1151,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $awards = $imdb->awards();
 
-      $this->assertCount(37, $awards);
+      $this->assertCount(38, $awards);
 
       $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
       $firstEntry = $scifiWritersAward['entries'][0];
