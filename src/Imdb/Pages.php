@@ -87,7 +87,7 @@ class Pages {
         if ($this->config->throwHttpExceptions) {
           $exception = new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
           $exception->HTTPStatusCode = $req->getStatus();
-          throw new $exception;
+          throw $exception;
         } else {
           return '';
         }
