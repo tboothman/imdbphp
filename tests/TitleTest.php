@@ -213,8 +213,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testRuntimes_two_runtimes_one_annotation() {
         $imdb = $this->getImdb('0078788');
         $runtimes = $imdb->runtimes();
-        $this->assertEquals(153, $runtimes[0]['time']);
-        $this->assertEquals(202, $runtimes[1]['time']);
+        $this->assertEquals(147, $runtimes[0]['time']);
+        $this->assertEquals(194, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
     }
 
@@ -255,6 +255,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
     public function testMetacriticRating_returns_null_when_no_rating() {
       $imdb = $this->getImdb('0087544');
+      $imdb = $this->getImdb('0087544');
       $this->assertEquals(null, $imdb->metacriticRating());
     }
 
@@ -275,11 +276,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb();
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
-
-        $recommendation = $recommendations[0];
-        $this->assertEquals("Inception", $recommendation['title']);
-        $this->assertEquals("1375666", $recommendation['imdbid']);
-        $this->assertEquals(2010, $recommendation['year']);
 
         foreach ($recommendations as $recommendation) {
           $this->assertInternalType('array', $recommendation);
@@ -773,8 +769,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2008, $firstCast['role_end_year']);
         $this->assertInternalType('array', $firstCast['role_other']);
         $this->assertCount(0, $firstCast['role_other']);
-        $this->assertEquals('https://images-na.ssl-images-amazon.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_UY44_CR0,0,32,44_AL_.jpg', $firstCast['thumb']);
-        $this->assertEquals('https://images-na.ssl-images-amazon.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg', $firstCast['photo']);
+        $this->assertEquals('https://images-na.ssl-images-amazon.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@._V1_UY44_CR19,0,32,44_AL_.jpg', $firstCast['thumb']);
+        $this->assertEquals('https://images-na.ssl-images-amazon.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@.jpg', $firstCast['photo']);
     }
 
     public function testCast_tv_multi_episode_one_year() {
@@ -1001,16 +997,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[1]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[1]['content']);
-
-      $this->assertEquals('Character error', $goofs[4]['type']);
-      $this->assertEquals("The doorknob at the Oracle&#39;s apartment is installed backwards. The screws are on the outside of the door, allowing a passer-by to take off the plate and remove the doorknob. Normally the screws would be on the inside to prevent this.", $goofs[4]['content']);
-
-      $this->assertEquals('Character error', $goofs[3]['type']);
-      $this->assertEquals("The streets all have Chicago street names (as observed in Trivia section), including Balbo Avenue. This street name is spelled correctly on signs in the subway station where Neo fights Agent Smith, but Tank directs Trinity and Neo to go to &quot;Balboa&quot; (as in <a href=\"http://www.imdb.com/title/tt0075148/\">Rocky</a>). The DVD captions of Tank&#39;s dialogue also show it as &quot;Balboa.&quot;", $goofs[3]['content']);
-
-      // This fails all the time. Pick a better film for this?
-//      $this->assertEquals('Revealing mistakes', $goofs[102]['type']);
-//      $this->assertEquals("When Neo is being run through the agent training program with the woman in the red dress, Morpheus' sunglasses reflect Neo with a Desert Eagle pistol being held up by an Agent standing in an empty sound stage, not the busy city they're supposed to be in.", $goofs[102]['content']);
     }
 
     public function testQuotes() {
@@ -1028,7 +1014,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertEquals(array(
         "title" => "Watch New Scenes",
-        "url" => "http://www.imdb.com/video/imdb/vi2821566745",
+        "url" => "http://www.imdb.com/videoplayer/vi2821566745",
         "resolution" => "HD",
         "lang" => "",
         "restful_url" => ""
@@ -1036,7 +1022,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertEquals(array(
         "title" => "Trailer #3",
-        "url" => "http://www.imdb.com/video/imdb/vi2906697241",
+        "url" => "http://www.imdb.com/videoplayer/vi2906697241",
         "resolution" => "HD",
         "lang" => "",
         "restful_url" => ""
@@ -1049,8 +1035,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertCount(6, $trailers);
 
-      $this->assertEquals("http://www.imdb.com/video/imdb/vi2821566745", $trailers[0]);
-      $this->assertEquals("http://www.imdb.com/video/imdb/vi2906697241", $trailers[1]);
+      $this->assertEquals("http://www.imdb.com/videoplayer/vi2821566745", $trailers[0]);
+      $this->assertEquals("http://www.imdb.com/videoplayer/vi2906697241", $trailers[1]);
     }
 
     public function testTrailers_no_trailers() {
