@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v5.2.2 (20.08.2017)
+-------------------
+! Fix Person::born() and Person::died() caused by site change
+
 v5.2.1 (07.07.2017)
 -------------------
 ! Fix Person::pubprints(), Person::pubmovies(), Person::pubportraits(), Person::interviews(), Person::articles(), Person::pictorials(), Person::magcovers() caused by site change
