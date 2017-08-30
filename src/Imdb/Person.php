@@ -440,14 +440,14 @@ class Person extends MdbBase {
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
    */
-  public function born() {
+  public function born()
+  {
     if (empty($this->birthday)) {
-      $this->getPage ("Bio");
-      if ( preg_match('|Date of Birth</td>\s*(.*)</td|iUms',$this->page["Bio"],$match) ) {
-        preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
-        preg_match('|/search/name\?birth_year=(\d{4})|ims',$match[1],$dyear);
-        preg_match('|/search/name\?birth_place=.*?"\s*>(.*?)<|ims',$match[1],$dloc);
-        $this->birthday = array("day"=>@$daymon[2],"month"=>@$daymon[3],"mon"=>@$daymon[1],"year"=>@$dyear[1],"place"=>@$dloc[1]);
+      if (preg_match('|Born</td>(.*)</td|iUms', $this->getPage("Bio"), $match)) {
+        preg_match('|/search/name\?birth_monthday=(\d+)-(\d+).*?\n?>(.*?) \d+<|', $match[1], $daymon);
+        preg_match('|/search/name\?birth_year=(\d{4})|ims', $match[1], $dyear);
+        preg_match('|/search/name\?birth_place=.*?"\s*>(.*?)<|ims', $match[1], $dloc);
+        $this->birthday = array("day" => @$daymon[2], "month" => @$daymon[3], "mon" => @$daymon[1], "year" => @$dyear[1], "place" => @$dloc[1]);
       }
     }
     return $this->birthday;
@@ -463,8 +463,8 @@ class Person extends MdbBase {
   public function died() {
     if (empty($this->deathday)) {
       $this->getPage ("Bio");
-      if (preg_match('|Date of Death</td>(.*?)</td|ims',$this->page["Bio"],$match)) {
-        preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?\n?>\d+&nbsp;(.*?)<|',$match[1],$daymon);
+      if (preg_match('|Died</td>(.*?)</td|ims',$this->page["Bio"],$match)) {
+        preg_match('|/search/name\?death_monthday=(\d+)-(\d+).*?\n?>(.*?) \d+<|',$match[1],$daymon);
         preg_match('|/search/name\?death_date=(\d{4})|ims',$match[1],$dyear);
         preg_match('|/search/name\?death_place=.*?"\s*>(.*?)<|ims',$match[1],$dloc);
         preg_match('/\(([^\)]+)\)/ims',$match[1],$dcause);
