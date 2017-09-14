@@ -255,7 +255,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
     public function testMetacriticRating_returns_null_when_no_rating() {
       $imdb = $this->getImdb('0087544');
-      $imdb = $this->getImdb('0087544');
       $this->assertEquals(null, $imdb->metacriticRating());
     }
 
@@ -992,8 +991,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $goofs = $imdb->goofs();
       $this->assertInternalType('array', $goofs);
-      $this->assertGreaterThan(103, count($goofs));
-      $this->assertLessThan(130, count($goofs));
+      $this->assertGreaterThan(125, count($goofs));
+      $this->assertLessThan(140, count($goofs));
 
       $this->assertEquals('Audio/visual unsynchronised', $goofs[1]['type']);
       $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[1]['content']);
@@ -1078,7 +1077,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function test_locations() {
       $imdb = $this->getImdb(107290);
       $locations = $imdb->locations();
-      $this->assertCount(18, $locations);
+      $this->assertCount(16, $locations);
       $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[4]);
     }
 
