@@ -1183,12 +1183,12 @@ class Title extends MdbBase {
       $xp = new \DOMXPath($doc);
       $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li");
       foreach ($cells as $cell) {
-		$link = '';
-		if($a = $cell->getElementsByTagName('a')->item(0)) {
-			$href = preg_replace('!/search/title!i','http://'.$this->imdbsite.'/search/title',$a->getAttribute('href'));
-			$link = "\n-\n" . '<a href="'. $href . '">'. trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
-		}
-		$this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
+        $link = '';
+        if($a = $cell->getElementsByTagName('a')->item(0)) {
+          $href = preg_replace('!/search/title!i','http://'.$this->imdbsite.'/search/title',$a->getAttribute('href'));
+          $link = "\n-\n" . '<a href="'. $href . '">'. trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
+        }
+        $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
       }
     }
     return $this->plot_plot;
@@ -1204,12 +1204,12 @@ class Title extends MdbBase {
     if (empty($this->split_plot)) {
       if (empty($this->plot_plot)) $this->plot_plot = $this->plot();
       foreach($this->plot_plot as $plot) {
-		if(preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims',$plot,$match)) {
+        if(preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims',$plot,$match)) {
           $this->split_plot[] = array("plot"=>$match['plot'],"author"=>array("name"=>$match['author_name'],"url"=>$match['author_url']));
-		} else {
+        } else {
           $this->split_plot[] = array("plot"=>$plot,"author"=>array("name"=>'',"url"=>''));
-		}
-	  }
+        }
+      }
     }
     return $this->split_plot;
   }
@@ -1224,9 +1224,9 @@ class Title extends MdbBase {
   public function synopsis() {
     if (empty($this->synopsis_wiki)) {
       $page = $this->getPage("Synopsis");
-	  if (empty($page)) return $this->synopsis_wiki; // no such page
+      if (empty($page)) return $this->synopsis_wiki; // no such page
       if (preg_match('|<h4[^>]*>Synopsis</h4>\s*<ul[^>]*>\s*<li[^>]*>(.*?)</li>\s*</ul>|ims',$page,$match)) {
-		$this->synopsis_wiki = trim($match[1]);
+        $this->synopsis_wiki = trim($match[1]);
       }
     }
     return $this->synopsis_wiki;
