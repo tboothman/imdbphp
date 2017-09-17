@@ -1202,7 +1202,7 @@ class Title extends MdbBase {
    */
   public function plot_split() {
     if (empty($this->split_plot)) {
-      if (empty($this->plot_plot)) return array();
+      if (empty($this->plot_plot)) $this->plot_plot = $this->plot();
       foreach($this->plot_plot as $plot) {
 		if(preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims',$plot,$match)) {
           $this->split_plot[] = array("plot"=>$match['plot'],"author"=>array("name"=>$match['author_name'],"url"=>$match['author_url']));
