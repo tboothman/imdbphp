@@ -4,7 +4,7 @@ use \Imdb\Title;
 
 class imdb_personTest extends PHPUnit_Framework_TestCase {
   public function test_constructor() {
-    $person = $this->getimdb_person();
+    $this->getimdb_person();
   }
 
   public function test_main_url() {
@@ -24,18 +24,11 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('', $person->savephoto());
   }
 
-  public function test_localurl() {
-    //@todo
-    return;
-    $person = $this->getimdb_person();
-    $this->assertEquals('', $person->localurl());
-  }
-
   public function test_movies_all() {
     $person = $this->getimdb_person();
     $result = $person->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(171, $result);
+    $this->assertCount(172, $result);
   }
 
   public function test_movies_actress() {
@@ -166,8 +159,8 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_self();
     $this->assertInternalType('array', $result);
-    $this->assertCount(25, $result);
-    $movie = $result[1];
+    $this->assertCount(26, $result);
+    $movie = $result[2];
     $this->assertEquals('1095875', $movie['mid']);
     $this->assertEquals('Jônetsu tairiku', $movie['name']);
     $this->assertEquals('2014', $movie['year']);
