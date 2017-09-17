@@ -1,3 +1,4 @@
+language: php
 matrix:
   include:
     - php: 5.3
