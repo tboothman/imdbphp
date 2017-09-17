@@ -132,7 +132,7 @@ class Title extends MdbBase {
       "Quotes" => "/quotes",
       "ReleaseInfo" => "/releaseinfo",
       "Soundtrack" => "/soundtrack",
-      "Synopsis" => "/synopsis",
+      "Synopsis" => "/plotsummary",
       "Taglines" => "/taglines",
       "Title" => "/",
       "Trailers" => "/videogallery/content_type-trailer",
