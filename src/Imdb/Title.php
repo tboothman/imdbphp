@@ -1175,18 +1175,23 @@ class Title extends MdbBase {
    * @see IMDB page /plotsummary
    */
   public function plot() {
-   if (empty($this->plot_plot)) {
-    $this->getPage("Plot");
-    if ( $this->page["Plot"] == "cannot open page" ) return array(); // no such page
-    if (preg_match('!<div class="desc"[^>]*>(.+?)<h4!ims',$this->page["Plot"],$block)) {
-      if (preg_match_all('!<li\s+class="(odd|even)[^"]*"\s*>(.+?)</li>!ims',$block[0],$matches)) {
-        for ($i=0;$i<count($matches[0]);++$i) {
-          $this->plot_plot[$i] = preg_replace('!<a href="/search/title!i','<a href="http://'.$this->imdbsite.'/search/title',$matches[2][$i]);
+    if (empty($this->plot_plot)) {
+      $page = $this->getPage("Plot");
+      if (empty($page)) return array(); // no such page
+      $doc = new \DOMDocument();
+      @$doc->loadHTML($page);
+      $xp = new \DOMXPath($doc);
+      $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li");
+      foreach ($cells as $cell) {
+        $link = '';
+        if($a = $cell->getElementsByTagName('a')->item(0)) {
+          $href = preg_replace('!/search/title!i','http://'.$this->imdbsite.'/search/title',$a->getAttribute('href'));
+          $link = "\n-\n" . '<a href="'. $href . '">'. trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
         }
+        $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
       }
     }
-   }
-   return $this->plot_plot;
+    return $this->plot_plot;
   }
 
  #-----------------------------------------------------[ Full Plot (split) ]---
@@ -1197,10 +1202,12 @@ class Title extends MdbBase {
    */
   public function plot_split() {
     if (empty($this->split_plot)) {
-      if (empty($this->plot_plot)) $plots = $this->plot();
-      for ($i=0;$i<count($this->plot_plot);++$i) {
-        if (preg_match('!<p[^>]*>\s*(?<plot>.*?)\s*</p>\s*<span[^>]+>\s*-\s*<em>Written by\s+<a href="(?<author_url>.*?)"\s*>(?<author_name>.*?)</a>\s*</span>\s*</em>!ims',$this->plot_plot[$i],$match)) {
+      if (empty($this->plot_plot)) $this->plot_plot = $this->plot();
+      foreach($this->plot_plot as $plot) {
+        if(preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims',$plot,$match)) {
           $this->split_plot[] = array("plot"=>$match['plot'],"author"=>array("name"=>$match['author_name'],"url"=>$match['author_url']));
+        } else {
+          $this->split_plot[] = array("plot"=>$plot,"author"=>array("name"=>'',"url"=>''));
         }
       }
     }
@@ -1216,10 +1223,11 @@ class Title extends MdbBase {
    */
   public function synopsis() {
     if (empty($this->synopsis_wiki)) {
-    $this->getPage("Synopsis");
-    if ( $this->page["Synopsis"] == "cannot open page" ) return $this->synopsis_wiki; // no such page
-    if (preg_match('|<div id="swiki\.2\.1">(.*?)</div>|ims',$this->page["Synopsis"],$match))
-      $this->synopsis_wiki = trim($match[1]);
+      $page = $this->getPage("Synopsis");
+      if (empty($page)) return $this->synopsis_wiki; // no such page
+      if (preg_match('|<h4[^>]*>Synopsis</h4>\s*<ul[^>]*>\s*<li[^>]*>(.*?)</li>\s*</ul>|ims',$page,$match)) {
+        $this->synopsis_wiki = trim($match[1]);
+      }
     }
     return $this->synopsis_wiki;
   }
