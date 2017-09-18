@@ -603,15 +603,57 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPlot() {
-        //@TODO
+      $imdb = $this->getImdb('2039393');
+      $plot = $imdb->plot();
+      $this->assertEquals(array(0,0),
+            array(
+              strpos($plot[0], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
+              strpos($plot[1], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark.")
+            ));
     }
 
     public function testPlot_split() {
-        //@TODO
+      $imdb = $this->getImdb('2039393');
+      $plot = $imdb->plot_split();
+      $this->assertEquals(
+            array(
+              array(
+                'plot' => 0,
+                'author' => array(
+                  'name' => 'Paramount Pictures',
+                  'url' => 'http://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_0'
+                )
+              ),
+              array(
+                'plot' => 0,
+                'author' => array(
+                  'name' => '',
+                  'url' => ''
+                )
+              ) 
+            ),
+            array(
+              array(
+                'plot' => strpos($plot[0]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
+                'author' => array(
+                  'name' => $plot[0]['author']['name'],
+                  'url' => $plot[0]['author']['url']
+                )
+              ),
+              array(
+                'plot' => strpos($plot[1]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
+                'author' => array(
+                  'name' => $plot[1]['author']['name'],
+                  'url' => $plot[1]['author']['url']
+                )
+              ) 
+            ));
     }
 
     public function testSynopsis() {
-        //@TODO
+      $imdb = $this->getImdb('2039393');
+      $synopsis = $imdb->synopsis();
+      $this->assertEquals(0, strpos($synopsis, "After his grandpa dies, Jim Bennett goes straight to a Mr. Lees illegal casino. He plays a few hands of blackjack,"));
     }
 
     public function testTaglines() {
