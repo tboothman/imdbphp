@@ -17,6 +17,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
    * 3110958 = Now You See Me 2 -- Testing german language
    * 107290 = Jurassic Park (location with interesting characters)
+   * 0120737 = The Lord of the Rings: The Fellowship of the Ring (historical mpaa)
    *
    * 0306414 = The Wire (TV / has everything)
    * 1286039 = Stargate Universe (multiple creators)
@@ -170,7 +171,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testYearspan() {
-        // @TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals(array('start'=>2002,'end'=>2008), $imdb->yearspan());
     }
 
     public function testMovieTypes() {
@@ -268,7 +270,27 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testComment_split() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $comment_split = $imdb->comment_split();
+        $this->assertEquals(
+                array(
+                    'title' => 'best show ever, owns nypd blues, the shield and so on...',
+                    'date' => '6 June 2005',
+                    'author' => array(
+                        'url' => 'http://www.imdb.com/user/ur5421073/?ref_=tt_urv',
+                        'name' => 'critikal'
+                    ),
+                    'comment' => 0
+                ),
+                array(
+                    'title' => $comment_split['title'],
+                    'date' => $comment_split['date'],
+                    'author' => array(
+                        'url' => $comment_split['author']['url'],
+                        'name' => $comment_split['author']['name']
+                    ),
+                    'comment' => strpos($comment_split['comment'], "the wire is definitely the best show ever made. most realistic stuff ever. i takes a couple of episodes to get into it because it's pretty slow")
+                ));
     }
 
     public function testMovie_recommendations() {
@@ -285,11 +307,18 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testKeywords() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $keywords = $imdb->keywords();
+        $this->assertTrue(in_array('baltimore maryland', $keywords));
+        $this->assertTrue(in_array('police department politics', $keywords));
+        $this->assertTrue(in_array('corruption', $keywords));
+        $this->assertTrue(in_array('homicide department', $keywords));
+        $this->assertTrue(in_array('urban decay', $keywords));
     }
 
     public function testLanguage() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals('English', $imdb->language());
     }
 
     public function testLanguages_onelanguage() {
@@ -380,15 +409,23 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testTagline() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals('A new case begins... (second season)', $imdb->tagline());
     }
 
     public function testSeasons() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals('5', $imdb->seasons());
     }
 
     public function testIs_serial() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertTrue($imdb->is_serial());
+    }
+	
+    public function test_if_not_Is_serial() {
+        $imdb = $this->getImdb();
+        $this->assertFalse($imdb->is_serial());
     }
 
     public function testEpisodeTitle() {
@@ -458,7 +495,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testStoryline() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $this->assertEquals(0, strpos($imdb->storyline(),"Set in Baltimore, this show centers around the city's inner-city drug scene. It starts as mid-level drug dealer"));
     }
 
     public function testPhoto_returns_false_if_no_poster() {
@@ -564,15 +602,24 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMpaa() {
-        //@TODO
+      $imdb = $this->getImdb('0120737');
+      $mpaa = $imdb->mpaa();
+      if( !isset($mpaa['United States']) && $mpaa['United States'] !== '15' ) {
+        $this->assertFalse(true);
+      }
     }
 
     public function testMpaa_hist() {
-        //@TODO
+      $imdb = $this->getImdb('0120737');
+      $mpaa = $imdb->mpaa_hist();
+      if( !isset($mpaa['United States']) && !in_array(array('PG-13','PG-13'),$mpaa['United States'],true) ) {
+        $this->assertFalse(true);
+      }
     }
 
     public function testMpaa_reason() {
-        //@TODO
+      $imdb = $this->getImdb('0120737');
+      $this->assertEquals('Rated PG-13 for epic battle sequences and some scary images', $imdb->mpaa_reason());
     }
 
     public function testProdNotes() {
@@ -657,7 +704,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testTaglines() {
-        //@TODO
+        $imdb = $this->getImdb("0306414");
+        $taglines = $imdb->taglines();
+        $this->assertTrue(in_array('A new case begins... (second season)', $taglines));
+        $this->assertTrue(in_array('Rules change. The game remains the same. (third season)', $taglines));
+        $this->assertTrue(in_array('No corner left behind. (fourth season)', $taglines));
+        $this->assertTrue(in_array('Listen carefully (first season)', $taglines));
+        $this->assertTrue(in_array('All in the game. (fifth season)', $taglines));
+        $this->assertTrue(in_array('Read between the lines (season five)', $taglines));
     }
 
     public function testDirector_single() {

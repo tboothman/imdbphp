@@ -304,7 +304,7 @@ class Title extends MdbBase {
       if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|\xe2\x80\x93|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
         $this->main_yearspan = array('start'=>$match[1],'end'=>$match[3]);
       } else {
-        $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->year());
+        $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->endyear());
       }
     }
     return $this->main_yearspan;
@@ -492,8 +492,8 @@ class Title extends MdbBase {
   public function comment_split() {
     if (empty($this->split_comment)) {
       if ($this->main_comment == "") $comm = $this->comment();
-      if (@preg_match('!<strong[^>]*>(.*?)</strong>.*?<div class="comment-meta">\s*(.*?)\s*\|\s*by\s*(.*?</a>).*?(<p[^>]*>.*?)\s*</div!ims',$this->main_comment,$match)) {
-        @preg_match('!href="(.*?)">(.*)</a!i',$match[3],$author);
+      if (@preg_match('!<strong[^>]*>(.*?)</strong>.*?<div class="comment-meta">\s*(.*?)\s*\|\s*by\s*(.*?</a>).*?<p[^>]*>(.*?)\s*</div!ims',$this->main_comment,$match)) {
+        @preg_match('!href="(.*?)"[^>]*><span[^>]*>(.*)</span!i',$match[3],$author);
         $this->split_comment = array("title"=>$match[1],"date"=>$match[2],"author"=>array("url"=>$author[1],"name"=>$author[2]),"comment"=>trim($match[4]));
       } elseif (@preg_match('!<div class="comment-meta">\s*<meta itemprop="datePublished" content=".+?">\s*(.{10,20})\s*\|\s*by\s*(.*?)\s*&ndash;.*?<div>\s*(.*?)\s*</div>!ims',$this->main_comment,$match)) {
         @preg_match('!href="(.*?)">(.*)</a!i',$match[2],$author);
@@ -539,7 +539,7 @@ class Title extends MdbBase {
   public function keywords() {
     if (empty($this->main_keywords)) {
       $this->getPage("Title");
-      if (preg_match_all('!href="/keyword/.+?"\s*>\s*(.*?)\s*</a>!',$this->page["Title"],$matches))
+      if (preg_match_all('!href="/keyword/.+?"\s*>\s*<span[^>]*>(.*?)</span></a>!',$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
     return $this->main_keywords;
@@ -855,13 +855,13 @@ class Title extends MdbBase {
       $this->getPage("Title");
       if (@preg_match('!Storyline</h2>\s*\n*<div.*?>\s*\n*<?p?>?(.*?)<?/?p?<h4!ims',$this->page["Title"],$match)) {
         if (preg_match('!(.*?)<em class="nobr">Written by!ims',$match[1],$det))
-          $this->main_storyline = $det[1];
+          $this->main_storyline = trim($det[1]);
         elseif (preg_match('!(.*)\s</p>!ims',$match[1],$det))
-          $this->main_storyline = $det[1];
+          $this->main_storyline = trim($det[1]);
         elseif (preg_match('!(.*)\s<span class="see-more inline">!ims',$match[1],$det))
-          $this->main_storyline = $det[1];
+          $this->main_storyline = trim($det[1]);
         elseif (preg_match('!(.*)\s\|!ims',$match[1],$det))
-          $this->main_storyline = $det[1];
+          $this->main_storyline = trim($det[1]);
         else $this->main_storyine = trim($match[1]);
       }
     }
@@ -1111,7 +1111,7 @@ class Title extends MdbBase {
   public function mpaa_reason() {
    if (empty($this->mpaa_justification)) {
     $this->getPage("ParentalGuide");
-    if (preg_match('!href="/mpaa"\s*>.*?</h5>\s*<div class="info-content">\s*(.*?)\s*</div!ims',$this->page["ParentalGuide"],$match))
+    if (preg_match('!id="mpaa-rating"\s*>\s*<td[^>]*>.*</td>\s*<td[^>]*>(.*)</td>!im',$this->page["ParentalGuide"],$match))
       $this->mpaa_justification = trim($match[1]);
    }
    return $this->mpaa_justification;
@@ -1244,7 +1244,7 @@ class Title extends MdbBase {
     $this->getPage("Taglines");
     if ( $this->page["Taglines"] == "cannot open page" ) return array(); // no such page
     if (preg_match_all('!<div class="soda[^>]+>\s*(.*)\s*</div!U',$this->page["Taglines"],$matches))
-      $this->taglines = $matches[1];
+      $this->taglines = array_map('trim',$matches[1]);
    }
    return $this->taglines;
   }
