@@ -299,15 +299,7 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   function yearspan() {
-    if ( empty($this->main_yearspan) ) {
-      $this->getPage("Title");
-      if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|\xe2\x80\x93|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
-        $this->main_yearspan = array('start'=>$match[1],'end'=>$match[3]);
-      } else {
-        $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->endyear());
-      }
-    }
-    return $this->main_yearspan;
+    return $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->endyear());
   }
 
   /** Get movie types (if any specified)
