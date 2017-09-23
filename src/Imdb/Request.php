@@ -61,6 +61,8 @@ class Request {
       curl_setopt($this->ch, CURLOPT_USERAGENT, $config->default_agent);
     if ($config->language)
       $this->addHeaderLine('Accept-Language', $config->language);
+    if( $config->ip_address )
+      $this->addHeaderLine('X-Forwarded-For', $config->ip_address);
   }
 
   public function addHeaderLine ($name, $value) {

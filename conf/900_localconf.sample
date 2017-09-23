@@ -44,6 +44,8 @@ debug = 0
 [proxy]
 ; Enable HTTP-Proxy support
 ; use_proxy = 0
+; Set originating IP address of a client connecting to a web server through an HTTP proxy or a load balancer.
+; ip_address = ''
 ; Set hostname of HTTP-Proxy
 ; proxy_host = ''
 ; Set port on which HTTP-Proxy is listening
