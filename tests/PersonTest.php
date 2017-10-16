@@ -28,7 +28,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(172, $result);
+    $this->assertCount(173, $result);
   }
 
   public function test_movies_actress() {
