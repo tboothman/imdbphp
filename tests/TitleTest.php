@@ -1150,6 +1150,31 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals('writer', $dg['credits'][0]['desc']);
 //        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
     }
+    
+    public function test_releaseInfo() {
+      $imdb = $this->getImdb(107290);
+      $releaseInfo = $imdb->releaseInfo();
+        
+      $this->assertCount(100, $releaseInfo);
+
+      $this->assertEquals(array(
+        'country' => 'USA',
+        'day' => '9',
+        'month' => 'June',
+        'mon' => '06',
+        'year' => '1993',
+        'comment' => '(Washington, D.C.) (premiere)'
+      ), $releaseInfo[0]);
+
+      $this->assertEquals(array(
+        'country' => 'USA',
+        'day' => '11',
+        'month' => 'June',
+        'mon' => '06',
+        'year' => '1993',
+        'comment' => ''
+      ), $releaseInfo[1]); 
+    }
 
     public function test_locations() {
       $imdb = $this->getImdb(107290);

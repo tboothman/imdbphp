@@ -300,12 +300,7 @@ class Title extends MdbBase {
    */
   function yearspan() {
     if ( empty($this->main_yearspan) ) {
-      $this->getPage("Title");
-      if ( preg_match('!<title>.*?\(.*?(\d{4})(\&ndash;|\xe2\x80\x93|-)(\d{4}|\?{4}).*?</title>!i',$this->page['Title'],$match) ) {
-        $this->main_yearspan = array('start'=>$match[1],'end'=>$match[3]);
-      } else {
-        $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->endyear());
-      }
+      $this->main_yearspan = array('start'=>$this->year(),'end'=>$this->endyear());
     }
     return $this->main_yearspan;
   }
@@ -1017,12 +1012,14 @@ class Title extends MdbBase {
    */
   public function alsoknow() {
     if (empty($this->akas)) {
-      $this->getPage("ReleaseInfo");
-      $ak_s = strpos($this->page["ReleaseInfo"], "<a id=\"akas\"");
+      $page = $this->getPage("ReleaseInfo");
+      if (empty($page)) return array(); // no such page
+      
+      $ak_s = strpos($page, "<a id=\"akas\"");
       if ($ak_s == 0)
         return array();
-      $alsoknow_end = strpos($this->page["ReleaseInfo"], "</table>", $ak_s);
-      $alsoknow_all = substr($this->page["ReleaseInfo"], $ak_s, $alsoknow_end - $ak_s);
+      $alsoknow_end = strpos($page, "</table>", $ak_s);
+      $alsoknow_all = substr($page, $ak_s, $alsoknow_end - $ak_s);
       preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
       for ($i = 0; $i < count($matches[1]); $i+=2) {
         $description = trim($matches[1][$i]);
@@ -2032,25 +2029,26 @@ class Title extends MdbBase {
     if (empty($this->release_info)) {
       $page = $this->getPage("ReleaseInfo");
       if (empty($page)) return array(); // no such page
-      $tag_s = strpos($this->page["ReleaseInfo"],'<th class="xxxx">Country</th><th class="xxxx">Date</th>');
-      $tag_e = strpos($this->page["ReleaseInfo"],'</table',$tag_s);
-      $block = substr($this->page["ReleaseInfo"],$tag_s,$tag_e-$tag_s);
+      $tag_s = strpos($page, "<a id=\"releases\"");
+      if ($tag_s == 0)
+        return array();
+      $tag_e = strpos($page,'</table',$tag_s);
+      $block = substr($page,$tag_s,$tag_e-$tag_s);
+      
       preg_match_all('!<tr[^>]*>\s*<td><a[^>]*>(.*?)</a></td>\s*<td[^>]*>(.*?)</td>\s*<td>(.*?)</td>!ims',$block,$matches);
-      $mc = count($matches[0]);
-      for ($i=0;$i<$mc;++$i) {
-        $country = strip_tags($matches[1][$i]);
-        if ( preg_match('!href="/date/(\d{2})-(\d{2})/">\d+ (.*?)</a>\s*<a href="/year/(\d{4})/">!is',$matches[2][$i],$match) ) { // full info
-          $this->release_info[] = array('country'=>$country,'day'=>$match[2],'month'=>$match[3],'mon'=>$match[1],'year'=>$match[4],'comment'=>$matches[3][$i]);
-        } elseif ( preg_match('!(\d{1,2})\s*(.+?)<a href="/year/(\d{4})/.+?"\s*>!is',$matches[2][$i],$match) ) { // full info v2
-          $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>trim($match[2]),'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$matches[3][$i]);
-        } elseif ( !preg_match('|a href=|i',$matches[2][$i],$match) ) { // no links within
-          if ( preg_match('!^(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // month and year
-            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>$match[1],'mon'=>$this->monthNo(trim($match[1])),'year'=>$match[2],'comment'=>$matches[3][$i]);
+      if( ! empty($matches[0]) && $mc = count($matches[0]) ) {
+        for ($i=0;$i<$mc;++$i) {
+          $country = strip_tags($matches[1][$i]);
+          $comment = trim(preg_replace('/\s+/', ' ', $matches[3][$i]));
+          if ( preg_match('!^(\d{1,2})\s(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // day, month and year
+            $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>$match[2],'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$comment);
+          } elseif ( preg_match('!^(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // month and year
+            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>$match[1],'mon'=>$this->monthNo(trim($match[1])),'year'=>$match[2],'comment'=>$comment);
           } elseif ( preg_match('!(\d{4})!',trim($matches[2][$i]),$match) ) { // year at least
-            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>'','mon'=>'','year'=>$match[1],'comment'=>$matches[3][$i]);
+            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>'','mon'=>'','year'=>$match[1],'comment'=>$comment);
+          } else {
+            $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[2][$i])."</pre>");
           }
-        } else {
-          $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[2][$i])."</pre>");
         }
       }
     }
