@@ -88,6 +88,7 @@ class Title extends MdbBase {
   protected $soundtracks = array();
   protected $split_comment = array();
   protected $split_plot = array();
+  protected $split_moviequotes = array();
   protected $taglines = array();
   protected $trailers = array();
   protected $video_sites = array();
@@ -1701,6 +1702,35 @@ class Title extends MdbBase {
       }
     }
     return $this->moviequotes;
+  }
+  
+  /** Get the quotes for a given movie (split-up variant)
+   * @method quotes_split
+   * @return array quote array[string quote, array character]; character: array[string url, string name]
+   * @see IMDB page /quotes
+   */
+  public function quotes_split() {
+    if (empty($this->split_moviequotes)) {
+      if (empty($this->moviequotes)) $quote = $this->quotes();
+      $i = 0;
+      if(!empty($this->moviequotes)) {
+        foreach($this->moviequotes as $moviequotes) {
+          if(@preg_match_all('!<p>\s*(.*?)\s*</p>!',$moviequotes,$matches)) {
+            if(!empty($matches[1])) {
+              foreach($matches[1] as $quote) {
+                if(@preg_match('!href="([^"]*)"\s*>.+?character">(.*?)</span.+?:(.*)!',$quote,$match)) {
+                  $this->split_moviequotes[$i][] = array('quote'=>trim(strip_tags($match[3])),'character'=>array('url'=>$match[1],'name'=>$match[2]));
+                } else {
+                  $this->split_moviequotes[$i][] = array('quote'=>trim(strip_tags($quote)),'character'=>array('url'=>'','name'=>''));
+                }
+              }
+            }
+          }
+          ++$i;
+        }
+      }
+    }
+    return $this->split_moviequotes;
   }
 
 
