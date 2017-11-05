@@ -1410,7 +1410,7 @@ class Title extends MdbBase {
           if (!$role_line) {
             continue;
           }
-          if ($role_line[0] == '(') {
+          if ($role_line[0] == '(' || preg_match('@\d+ episode@',$role_line)) {
             // Start of additional information, stop looking for the role name
             array_unshift($role_lines, $role_line);
             break;
@@ -1432,7 +1432,7 @@ class Title extends MdbBase {
           $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
         }
 
-        if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+))?\)#", $cleaned_role_cell, $matches)) {
+        if (preg_match("#(\d+) episodes?, (\d+)(?:-(\d+))?#", $cleaned_role_cell, $matches)) {
           $dir['role_episodes'] = (int)$matches[1];
           $dir['role_start_year'] = (int)$matches[2];
           if (isset($matches[3])) {
