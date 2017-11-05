@@ -2160,35 +2160,55 @@ class Title extends MdbBase {
   }
 
  #===================================================[ /parentalguide page ]===
+ #------------------------------------------------[ Helper: ParentalGuide Section ]---
+  /** Get lists for the Parental Guide section's
+   * @method protected get_section_list_parental_guide
+   * @param string html
+   * @param string section_id
+   * @return array array[0..n] of strings
+   * @see used by the method parentalGuide
+   */
+  protected function get_section_list_parental_guide( $html, $section_id ) {
+    $tag_s = strpos($html, '<section id="advisory-' . $section_id . '"');
+    if ($tag_s == 0)
+      return array();
+    $tag_e = strpos($html,'</section',$tag_s);
+    $block = substr($html,$tag_s,$tag_e-$tag_s);
+    
+    if (preg_match_all('!<li class="ipl[^"]+">\s*(.*?)\s*<div!is',$block,$matches)) {
+      return array_map('htmlspecialchars_decode',array_map('trim',$matches[1]));
+    }
+    return array();
+  }
+ 
  #-------------------------------------------------[ ParentalGuide Details ]---
   /** Detailed Parental Guide
    * @method parentalGuide
-   * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
+   * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
+   * @return array of strings; keys: Drugs, Sex, Violence, Profanity,
    *         Frightening - and maybe more; values: arguments for the rating
    * @see IMDB page /parentalguide
    */
-  public function parentalGuide() {
+  public function parentalGuide($spoil=FALSE) {
     if (empty($this->parental_guide)) {
       $page = $this->getPage("ParentalGuide");
       if (empty($page)) return array(); // no such page
-      if (preg_match_all('/<div class="section">(.*)<div id="swiki(\.\d+\.\d+|_last)">/iUms',$this->page["ParentalGuide"],$matches)) {
-        $mc = count($matches[0]);
-        for ($i=0;$i<$mc;++$i) {
-          if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
-          $section = $match[1];
-          if (preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match)) $content = trim($match[1]);
-          else $content = '';
-          preg_match('/^(.*)(\s|\/)/U',$section,$match);
-          if (isset($match[1])) $sgot = $match[1];
-          if (empty($sgot)) $sgot = $section;
-          switch($sgot) {
-            case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
-            case "Sex"        :
-            case "Violence"   :
-            case "Profanity"  :
-            case "Frightening":
-            default           : $this->parental_guide[$sgot] = trim($content); break;
+      if (preg_match_all('@section id="advisory-([^"]*)(?<!spoilers)">.+?<h4[^>]+>(.*?)</h4>@s',$page,$matches)) {
+        $section_id   = $matches[1];
+        $section_name = array_map('htmlspecialchars_decode',$matches[2]);
+        foreach($section_id as $key => $id) {
+          if($spoil && 0 !== strpos($id,'spoiler')) {
+            continue;
+          } elseif(!$spoil && 0 === strpos($id,'spoiler')) {
+            continue;
           }
+          switch($array_key = $section_name[$key]) {
+            case 'Alcohol, Drugs & Smoking'    : $array_key = 'Drugs'; break;
+            case 'Sex & Nudity'                : $array_key = 'Sex'; break;
+            case 'Violence & Gore'             : $array_key = 'Violence'; break;
+            case 'Frightening & Intense Scenes': $array_key = 'Frightening'; break;
+          }
+          $this->parental_guide[$array_key] = $this->get_section_list_parental_guide($page,$id);
         }
       }
     }
