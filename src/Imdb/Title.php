@@ -2007,10 +2007,16 @@ class Title extends MdbBase {
     if (empty($this->extreviews)) {
       $page = $this->getPage("ExtReviews");
       if (empty($page)) return array(); // no such page
-      if (preg_match_all('@<li><a href="(.*?)".*?>(.*?)</a>@',$this->page["ExtReviews"],$matches)) {
+      $tag_s = strpos($page, "<ul class=\"simpleList\"");
+      if ($tag_s == 0)
+        return array();
+      $tag_e = strpos($page,'</ul',$tag_s);
+      $block = substr($page,$tag_s,$tag_e-$tag_s);
+      
+      if (preg_match_all('@<a href="(.*?)"[^>]*>(.*?)</a>@',$block,$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
-          $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
+          $this->extreviews[$i] = array("url"=>'http://'.$this->imdbsite.$matches[1][$i], "desc"=>$matches[2][$i]);
         }
       }
     }
