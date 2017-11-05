@@ -176,7 +176,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovieTypes() {
-        // @TODO
+        $imdb = $this->getImdb("0306414");
+        $movieTypes = $imdb->movieTypes();
+        $this->assertEquals('TV Series 2002–2008', $movieTypes[0]);
     }
 
     public function testRuntime() {
@@ -222,7 +224,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
     public function testAspect_ratio() {
         $imdb = $this->getImdb();
-        $this->assertEquals('2.35 : 1', $imdb->aspect_ratio());
+        $this->assertEquals('2.39 : 1', $imdb->aspect_ratio());
     }
 
     public function testAspect_ratio_missing() {
@@ -320,6 +322,33 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLanguages_detailed() {
+        $imdb = $this->getImdb('0306414');
+        $this->assertEquals(array(
+                array(
+                  'name' => 'English',
+                  'code' => 'en',
+                  'comment' => ''
+                ),
+                array(
+                  'name' => 'Greek',
+                  'code' => 'el',
+                  'comment' => ''
+                ),
+                array(
+                  'name' => 'Mandarin',
+                  'code' => 'cmn',
+                  'comment' => ''
+                ),
+                array(
+                  'name' => 'Spanish',
+                  'code' => 'es',
+                  'comment' => ''
+                )
+            ),
+            $imdb->languages_detailed());
+    }
+    
+    public function testLanguages_detailed_comment() {
         //@TODO
     }
 
@@ -1081,6 +1110,30 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertGreaterThan(100, count($quotes));
     }
+    
+    public function testQuotes_split() {
+        $imdb = $this->getImdb("0306414");
+        $quotes_split = $imdb->quotes_split();
+
+        $this->assertGreaterThan(10, count($quotes_split));
+        $this->assertEquals(array(
+                array(
+                    'quote' => '[repeated line]',
+                    'character' => array(
+                        'url' => '',
+                        'name' => ''
+                    )
+                ),
+                array(
+                    'quote' => 'All in the game yo, all in the game.',
+                    'character' => array(
+                        'url' => 'http://www.imdb.com/name/nm0931324/?ref_=tt_trv_qu',
+                        'name' => 'Omar'
+                    )
+                )
+            ),
+            $quotes_split[3]);
+    }
 
     public function testTrailers_all() {
       $imdb = $this->getImdb(2395427);
@@ -1121,6 +1174,22 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertCount(0, $trailers);
     }
+    
+    public function testTrivia() {
+      $imdb = $this->getImdb();
+      $trivia = $imdb->trivia();
+
+      $this->assertGreaterThan(100, count($trivia));
+      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[89]);
+    }
+    
+    public function testTrivia_spoilers() {
+      $imdb = $this->getImdb();
+      $spoil = $imdb->trivia(true);
+
+      $this->assertGreaterThan(10, count($spoil));
+      $this->assertEquals('Body count: 39.', $spoil[6]);
+    }
 
     public function testSoundtrack_nosoundtracks() {
         $imdb = $this->getImdb('1899250');
@@ -1149,6 +1218,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals(8, count($dg['credits']), "Incorrect number of credits");
 //        $this->assertEquals('writer', $dg['credits'][0]['desc']);
 //        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
+    }
+    
+    public function testExtReviews() {
+        $imdb = $this->getImdb();
+        $extReviews = $imdb->extReviews();
+        
+        $this->assertEquals(0, strpos($extReviews[0]['url'], 'http://www.imdb.com/offsite/?page-action=offsite-rogerebert&token=BCYq70CsO'));
+        $this->assertEquals('rogerebert.com [Roger Ebert]',$extReviews[0]['desc']);
     }
     
     public function test_releaseInfo() {
@@ -1181,6 +1258,77 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $locations = $imdb->locations();
       $this->assertCount(16, $locations);
       $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[4]);
+    }
+    
+    public function testProdCompany_empty_notes() {
+      $imdb = $this->getImdb("0306414");
+      $prodCompany = $imdb->prodCompany();
+      $this->assertEquals('Blown Deadline Productions', $prodCompany[0]['name']);
+      $this->assertEquals('http://www.imdb.com/company/co0019588?ref_=ttco_co_1', $prodCompany[0]['url']);
+      $this->assertEquals('', $prodCompany[0]['notes']);
+    }
+    
+    public function testProdCompany() {
+      $imdb = $this->getImdb();
+      $prodCompany = $imdb->prodCompany();
+      $this->assertEquals('Warner Bros.', $prodCompany[0]['name']);
+      $this->assertEquals('http://www.imdb.com/company/co0026840?ref_=ttco_co_1', $prodCompany[0]['url']);
+      $this->assertEquals('(presents)', $prodCompany[0]['notes']);
+    }
+    
+    public function testDistCompany() {
+      $imdb = $this->getImdb();
+      $distCompany = $imdb->distCompany();
+      $this->assertEquals('Roadshow Entertainment', $distCompany[0]['name']);
+      $this->assertEquals('http://www.imdb.com/company/co0152990?ref_=ttco_co_1', $distCompany[0]['url']);
+      $this->assertEquals('(1999) (Australia) (theatrical)', $distCompany[0]['notes']);
+    }
+    
+    public function testSpecialCompany() {
+      $imdb = $this->getImdb();
+      $specialCompany = $imdb->specialCompany();
+      $this->assertEquals('Amalgamated Pixels', $specialCompany[0]['name']);
+      $this->assertEquals('http://www.imdb.com/company/co0012497?ref_=ttco_co_1', $specialCompany[0]['url']);
+      $this->assertEquals('(additional visual effects)', $specialCompany[0]['notes']);
+    }
+    
+    public function testOtherCompany() {
+      $imdb = $this->getImdb();
+      $otherCompany = $imdb->otherCompany();
+      $this->assertEquals('Absolute Rentals', $otherCompany[0]['name']);
+      $this->assertEquals('http://www.imdb.com/company/co0235245?ref_=ttco_co_1', $otherCompany[0]['url']);
+      $this->assertEquals('(post-production rentals)', $otherCompany[0]['notes']);
+    }
+    
+    public function testParentalGuide() {
+      $imdb = $this->getImdb();
+      $parentalGuide = $imdb->parentalGuide();
+      $profanity = $parentalGuide['Profanity'];
+      $drugs = $parentalGuide['Drugs'];
+      $this->assertEquals('9 uses of "hell"', $profanity[3]);
+      $this->assertEquals('The Oracle smokes a cigarette.', $drugs[3]);
+    }
+    
+    public function testParentalGuide_spoilers() {
+      $imdb = $this->getImdb();
+      $parentalGuide = $imdb->parentalGuide(TRUE);
+      $violence = $parentalGuide['Violence'][0];
+      $this->assertEquals(0,strpos($violence,'A woman breaks another man&#39;s arm (we hear a crunch and see the chop without much detail)'));
+    }
+    
+    public function testOfficialsites() {
+      $imdb = $this->getImdb();
+      $officialSites = $imdb->officialSites();
+      $this->assertEquals('https://www.facebook.com/#!/TheMatrixMovie',$officialSites[0]['url']);
+      $this->assertEquals('Official Facebook',$officialSites[0]['name']);
+    }
+    
+    public function testKeywords_all() {
+      $imdb = $this->getImdb();
+      $keywords_all = $imdb->keywords_all();
+      $this->assertGreaterThan(250, count($keywords_all));
+      $this->assertEquals('truth',$keywords_all[36]);
+      $this->assertEquals('human machine relationship',$keywords_all[115]);
     }
 
     public function test_title_redirects_are_followed() {
