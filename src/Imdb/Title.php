@@ -563,11 +563,11 @@ class Title extends MdbBase {
    */
   public function languages() {
     if (empty($this->langs)) {
-      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*?).+?"[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
-        $this->langs = $matches[2];
+      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*)[^>]*>(.*?)</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
+        $this->langs = array_map('trim',$matches[2]);
         $mc = count($matches[2]);
         for ($i = 0; $i < $mc; $i++) {
-          $this->langs_full[] = array('name' => $matches[2][$i], 'code' => $matches[1][$i], 'comment' => $matches[4][$i]);
+          $this->langs_full[] = array('name' => trim($matches[2][$i]), 'code' => trim($matches[1][$i]), 'comment' => trim($matches[4][$i]));
         }
       }
     }
