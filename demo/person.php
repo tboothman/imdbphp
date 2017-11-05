@@ -182,7 +182,10 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td>
             There are <?php echo $tc ?> trivia records. Some examples:
             <ul>
-              <?php for($i=0;$i<5;++$i) { ?>
+              <?php 
+                for($i=0;$i<5;++$i) {
+                if (empty($trivia[$i])) break;
+              ?>
               <li>
                 <?php
                 $t = $trivia[$i];
