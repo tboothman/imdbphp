@@ -1327,8 +1327,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $keywords_all = $imdb->keywords_all();
       $this->assertGreaterThan(250, count($keywords_all));
-      $this->assertEquals('truth',$keywords_all[36]);
-      $this->assertEquals('human machine relationship',$keywords_all[115]);
+      $this->assertTrue(in_array('truth', $keywords_all));
+      $this->assertTrue(in_array('human machine relationship', $keywords_all));
     }
 
     public function test_title_redirects_are_followed() {

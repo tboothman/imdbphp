@@ -564,11 +564,11 @@ class Title extends MdbBase {
    */
   public function languages() {
     if (empty($this->langs)) {
-      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*)[^>]*>(.*?)</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
-        $this->langs = array_map('trim',$matches[2]);
+      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*)[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
+        $this->langs = $matches[2];
         $mc = count($matches[2]);
         for ($i = 0; $i < $mc; $i++) {
-          $this->langs_full[] = array('name' => trim($matches[2][$i]), 'code' => trim($matches[1][$i]), 'comment' => trim($matches[4][$i]));
+          $this->langs_full[] = array('name' => $matches[2][$i], 'code' => $matches[1][$i], 'comment' => trim($matches[4][$i]));
         }
       }
     }
@@ -2043,7 +2043,7 @@ class Title extends MdbBase {
       $tag_e = strpos($page,'</ul',$tag_s);
       $block = substr($page,$tag_s,$tag_e-$tag_s);
       
-      if (preg_match_all('@<a href="(.*?)"[^>]*>(.*?)</a>@',$block,$matches)) {
+      if (preg_match_all('@href="(.*?)"[^>]*>(.*?)</a>@',$block,$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
           $this->extreviews[$i] = array("url"=>'http://'.$this->imdbsite.$matches[1][$i], "desc"=>$matches[2][$i]);
@@ -2211,7 +2211,7 @@ class Title extends MdbBase {
     $tag_e = strpos($html,'</section',$tag_s);
     $block = substr($html,$tag_s,$tag_e-$tag_s);
     
-    if (preg_match_all('!<li class="ipl[^"]+">\s*(.*?)\s*<div!is',$block,$matches)) {
+    if (preg_match_all('!<li class="ipl[^"]+">\s*(.*?)\s*<div!sui',$block,$matches)) {
       return array_map('htmlspecialchars_decode',array_map('trim',$matches[1]));
     }
     return array();
@@ -2229,7 +2229,7 @@ class Title extends MdbBase {
     if (empty($this->parental_guide)) {
       $page = $this->getPage("ParentalGuide");
       if (empty($page)) return array(); // no such page
-      if (preg_match_all('@section id="advisory-([^"]*)(?<!spoilers)">.+?<h4[^>]+>(.*?)</h4>@s',$page,$matches)) {
+      if (preg_match_all('@<section id="advisory-([^"]*)(?<!spoilers)">.+?<h4[^>]+>(.*?)</h4>@sui',$page,$matches)) {
         $section_id   = $matches[1];
         $section_name = array_map('htmlspecialchars_decode',$matches[2]);
         foreach($section_id as $key => $id) {
