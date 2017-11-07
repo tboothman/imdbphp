@@ -2,6 +2,14 @@
 History for IMDBPHP
 ====================
 
+v5.2.4 (07.11.2017)
+-------------------
+! `Title::yearspan()` - returned the incorrect end year sometimes
+! `Title::mpaa_reason()`, `Title::parentalGuide()`, `Title::extReviews()`, `Title::languages_detailed()`, `Title::cast()`
+! `Title::releaseInfo()` returning the wrong day/month #103
++ `Config::$ip_address` which lets you send a 'X-Forwarded-For' header to make imdb think you're using a different IP. This can be used to give better access to a country's titles.
++ `Title::quotes_split()` which provides the data from quotes in a more machine readable format (no html)
+
 v5.2.3 (18.09.2017)
 -------------------
 ! Fix Title::openingWeekend when an entry has no number of screens
@@ -239,7 +247,7 @@ v2.2.1 (20.10.2013)
 -------------------
 ! again site changes, this time they broke the personal credits (actors, composers, writers, etc.)
 * imdb::yearspan() didn't catch all "delimiters" used on the IMDB sites
-+ added new config option "language" (see mdb_config for details – and thanx to strikedaemon for the code!)
++ added new config option "language" (see mdb_config for details ? and thanx to strikedaemon for the code!)
 * changed a bunch of methods from private to protected, to allow overriding them by extension classes
 ! IMDB decided to introduce another /genre/ link to most popular genres, which messed up the genre() method
 ! imdb::plot() and imdb::plot_split() were broken due to another site change
@@ -766,8 +774,8 @@ v0.9.1 (20.01.2008)
 v0.9.0 (06.01.2008)
 -------------------
 ! link to SearchPlotWriters was pointing to wrong server
-+ added gzip support to cache (Jörg Eitemüller)
-+ added support for tv series (Jörg Eitemüller) - new methods:
++ added gzip support to cache (J?rg Eitem?ller)
++ added support for tv series (J?rg Eitem?ller) - new methods:
   episodes() and seasons()
 ! fixed bug concerning genre parsing
 + added support for retrieving the movie quotes - method: quotes()
