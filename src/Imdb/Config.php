@@ -117,6 +117,14 @@ class Config {
   public $use_proxy = false;
   
   /**
+   * Set originating IP address of a client connecting to a web server through an HTTP proxy or a load balancer.
+   * Useful with language for times when Imdb uses your ip address geo-location before Accept-Language header.
+   * If this option is specified, a X-Forwarded-For header with this value will be included in requests to IMDb.
+   * @var string
+   */
+  public $ip_address = '';
+  
+  /**
    * Set hostname of HTTP-Proxy
    * @var string
    */
