@@ -88,6 +88,7 @@ class Title extends MdbBase {
   protected $soundtracks = array();
   protected $split_comment = array();
   protected $split_plot = array();
+  protected $split_moviequotes = array();
   protected $taglines = array();
   protected $trailers = array();
   protected $video_sites = array();
@@ -563,11 +564,11 @@ class Title extends MdbBase {
    */
   public function languages() {
     if (empty($this->langs)) {
-      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*?).+?"[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
+      if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*)[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m', $this->getPage("Title"), $matches)) {
         $this->langs = $matches[2];
         $mc = count($matches[2]);
         for ($i = 0; $i < $mc; $i++) {
-          $this->langs_full[] = array('name' => $matches[2][$i], 'code' => $matches[1][$i], 'comment' => $matches[4][$i]);
+          $this->langs_full[] = array('name' => $matches[2][$i], 'code' => $matches[1][$i], 'comment' => trim($matches[4][$i]));
         }
       }
     }
@@ -1410,7 +1411,7 @@ class Title extends MdbBase {
           if (!$role_line) {
             continue;
           }
-          if ($role_line[0] == '(') {
+          if ($role_line[0] == '(' || preg_match('@\d+ episode@',$role_line)) {
             // Start of additional information, stop looking for the role name
             array_unshift($role_lines, $role_line);
             break;
@@ -1432,7 +1433,7 @@ class Title extends MdbBase {
           $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
         }
 
-        if (preg_match("#\((\d+) episodes?, (\d+)(?:-(\d+))?\)#", $cleaned_role_cell, $matches)) {
+        if (preg_match("#(\d+) episodes?, (\d+)(?:-(\d+))?#", $cleaned_role_cell, $matches)) {
           $dir['role_episodes'] = (int)$matches[1];
           $dir['role_start_year'] = (int)$matches[2];
           if (isset($matches[3])) {
@@ -1701,6 +1702,35 @@ class Title extends MdbBase {
       }
     }
     return $this->moviequotes;
+  }
+  
+  /** Get the quotes for a given movie (split-up variant)
+   * @method quotes_split
+   * @return array quote array[string quote, array character]; character: array[string url, string name]
+   * @see IMDB page /quotes
+   */
+  public function quotes_split() {
+    if (empty($this->split_moviequotes)) {
+      if (empty($this->moviequotes)) $quote = $this->quotes();
+      $i = 0;
+      if(!empty($this->moviequotes)) {
+        foreach($this->moviequotes as $moviequotes) {
+          if(@preg_match_all('!<p>\s*(.*?)\s*</p>!',$moviequotes,$matches)) {
+            if(!empty($matches[1])) {
+              foreach($matches[1] as $quote) {
+                if(@preg_match('!href="([^"]*)"\s*>.+?character">(.*?)</span.+?:(.*)!',$quote,$match)) {
+                  $this->split_moviequotes[$i][] = array('quote'=>trim(strip_tags($match[3])),'character'=>array('url'=>$match[1],'name'=>$match[2]));
+                } else {
+                  $this->split_moviequotes[$i][] = array('quote'=>trim(strip_tags($quote)),'character'=>array('url'=>'','name'=>''));
+                }
+              }
+            }
+          }
+          ++$i;
+        }
+      }
+    }
+    return $this->split_moviequotes;
   }
 
 
@@ -2007,10 +2037,16 @@ class Title extends MdbBase {
     if (empty($this->extreviews)) {
       $page = $this->getPage("ExtReviews");
       if (empty($page)) return array(); // no such page
-      if (preg_match_all('@<li><a href="(.*?)".*?>(.*?)</a>@',$this->page["ExtReviews"],$matches)) {
+      $tag_s = strpos($page, "<ul class=\"simpleList\"");
+      if ($tag_s == 0)
+        return array();
+      $tag_e = strpos($page,'</ul',$tag_s);
+      $block = substr($page,$tag_s,$tag_e-$tag_s);
+      
+      if (preg_match_all('@href="(.*?)"[^>]*>(.*?)</a>@',$block,$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
-          $this->extreviews[$i] = array("url"=>$matches[1][$i], "desc"=>$matches[2][$i]);
+          $this->extreviews[$i] = array("url"=>'http://'.$this->imdbsite.$matches[1][$i], "desc"=>$matches[2][$i]);
         }
       }
     }
@@ -2160,35 +2196,55 @@ class Title extends MdbBase {
   }
 
  #===================================================[ /parentalguide page ]===
+ #------------------------------------------------[ Helper: ParentalGuide Section ]---
+  /** Get lists for the Parental Guide section's
+   * @method protected get_section_list_parental_guide
+   * @param string html
+   * @param string section_id
+   * @return array array[0..n] of strings
+   * @see used by the method parentalGuide
+   */
+  protected function get_section_list_parental_guide( $html, $section_id ) {
+    $tag_s = strpos($html, '<section id="advisory-' . $section_id . '"');
+    if ($tag_s == 0)
+      return array();
+    $tag_e = strpos($html,'</section',$tag_s);
+    $block = substr($html,$tag_s,$tag_e-$tag_s);
+    
+    if (preg_match_all('!<li class="ipl[^"]+">\s*(.*?)\s*<div!sui',$block,$matches)) {
+      return array_map('htmlspecialchars_decode',array_map('trim',$matches[1]));
+    }
+    return array();
+  }
+ 
  #-------------------------------------------------[ ParentalGuide Details ]---
   /** Detailed Parental Guide
    * @method parentalGuide
-   * @return array of strings; keys: Alcohol, Sex, Violence, Profanity,
+   * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
+   * @return array of strings; keys: Drugs, Sex, Violence, Profanity,
    *         Frightening - and maybe more; values: arguments for the rating
    * @see IMDB page /parentalguide
    */
-  public function parentalGuide() {
+  public function parentalGuide($spoil=FALSE) {
     if (empty($this->parental_guide)) {
       $page = $this->getPage("ParentalGuide");
       if (empty($page)) return array(); // no such page
-      if (preg_match_all('/<div class="section">(.*)<div id="swiki(\.\d+\.\d+|_last)">/iUms',$this->page["ParentalGuide"],$matches)) {
-        $mc = count($matches[0]);
-        for ($i=0;$i<$mc;++$i) {
-          if ( !preg_match('|<span>(.*)</span>|iUms',$matches[1][$i],$match) ) continue;
-          $section = $match[1];
-          if (preg_match('|<p id="swiki\.\d+\.\d+\.\d+">(.*)</p>|iUms',$matches[1][$i],$match)) $content = trim($match[1]);
-          else $content = '';
-          preg_match('/^(.*)(\s|\/)/U',$section,$match);
-          if (isset($match[1])) $sgot = $match[1];
-          if (empty($sgot)) $sgot = $section;
-          switch($sgot) {
-            case "Alcohol"    : $this->parental_guide["Drugs"] = trim($content); break;
-            case "Sex"        :
-            case "Violence"   :
-            case "Profanity"  :
-            case "Frightening":
-            default           : $this->parental_guide[$sgot] = trim($content); break;
+      if (preg_match_all('@<section id="advisory-([^"]*)(?<!spoilers)">.+?<h4[^>]+>(.*?)</h4>@sui',$page,$matches)) {
+        $section_id   = $matches[1];
+        $section_name = array_map('htmlspecialchars_decode',$matches[2]);
+        foreach($section_id as $key => $id) {
+          if($spoil && 0 !== strpos($id,'spoiler')) {
+            continue;
+          } elseif(!$spoil && 0 === strpos($id,'spoiler')) {
+            continue;
           }
+          switch($array_key = $section_name[$key]) {
+            case 'Alcohol, Drugs & Smoking'    : $array_key = 'Drugs'; break;
+            case 'Sex & Nudity'                : $array_key = 'Sex'; break;
+            case 'Violence & Gore'             : $array_key = 'Violence'; break;
+            case 'Frightening & Intense Scenes': $array_key = 'Frightening'; break;
+          }
+          $this->parental_guide[$array_key] = $this->get_section_list_parental_guide($page,$id);
         }
       }
     }
