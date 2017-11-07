@@ -103,12 +103,17 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase {
     $results = $search->search('Home 2015', array(TitleSearch::MOVIE));
     $this->assertInternalType('array', $results);
 
-    /* @var $firstResult Title */
-    $firstResult = $results[2];
-    $this->assertInstanceOf('\Imdb\Title', $firstResult);
-    $this->assertEquals("2224026", $firstResult->imdbid());
-    $this->assertEquals("Home", $firstResult->title());
-    $this->assertEquals(2015, $firstResult->year());
+    $found = false;
+    foreach ($results as $result) {
+      if ("2224026" == $result->imdbid()) {
+        $this->assertInstanceOf('\Imdb\Title', $result);
+        $this->assertEquals("2224026", $result->imdbid());
+        $this->assertEquals("Home", $result->title());
+        $this->assertEquals(2015, $result->year());
+        $found = true;
+      }
+    }
+    $this->assertTrue($found, "Did not find Home(II) 2015 in search results");
   }
 
   protected function getimdbsearch() {

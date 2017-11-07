@@ -1232,7 +1232,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb(107290);
       $releaseInfo = $imdb->releaseInfo();
         
-      $this->assertCount(100, $releaseInfo);
+      $this->assertGreaterThanOrEqual(100, count($releaseInfo));
+      $this->assertLessThanOrEqual(105, count($releaseInfo));
 
       $this->assertEquals(array(
         'country' => 'USA',
