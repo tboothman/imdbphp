@@ -1320,7 +1320,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testOfficialsites() {
       $imdb = $this->getImdb();
       $officialSites = $imdb->officialSites();
-      $this->assertEquals('https://www.facebook.com/#!/TheMatrixMovie',$officialSites[0]['url']);
+      $this->assertEquals('https://www.facebook.com/TheMatrixMovie',$officialSites[0]['url']);
       $this->assertEquals('Official Facebook',$officialSites[0]['name']);
     }
     
