@@ -2365,36 +2365,20 @@ class Title extends MdbBase {
     return $this->awards;
   }
 
-  /* Get budget
-  * @param string budg
-  * @return int|null null on failure
-  * @brief Assuming budget is estimated, and in american dollar
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_budget($budg){
-     // Tries to get a single entry
-    if (@preg_match("!(.*?)\s*\(estimated\)!ims", $budg, $opWe)) {
-      $result = $opWe[1];
-      return intval(substr(str_replace(",", "", $result), 1));
-    } else {
-      return null;
-    }
- } // End of get_budget
-
- /* Get budget
+ /*
+  * Get budget
   * @return int|null null on failure / no data
   * @brief Assuming budget is estimated, and in american dollar
   * @see IMDB page / (TitlePage)
   */
   public function budget() {
     if (empty($this->budget)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Budget</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $bud)) { // Opening Weekend
-        $budget = $bud[1];
+      $page = $this->getPage("Title");
+      if (@preg_match("!<h4[^>]+>Budget:</h4>\\$([\d,]+)\n!is", $page, $bud)) { // Opening Weekend
+        $this->budget = intval(str_replace(",", "", $bud[1]));
       } else {
         return null;
       }
-      $this->budget = $this->get_budget($budget);
     }
     return $this->budget;
   }
