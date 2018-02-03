@@ -1,7 +1,7 @@
 {
     "name": "imdbphp/imdbphp",
     "description": "Library for retrieving film and tv information from IMDb",
-    "license": "GPL-2.0",
+    "license": "GPL-2.0-or-later",
     "autoload": {
         "psr-4": {
             "Imdb\\": "src/Imdb"
