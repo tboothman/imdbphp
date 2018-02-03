@@ -213,12 +213,12 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('edited', $runtimes[1]['annotations'][1]);
     }
 
-    // Apocalypse now "153 min | 202 min (Redux)"
+    // Apocalypse now "147 min | 196 min (Redux)"
     public function testRuntimes_two_runtimes_one_annotation() {
         $imdb = $this->getImdb('0078788');
         $runtimes = $imdb->runtimes();
         $this->assertEquals(147, $runtimes[0]['time']);
-        $this->assertEquals(194, $runtimes[1]['time']);
+        $this->assertEquals(196, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
     }
 
@@ -1169,7 +1169,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testTrailers_no_trailers() {
-      $imdb = $this->getImdb(1027544);
+      $imdb = $this->getImdb(149937);
       $trailers = $imdb->trailers();
 
       $this->assertCount(0, $trailers);
