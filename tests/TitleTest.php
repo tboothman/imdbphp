@@ -1258,7 +1258,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb(107290);
       $locations = $imdb->locations();
       $this->assertCount(16, $locations);
-      $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[4]);
+      $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[3]);
     }
     
     public function testProdCompany_empty_notes() {

@@ -2104,7 +2104,7 @@ class Title extends MdbBase {
       $doc = new \DOMDocument();
       @$doc->loadHTML($page);
       $xp = new \DOMXPath($doc);
-      $cells = $xp->query("//div[@id=\"filming_locations_content\"]//dt");
+      $cells = $xp->query("//section[@id=\"filming_locations\"]//dt");
       foreach ($cells as $cell) {
         $this->locations[] = trim($cell->nodeValue);
       }
