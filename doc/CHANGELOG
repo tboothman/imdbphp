@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v5.2.5 (05.02.2018)
+-------------------
+! Fix `Title::locations()` caused by a site change
+! The Box Office / Business page has been removed so several pieces of information are missing, but some are available elsewhere. `Title::budget()` and `Title::filmingDates()` have been fixed but several methods like `Title::openingWeekend()` and `Title::gross()` do not work
+
 v5.2.4 (07.11.2017)
 -------------------
 ! `Title::yearspan()` - returned the incorrect end year sometimes
