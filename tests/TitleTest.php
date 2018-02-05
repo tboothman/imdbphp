@@ -1311,10 +1311,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testParentalGuide_spoilers() {
-      $imdb = $this->getImdb();
+      $imdb = $this->getImdb(120737);
       $parentalGuide = $imdb->parentalGuide(TRUE);
-      $violence = $parentalGuide['Violence'][0];
-      $this->assertEquals(0,strpos($violence,'A woman breaks another man&#39;s arm (we hear a crunch and see the chop without much detail)'));
+      $violence = $parentalGuide['Frightening'][0];
+      $this->assertEquals(0,strpos($violence,'Gandalf&#39;s "death" scene is extremely emotional.'));
     }
     
     public function testOfficialsites() {
