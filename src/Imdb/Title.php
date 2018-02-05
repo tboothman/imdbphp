@@ -108,7 +108,7 @@ class Title extends MdbBase {
   protected $gross = array();
   protected $weekendGross = array();
   protected $admissions = array();
-  protected $filmingDates = array();
+  protected $filmingDates = null;
   protected $moviealternateversions = array();
   protected $isSerial = null;
   protected $episodeSeason = null;
@@ -2653,62 +2653,25 @@ class Title extends MdbBase {
   }
 
   #-------------------------------------------------[ Filming Dates ]---
- /** Get filming dates
-  * @param ref string listFilmingDates
-  * @return array[0..n] of array[beginning,end]
-  * Time format : YYYY-MM-DD
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_filmingDates($listFilmingDates){
-   $temp = $listFilmingDates;
 
-   // Tries to get the beginning
-   if (@preg_match("!(.*?)&nbsp;-!ims",$temp,$beginning))
-
-     if (@preg_match("#[A-Z0-9]#",$beginning[1])) { // Check if there is a date
-       if (@preg_match("!<a(.*?)&nbsp;-!ims",$temp)) { // Check if there  is a linked date
-         if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$beginning[1],$dayMonthB))
-           if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$beginning[1],$yearB))
-             $beginningDate = $yearB[1].'-'.$dayMonthB[1];
-       } else if (@preg_match("!(.*?)&nbsp;-!ims",$temp,$beginning)) {
-         $beginningDate = date('Y-m-d', strtotime($beginning[1]));
-       }
-     }
-
-   // Tries to get the end
-   if (@preg_match("!-&nbsp;(.*?)$!ims",$temp,$end))
-
-     if (@preg_match("#[A-Z0-9]#",$end[1])) { // Check if there is a date
-       if (@preg_match("!-&nbsp;<a(.*?)!ims",$temp)) { // Check if there  is a linked date
-         if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$end[1],$dayMonthE))
-           if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$end[1],$yearE))
-             $endDate = $yearE[1].'-'.$dayMonthE[1];
-       } else if (@preg_match("!-&nbsp;(.*?)$!ims",$temp,$end)) {
-         $endDate = date('Y-m-d', strtotime($end[1]));
-       }
-     }
-
-   // Parse the results in an array
-   $result = array(
-       'beginning' => $beginningDate,
-       'end'       => $endDate
-   );
-
-   return $result;
- }
-
-
- /** Get filming dates
-   * @return array[beginning, end]
+  /**
+   * Get filming dates
+   * @return null|array[beginning, end]
    * Time format : YYYY-MM-DD
-   * @see IMDB page / (TitlePage)
+   * @see IMDB page / (Locations)
    */
-  public function filmingDates() {
+  public function filmingDates()
+  {
     if (empty($this->filmingDates)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Filming Dates</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $filDates)) // Filming Dates
-        $filmingDates = $filDates[1];
-      $this->filmingDates = $this->get_filmingDates($filmingDates);
+      $page = $this->getPage("Locations");
+      if (@preg_match("!<h4[^>]+>Filming Dates</h4>\s*\n*(.*?)(<br/>\n*)*</section!ims", $page, $filDates)) {
+        if (preg_match("/(\d+ \w+ \d{4}) - (\d+ \w+ \d{4})/", strip_tags($filDates[1]), $dates)) {
+          $this->filmingDates = array(
+            'beginning' => date('Y-m-d', strtotime($dates[1])),
+            'end' => date('Y-m-d', strtotime($dates[2])),
+          );
+        }
+      }
     }
     return $this->filmingDates;
   }

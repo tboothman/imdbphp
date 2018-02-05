@@ -1603,9 +1603,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_filmingDates() {
-    $budget = $this->getImdb();
-
-    $filmingDates = $budget->filmingDates();
+    $imdb = $this->getImdb();
+    $filmingDates = $imdb->filmingDates();
     $this->assertInternalType('array', $filmingDates);
     $this->assertEquals('1998-03-14', $filmingDates['beginning']);
     $this->assertEquals('1998-09-01', $filmingDates['end']);
