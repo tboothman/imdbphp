@@ -1372,7 +1372,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $awards = $imdb->awards();
 
       $ifmca = $awards['International Film Music Critics Award (IFMCA)'];
-      $firstEntry = $ifmca['entries'][0];
+      $firstEntry = $ifmca['entries'][1];
 
       $this->assertEquals(1999, $firstEntry['year']);
       $this->assertEquals(false, $firstEntry['won']);

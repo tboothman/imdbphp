@@ -2328,10 +2328,17 @@ class Title extends MdbBase {
         for ($k=0;$k<$ccount;++$k) {
           switch($col['class'][$k]) {
             case "title_award_outcome":
-              $have_title = TRUE; $have_desc = FALSE;
               preg_match('!(?<outcome>.+?)<br\s*/>\s*<span class="award_category">\s*(?<award>.+?)</span>!ims',$col['data'][$k],$data);
               $outcome = trim(strip_tags($data['outcome']));
-              $outcome == "Won" ? $won = TRUE : $won = FALSE;
+              if ($outcome === "Winner" || $outcome === "Won") {
+                $won = true;
+                $outcome = "Won";
+              } else {
+                $won = false;
+                if ($outcome === "Nominee") {
+                  $outcome = "Nominated";
+                }
+              }
               $award = trim($data['award']);
               break;
             case "award_description":
