@@ -2,6 +2,7 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * File caching
@@ -9,7 +10,17 @@ use Psr\Log\LoggerInterface;
  *
  * Config keys used: cachedir cache_expire usezip converttozip usecache storecache
  */
-class Cache extends CacheBase {
+class Cache implements CacheInterface {
+  /**
+   * @var Config
+   */
+  protected $config;
+
+  /**
+   * @var LoggerInterface
+   */
+  protected $logger;
+
   /**
    * Cache constructor.
    * @param Config $config
@@ -17,7 +28,8 @@ class Cache extends CacheBase {
    * @throws Exception
    */
   public function __construct(Config $config, LoggerInterface $logger) {
-    parent::__construct($config, $logger);
+    $this->config = $config;
+    $this->logger = $logger;
 
     if (($this->config->usecache || $this->config->storecache) && !is_dir($this->config->cachedir)) {
       @mkdir($this->config->cachedir, 0700, true);
@@ -30,16 +42,24 @@ class Cache extends CacheBase {
       $this->logger->critical("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
       throw new Exception("[Cache] Configured cache directory [{$this->config->cachedir}] lacks write permission!");
     }
+
+    // @TODO add a limit on how frequently a purge can occur
+    $this->purge();
   }
 
   /**
    * @inheritdoc
    */
-  public function getInternal($key, $cleanKey) {
+  public function get($key, $default = null) {
+    if (!$this->config->usecache) {
+      return $default;
+    }
+
+    $cleanKey = $this->sanitiseKey($key);
     $fname = $this->config->cachedir . '/' . $cleanKey;
     if (!file_exists($fname)) {
       $this->logger->debug("[Cache] Cache miss for [$key]");
-      return null;
+      return $default;
     }
 
     $this->logger->debug("[Cache] Cache hit for [$key]");
@@ -67,7 +87,12 @@ class Cache extends CacheBase {
   /**
    * @inheritdoc
    */
-  public function setInternal($key, $cleanKey, $value) {
+  public function set($key, $value, $ttl = null) {
+    if (!$this->config->storecache) {
+      return false;
+    }
+
+    $cleanKey = $this->sanitiseKey($key);
     $fname = $this->config->cachedir . '/' . $cleanKey;
     $this->logger->debug("[Cache] Writing key [$key] to [$fname]");
     if ($this->config->usezip) {
@@ -75,20 +100,22 @@ class Cache extends CacheBase {
       gzputs($fp, $value);
       gzclose($fp);
     } else { // no zip
-      $this->logger->debug("[Cache] Writing $fname");
       file_put_contents($fname, $value);
     }
+
+    return true;
   }
 
   /**
-   * @inheritdoc
-   *
    * This method looks for files older than the cache_expire set in the
-   * mdb_config and removes them
+   * \Imdb\Config and removes them
    *
-   * @TODO add a limit on how frequently a purge can occur
    */
-  public function purgeInternal() {
+  public function purge() {
+    if (!$this->config->storecache || $this->config->cache_expire == 0) {
+      return;
+    }
+
     $cacheDir = $this->config->cachedir;
     $this->logger->debug("[Cache] Purging old cache entries");
 
@@ -105,4 +132,16 @@ class Cache extends CacheBase {
       }
     }
   }
+
+  protected function sanitiseKey($key) {
+    return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
+  }
+
+  // Some empty functions so we match the interface. These will never be used
+  public function getMultiple($keys, $default = null){}
+  public function clear(){}
+  public function delete($key){}
+  public function deleteMultiple($keys){}
+  public function has($key){}
+  public function setMultiple($values, $ttl = null){}
 }

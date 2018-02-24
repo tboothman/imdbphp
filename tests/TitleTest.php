@@ -68,7 +68,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_constructor_with_custom_cache() {
-      $cache = \Mockery::mock('\Imdb\CacheInterface', function($mock) {
+      $cache = \Mockery::mock('\Psr\SimpleCache\CacheInterface', function($mock) {
         $mock->shouldReceive('get')->andReturn('test');
         $mock->shouldReceive('purge');
       });

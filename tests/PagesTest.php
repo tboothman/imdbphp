@@ -51,12 +51,13 @@ class PagesTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetSavesToCache() {
+    $config = new Config();
+
     $cache = Mockery::mock('\Imdb\Cache');
-
     $cache->shouldReceive('get')->once()->andReturn(null);
-    $cache->shouldReceive('set')->with('title/whatever', 'test')->once()->andReturn(true);
+    $cache->shouldReceive('set')->with('title/whatever', 'test', $config->cache_expire)->once()->andReturn(true);
 
-    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array(new Config(), $cache, new Logger(false)));
+    $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array($config, $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
     $pages->shouldReceive('requestPage')->once()->andReturn('test');
 

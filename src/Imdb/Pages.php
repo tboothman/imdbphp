@@ -2,6 +2,7 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Handles requesting urls, including the caching layer
@@ -99,7 +100,7 @@ class Pages {
   }
 
   protected function saveToCache($url, $page) {
-    $this->cache->set($this->getCacheKey($url), $page);
+    $this->cache->set($this->getCacheKey($url), $page, $this->config->cache_expire);
   }
 
   protected function getCacheKey($url) {

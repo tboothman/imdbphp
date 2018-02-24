@@ -11,6 +11,7 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * A person on IMDb

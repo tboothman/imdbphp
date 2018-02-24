@@ -11,8 +11,9 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
- /**
+/**
   * A title on IMDb
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
@@ -162,8 +163,8 @@ class Title extends MdbBase {
   /**
    * @param string $id IMDb ID. e.g. 285331 for http://www.imdb.com/title/tt0285331/
    * @param Config $config OPTIONAL override default config
-   * @param LoggerInterface $logger OPTIONAL override default logger
-   * @param CacheInterface $cache OPTIONAL override default cache
+   * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+   * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
    */
   public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     parent::__construct($config, $logger, $cache);

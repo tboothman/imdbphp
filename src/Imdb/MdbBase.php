@@ -10,6 +10,7 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Accessing Movie information
@@ -64,8 +65,8 @@ class MdbBase extends Config {
 
   /**
    * @param Config $config OPTIONAL override default config
-   * @param LoggerInterface $logger OPTIONAL override default logger
-   * @param CacheInterface $cache OPTIONAL override default cache
+   * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+   * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
    */
   public function __construct(Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     parent::__construct();
@@ -82,8 +83,6 @@ class MdbBase extends Config {
     $this->logger = empty($logger) ? new Logger($this->debug) : $logger;
     $this->cache = empty($cache) ? new Cache($this->config, $this->logger) : $cache;
     $this->pages = new Pages($this->config, $this->cache, $this->logger);
-
-    $this->cache->purge();
   }
 
   /**
