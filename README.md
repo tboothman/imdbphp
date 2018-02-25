@@ -34,7 +34,7 @@ Install the files:
 * [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
 
 ### Requirements
-* PHP >= 5.3
+* PHP >= 5.6
 * PHP cURL extension
 
 
