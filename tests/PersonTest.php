@@ -28,7 +28,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_all();
     $this->assertInternalType('array', $result);
-    $this->assertCount(174, $result);
+    $this->assertCount(176, $result);
   }
 
   public function test_movies_actress() {
@@ -85,8 +85,8 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_director();
     $this->assertInternalType('array', $result);
-    $this->assertCount(27, $result);
-    $windRises = $result[1];
+    $this->assertCount(28, $result);
+    $windRises = $result[2];
     $this->assertEquals('2013293', $windRises['mid']);
     $this->assertEquals('The Wind Rises', $windRises['name']);
     $this->assertEquals('2013', $windRises['year']);
@@ -97,7 +97,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(), $windRises['addons']);
 
     // Short
-    $mrDough = $result[2];
+    $mrDough = $result[3];
     $this->assertEquals('1857816', $mrDough['mid']);
     $this->assertEquals('Mr. Dough and the Egg Princess', $mrDough['name']);
     $this->assertEquals('2010', $mrDough['year']);
@@ -106,7 +106,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(), $mrDough['addons']);
 
     // TV Series
-    $sherlockHound = $result[19];
+    $sherlockHound = $result[20];
     $this->assertEquals('0088109', $sherlockHound['mid']);
     $this->assertEquals('Sherlock Hound', $sherlockHound['name']);
     $this->assertEquals('', $sherlockHound['year']);
@@ -174,8 +174,8 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_writer();
     $this->assertInternalType('array', $result);
-    $this->assertCount(39, $result);
-    $windRises = $result[2];
+    $this->assertCount(40, $result);
+    $windRises = $result[3];
     $this->assertEquals('2013293', $windRises['mid']);
     $this->assertEquals('The Wind Rises', $windRises['name']);
     $this->assertEquals('2013', $windRises['year']);
