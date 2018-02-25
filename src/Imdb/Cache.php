@@ -133,6 +133,9 @@ class Cache implements CacheInterface {
     }
   }
 
+  /**
+   * Replace characters the OS won't like using with the filesystem
+   */
   protected function sanitiseKey($key) {
     return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
   }

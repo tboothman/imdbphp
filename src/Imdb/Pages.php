@@ -105,8 +105,8 @@ class Pages {
 
   protected function getCacheKey($url) {
     $urlParts = parse_url($url);
-    $cacheKey = $urlParts['path'] . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '');
-    return trim($cacheKey, '/');
+    $cacheKey = trim($urlParts['path'], '/') . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '');
+    return str_replace(array('{', '}', '(', ')', '/', '\\', '@', ':'), '.', $cacheKey);
   }
 
   protected function buildRequest($url) {

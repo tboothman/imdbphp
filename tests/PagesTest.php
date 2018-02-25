@@ -22,7 +22,22 @@ class PagesTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('test', $result);
   }
 
-  public function testGetDoesNotUseCacheForSecondCall() {
+  // In particular PSR16 caches don't allow {}()/\@: in keys
+  public function testGetRetrievesFromAnotherPSR16Cache() {
+    $cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
+    $cache->set('search.title?locations=.test..', 'test');
+
+    $pages = new Pages(new Config(), $cache, new Logger(false));
+
+    // Get something that has characters the PSR16 spec doesn't like
+    $result = $pages->get('/search/title?locations=(test:)');
+
+    $this->assertEquals('test', $result);
+  }
+
+  // It should use its internal cache of the returned strings rather than using the cache object every time
+  // The default cache is on disk and replacement cache would also probably involve some IO
+  public function testGetDoesNotUseCacheObjectForSecondCall() {
     $cache = Mockery::mock('\Imdb\Cache');
     $cache->shouldReceive('get')->once()->andReturn('test');
 
@@ -55,7 +70,7 @@ class PagesTest extends PHPUnit_Framework_TestCase {
 
     $cache = Mockery::mock('\Imdb\Cache');
     $cache->shouldReceive('get')->once()->andReturn(null);
-    $cache->shouldReceive('set')->with('title/whatever', 'test', $config->cache_expire)->once()->andReturn(true);
+    $cache->shouldReceive('set')->with('title.whatever', 'test', $config->cache_expire)->once()->andReturn(true);
 
     $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array($config, $cache, new Logger(false)));
     $pages->shouldAllowMockingProtectedMethods();
