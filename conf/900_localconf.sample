@@ -23,7 +23,7 @@ storecache = 1
 ; Use zip compression for caching the retrieved html-files?
 usezip = 1
 ; Convert non-zip cache-files to zip (check file permissions!)?
-converttozip = 1
+converttozip = 0
 ; Cache expiration: 3600 = 1h, 86400 = 1d, 604800 = 1w (default), 2592000 = 1m
 cache_expire = 604800
 
