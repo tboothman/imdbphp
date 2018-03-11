@@ -64,21 +64,20 @@ class Cache implements CacheInterface {
 
     $this->logger->debug("[Cache] Cache hit for [$key]");
     if ($this->config->usezip) {
-      if (($content = @join("", @gzfile($fname)))) {
-        if ($this->config->converttozip) {
-          @$fp = fopen($fname, "r");
-          $zipchk = fread($fp, 2);
-          fclose($fp);
-          if (!($zipchk[0] == chr(31) && $zipchk[1] == chr(139))) { //checking for zip header
-            /* converting on access */
-            $fp = @gzopen($fname, "w");
-            @gzputs($fp, $content);
-            @gzclose($fp);
-          }
-        }
-
-        return $content;
+      $content = file_get_contents('compress.zlib://' . $fname);
+      if (!$content) {
+        return $default;
       }
+      if ($this->config->converttozip) {
+        @$fp = fopen($fname, "r");
+        $zipchk = fread($fp, 2);
+        fclose($fp);
+        if (!($zipchk[0] == chr(31) && $zipchk[1] == chr(139))) { //checking for zip header
+          /* converting on access */
+          file_put_contents('compress.zlib://' . $fname, $content);
+        }
+      }
+      return $content;
     } else { // no zip
       return file_get_contents($fname);
     }
@@ -123,7 +122,7 @@ class Cache implements CacheInterface {
     $now = time();
     while ($file = $thisdir->read()) {
       if ($file != "." && $file != ".." && $file != ".placeholder") {
-        $fname = $cacheDir . $file;
+        $fname = $cacheDir . '/' . $file;
         if (is_dir($fname))
           continue;
         $mod = filemtime($fname);

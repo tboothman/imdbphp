@@ -89,6 +89,23 @@ class CacheTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('a value', $getValue);
   }
 
+  // Also tests that it can read an ungzipped file even if config is set to gzip
+  public function test_get_gzips_ungzipped_if_converttozip() {
+    $config = $this->getConfig();
+    $config->usezip = false;
+    $cache = new Cache($config, new Logger(false));
+
+    $setOk = $cache->set('test3', 'a value');
+    $this->assertTrue($setOk);
+
+    $config->usezip = true;
+    $config->converttozip = true;
+    $cache = new Cache($config, new Logger(false));
+
+    $getValue = $cache->get('test3');
+    $this->assertEquals('a value', $getValue);
+  }
+
   public function test_purge() {
     $path = realpath(dirname(__FILE__).'/cache') . '/purge';
     @mkdir($path);
