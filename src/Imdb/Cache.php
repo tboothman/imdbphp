@@ -64,7 +64,7 @@ class Cache implements CacheInterface {
 
     $this->logger->debug("[Cache] Cache hit for [$key]");
     if ($this->config->usezip) {
-      $content = file_get_contents('compress.zlib://' . $fname);
+      $content = file_get_contents('compress.zlib://' . $fname); // This can read uncompressed files too
       if (!$content) {
         return $default;
       }
