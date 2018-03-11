@@ -131,6 +131,7 @@ class Cache implements CacheInterface {
           unlink($fname);
       }
     }
+    $thisdir->close();
   }
 
   /**
