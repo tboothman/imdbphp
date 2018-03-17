@@ -832,7 +832,7 @@ class Title extends MdbBase {
           $this->main_storyline = trim($det[1]);
         elseif (preg_match('!(.*)\s\|!ims',$match[1],$det))
           $this->main_storyline = trim($det[1]);
-        else $this->main_storyine = trim($match[1]);
+        else $this->main_storyline = trim($match[1]);
       }
     }
     return $this->main_storyline;
@@ -859,7 +859,7 @@ class Title extends MdbBase {
   /**
    * Get the poster/cover image URL
    * @param boolean $thumb get the thumbnail (182x268) or the full sized image
-   * @return string|boolean photo (string URL if found, FALSE otherwise)
+   * @return string|false photo (string URL if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
    */
   public function photo($thumb = true) {

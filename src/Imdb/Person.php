@@ -84,14 +84,13 @@ class Person extends MdbBase {
   }
 
   /**
-   * @param string id IMDBID to use for data retrieval
+   * @param string $id IMDBID to use for data retrieval
    * @param Config $config OPTIONAL override default config
    * @param LoggerInterface $logger OPTIONAL override default logger
    * @param CacheInterface $cache OPTIONAL override default cache
    */
   public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     parent::__construct($config, $logger, $cache);
-    $this->revision = preg_replace('|^.*?(\d+).*$|','$1','$Revision$');
     $this->setid($id);
   }
 
@@ -229,7 +228,6 @@ class Person extends MdbBase {
         $year = '';
         $type = Title::MOVIE;
         if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>\n?(.*)!ims', $matches[1][$i], $mov) ) continue;
-        if ( preg_match('!<br/>\s*([^>]+)\s*</div!',$matches[0][$i],$char) ) $chname = trim($char[1]);
         $char = array();
         if (preg_match('!<span class="year_column">[^<]*(\d{4})(.*?)</span>!ims',$matches[1][$i],$ty)) $year = $ty[1];
         if ( preg_match('!href="/character/ch(\d{7})[^"]*"\s*>(.*?)</a>!ims',$matches[1][$i],$char) ) {
