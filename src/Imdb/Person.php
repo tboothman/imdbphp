@@ -105,7 +105,6 @@ class Person extends MdbBase {
 
  #-----------------------------------------------[ URL to person main page ]---
   /** Set up the URL to the movie title page
-   * @method main_url
    * @return string url full URL to the current movies main page
    */
   public function main_url(){
@@ -115,7 +114,6 @@ class Person extends MdbBase {
  #=============================================================[ Main Page ]===
  #------------------------------------------------------------------[ Name ]---
   /** Get the name of the person
-   * @method name
    * @return string name full name of the person
    * @see IMDB person page / (Main page)
    */
@@ -133,7 +131,6 @@ class Person extends MdbBase {
 
  #--------------------------------------------------------[ Photo specific ]---
   /** Get cover photo
-   * @method photo
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed photo (string url if found, FALSE otherwise)
@@ -189,7 +186,6 @@ class Person extends MdbBase {
   }
 
   /** Get the URL for the movies cover photo
-   * @method photo_localurl
    * @param optional boolean thumb get the thumbnail (100x140, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
@@ -213,7 +209,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------------[ Filmographie ]---
   /** Get filmography
-   * @method protected filmograf
    * @param ref array where to store the filmography
    * @param string type Which filmografie to retrieve ("actor","producer")
    */
@@ -277,7 +272,6 @@ class Person extends MdbBase {
    *  filmography. Useful e.g. for pages without categories on. It may, however,
    *  contain duplicates if there are categories and a movie is listed in more
    *  than one of them
-   * @method movies_all
    * @return array array[0..n][mid,name,year,title_type,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
@@ -312,7 +306,6 @@ class Person extends MdbBase {
   }
 
   /** Get producers filmography
-   * @method movies_producer
    * @return array array[0..n][mid,name,year,title_type,chid,chname,addons], where chid is
    *         the character IMDB ID, chname the character name, and addons an
    *         array of additional remarks (the things in parenthesis)
@@ -324,7 +317,6 @@ class Person extends MdbBase {
   }
 
   /** Get directors filmography
-   * @method movies_director
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
@@ -334,7 +326,6 @@ class Person extends MdbBase {
   }
 
   /** Get soundtrack filmography
-   * @method movies_soundtrack
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
@@ -344,7 +335,6 @@ class Person extends MdbBase {
   }
 
   /** Get "Misc Crew" filmography
-   * @method movies_crew
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
@@ -354,7 +344,6 @@ class Person extends MdbBase {
   }
 
   /** Get "Thanx" filmography
-   * @method movies_thanx
    * @return array array[0..n][mid,name,year]
    * @see IMDB person page / (Main page)
    */
@@ -364,7 +353,6 @@ class Person extends MdbBase {
   }
 
   /** Get "Self" filmography
-   * @method movies_self
    * @return array array[0..n][mid,name,year,chid,chname], where chid is the
    *         character IMDB ID, and chname the character name
    * @see IMDB person page / (Main page)
@@ -375,7 +363,6 @@ class Person extends MdbBase {
   }
 
   /** Get writers filmography
-   * @method movies_writer
    * @return array array[0..n][mid,name,year,chid,chname], where chid is the
    *         character IMDB ID, and chname the character name
    * @see IMDB person page / (Main page)
@@ -386,7 +373,6 @@ class Person extends MdbBase {
   }
 
   /** Get "Archive Footage" filmography
-   * @method movies_archive
    * @return array array[0..n][mid,name,year,chid,chname], where chid is the
    *         character IMDB ID, and chname the character name
    * @see IMDB person page / (Main page)
@@ -399,7 +385,6 @@ class Person extends MdbBase {
  #==================================================================[ /bio ]===
  #------------------------------------------------------------[ Birth Name ]---
  /** Get the birth name
-  * @method birthname
   * @return string birthname
   * @see IMDB person page /bio
   */
@@ -414,7 +399,6 @@ class Person extends MdbBase {
 
  #-------------------------------------------------------------[ Nick Name ]---
  /** Get the nick name
-  * @method nickname
   * @return array nicknames array[0..n] of strings
   * @see IMDB person page /bio
   */
@@ -436,7 +420,6 @@ class Person extends MdbBase {
 
  #------------------------------------------------------------------[ Born ]---
   /** Get Birthday
-   * @method born
    * @return array|null birthday [day,month,mon,year,place]
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
@@ -456,7 +439,6 @@ class Person extends MdbBase {
 
  #------------------------------------------------------------------[ Died ]---
   /** Get Deathday
-   * @method died
    * @return array deathday [day,month.mon,year,place,cause]
    *         where month is the month name, and mon the month number
    * @see IMDB person page /bio
@@ -477,7 +459,6 @@ class Person extends MdbBase {
 
  #-----------------------------------------------------------[ Body Height ]---
  /** Get the body height
-  * @method height
   * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
   * @see IMDB person page /bio
   */
@@ -494,7 +475,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------------------[ Spouse ]---
  /** Get spouse(s)
-  * @method spouse
   * @return array [0..n] of array spouses [string imdb, string name, array from,
   *         array to, string comment, string children], where from/to are array
   *         [day,month,mon,year] (month is the name, mon the number of the month),
@@ -543,7 +523,6 @@ class Person extends MdbBase {
 
  #---------------------------------------------------------------[ MiniBio ]---
  /** Get the person's mini bio
-  * @method bio
   * @return array bio array [0..n] of array[string desc, array author[url,name]]
   * @see IMDB person page /bio
   */
@@ -574,7 +553,6 @@ class Person extends MdbBase {
 
  #-----------------------------------------[ Helper to Trivia, Quotes, ... ]---
   /** Parse Trivia, Quotes, etc (same structs)
-   * @method protected parparse
    * @param string name
    * @param ref array res
    */
@@ -592,7 +570,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------------------[ Trivia ]---
   /** Get the Trivia
-   * @method trivia
    * @return array trivia array[0..n] of string
    * @see IMDB person page /bio
    */
@@ -603,7 +580,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------------------[ Quotes ]---
   /** Get the Personal Quotes
-   * @method quotes
    * @return array quotes array[0..n] of string
    * @see IMDB person page /bio
    */
@@ -614,7 +590,6 @@ class Person extends MdbBase {
 
  #------------------------------------------------------------[ Trademarks ]---
   /** Get the "trademarks" of the person
-   * @method trademark
    * @return array trademarks array[0..n] of strings
    * @see IMDB person page /bio
    */
@@ -625,7 +600,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------------------[ Salary ]---
   /** Get the salary list
-   * @method salary
    * @return array salary array[0..n] of array movie[strings imdb,name,year], string salary
    * @see IMDB person page /bio
    */
@@ -656,7 +630,6 @@ class Person extends MdbBase {
  #============================================================[ /publicity ]===
  #-----------------------------------------------------------[ Print media ]---
   /** Print media about this person
-   * @method pubprints
    * @return array prints array[0..n] of array[author,title,place,publisher,year,isbn,url],
    *         where "place" refers to the place of publication, and "url" is a link to the ISBN
    * @see IMDB person page /publicity
@@ -705,7 +678,6 @@ class Person extends MdbBase {
 
  #----------------------------------------------------[ Biographical movies ]---
   /** Biographical Movies
-   * @method pubmovies
    * @return array pubmovies array[0..n] of array[imdb,name,year]
    * @see IMDB person page /publicity
    */
@@ -716,7 +688,6 @@ class Person extends MdbBase {
 
  #-----------------------------------------------------------[ Portrayed in ]---
   /** List of movies protraying the person
-   * @method pubportraits
    * @return array pubmovies array[0..n] of array[imdb,name,year]
    * @see IMDB person page /publicity
    */
@@ -759,7 +730,6 @@ class Person extends MdbBase {
 
  #-------------------------------------------------------------[ Interviews ]---
   /** Interviews
-   * @method interviews
    * @return array interviews array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
@@ -774,7 +744,6 @@ class Person extends MdbBase {
 
  #--------------------------------------------------------------[ Articles ]---
   /** Articles
-   * @method articles
    * @return array articles array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
@@ -789,7 +758,6 @@ class Person extends MdbBase {
 
  #-------------------------------------------------------------[ Pictorials ]---
   /** Pictorials
-   * @method pictorials
    * @return array pictorials array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
@@ -804,7 +772,6 @@ class Person extends MdbBase {
 
  #--------------------------------------------------------------[ Magazines ]---
   /** Magazine cover photos
-   * @method magcovers
    * @return array magcovers array[0..n] of array[inturl,name,date,details,auturl,author]
    *         where all elements are strings - just date is an array[day,month,mon,year,full]
    *         (full: as displayed on the IMDB site)
@@ -819,7 +786,6 @@ class Person extends MdbBase {
 
  #---------------------------------------------------------[ Search Details ]---
   /** Set some search details
-   * @method setSearchDetails
    * @param string role
    * @param integer mid IMDB ID
    * @param string name movie-name
@@ -831,7 +797,6 @@ class Person extends MdbBase {
   /** Get the search details
    *  They are just set when the imdb_person object has been initialized by the
    *  imdbpsearch class
-   * @method getSearchDetails
    * @return array SearchDetails (mid,name,role,moviename,year)
    */
   public function getSearchDetails() {
