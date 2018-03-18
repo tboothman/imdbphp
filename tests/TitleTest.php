@@ -169,6 +169,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb("0306414");
         $this->assertEquals(2008, $imdb->endyear());
     }
+    
+    public function testYearspan_for_a_tv_show_that_havent_ended() {
+        $imdb = $this->getImdb("5011816");
+        $this->assertEquals(array('start'=>2015,'end'=>0), $imdb->yearspan());
+    }
 
     public function testYearspan() {
         $imdb = $this->getImdb("0306414");

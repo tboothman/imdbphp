@@ -208,10 +208,10 @@ class Title extends MdbBase {
     $this->getPage("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(?<ititle>.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$imatch)) {
       $ititle = $imatch['ititle'];
-      if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4})).*\)(.*)!',$ititle,$match)) { // serial
+      if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4}|)).*\)(.*)!',$ititle,$match)) { // serial
         $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
-        $this->main_endyear = $match['endyear'];
+        $this->main_endyear = $match['endyear'] ? $match['endyear'] : '0';
         $this->main_title = htmlspecialchars_decode($match['title']);
       } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!',$ititle,$match)) {
         $this->main_movietype = trim($match['movietype']);
