@@ -96,7 +96,7 @@ class Charts extends MdbBase {
   }
 
   protected function buildUrl($context = null) {
-    return "http://" . $this->config->imdbsite . "/chart/";
+    return "https://" . $this->config->imdbsite . "/chart/";
   }
 
 }

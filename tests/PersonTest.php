@@ -9,7 +9,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
 
   public function test_main_url() {
     $person = $this->getimdb_person();
-    $this->assertEquals('http://www.imdb.com/name/nm0594503/', $person->main_url());
+    $this->assertEquals('https://www.imdb.com/name/nm0594503/', $person->main_url());
   }
 
   public function test_name() {

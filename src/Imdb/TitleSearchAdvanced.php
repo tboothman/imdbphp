@@ -16,8 +16,8 @@ namespace Imdb;
 /**
  * Use IMDb's advanced search to get filtered lists of titles
  * e.g. most popular tv shows from 2000
- * @see http://www.imdb.com/search/
- * @see http://www.imdb.com/search/title?year=2015,2015&title_type=feature&explore=has
+ * @see https://www.imdb.com/search/
+ * @see https://www.imdb.com/search/title?year=2015,2015&title_type=feature&explore=has
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2009 by Itzchak Rehberg and IzzySoft
  */
@@ -68,7 +68,7 @@ class TitleSearchAdvanced extends MdbBase {
    * Set which countries of origin you want titles from
    * These are combinatory so you will only get titles that were made in every country you specify
    * @param array $countries Countries are 2/3/4 character codes
-   * @see http://www.imdb.com/country/
+   * @see https://www.imdb.com/country/
    */
   public function setCountries(array $countries) {
     $this->countries = $countries;
@@ -78,7 +78,7 @@ class TitleSearchAdvanced extends MdbBase {
    * Set which languages are in the title
    * These are combinatory so you will only get titles that include every language you specify
    * @param array $languages Languages are 2/3/4 character codes
-   * @see http://www.imdb.com/language/
+   * @see https://www.imdb.com/language/
    */
   public function setLanguages(array $languages) {
     $this->languages = $languages;
@@ -134,7 +134,7 @@ class TitleSearchAdvanced extends MdbBase {
       $queries['sort'] = $this->sort;
     }
 
-    return "http://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
+    return "https://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
   }
 
   /**

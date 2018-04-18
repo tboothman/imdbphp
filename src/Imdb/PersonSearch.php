@@ -83,7 +83,7 @@ class PersonSearch extends MdbBase {
    * @return string url
    */
   protected function buildUrl($context = null) {
-    return "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . "&s=nm";
+    return "https://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . "&s=nm";
   }
 
 }

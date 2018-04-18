@@ -53,7 +53,7 @@ class Request {
     
     $this->urltoopen = $url;
 
-    $this->addHeaderLine('Referer', 'http://' . $config->imdbsite . '/');
+    $this->addHeaderLine('Referer', 'https://' . $config->imdbsite . '/');
 
     if ($config->force_agent)
       curl_setopt($this->ch, CURLOPT_USERAGENT, $config->force_agent);

@@ -107,7 +107,7 @@ class Person extends MdbBase {
    * @return string url full URL to the current movies main page
    */
   public function main_url(){
-   return "http://".$this->imdbsite."/name/nm".$this->imdbid()."/";
+   return "https://".$this->imdbsite."/name/nm".$this->imdbid()."/";
   }
 
  #=============================================================[ Main Page ]===
@@ -531,10 +531,10 @@ class Person extends MdbBase {
      if ( preg_match('!<h4 class="li_group">Mini Bio[^>]+?>(.+?)<(h4 class="li_group"|div class="article")!ims',$this->page["Bio"],$block) ) {
        preg_match_all('!<div class="soda.*?\s*<p>\s*(?<bio>.+?)\s</p>\s*<p><em>- IMDb Mini Biography By:\s*(?<author>.+?)\s*</em>!ims',$block[1],$matches);
        for ($i=0;$i<count($matches[0]);++$i) {
-         $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"http://".$this->imdbsite."/name/nm",
-                              str_replace("href=\"/title/tt","href=\"http://".$this->imdbsite."/title/tt",
-                                str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches['bio'][$i])));
-         $author = 'Written by '.(str_replace('/search/name','http://'.$this->imdbsite.'/search/name',$matches['author'][$i]));
+         $bio_bio["desc"] = str_replace("href=\"/name/nm","href=\"https://".$this->imdbsite."/name/nm",
+                              str_replace("href=\"/title/tt","href=\"https://".$this->imdbsite."/title/tt",
+                                str_replace('/search/name','https://'.$this->imdbsite.'/search/name',$matches['bio'][$i])));
+         $author = 'Written by '.(str_replace('/search/name','https://'.$this->imdbsite.'/search/name',$matches['author'][$i]));
          if (@preg_match('!href="(.+?)"[^>]*>\s*(.*?)\s*</a>!',$author,$match)) {
            $bio_bio["author"]["url"]  = $match[1];
            $bio_bio["author"]["name"] = $match[2];
@@ -562,8 +562,8 @@ class Person extends MdbBase {
     $block = substr($this->page["Bio"],$pos_s,$pos_e - $pos_s);
     if (preg_match_all('!<div class="soda[^>]*>(.*?)</div>!ms',$block,$matches))
       foreach ($matches[1] as $match)
-        $res[] = str_replace('href="/name/nm', 'href="http://'.$this->imdbsite.'/name/nm',
-                 str_replace('href="/title/tt','href="http://'.$this->imdbsite.'/title/tt',$match));
+        $res[] = str_replace('href="/name/nm', 'href="https://'.$this->imdbsite.'/name/nm',
+                 str_replace('href="/title/tt','href="https://'.$this->imdbsite.'/title/tt',$match));
   }
 
  #----------------------------------------------------------------[ Trivia ]---
@@ -816,7 +816,7 @@ class Person extends MdbBase {
    return $urlname;
   }
   protected function buildUrl($page = null) {
-    return "http://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->getUrlSuffix($page);
+    return "https://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->getUrlSuffix($page);
   }
 
   protected function getPage($page = null) {

@@ -159,8 +159,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($bio)) {
           if (count($bio)<2) $idx = 0; else $idx = 1;
           $minibio = $bio[$idx]["desc"];
-          $minibio = preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_mbio)?/','?mid=\\1',$minibio);
-          $minibio = preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_mbio)?/','movie.php?mid=\\1',$minibio);
+          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_mbio)?/','?mid=\\1',$minibio);
+          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_mbio)?/','movie.php?mid=\\1',$minibio);
         ?>
         <tr>
           <td><b>Mini Bio:</b></td>
@@ -189,8 +189,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
               <li>
                 <?php
                 $t = $trivia[$i];
-                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_trv_\d)?/','?mid=\\1',$t);
-                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_trv_\d)?/','movie.php?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_trv_\d)?/','?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_trv_\d)?/','movie.php?mid=\\1',$t);
                 echo $t;
                 ?>
               </li>
@@ -283,7 +283,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
                     if (empty($film["chid"])) {
                       echo $film["chname"];
                     } else { ?>
-                      <a href="http://<?php echo $person->imdbsite ?>/character/ch<?php echo $film["chid"] ?>/"><?php echo $film["chname"] ?></a>
+                      <a href="https://<?php echo $person->imdbsite ?>/character/ch<?php echo $film["chid"] ?>/"><?php echo $film["chname"] ?></a>
                     <?php
                     }
                   }
@@ -380,7 +380,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
                     <?php if (empty($interview['inturl'])) {
                       echo $interview["name"];
                     } else { ?>
-                      <a href="http://<?php echo $person->imdbsite . $interview["inturl"] ?>"><?php echo $interview["name"] ?></a>
+                      <a href="https://<?php echo $person->imdbsite . $interview["inturl"] ?>"><?php echo $interview["name"] ?></a>
                     <?php } ?>
                   </td>
                   <td><?php echo $interview["details"]; ?></td>
@@ -392,7 +392,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
                       if (empty($interview['auturl'])) {
                         echo $interview["author"];
                       } else { ?>
-                        <a href="http://<?php echo $person->imdbsite.$interview["auturl"] ?>"><?php echo $interview["author"] ?></a>
+                        <a href="https://<?php echo $person->imdbsite.$interview["auturl"] ?>"><?php echo $interview["author"] ?></a>
                       <?php 
                       }
                     } ?>

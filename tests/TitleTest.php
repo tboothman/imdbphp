@@ -54,7 +54,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_constructor_with_url_is_coerced_to_7_digit_number() {
-      $imdb = new \Imdb\Title('http://www.imdb.com/title/tt0133093/');
+      $imdb = new \Imdb\Title('https://www.imdb.com/title/tt0133093/');
       $this->assertEquals('0133093', $imdb->imdbid());
     }
 
@@ -683,7 +683,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
                 'plot' => 0,
                 'author' => array(
                   'name' => 'Paramount Pictures',
-                  'url' => 'http://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_0'
+                  'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_0'
                 )
               ),
               array(
@@ -1132,7 +1132,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
                 array(
                     'quote' => 'All in the game yo, all in the game.',
                     'character' => array(
-                        'url' => 'http://www.imdb.com/name/nm0931324/?ref_=tt_trv_qu',
+                        'url' => 'https://www.imdb.com/name/nm0931324/?ref_=tt_trv_qu',
                         'name' => 'Omar'
                     )
                 )
@@ -1148,7 +1148,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertEquals(array(
         "title" => "Watch New Scenes",
-        "url" => "http://www.imdb.com/videoplayer/vi2821566745",
+        "url" => "https://www.imdb.com/videoplayer/vi2821566745",
         "resolution" => "HD",
         "lang" => "",
         "restful_url" => ""
@@ -1156,7 +1156,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertEquals(array(
         "title" => "Trailer #3",
-        "url" => "http://www.imdb.com/videoplayer/vi2906697241",
+        "url" => "https://www.imdb.com/videoplayer/vi2906697241",
         "resolution" => "HD",
         "lang" => "",
         "restful_url" => ""
@@ -1169,8 +1169,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
       $this->assertCount(6, $trailers);
 
-      $this->assertEquals("http://www.imdb.com/videoplayer/vi2821566745", $trailers[0]);
-      $this->assertEquals("http://www.imdb.com/videoplayer/vi2906697241", $trailers[1]);
+      $this->assertEquals("https://www.imdb.com/videoplayer/vi2821566745", $trailers[0]);
+      $this->assertEquals("https://www.imdb.com/videoplayer/vi2906697241", $trailers[1]);
     }
 
     public function testTrailers_no_trailers() {
@@ -1185,7 +1185,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $trivia = $imdb->trivia();
 
       $this->assertGreaterThan(100, count($trivia));
-      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[90]);
+      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[89]);
     }
     
     public function testTrivia_spoilers() {
@@ -1229,7 +1229,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb();
         $extReviews = $imdb->extReviews();
         
-        $this->assertEquals(0, strpos($extReviews[0]['url'], 'http://www.imdb.com/offsite/?page-action=offsite-rogerebert&token=BCYq70CsO'));
+        $this->assertEquals(0, strpos($extReviews[0]['url'], 'https://www.imdb.com/offsite/?page-action=offsite-rogerebert&token=BCYq70CsO'));
         $this->assertEquals('rogerebert.com [Roger Ebert]',$extReviews[0]['desc']);
     }
     
@@ -1270,7 +1270,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb("0306414");
       $prodCompany = $imdb->prodCompany();
       $this->assertEquals('Blown Deadline Productions', $prodCompany[0]['name']);
-      $this->assertEquals('http://www.imdb.com/company/co0019588?ref_=ttco_co_1', $prodCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0019588?ref_=ttco_co_1', $prodCompany[0]['url']);
       $this->assertEquals('', $prodCompany[0]['notes']);
     }
     
@@ -1278,7 +1278,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $prodCompany = $imdb->prodCompany();
       $this->assertEquals('Warner Bros.', $prodCompany[0]['name']);
-      $this->assertEquals('http://www.imdb.com/company/co0026840?ref_=ttco_co_1', $prodCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0026840?ref_=ttco_co_1', $prodCompany[0]['url']);
       $this->assertEquals('(presents)', $prodCompany[0]['notes']);
     }
     
@@ -1286,7 +1286,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $distCompany = $imdb->distCompany();
       $this->assertEquals('Roadshow Entertainment', $distCompany[0]['name']);
-      $this->assertEquals('http://www.imdb.com/company/co0152990?ref_=ttco_co_1', $distCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0152990?ref_=ttco_co_1', $distCompany[0]['url']);
       $this->assertEquals('(1999) (Australia) (theatrical)', $distCompany[0]['notes']);
     }
     
@@ -1294,7 +1294,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $specialCompany = $imdb->specialCompany();
       $this->assertEquals('Amalgamated Pixels', $specialCompany[0]['name']);
-      $this->assertEquals('http://www.imdb.com/company/co0012497?ref_=ttco_co_1', $specialCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0012497?ref_=ttco_co_1', $specialCompany[0]['url']);
       $this->assertEquals('(additional visual effects)', $specialCompany[0]['notes']);
     }
     
@@ -1302,7 +1302,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $otherCompany = $imdb->otherCompany();
       $this->assertEquals('Absolute Rentals', $otherCompany[0]['name']);
-      $this->assertEquals('http://www.imdb.com/company/co0235245?ref_=ttco_co_1', $otherCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0235245?ref_=ttco_co_1', $otherCompany[0]['url']);
       $this->assertEquals('(post-production rentals)', $otherCompany[0]['notes']);
     }
     
