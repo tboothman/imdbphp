@@ -2,6 +2,19 @@
 History for IMDBPHP
 ====================
 
+v6.0.1 (19.04.2018)
+-------------------
+! Try to fix too many open file handles in `Cache::purge()`
+! Speed up reading of cached gzipped files
+! Disable `Config::$converttozip` by default
+! Fix docblocks documentation
+! Fix a typo in `Title::storyline()`
+! Fix `Charts::getChartsBoxOffice()` caused by a site change
+! `Title::endyear()` returned incorrect year if tv show are still on air
+! Fix 302 Found redirection by switching to https
+- Removed invalid `phpDocumentor` @method tags
+- Removed unused code in `Title::filmograf()`
+
 v6.0.0 (26.02.2018)
 -------------------
 ! Drop support for PHP < 5.6
