@@ -64,6 +64,7 @@ class Person extends MdbBase {
   protected $bio_trivia      = array();
   protected $bio_tm          = array();
   protected $bio_salary      = array();
+  protected $bio_quotes      = array();
 
     // "Publicity" page:
   protected $pub_prints      = array();
@@ -73,6 +74,7 @@ class Person extends MdbBase {
   protected $pub_articles    = array();
   protected $pub_pictorial   = array();
   protected $pub_magcovers   = array();
+  protected $pub_pictorials  = array();
 
     // SearchDetails
   protected $SearchDetails   = array();

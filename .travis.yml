@@ -8,4 +8,5 @@ matrix:
 install:
   composer install
 script:
-  composer test
+  - composer test
+  - composer phpstan
