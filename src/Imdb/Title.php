@@ -822,17 +822,9 @@ class Title extends MdbBase {
    */
   public function storyline() {
     if ($this->main_storyline == "") {
-      $this->getPage("Title");
-      if (@preg_match('!Storyline</h2>\s*\n*<div.*?>\s*\n*<?p?>?(.*?)<?/?p?<h4!ims',$this->page["Title"],$match)) {
-        if (preg_match('!(.*?)<em class="nobr">Written by!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s</p>!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s<span class="see-more inline">!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s\|!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        else $this->main_storyline = trim($match[1]);
+      $page = $this->getPage("Title");
+      if (@preg_match('!Storyline</h2>\s*\n*<div.*?>\s*\n*<?p?>?<span itemprop="description">(.*?)</span><?/?p?<h4!ims', $page, $match)) {
+        $this->main_storyline = trim($match[1]);
       }
     }
     return $this->main_storyline;

@@ -263,7 +263,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMetacriticRating_returns_null_when_no_rating() {
-      $imdb = $this->getImdb('0087544');
+      $imdb = $this->getImdb('1899250');
       $this->assertEquals(null, $imdb->metacriticRating());
     }
 
