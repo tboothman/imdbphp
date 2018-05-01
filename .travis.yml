@@ -9,4 +9,3 @@ install:
   composer install
 script:
   - composer test
-  - composer phpstan
