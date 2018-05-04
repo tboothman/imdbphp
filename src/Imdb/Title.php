@@ -805,7 +805,7 @@ class Title extends MdbBase {
   public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
       $page = $this->getPage("Title");
-      if (preg_match('!itemprop="description">\s*(.*?)\s*</div>!ims', $page, $match)) {
+      if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
         $this->main_plotoutline = trim($match[1]);
       } elseif($fallback) {
         $this->main_plotoutline = $this->storyline();
