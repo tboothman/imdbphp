@@ -823,7 +823,7 @@ class Title extends MdbBase {
   public function storyline() {
     if ($this->main_storyline == "") {
       $page = $this->getPage("Title");
-      if (@preg_match('!Storyline</h2>\s*\n*<div.*?>\s*\n*<?p?>?<span itemprop="description">(.*?)</span><?/?p?<h4!ims', $page, $match)) {
+      if (@preg_match('!Storyline</h2>.*?itemprop="description">(.*?)</span>!ims', $page, $match)) {
         $this->main_storyline = trim($match[1]);
       }
     }
