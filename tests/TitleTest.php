@@ -527,13 +527,13 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPhoto() {
         $imdb = $this->getImdb();
         // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('https://ia.media-imdb.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1', $imdb->photo(false));
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1', $imdb->photo(false));
     }
 
     public function testPhoto_thumb() {
         $imdb = $this->getImdb();
         // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('https://ia.media-imdb.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX182_CR0,0,182,268_AL_.jpg', $imdb->photo(true));
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX182_CR0,0,182,268_AL_.jpg', $imdb->photo(true));
     }
 
     public function testSavephoto() {
@@ -879,8 +879,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2008, $firstCast['role_end_year']);
         $this->assertInternalType('array', $firstCast['role_other']);
         $this->assertCount(0, $firstCast['role_other']);
-        $this->assertEquals('https://ia.media-imdb.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@._V1_UY44_CR19,0,32,44_AL_.jpg', $firstCast['thumb']);
-        $this->assertEquals('https://ia.media-imdb.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@.jpg', $firstCast['photo']);
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@._V1_UY44_CR19,0,32,44_AL_.jpg', $firstCast['thumb']);
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BMjM1MDU1Mzg3N15BMl5BanBnXkFtZTgwNTcwNzcyMzI@.jpg', $firstCast['photo']);
     }
 
     public function testCast_tv_multi_episode_one_year() {
@@ -1185,7 +1185,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $trivia = $imdb->trivia();
 
       $this->assertGreaterThan(100, count($trivia));
-      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[89]);
+      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[91]);
     }
     
     public function testTrivia_spoilers() {
