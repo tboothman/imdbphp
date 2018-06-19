@@ -1185,7 +1185,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $trivia = $imdb->trivia();
 
       $this->assertGreaterThan(100, count($trivia));
-      $this->assertEquals('The lobby shootout took ten days to film.', $trivia[91]);
+      $this->assertTrue(in_array('The lobby shootout took ten days to film.', $trivia));
     }
     
     public function testTrivia_spoilers() {
