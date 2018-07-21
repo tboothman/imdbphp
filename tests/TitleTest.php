@@ -1065,14 +1065,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $seasons = $imdb->episodes();
       $this->assertInternalType('array', $seasons);
       $this->assertCount(4, $seasons);
-      $episode = $seasons[1][2];
+      $episode = $seasons[1][14];
 
-      $this->assertEquals('1878585', $episode['imdbid']);
-      $this->assertEquals("Roary Slips Up", $episode['title']);
+      $this->assertEquals('1827207', $episode['imdbid']);
+      $this->assertEquals("Make Up Your Mind Roary", $episode['title']);
       $this->assertEquals('2007', $episode['airdate']);
       $this->assertEquals("", $episode['plot']);
       $this->assertEquals(1, $episode['season']);
-      $this->assertEquals(2, $episode['episode']);
+      $this->assertEquals(14, $episode['episode']);
     }
 
     public function testEpisodes_returns_unknown_season_episodes() {
