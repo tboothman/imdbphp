@@ -635,7 +635,7 @@ class Title extends MdbBase {
     if (empty($this->main_creator)) {
       $this->getPage("Title");
       if (@preg_match("#Creators?:\</h4\>[\s\n]*(.*?)(</div|<a class=\"tn15more)#ms", $this->page["Title"], $match)) {
-        if (preg_match_all('#/name/nm(\d{7}).*?><span.+?>(.*?)</span#s', $match[1], $matches)) {
+        if (preg_match_all('#/name/nm(\d+).*?><span.+?>(.*?)</span#s', $match[1], $matches)) {
           for ($i = 0; $i < count($matches[0]); ++$i)
             $this->main_creator[] = array('name' => $matches[2][$i], 'imdb' => $matches[1][$i]);
         }
@@ -1347,7 +1347,7 @@ class Title extends MdbBase {
           'thumb' => null,
           'photo' => null
       );
-      $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims', '$1', $cels[1]);
+      $dir["imdb"] = preg_replace('!.*href="/name/nm(\d+)/.*!ims', '$1', $cels[1]);
       $dir["name"] = trim(strip_tags($cels[1]));
       if (empty($dir['name']))
         continue;
@@ -1441,7 +1441,7 @@ class Title extends MdbBase {
    if (!$writing_rows) return array();
    for ( $i = 0; $i < count ($writing_rows); $i++){
      $wrt = array();
-     if ( preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
+     if ( preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
        $wrt['imdb'] = $match[1];
        $wrt['name'] = trim($match[2]);
      } elseif ( preg_match('!<td\s+class="name">(.+?)</td!ims',$writing_rows[$i],$match) ) {
@@ -1512,7 +1512,7 @@ class Title extends MdbBase {
     }
     foreach ($composer_rows as $composer_row) {
       $composer = array();
-      if (preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims', $composer_row, $match)) {
+      if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $composer_row, $match)) {
         $composer['imdb'] = $match[1];
         $composer['name'] = trim($match[2]);
       } elseif (preg_match('!<td\s+class="name">(.+?)</td!ims', $composer_row, $match)) {
@@ -2268,7 +2268,7 @@ class Title extends MdbBase {
               break;
             case "award_description":
               $desc = trim($col['data'][$k]);
-              if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
+              if ( preg_match_all( '|<a href\="/name/nm(\d+)[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
                 $people = isset( $data[0][0] ) ? array_combine($data[1],$data[2]) : array();
                 preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
                 if (substr($cat,0,3)=='<a ') $cat = '';

@@ -100,7 +100,7 @@ class MdbBase extends Config {
   protected function setid ($id) {
     if (is_numeric($id)) {
       $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
-    } elseif (preg_match("/(?:nm|tt)(\d{7})/", $id, $matches)) {
+    } elseif (preg_match("/(?:nm|tt)(\d{7,8})/", $id, $matches)) {
       $this->imdbID = $matches[1];
     } else {
       $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
