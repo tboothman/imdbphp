@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v6.0.2 (12.08.2018)
+-------------------
+! Fixed error when fetching languages for a title that had none
+! Removed rubbish data in `Title::plot()` when title had no plot
+! Fixed people with an ID of over 10 million not being parsed correctly
+
 v6.0.1 (19.04.2018)
 -------------------
 ! Try to fix too many open file handles in `Cache::purge()`

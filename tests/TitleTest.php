@@ -1193,7 +1193,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $spoil = $imdb->trivia(true);
 
       $this->assertGreaterThan(10, count($spoil));
-      $this->assertEquals('Body count: 39.', $spoil[6]);
+      $this->assertEquals('Body count: 39.', $spoil[7]);
     }
 
     public function testSoundtrack_nosoundtracks() {
