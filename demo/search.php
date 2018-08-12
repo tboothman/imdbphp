@@ -15,34 +15,34 @@ require __DIR__ . "/../bootstrap.php";
 require "inc.php";
 
 # If MID has been explicitly given, we don't need to search:
-if (!empty($_GET["mid"]) && preg_match('/^(tt|nm|)([0-9]+)$/',$_GET["mid"],$matches)) {
-  $searchtype = !empty($matches[1]) ? $matches[1] : $_GET["searchtype"];
-  switch($searchtype) {
-    case "nm" : header("Location: person.php?mid=".$matches[2]); break;
-    default   : header("Location: movie.php?mid=".$matches[2]); break;
-  }
-  return;
+if (!empty($_GET["mid"]) && preg_match('/^(tt|nm|)([0-9]+)$/', $_GET["mid"], $matches)) {
+    $searchtype = !empty($matches[1]) ? $matches[1] : $_GET["searchtype"];
+    switch ($searchtype) {
+        case "nm": header("Location: person.php?mid=".$matches[2]); break;
+        default: header("Location: movie.php?mid=".$matches[2]); break;
+    }
+    return;
 }
 
 # If we have no MID and no NAME, go back to search page
 if (empty($_GET["name"])) {
-  header("Location: index.html");
-  return;
+    header("Location: index.html");
+    return;
 }
 
 # Still here? Then we need to search for the movie:
 if ($_GET['searchtype'] === 'nm') {
-  $headname = "Person";
-  $search = new \Imdb\PersonSearch();
-  $results = $search->search($_GET["name"]);
-} else {
-  $headname = "Movie";
-  $search = new \Imdb\TitleSearch();
-  if ($_GET["searchtype"] == "episode") {
-    $results = $search->search($_GET["name"], array(\Imdb\TitleSearch::TV_EPISODE));
-  } else {
+    $headname = "Person";
+    $search = new \Imdb\PersonSearch();
     $results = $search->search($_GET["name"]);
-  }
+} else {
+    $headname = "Movie";
+    $search = new \Imdb\TitleSearch();
+    if ($_GET["searchtype"] == "episode") {
+        $results = $search->search($_GET["name"], [\Imdb\TitleSearch::TV_EPISODE]);
+    } else {
+        $results = $search->search($_GET["name"]);
+    }
 }
 ?>
 
@@ -62,7 +62,7 @@ if ($_GET['searchtype'] === 'nm') {
           $details = $res->getSearchDetails();
           $hint = '';
           if (!empty($details)) {
-            $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
+              $hint = " (".$details["role"]." in <a href='movie.php?mid=".$details["mid"]."'>".$details["moviename"]."</a> (".$details["year"]."))";
           } ?>
           <tr>
             <td><a href="person.php?mid=<?php echo $res->imdbid() ?>"><?php echo $res->name() ?></a><?php echo $hint ?></td>

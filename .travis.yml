@@ -9,3 +9,4 @@ install:
   composer install
 script:
   - composer test
+  - composer lint
