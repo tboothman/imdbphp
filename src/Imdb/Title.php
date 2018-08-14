@@ -126,7 +126,7 @@ class Title extends MdbBase {
       "Goofs" => "/trivia?tab=gf",
       "Keywords" => "/keywords",
       "Locations" => "/locations",
-      "MovieConnections" => "/trivia?tab=mc",
+      "MovieConnections" => "/movieconnections",
       "OfficialSites" => "/officialsites",
       "ParentalGuide" => "/parentalguide",
       "Plot" => "/plotsummary",
@@ -1915,12 +1915,13 @@ class Title extends MdbBase {
    * @return array [0..n] of array mid,name,year,comment - or empty array if not found
    */
   protected function parseConnection($conn) {
+    $arr = array();
     $tag_s = strpos($this->page["MovieConnections"],"<h4 class=\"li_group\">$conn");
     if (empty($tag_s)) return array(); // no such feature
     $tag_e = strpos($this->page["MovieConnections"],"<h4 class=\"li",$tag_s+4);
-    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<script",$tag_s);
+    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<h2",$tag_s);
     $block = substr($this->page["MovieConnections"],$tag_s,$tag_e-$tag_s);
-    if (preg_match_all('!<a href="(.*?)">(.*?)</a>&nbsp;\((\d{4})\)(.*<br\s*/>(.*?)\s*</div>)?!ims',$block,$matches)) {
+    if (preg_match_all('!<a href="(.*?)">(.*?)</a>(?:&nbsp;\((\d{4})\))?(.*?<br\s*/>(.*?)\s*</div>)?!ims',$block,$matches)) {
       $this->debug_object($matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
