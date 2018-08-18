@@ -995,7 +995,7 @@ class Title extends MdbBase {
   public function sound() {
    if (empty($this->sound)) {
     $this->getPage("Title");
-    if (preg_match_all("|/search/title\?sound_mixes=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
+    if (preg_match_all("|/search/title\?sound_mixes=[^>]+>\s*(.*?)</|",$this->page["Title"],$matches))
       $this->sound = $matches[1];
    }
    return $this->sound;
