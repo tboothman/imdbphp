@@ -597,7 +597,7 @@ class Title extends MdbBase {
   public function colors() {
     if (empty($this->moviecolors)) {
       $this->getPage("Title");
-      if (preg_match_all("|/search/title\?colors=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
+      if (preg_match_all("|/search/title\?colors=[^>]+?>\s?(.*?)</a|",$this->page["Title"],$matches))
         $this->moviecolors = $matches[1];
     }
     return $this->moviecolors;
