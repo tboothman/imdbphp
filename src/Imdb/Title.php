@@ -135,6 +135,7 @@ class Title extends MdbBase {
       "Soundtrack" => "/soundtrack",
       "Synopsis" => "/plotsummary",
       "Taglines" => "/taglines",
+      "Technical" => "/technical",
       "Title" => "/",
       "Trailers" => "/videogallery/content_type-trailer",
       "Trivia" => "/trivia",
@@ -327,6 +328,11 @@ class Title extends MdbBase {
       if (@preg_match('!Runtime:</h4>\s*(.+?)\s*</div!ms',$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
+    if ($this->main_runtime == "") {
+      $this->getPage("Technical");
+      if (@preg_match('!Runtime.*?<td>(.+?)</td!ms',$this->page["Technical"],$match))
+        $this->main_runtime = $match[1];
+    }
     return $this->main_runtime;
   }
 
@@ -354,11 +360,11 @@ class Title extends MdbBase {
     if (empty($this->movieruntimes)) {
       $this->movieruntimes = array();
       $rt = $this->runtime_all();
-      foreach (explode('|', strip_tags($rt)) as $runtimestring) {
-        if (preg_match("/(\d+) min/", $runtimestring, $matches)) {
-          $runtime = $matches[1];
+      foreach (preg_split('!(\||<br>)!', strip_tags($rt,'<br>')) as $runtimestring) {
+        if (preg_match_all("/(\d+\s+hr\s+\d+\s+min)?\((\d+)\s+min\)|(\d+)\s+min/", $runtimestring, $matches, PREG_SET_ORDER, 0)) {
+          $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][3]) ? $matches[0][3] : 0);
           $annotations = array();
-          if (preg_match_all("/\((.+?)\)/", $runtimestring, $matches)) {
+          if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", $runtimestring, $matches)) {
             $annotations = $matches[1];
           }
           $this->movieruntimes[] = array("time"=>$runtime, "country"=>'', "comment"=>'', "annotations" => $annotations);
