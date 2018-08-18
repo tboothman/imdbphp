@@ -192,6 +192,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(136, $imdb->runtime());
     }
 
+    public function testRuntime_episode() {
+      $imdb = $this->getImdb('0579539');
+      $this->assertEquals(42, $imdb->runtime());
+    }
+
     public function testRuntime_no_runtime_in_technical_details() {
         $imdb = $this->getImdb('1570728');
         $this->assertEquals(118, $imdb->runtime());

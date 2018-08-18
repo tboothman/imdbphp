@@ -337,18 +337,12 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function runtime() {
-    $runarr = $this->runtimes();
-    if (isset($runarr[0]["time"])) {
-      return $runarr[0]["time"];
+    $jsonValue = isset($this->jsonLD()->duration) ? $this->jsonLD()->duration : (isset($this->jsonLD()->timeRequired) ? $this->jsonLD()->timeRequired : null);
+    if (isset($jsonValue) && preg_match('/PT((\d+)H)?(\d+)M/', $jsonValue, $matches)) {
+      return $matches[2] * 60 + $matches[3];
     }
 
-    // No runtimes in tech details? Maybe there's one under the title
-    $this->getPage("Title");
-    if (preg_match('/<time itemprop="duration" datetime="PT(\d+)M"/', $this->page["Title"], $matches)) {
-      return (int)$matches[1];
-    }
-
-    return NULL;
+    return null;
   }
 
   /**
