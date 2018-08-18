@@ -401,8 +401,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('Color', $colors[1]);
     }
 
-    public function testCreator_no_creators() {
-      // A little weak to test a movie for this, but it is testing a missing field
+    public function testCreator_no_creators_because_its_a_film() {
       $imdb = $this->getImdb('0133093');
       $creators = $imdb->creator();
 

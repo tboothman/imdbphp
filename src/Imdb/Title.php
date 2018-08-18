@@ -65,7 +65,6 @@ class Title extends MdbBase {
   protected $main_year = -1;
   protected $main_endyear = -1;
   protected $main_yearspan = array();
-  protected $main_creator = array();
   protected $main_tagline = "";
   protected $main_storyline = "";
   protected $main_prodnotes = array();
@@ -599,21 +598,23 @@ class Title extends MdbBase {
 
  #---------------------------------------------------------------[ Creator ]---
   /**
-   * Get the creator of a movie (most likely for seasons only)
+   * Get the creator(s) of a TV Show
    * @return array creator (array[0..n] of array[name,imdb])
    * @see IMDB page / (TitlePage)
    */
   public function creator() {
-    if (empty($this->main_creator)) {
-      $this->getPage("Title");
-      if (@preg_match("#Creators?:\</h4\>[\s\n]*(.*?)(</div|<a class=\"tn15more)#ms", $this->page["Title"], $match)) {
-        if (preg_match_all('#/name/nm(\d+).*?><span.+?>(.*?)</span#s', $match[1], $matches)) {
-          for ($i = 0; $i < count($matches[0]); ++$i)
-            $this->main_creator[] = array('name' => $matches[2][$i], 'imdb' => $matches[1][$i]);
+    $result = array();
+    if ($this->jsonLD()->{'@type'} === 'TVSeries' && isset($this->jsonLD()->creator) && is_array($this->jsonLD()->creator)) {
+      foreach ($this->jsonLD()->creator as $creator) {
+        if ($creator->{'@type'} === 'Person') {
+          $result[] = array(
+            'name' => $creator->name,
+            'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
+          );
         }
       }
     }
-    return $this->main_creator;
+    return $result;
   }
 
  #---------------------------------------------------------------[ Tagline ]---
