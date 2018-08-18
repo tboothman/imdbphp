@@ -338,7 +338,8 @@ class Title extends MdbBase {
   public function runtime() {
     $jsonValue = isset($this->jsonLD()->duration) ? $this->jsonLD()->duration : (isset($this->jsonLD()->timeRequired) ? $this->jsonLD()->timeRequired : null);
     if (isset($jsonValue) && preg_match('/PT((\d+)H)?(\d+)M/', $jsonValue, $matches)) {
-      return $matches[2] * 60 + $matches[3];
+      $runtime = isset($matches[2]) ? intval($matches[2]) * 60 : 0;
+      return $runtime + intval($matches[3]);
     }
 
     return null;
