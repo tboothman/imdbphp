@@ -1214,6 +1214,19 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertGreaterThan(10, count($spoil));
       $this->assertEquals('Body count: 39.', $spoil[7]);
     }
+    
+    public function testMovieconnection_followed_by() {
+      $imdb = $this->getImdb();
+      $conn = $imdb->movieconnection();
+
+      $this->assertGreaterThan(5, count($conn["followedBy"]));
+      $this->assertEquals(array(
+        'mid' => '0366179',
+        'name' => 'The Second Renaissance Part I',
+        'year' => '2003',
+        'comment' => ''
+      ), $conn["followedBy"][0]);
+    }
 
     public function testSoundtrack_nosoundtracks() {
         $imdb = $this->getImdb('7618100');
