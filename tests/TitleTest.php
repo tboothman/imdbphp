@@ -454,6 +454,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('The Train Job', $imdb->episodeTitle());
     }
 
+  public function testEpisodeTitle_film() {
+    $imdb = $this->getImdb();
+    $this->assertEquals('', $imdb->episodeTitle());
+  }
+
     public function testEpisodeSeason() {
       $imdb = $this->getImdb('0579539');
       $this->assertEquals(1, $imdb->episodeSeason());

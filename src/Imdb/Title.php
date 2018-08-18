@@ -678,12 +678,7 @@ class Title extends MdbBase {
   public function episodeTitle() {
     if (!$this->isEpisode()) return "";
 
-    $page = $this->getPage("Title");
-
-    if (preg_match("@<h1 itemprop=\"name\" class=\"\">(.+?)</h1>@", $page, $matches)) {
-       return trim(str_replace('&nbsp;', ' ', $matches[1]));
-    }
-    return "";
+    return $this->jsonLD()->name;
   }
 
   private function populateEpisodeSeasonEpisode() {
@@ -727,12 +722,11 @@ class Title extends MdbBase {
   public function episodeAirDate() {
     if (!$this->isEpisode()) return "";
 
-    $page = $this->getPage("Title");
-
-    if (preg_match("@<meta itemprop=\"datePublished\" content=\"([\d\-]+)\" />@", $page, $matches)) {
-      return $matches[1];
+    if (!isset($this->jsonLD()->datePublished)) {
+      return '';
     }
-    return "";
+
+    return $this->jsonLD()->datePublished;
   }
 
   /**
