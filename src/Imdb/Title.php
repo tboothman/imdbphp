@@ -114,6 +114,7 @@ class Title extends MdbBase {
   protected $isSerial = null;
   protected $episodeSeason = null;
   protected $episodeEpisode = null;
+  protected $jsonLD = null;
 
   protected $pageUrls = array(
       "AlternateVersions" => '/alternateversions',
@@ -390,34 +391,12 @@ class Title extends MdbBase {
   }
 
  #----------------------------------------------------------[ Movie Rating ]---
-  /**
-   * Setup votes
-   */
-  protected function rate_vote() {
-    $page = $this->getPage("Title");
-
-    if (preg_match('!itemprop="ratingValue">(\d{1,2}[\.,]\d)!i', $page, $match)) {
-      $rating = str_replace(',', '.', $match[1]);
-      $this->main_rating = $rating;
-    } else {
-      $this->main_rating = 0;
-    }
-
-    if (preg_match('!itemprop="ratingCount">([\d\.,]+)</span!i', $page, $match)) {
-      $votes = str_replace(array('.', ','), '', $match[1]);
-      $this->main_votes = (int)$votes;
-    } else {
-      $this->main_votes = 0;
-    }
-  }
-
   /** Get movie rating
    * @return string rating current rating as given by IMDB site
    * @see IMDB page / (TitlePage)
    */
   public function rating () {
-    if ($this->main_rating == -1) $this->rate_vote();
-    return $this->main_rating;
+    return isset($this->jsonLD()->aggregateRating->ratingValue) ? $this->jsonLD()->aggregateRating->ratingValue : '';
   }
 
   /**
@@ -426,8 +405,7 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   public function votes() {
-    if ($this->main_votes == -1) $this->rate_vote();
-    return $this->main_votes;
+    return isset($this->jsonLD()->aggregateRating->ratingCount) ? $this->jsonLD()->aggregateRating->ratingCount : 0;
   }
 
   /**
@@ -836,14 +814,12 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   private function populatePoster() {
-    preg_match('!<img [^>]+src="([^"]+)"[^>]+itemprop="image" />!ims', $this->getPage("Title"), $match);
-    if (empty($match[1])) return false;
-    $this->main_poster_thumb = $match[1];
-    if ( preg_match('|(.*\._V1).*|iUs',$match[1],$mo) ) {
-      $this->main_poster = $mo[1];
-      return true;
-    } else {
-      return false;
+    if (isset($this->jsonLD()->image)) {
+      $this->main_poster = $this->jsonLD()->image;
+    }
+    preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match);
+    if (!empty($match[1])) {
+      $this->main_poster_thumb = $match[1];
     }
   }
 
@@ -2370,6 +2346,16 @@ class Title extends MdbBase {
     $this->page[$page] = parent::getPage($page);
 
     return $this->page[$page];
+  }
+
+  protected function jsonLD() {
+    if ($this->jsonLD) {
+      return $this->jsonLD;
+    }
+    $page = $this->getPage('Title');
+    preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
+    $this->jsonLD = json_decode($matches[1]);
+    return $this->jsonLD;
   }
 
 }

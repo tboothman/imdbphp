@@ -11,7 +11,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 0108052 = Schindler's List (multiple colours)
    * 0338187 = The Last New Yorker (see full synopsis...)
    * 2768262 = redirect to 2386868
-   * 1899250 = Mr. Considerate. short, no poster
    * 0416449 = 300 (some multi bracket credits)
    * 0103074 = Thelma & Louise (&amp; in title)
    * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
@@ -32,6 +31,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
    * 0314979 = Battlestar Galactica (Tv Miniseries / no end date)
    *
    * 149937 = Bottom Live (Video)
+   *
+   * 7618100 = Untitled Star Wars Trilogy: Episode III ... has almost no information
    */
 
     public function testConstruct_from_ini_constructed_config() {
@@ -243,7 +244,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRating_no_rating() {
-        //@TODO
+      $imdb = $this->getImdb('tt7618100');
+      $this->assertEquals('', $imdb->rating());
     }
 
     public function testVotes() {
@@ -263,7 +265,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMetacriticRating_returns_null_when_no_rating() {
-      $imdb = $this->getImdb('1899250');
+      $imdb = $this->getImdb('7618100');
       $this->assertEquals(null, $imdb->metacriticRating());
     }
 
@@ -515,19 +517,19 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testPhoto_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('1899250');
+        $imdb = $this->getImdb('7618100');
         $this->assertFalse($imdb->photo(false));
     }
 
     public function testPhoto_thumb_returns_false_if_no_poster() {
-        $imdb = $this->getImdb('1899250');
+        $imdb = $this->getImdb('7618100');
         $this->assertFalse($imdb->photo(true));
     }
 
     public function testPhoto() {
         $imdb = $this->getImdb();
-        // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1', $imdb->photo(false));
+        // This is a little brittle. What if the image changes? ...
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg', $imdb->photo(false));
     }
 
     public function testPhoto_thumb() {
@@ -1197,7 +1199,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSoundtrack_nosoundtracks() {
-        $imdb = $this->getImdb('1899250');
+        $imdb = $this->getImdb('7618100');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
