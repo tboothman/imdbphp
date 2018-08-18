@@ -4,7 +4,8 @@ History for IMDBPHP
 
 v6.0.3 (19.08.2018)
 -------------------
-! Fix `Title::rating()`, `Title::votes()`, `Title::poster()`, `Title::runtime()`, `Title::creator()`, `Title::episodeTitle()`, `Title::episodeAirDate()`, `Title:country()`, `Title:runtimes()`, `Title:colors()` and `Title:sound()` caused by a site change
+! Fix `Title::rating()`, `Title::votes()`, `Title::poster()`, `Title::runtime()`, `Title::creator()`, `Title::episodeTitle()`, `Title::episodeAirDate()`, `Title:country()`, `Title:runtimes()`, `Title:colors()` and `Title:sound()` caused by a site change #133
+! Fix `Title:movieconnection()` caused by a site change #132
 
 v6.0.2 (12.08.2018)
 -------------------
