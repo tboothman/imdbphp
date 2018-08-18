@@ -232,6 +232,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(196, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
     }
+    
+    // Not containing runtime on title page, but technical instaed
+    public function testRuntimes_on_technical() {
+        $imdb = $this->getImdb('1570728');
+        $runtimes = $imdb->runtimes();
+        $this->assertEquals(118, $runtimes[0]['time']);
+        $this->assertEquals('USA', $runtimes[0]['annotations'][0]);
+    }
 
     public function testAspect_ratio() {
         $imdb = $this->getImdb();
