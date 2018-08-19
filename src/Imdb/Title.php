@@ -347,6 +347,11 @@ class Title extends MdbBase {
       $runtime = isset($matches[2]) ? intval($matches[2]) * 60 : 0;
       return $runtime + intval($matches[3]);
     }
+    // Fallback in case new json format aren't available
+    $runtimes = $this->runtimes();
+    if( isset($runtimes[0]['time']) ) {
+        return $runtimes[0]['time'];
+    }
 
     return null;
   }
