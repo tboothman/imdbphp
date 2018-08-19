@@ -1748,7 +1748,7 @@ class Title extends MdbBase {
     if ( empty($this->soundclip_sites) ) {
       $this->parse_extcontent('Sound Clips',$this->soundclip_sites);
     }
-    return $this->video_sites;
+    return $this->soundclip_sites;
   }
 
  #-------------------------------------------------------[ Off-site photos ]---
