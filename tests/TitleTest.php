@@ -511,14 +511,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPlotoutline_strip_see_full_summary() {
         $imdb = $this->getImdb('0284717');
         $outline = $imdb->plotoutline();
-        $this->assertEquals(0, strpos($outline, 'Towards the end of the eleventh century, Pope Urban II announces a crusade against the Saracens, who have occupied the holy city of Jerusalem.'));
+        $this->assertSame(0, strpos($outline, 'Towards the end of the eleventh century, Pope Urban II announces a crusade against the Saracens, who have occupied the holy city of Jerusalem.'));
         $this->assertFalse(stripos($outline, 'full summary'));
     }
 
     public function testPlotoutline_strip_see_full_synopsis() {
         $imdb = $this->getImdb('0338187');
         $outline = $imdb->plotoutline();
-        $this->assertEquals(0, strpos($outline, 'Lifelong friends Lenny (Dominic Chianese) and Ruben (Dick Latessa) are both in their 70s and dyed-in-the-wool New Yorkers...'));
+        $this->assertSame(0, strpos($outline, 'Lifelong friends Lenny (Dominic Chianese) and Ruben (Dick Latessa) are both in their 70s and dyed-in-the-wool New Yorkers.'));
         $this->assertFalse(stripos($outline, 'See full synopsis'));
     }
 
@@ -530,7 +530,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
 
     public function testStoryline() {
         $imdb = $this->getImdb("0306414");
-        $this->assertEquals(0, strpos($imdb->storyline(),"Set in Baltimore, this show centers around the city's inner-city drug scene. It starts as mid-level drug dealer"));
+        $this->assertSame(0, strpos($imdb->storyline(),"Set in Baltimore, this show centers around the city's inner-city drug scene. It starts as mid-level drug dealer"));
     }
 
     public function testPhoto_returns_false_if_no_poster() {
@@ -686,7 +686,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPlot() {
       $imdb = $this->getImdb('2039393');
       $plot = $imdb->plot();
-      $this->assertEquals(array(0,0),
+      $this->assertSame(array(0,0),
             array(
               strpos($plot[0], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
               strpos($plot[1], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark.")
@@ -734,7 +734,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testSynopsis() {
       $imdb = $this->getImdb('2039393');
       $synopsis = $imdb->synopsis();
-      $this->assertEquals(0, strpos($synopsis, "After his grandpa dies, Jim Bennett goes straight to a Mr. Lees illegal casino. He plays a few hands of blackjack,"));
+      $this->assertSame(0, strpos($synopsis, "After his grandpa dies, Jim Bennett goes straight to a Mr. Lees illegal casino. He plays a few hands of blackjack,"));
     }
 
     public function testTaglines() {
@@ -1261,7 +1261,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb();
         $extReviews = $imdb->extReviews();
         
-        $this->assertEquals(0, strpos($extReviews[0]['url'], 'https://www.imdb.com/offsite/?page-action=offsite-rogerebert&token=BCYq70CsO'));
+        $this->assertSame(0, strpos($extReviews[0]['url'], 'https://www.imdb.com/offsite/?page-action=offsite-rogerebert&token='));
         $this->assertEquals('rogerebert.com [Roger Ebert]',$extReviews[0]['desc']);
     }
     
@@ -1351,7 +1351,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb(120737);
       $parentalGuide = $imdb->parentalGuide(TRUE);
       $violence = $parentalGuide['Frightening'][0];
-      $this->assertEquals(0,strpos($violence,'Gandalf&#39;s "death" scene is extremely emotional.'));
+      $this->assertSame(0, strpos($violence,'Gandalf&#39;s "death" scene is extremely emotional.'));
     }
     
     public function testOfficialsites() {
