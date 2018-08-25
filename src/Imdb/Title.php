@@ -343,14 +343,15 @@ class Title extends MdbBase {
    */
   public function runtime() {
     $jsonValue = isset($this->jsonLD()->duration) ? $this->jsonLD()->duration : (isset($this->jsonLD()->timeRequired) ? $this->jsonLD()->timeRequired : null);
-    if (isset($jsonValue) && preg_match('/PT((\d+)H)?(\d+)M/', $jsonValue, $matches)) {
-      $runtime = isset($matches[2]) ? intval($matches[2]) * 60 : 0;
-      return $runtime + intval($matches[3]);
+    if (isset($jsonValue) && preg_match('/PT(?:(\d+)H)?(?:(\d+)M)?/', $jsonValue, $matches)) {
+      $h = isset($matches[1]) ? intval($matches[1]) * 60 : 0;
+      $m = isset($matches[2]) ? intval($matches[2]) : 0;
+      return $h + $m;
     }
     // Fallback in case new json format aren't available
     $runtimes = $this->runtimes();
-    if( isset($runtimes[0]['time']) ) {
-        return $runtimes[0]['time'];
+    if( !empty($runtimes[0]['time']) ) {
+        return intval($runtimes[0]['time']);
     }
 
     return null;
