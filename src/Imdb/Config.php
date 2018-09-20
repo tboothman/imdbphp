@@ -56,15 +56,17 @@ class Config {
 
   /**
    * Use zip compression for caching the retrieved html-files?
+   * @see $converttozip if you're changing from false to true
    * @var boolean
    */
   public $usezip = true;
 
   /**
-   * Convert non-zip cache-files to zip (check file permissions!)?
+   * Convert non-zip cache-files to zip
+   * You might want to use this if you weren't gzipping your cache files, but now are. They will be rewritten when they're used
    * @var boolean
    */
-  public $converttozip = true;
+  public $converttozip = false;
 
   /**
    * Cache expiration time - cached pages older than this value (in seconds) will

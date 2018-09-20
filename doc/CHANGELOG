@@ -2,6 +2,45 @@
 History for IMDBPHP
 ====================
 
+v6.0.3 (19.08.2018)
+-------------------
+! Fix `Title::rating()`, `Title::votes()`, `Title::poster()`, `Title::runtime()`, `Title::creator()`, `Title::episodeTitle()`, `Title::episodeAirDate()`, `Title:country()`, `Title:runtimes()`, `Title:colors()` and `Title:sound()` caused by a site change #133
+! Fix `Title:movieconnection()` caused by a site change #132
+
+v6.0.2 (12.08.2018)
+-------------------
+! Fixed error when fetching languages for a title that had none
+! Removed rubbish data in `Title::plot()` when title had no plot
+! Fixed people with an ID of over 10 million not being parsed correctly
+
+v6.0.1 (19.04.2018)
+-------------------
+! Try to fix too many open file handles in `Cache::purge()`
+! Speed up reading of cached gzipped files
+! Disable `Config::$converttozip` by default
+! Fix docblocks documentation
+! Fix a typo in `Title::storyline()`
+! Fix `Charts::getChartsBoxOffice()` caused by a site change
+! `Title::endyear()` returned incorrect year if tv show are still on air
+! Fix 302 Found redirection by switching to https
+- Removed invalid `phpDocumentor` @method tags
+- Removed unused code in `Title::filmograf()`
+
+v6.0.0 (26.02.2018)
+-------------------
+! Drop support for PHP < 5.6
+! Removed `\Imdb\Title::openingWeekend()`, `Title::gross()`, `Title::weekendGross()` and `Title::admissions()`
++ Support for PSR-16 cache
+
+v5.2.6 (24.02.2018)
+-------------------
+! Fix "won" on Title::awards() output. It was always false because imdb changed their wording
+
+v5.2.5 (05.02.2018)
+-------------------
+! Fix `Title::locations()` caused by a site change
+! The Box Office / Business page has been removed so several pieces of information are missing, but some are available elsewhere. `Title::budget()` and `Title::filmingDates()` have been fixed but several methods like `Title::openingWeekend()` and `Title::gross()` do not work
+
 v5.2.4 (07.11.2017)
 -------------------
 ! `Title::yearspan()` - returned the incorrect end year sometimes

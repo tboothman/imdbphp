@@ -474,7 +474,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         ?>
         <tr>
           <td><b>Movie Quotes:</b></td>
-          <td><?php echo preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\/(\?ref_=tt_trv_qu)?/","person.php?mid=\\1",$quotes[0]) ?></td>
+          <td><?php echo preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\/(\?ref_=tt_trv_qu)?/","person.php?mid=\\1",$quotes[0]) ?></td>
         </tr>
         <?php } ?>
         
@@ -543,8 +543,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
               <li>
                 <?php
                 $t = $trivia[$i];
-                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/name\/nm(\d{7})/','person.php?mid=\\1',$t);
-                $t = preg_replace('/http\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/title\/tt(\d{7})/','movie.php?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/name\/nm(\d{7})/','person.php?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$movie->imdbsite).'\/title\/tt(\d{7})/','movie.php?mid=\\1',$t);
                 echo $t;
                 ?>
               </li>
@@ -571,8 +571,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
                 <th class="mw-200">Credit 2</th>
               </tr>
               <?php foreach ( $soundtracks as $soundtrack) { 
-                $credit1 = isset($soundtrack["credits"][0]) ? preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][0]['credit_to'])." (".$soundtrack["credits"][0]['desc'].")" : '';
-                $credit2 = isset($soundtrack["credits"][1]) ? preg_replace("/http\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][1]['credit_to'])." (".$soundtrack["credits"][1]['desc'].")" : '';
+                $credit1 = isset($soundtrack["credits"][0]) ? preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][0]['credit_to'])." (".$soundtrack["credits"][0]['desc'].")" : '';
+                $credit2 = isset($soundtrack["credits"][1]) ? preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7})\//","person.php?mid=\\1",$soundtrack["credits"][1]['credit_to'])." (".$soundtrack["credits"][1]['desc'].")" : '';
               ?>
                 <tr>
                   <td><?php echo $soundtrack["soundtrack"] ?></td>

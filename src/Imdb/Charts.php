@@ -56,7 +56,7 @@ class Charts extends MdbBase {
    */
   public function getChartsBoxOffice() {
     $page = $this->getPage();
-    $matchinit = '<h2>Top Box Office</h2>';
+    $matchinit = '<h1 class="header">Top Box Office';
     $offset = strpos($page, $matchinit);
     $end = strpos($page, 'See more box office results at BoxOfficeMojo.com');
     $chart = array();
@@ -96,7 +96,7 @@ class Charts extends MdbBase {
   }
 
   protected function buildUrl($context = null) {
-    return "http://" . $this->config->imdbsite . "/chart/";
+    return "https://" . $this->config->imdbsite . "/chart/";
   }
 
 }

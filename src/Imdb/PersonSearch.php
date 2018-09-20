@@ -15,7 +15,6 @@ class PersonSearch extends MdbBase {
 
   /**
    * Search for people on imdb who match $searchTerms
-   * @method search
    * @param string $searchTerms
    * @return Person[]
    */
@@ -27,7 +26,6 @@ class PersonSearch extends MdbBase {
 
   /**
    * Set the name (title) to search for
-   * @method setsearchname
    * @param string searchstring what to search for - (part of) the movie name
    */
   public function setsearchname($name) {
@@ -85,7 +83,7 @@ class PersonSearch extends MdbBase {
    * @return string url
    */
   protected function buildUrl($context = null) {
-    return "http://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . "&s=nm";
+    return "https://" . $this->imdbsite . "/find?q=" . urlencode($this->name) . "&s=nm";
   }
 
 }

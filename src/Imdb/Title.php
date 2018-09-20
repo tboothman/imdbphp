@@ -11,8 +11,9 @@
 
 namespace Imdb;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
- /**
+/**
   * A title on IMDb
   * @author Georgos Giagas
   * @author Izzy (izzysoft AT qumran DOT org)
@@ -64,7 +65,6 @@ class Title extends MdbBase {
   protected $main_year = -1;
   protected $main_endyear = -1;
   protected $main_yearspan = array();
-  protected $main_creator = array();
   protected $main_tagline = "";
   protected $main_storyline = "";
   protected $main_prodnotes = array();
@@ -108,16 +108,16 @@ class Title extends MdbBase {
   protected $gross = array();
   protected $weekendGross = array();
   protected $admissions = array();
-  protected $filmingDates = array();
+  protected $filmingDates = null;
   protected $moviealternateversions = array();
   protected $isSerial = null;
   protected $episodeSeason = null;
   protected $episodeEpisode = null;
+  protected $jsonLD = null;
 
   protected $pageUrls = array(
       "AlternateVersions" => '/alternateversions',
       "Awards" => "/awards",
-      "BoxOffice" => "/business",
       "CompanyCredits" => "/companycredits",
       "CrazyCredits" => "/crazycredits",
       "Credits" => "/fullcredits",
@@ -126,7 +126,7 @@ class Title extends MdbBase {
       "Goofs" => "/trivia?tab=gf",
       "Keywords" => "/keywords",
       "Locations" => "/locations",
-      "MovieConnections" => "/trivia?tab=mc",
+      "MovieConnections" => "/movieconnections",
       "OfficialSites" => "/officialsites",
       "ParentalGuide" => "/parentalguide",
       "Plot" => "/plotsummary",
@@ -135,6 +135,7 @@ class Title extends MdbBase {
       "Soundtrack" => "/soundtrack",
       "Synopsis" => "/plotsummary",
       "Taglines" => "/taglines",
+      "Technical" => "/technical",
       "Title" => "/",
       "Trailers" => "/videogallery/content_type-trailer",
       "Trivia" => "/trivia",
@@ -161,10 +162,10 @@ class Title extends MdbBase {
   }
 
   /**
-   * @param string $id IMDb ID. e.g. 285331 for http://www.imdb.com/title/tt0285331/
+   * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
    * @param Config $config OPTIONAL override default config
-   * @param LoggerInterface $logger OPTIONAL override default logger
-   * @param CacheInterface $cache OPTIONAL override default cache
+   * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+   * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
    */
   public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null) {
     parent::__construct($config, $logger, $cache);
@@ -174,7 +175,7 @@ class Title extends MdbBase {
  #-------------------------------------------------------------[ Open Page ]---
 
   protected function buildUrl($page = null) {
-    return "http://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->getUrlSuffix($page);
+    return "https://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->getUrlSuffix($page);
   }
 
   /**
@@ -198,7 +199,7 @@ class Title extends MdbBase {
    * @return string
    */
   public function main_url(){
-   return "http://".$this->imdbsite."/title/tt".$this->imdbid()."/";
+   return "https://".$this->imdbsite."/title/tt".$this->imdbid()."/";
   }
 
   /**
@@ -208,10 +209,10 @@ class Title extends MdbBase {
     $this->getPage("Title");
     if (@preg_match('!<title>(IMDb\s*-\s*)?(?<ititle>.*)(\s*-\s*IMDb)?</title>!',$this->page["Title"],$imatch)) {
       $ititle = $imatch['ititle'];
-      if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4})).*\)(.*)!',$ititle,$match)) { // serial
+      if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4}|)).*\)(.*)!',$ititle,$match)) { // serial
         $this->main_movietype = trim($match['movietype']);
         $this->main_year = $match['year'];
-        $this->main_endyear = $match['endyear'];
+        $this->main_endyear = $match['endyear'] ? $match['endyear'] : '0';
         $this->main_title = htmlspecialchars_decode($match['title']);
       } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!',$ititle,$match)) {
         $this->main_movietype = trim($match['movietype']);
@@ -231,7 +232,6 @@ class Title extends MdbBase {
   }
 
   /** Get movie type
-   * @method movietype
    * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini-Series, Video Game, TV Short, Video)
    * @see IMDB page / (TitlePage)
    * @brief This is faster than movietypes() as it is retrieved already together with the title.
@@ -254,7 +254,6 @@ class Title extends MdbBase {
   }
 
   /** Get movie title
-   * @method title
    * @return string title movie title (name)
    * @see IMDB page / (TitlePage)
    */
@@ -264,7 +263,6 @@ class Title extends MdbBase {
   }
 
   /** Get movie original title
-   * @method orig_title
    * @return string title original movie title (name), if available
    * @see IMDB page / (TitlePage)
    */
@@ -274,7 +272,6 @@ class Title extends MdbBase {
   }
 
   /** Get year
-   * @method year
    * @return string year
    * @see IMDB page / (TitlePage)
    */
@@ -285,7 +282,6 @@ class Title extends MdbBase {
 
   /** Get end-year
    *  Usually this returns the same value as year() -- except for those cases where production spanned multiple years, usually for series
-   * @method endyear
    * @return string year
    * @see IMDB page / (TitlePage)
    */
@@ -295,7 +291,6 @@ class Title extends MdbBase {
   }
 
   /** Get range of years for e.g. series spanning multiple years
-   * @method yearspan
    * @return array yearspan [start,end] (if there was no range, start==end)
    * @see IMDB page / (TitlePage)
    */
@@ -307,7 +302,6 @@ class Title extends MdbBase {
   }
 
   /** Get movie types (if any specified)
-   * @method movieTypes
    * @return array [0..n] of strings (or empty array if no movie types specified)
    * @see IMDB page / (TitlePage)
    */
@@ -326,7 +320,6 @@ class Title extends MdbBase {
  #---------------------------------------------------------------[ Runtime ]---
   /**
    * Get general runtime
-   * @method protected runtime_all
    * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
    */
   protected function runtime_all() {
@@ -335,33 +328,37 @@ class Title extends MdbBase {
       if (@preg_match('!Runtime:</h4>\s*(.+?)\s*</div!ms',$this->page["Title"],$match))
         $this->main_runtime = $match[1];
     }
+    if ($this->main_runtime == "") {
+      $this->getPage("Technical");
+      if (@preg_match('!Runtime.*?<td>(.+?)</td!ms',$this->page["Technical"],$match))
+        $this->main_runtime = $match[1];
+    }
     return $this->main_runtime;
   }
 
   /**
    * Get overall runtime (first one mentioned on title page)
-   * @method runtime
    * @return int|null runtime in minutes (if set), NULL otherwise
    * @see IMDB page / (TitlePage)
    */
   public function runtime() {
-    $runarr = $this->runtimes();
-    if (isset($runarr[0]["time"])) {
-      return $runarr[0]["time"];
+    $jsonValue = isset($this->jsonLD()->duration) ? $this->jsonLD()->duration : (isset($this->jsonLD()->timeRequired) ? $this->jsonLD()->timeRequired : null);
+    if (isset($jsonValue) && preg_match('/PT(?:(\d+)H)?(?:(\d+)M)?/', $jsonValue, $matches)) {
+      $h = isset($matches[1]) ? intval($matches[1]) * 60 : 0;
+      $m = isset($matches[2]) ? intval($matches[2]) : 0;
+      return $h + $m;
+    }
+    // Fallback in case new json format aren't available
+    $runtimes = $this->runtimes();
+    if( !empty($runtimes[0]['time']) ) {
+        return intval($runtimes[0]['time']);
     }
 
-    // No runtimes in tech details? Maybe there's one under the title
-    $this->getPage("Title");
-    if (preg_match('/<time itemprop="duration" datetime="PT(\d+)M"/', $this->page["Title"], $matches)) {
-      return (int)$matches[1];
-    }
-
-    return NULL;
+    return null;
   }
 
   /**
    * Retrieve all runtimes and their descriptions
-   * @method runtimes
    * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
    * @see IMDB page / (TitlePage)
    */
@@ -369,11 +366,11 @@ class Title extends MdbBase {
     if (empty($this->movieruntimes)) {
       $this->movieruntimes = array();
       $rt = $this->runtime_all();
-      foreach (explode('|', strip_tags($rt)) as $runtimestring) {
-        if (preg_match("/(\d+) min/", $runtimestring, $matches)) {
-          $runtime = $matches[1];
+      foreach (preg_split('!(\||<br>)!', strip_tags($rt,'<br>')) as $runtimestring) {
+        if (preg_match_all("/(\d+\s+hr\s+\d+\s+min)?\((\d+)\s+min\)|(\d+)\s+min/", $runtimestring, $matches, PREG_SET_ORDER, 0)) {
+          $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][3]) ? $matches[0][3] : 0);
           $annotations = array();
-          if (preg_match_all("/\((.+?)\)/", $runtimestring, $matches)) {
+          if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", $runtimestring, $matches)) {
             $annotations = $matches[1];
           }
           $this->movieruntimes[] = array("time"=>$runtime, "country"=>'', "comment"=>'', "annotations" => $annotations);
@@ -400,46 +397,21 @@ class Title extends MdbBase {
   }
 
  #----------------------------------------------------------[ Movie Rating ]---
-  /**
-   * Setup votes
-   */
-  protected function rate_vote() {
-    $page = $this->getPage("Title");
-
-    if (preg_match('!itemprop="ratingValue">(\d{1,2}[\.,]\d)!i', $page, $match)) {
-      $rating = str_replace(',', '.', $match[1]);
-      $this->main_rating = $rating;
-    } else {
-      $this->main_rating = 0;
-    }
-
-    if (preg_match('!itemprop="ratingCount">([\d\.,]+)</span!i', $page, $match)) {
-      $votes = str_replace(array('.', ','), '', $match[1]);
-      $this->main_votes = (int)$votes;
-    } else {
-      $this->main_votes = 0;
-    }
-  }
-
   /** Get movie rating
-   * @method rating
    * @return string rating current rating as given by IMDB site
    * @see IMDB page / (TitlePage)
    */
   public function rating () {
-    if ($this->main_rating == -1) $this->rate_vote();
-    return $this->main_rating;
+    return isset($this->jsonLD()->aggregateRating->ratingValue) ? $this->jsonLD()->aggregateRating->ratingValue : '';
   }
 
   /**
    * Return number of votes for this movie
-   * @method votes
    * @return int
    * @see IMDB page / (TitlePage)
    */
   public function votes() {
-    if ($this->main_votes == -1) $this->rate_vote();
-    return $this->main_votes;
+    return isset($this->jsonLD()->aggregateRating->ratingCount) ? $this->jsonLD()->aggregateRating->ratingCount : 0;
   }
 
   /**
@@ -465,7 +437,6 @@ class Title extends MdbBase {
 
  #------------------------------------------------------[ Movie Comment(s) ]---
   /** Get movie main comment (from title page)
-   * @method comment
    * @return string comment full text of movie comment from the movies main page
    * @see IMDB page / (TitlePage)
    */
@@ -474,14 +445,13 @@ class Title extends MdbBase {
     if ($this->main_comment == "") {
       $this->getPage("Title");
       if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<hr\s*/>\s*<div class\="yn"!ms',$this->page["Title"],$match))
-        $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"http://".$this->imdbsite."/",$match[1]);
-        $this->main_comment = str_replace("http://i.media-imdb.com/images/showtimes",$this->imdb_img_url."/showtimes",$this->main_comment);
+        $this->main_comment = preg_replace("/a href\=\"\//i","a href=\"https://".$this->imdbsite."/",$match[1]);
+        $this->main_comment = str_replace("https://i.media-imdb.com/images/showtimes",$this->imdb_img_url."/showtimes",$this->main_comment);
     }
     return $this->main_comment;
   }
 
   /** Get movie main comment (from title page - split-up variant)
-   * @method comment_split
    * @return array comment array[string title, string date, array author, string comment]; author: array[string url, string name]
    * @see IMDB page / (TitlePage)
    */
@@ -528,7 +498,6 @@ class Title extends MdbBase {
 
  #--------------------------------------------------------------[ Keywords ]---
   /** Get the keywords for the movie
-   * @method keywords
    * @return array keywords
    * @see IMDB page / (TitlePage)
    */
@@ -543,22 +512,20 @@ class Title extends MdbBase {
 
  #--------------------------------------------------------[ Language Stuff ]---
   /** Get movies original language
-   * @method language
    * @return string language
    * @brief There is not really a main language on the IMDB sites (yet), so this
    *  simply returns the first one
    * @see IMDB page / (TitlePage)
    */
   public function language() {
-   if ($this->main_language == "") {
+   if (empty($this->main_language)) {
      if (empty($this->langs)) $this->langs = $this->languages();
-     $this->main_language = $this->langs[0];
+     if (!empty($this->langs)) $this->main_language = $this->langs[0];
    }
    return $this->main_language;
   }
 
   /** Get all languages this movie is available in
-   * @method languages
    * @return array languages (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
@@ -576,7 +543,6 @@ class Title extends MdbBase {
   }
 
   /** Get all languages this movie is available in, including details
-   * @method languages_detailed
    * @return array languages (array[0..n] of array[string name, string code, string comment], code being the ISO-Code)
    * @see IMDB page / (TitlePage)
    */
@@ -592,7 +558,6 @@ class Title extends MdbBase {
   /** Get the movies main genre
    *  Since IMDB.COM does not really now a "Main Genre", this simply means the
    *  first mentioned genre will be returned.
-   * @method genre
    * @return string genre first of the genres listed on the movies main page
    * @brief There is not really a main genre on the IMDB sites (yet), so this
    *  simply returns the first one
@@ -607,7 +572,6 @@ class Title extends MdbBase {
   }
 
   /** Get all genres the movie is registered for
-   * @method genres
    * @return array genres (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
@@ -633,14 +597,13 @@ class Title extends MdbBase {
   /**
    * Get the colours this movie was shot in.
    * e.g. Color, Black and White
-   * @method colors
    * @return array colors (array[0..1] of strings)
    * @see IMDB page / (TitlePage)
    */
   public function colors() {
     if (empty($this->moviecolors)) {
       $this->getPage("Title");
-      if (preg_match_all("|/search/title\?colors=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
+      if (preg_match_all("|/search/title\?colors=[^>]+?>\s?(.*?)</a|",$this->page["Title"],$matches))
         $this->moviecolors = $matches[1];
     }
     return $this->moviecolors;
@@ -648,26 +611,27 @@ class Title extends MdbBase {
 
  #---------------------------------------------------------------[ Creator ]---
   /**
-   * Get the creator of a movie (most likely for seasons only)
+   * Get the creator(s) of a TV Show
    * @return array creator (array[0..n] of array[name,imdb])
    * @see IMDB page / (TitlePage)
    */
   public function creator() {
-    if (empty($this->main_creator)) {
-      $this->getPage("Title");
-      if (@preg_match("#Creators?:\</h4\>[\s\n]*(.*?)(</div|<a class=\"tn15more)#ms", $this->page["Title"], $match)) {
-        if (preg_match_all('#/name/nm(\d{7}).*?><span.+?>(.*?)</span#s', $match[1], $matches)) {
-          for ($i = 0; $i < count($matches[0]); ++$i)
-            $this->main_creator[] = array('name' => $matches[2][$i], 'imdb' => $matches[1][$i]);
+    $result = array();
+    if ($this->jsonLD()->{'@type'} === 'TVSeries' && isset($this->jsonLD()->creator) && is_array($this->jsonLD()->creator)) {
+      foreach ($this->jsonLD()->creator as $creator) {
+        if ($creator->{'@type'} === 'Person') {
+          $result[] = array(
+            'name' => $creator->name,
+            'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
+          );
         }
       }
     }
-    return $this->main_creator;
+    return $result;
   }
 
  #---------------------------------------------------------------[ Tagline ]---
   /** Get the main tagline for the movie
-   * @method tagline
    * @return string tagline
    * @see IMDB page / (TitlePage)
    */
@@ -683,7 +647,6 @@ class Title extends MdbBase {
 
  #---------------------------------------------------------------[ Seasons ]---
   /** Get the number of seasons or 0 if not a series
-   * @method seasons
    * @return int seasons number of seasons
    * @see IMDB page / (TitlePage)
    */
@@ -728,12 +691,7 @@ class Title extends MdbBase {
   public function episodeTitle() {
     if (!$this->isEpisode()) return "";
 
-    $page = $this->getPage("Title");
-
-    if (preg_match("@<h1 itemprop=\"name\" class=\"\">(.+?)</h1>@", $page, $matches)) {
-       return trim(str_replace('&nbsp;', ' ', $matches[1]));
-    }
-    return "";
+    return $this->jsonLD()->name;
   }
 
   private function populateEpisodeSeasonEpisode() {
@@ -777,17 +735,15 @@ class Title extends MdbBase {
   public function episodeAirDate() {
     if (!$this->isEpisode()) return "";
 
-    $page = $this->getPage("Title");
-
-    if (preg_match("@<meta itemprop=\"datePublished\" content=\"([\d\-]+)\" />@", $page, $matches)) {
-      return $matches[1];
+    if (!isset($this->jsonLD()->datePublished)) {
+      return '';
     }
-    return "";
+
+    return $this->jsonLD()->datePublished;
   }
 
   /**
    * Extra information about this episode (if this title is an episode)
-   * @method get_episode_details
    * @return array [imdbid,seriestitle,episodetitle,season,episode,airdate]
    * e.g.
    * <pre>
@@ -822,7 +778,6 @@ class Title extends MdbBase {
 
  #--------------------------------------------------------[ Plot (Outline) ]---
   /** Get the main Plot outline for the movie
-   * @method plotoutline
    * @param boolean $fallback Fallback to storyline if we could not catch plotoutline
    * @return string plotoutline
    * @see IMDB page / (TitlePage)
@@ -830,7 +785,7 @@ class Title extends MdbBase {
   public function plotoutline($fallback=FALSE) {
     if ($this->main_plotoutline == "") {
       $page = $this->getPage("Title");
-      if (preg_match('!itemprop="description">\s*(.*?)\s*</div>!ims', $page, $match)) {
+      if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
         $this->main_plotoutline = trim($match[1]);
       } elseif($fallback) {
         $this->main_plotoutline = $this->storyline();
@@ -842,23 +797,14 @@ class Title extends MdbBase {
   }
 
   /** Get the Storyline for the movie
-   * @method storyline
    * @return string storyline
    * @see IMDB page / (TitlePage)
    */
   public function storyline() {
     if ($this->main_storyline == "") {
-      $this->getPage("Title");
-      if (@preg_match('!Storyline</h2>\s*\n*<div.*?>\s*\n*<?p?>?(.*?)<?/?p?<h4!ims',$this->page["Title"],$match)) {
-        if (preg_match('!(.*?)<em class="nobr">Written by!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s</p>!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s<span class="see-more inline">!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        elseif (preg_match('!(.*)\s\|!ims',$match[1],$det))
-          $this->main_storyline = trim($det[1]);
-        else $this->main_storyine = trim($match[1]);
+      $page = $this->getPage("Title");
+      if (@preg_match('~Storyline</h2>.*?<div.*?<p>.*?<span>(.*?)</span>.*?</p>~ims', $page, $match)) {
+        $this->main_storyline = trim($match[1]);
       }
     }
     return $this->main_storyline;
@@ -870,14 +816,12 @@ class Title extends MdbBase {
    * @see IMDB page / (TitlePage)
    */
   private function populatePoster() {
-    preg_match('!<img [^>]+src="([^"]+)"[^>]+itemprop="image" />!ims', $this->getPage("Title"), $match);
-    if (empty($match[1])) return false;
-    $this->main_poster_thumb = $match[1];
-    if ( preg_match('|(.*\._V1).*|iUs',$match[1],$mo) ) {
-      $this->main_poster = $mo[1];
-      return true;
-    } else {
-      return false;
+    if (isset($this->jsonLD()->image)) {
+      $this->main_poster = $this->jsonLD()->image;
+    }
+    preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match);
+    if (!empty($match[1])) {
+      $this->main_poster_thumb = $match[1];
     }
   }
 
@@ -885,7 +829,7 @@ class Title extends MdbBase {
   /**
    * Get the poster/cover image URL
    * @param boolean $thumb get the thumbnail (182x268) or the full sized image
-   * @return string|boolean photo (string URL if found, FALSE otherwise)
+   * @return string|false photo (string URL if found, FALSE otherwise)
    * @see IMDB page / (TitlePage)
    */
   public function photo($thumb = true) {
@@ -934,7 +878,6 @@ class Title extends MdbBase {
   }
 
   /** Get the URL for the movies cover image
-   * @method photo_localurl
    * @param boolean $thumb get the thumbnail (182x268, default) or the
    *        bigger variant (400x600 - FALSE)
    * @return mixed url (string URL or FALSE if none)
@@ -957,7 +900,6 @@ class Title extends MdbBase {
   }
 
   /** Get URLs for the pictures on the main page
-   * @method mainPictures
    * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
    *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
    *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
@@ -972,7 +914,7 @@ class Title extends MdbBase {
       if (@preg_match_all('!<a .*?href="(?<href>.*?)".*?<img.*?src="(.*?)".*?loadlate="(?<imgsrc>.*?)"!ims',$match[1],$matches)) {
         for ($i=0;$i<count($matches[0]);++$i) {
           $this->main_pictures[$i]["imgsrc"] = $matches['imgsrc'][$i];
-          if (substr($matches['href'][$i],0,4)!="http") $matches['href'][$i] = "http://".$this->imdbsite.$matches[1][$i];
+          if (substr($matches['href'][$i],0,4)!="http") $matches['href'][$i] = "https://".$this->imdbsite.$matches[1][$i];
           $this->main_pictures[$i]["imglink"] = $matches['href'][$i];
           preg_match('|(.*\._V1).*|iUs',$matches['imgsrc'][$i],$big);
           $ext = substr($matches[2][$i],-3);
@@ -990,13 +932,12 @@ class Title extends MdbBase {
 
  #-------------------------------------------------[ Country of Production ]---
   /** Get country of production
-   * @method country
    * @return array country (array[0..n] of string)
    * @see IMDB page / (TitlePage)
    */
   public function country() {
     if (empty($this->countries)) {
-      if (preg_match_all('!/search/title\?country_of_origin=.+?\s.+?>(.*?)<!m', $this->getPage("Title"), $matches)) {
+      if (preg_match_all('!/search/title\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"), $matches)) {
         $this->countries = $matches[1];
       }
     }
@@ -1054,14 +995,13 @@ class Title extends MdbBase {
 
  #---------------------------------------------------------[ Sound formats ]---
   /** Get sound formats
-   * @method sound
    * @return array sound (array[0..n] of strings)
    * @see IMDB page / (TitlePage)
    */
   public function sound() {
    if (empty($this->sound)) {
     $this->getPage("Title");
-    if (preg_match_all("|/search/title\?sound_mixes=.+?\s.+?>\s*(.*?)<|",$this->page["Title"],$matches))
+    if (preg_match_all("|/search/title\?sound_mixes=[^>]+>\s*(.*?)</|",$this->page["Title"],$matches))
       $this->sound = $matches[1];
    }
    return $this->sound;
@@ -1085,7 +1025,6 @@ class Title extends MdbBase {
   }
 
   /** Get the MPAA data (also known as PG or FSK) - including historical data
-   * @method mpaa_hist
    * @return array mpaa (array[country][0..n]=rating)
    * @see IMDB page / (TitlePage)
    */
@@ -1102,7 +1041,6 @@ class Title extends MdbBase {
 
  #----------------------------------------------------[ MPAA justification ]---
   /** Find out the reason for the MPAA rating
-   * @method mpaa_reason
    * @return string reason why the movie was rated such
    * @see IMDB page / (TitlePage)
    */
@@ -1117,7 +1055,6 @@ class Title extends MdbBase {
 
  #------------------------------------------------------[ Production Notes ]---
   /** For not-yet completed movies, we can get the production state
-   * @method prodNotes
    * @return array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
    * @see IMDB page / (TitlePage)
    */
@@ -1137,7 +1074,7 @@ class Title extends MdbBase {
     else $update = array();
     if ( preg_match('!<b>More Info:\s*</b>\s*(.*)!ims',$match[1],$tmp) ) {
         $more = preg_replace('!\s*onclick=".*?"!ims','',trim($tmp[1]));
-        $more = preg_replace('!href="/!ims','href="http://'.$this->imdbsite.'/',$more);
+        $more = preg_replace('!href="/!ims','href="https://'.$this->imdbsite.'/',$more);
     } else $more = '';
     if ( preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims',$match[1],$tmp) ) $note = trim($tmp[1]);
     else $note = '';
@@ -1168,7 +1105,6 @@ class Title extends MdbBase {
  #=====================================================[ /plotsummary page ]===
  #--------------------------------------------------[ Full Plot (combined) ]---
   /** Get the movies plot(s)
-   * @method plot
    * @return array plot (array[0..n] of strings)
    * @see IMDB page /plotsummary
    */
@@ -1179,11 +1115,11 @@ class Title extends MdbBase {
       $doc = new \DOMDocument();
       @$doc->loadHTML($page);
       $xp = new \DOMXPath($doc);
-      $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li");
+      $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
       foreach ($cells as $cell) {
         $link = '';
         if($a = $cell->getElementsByTagName('a')->item(0)) {
-          $href = preg_replace('!/search/title!i','http://'.$this->imdbsite.'/search/title',$a->getAttribute('href'));
+          $href = preg_replace('!/search/title!i','https://'.$this->imdbsite.'/search/title',$a->getAttribute('href'));
           $link = "\n-\n" . '<a href="'. $href . '">'. trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
         }
         $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
@@ -1194,7 +1130,6 @@ class Title extends MdbBase {
 
  #-----------------------------------------------------[ Full Plot (split) ]---
   /** Get the movie plot(s) - split-up variant
-   * @method plot_split
    * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
    * @see IMDB page /plotsummary
    */
@@ -1215,7 +1150,6 @@ class Title extends MdbBase {
  #========================================================[ /synopsis page ]===
  #---------------------------------------------------------[ Full Synopsis ]---
   /** Get the movies synopsis
-   * @method synopsis
    * @return string synopsis
    * @see IMDB page /synopsis
    */
@@ -1233,7 +1167,6 @@ class Title extends MdbBase {
  #========================================================[ /taglines page ]===
  #--------------------------------------------------------[ Taglines Array ]---
   /** Get all available taglines for the movie
-   * @method taglines
    * @return array taglines (array[0..n] of strings)
    * @see IMDB page /taglines
    */
@@ -1270,7 +1203,6 @@ class Title extends MdbBase {
 
  #------------------------------------------------[ Helper: Cast TableRows ]---
   /** Get rows for the cast table on the page
-   * @method protected get_table_rows_cast
    * @param string html
    * @param string table_start
    * @return array array[0..n] of strings
@@ -1289,7 +1221,6 @@ class Title extends MdbBase {
 
  #------------------------------------------------------[ Helper: RowCells ]---
   /** Get content of table row cells
-   * @method protected get_row_cels
    * @param string row (as returned by imdb::get_table_rows)
    * @return array cells (array[0..n] of strings)
    * @see used by the methods director, cast, writing, producer, composer
@@ -1301,7 +1232,6 @@ class Title extends MdbBase {
 
  #-------------------------------------------[ Helper: Get IMDBID from URL ]---
   /** Get the IMDB ID from a names URL
-   * @method protected get_imdbname
    * @param string href url to the staff members IMDB page
    * @return string IMDBID of the staff member
    * @see used by the methods director, cast, writing, producer, composer
@@ -1347,7 +1277,6 @@ class Title extends MdbBase {
  #----------------------------------------------------------------[ Actors ]---
   /**
    * Get the actors/cast members for this title
-   * @method cast
    * @param boolean $clean_ws whether to clean white-space inside names
    * @return array cast (array[0..n] of array[imdb,name,name_alias,role,role_episodes,role_start_year,role_end_year,thumb,photo])
    * e.g.
@@ -1362,8 +1291,8 @@ class Title extends MdbBase {
    *  'role_start_year' => 2002, // Only applies to episodic titles. Will be NULL if not available
    *  'role_end_year' => 2008, // Only applies to episodic titles. Will be NULL if not available
    *  'role_other' => array() // Any other information about what the cast member did e.g. 'voice', 'archive footage'
-   *  'thumb' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
-   *  'photo' => 'http://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg' // Fullsize image of actor
+   *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
+   *  'photo' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg' // Fullsize image of actor
    * )
    * </pre>
    * @see IMDB page /fullcredits
@@ -1396,7 +1325,7 @@ class Title extends MdbBase {
           'thumb' => null,
           'photo' => null
       );
-      $dir["imdb"] = preg_replace('!.*href="/name/nm(\d{7})/.*!ims', '$1', $cels[1]);
+      $dir["imdb"] = preg_replace('!.*href="/name/nm(\d+)/.*!ims', '$1', $cels[1]);
       $dir["name"] = trim(strip_tags($cels[1]));
       if (empty($dir['name']))
         continue;
@@ -1475,7 +1404,6 @@ class Title extends MdbBase {
 
  #---------------------------------------------------------------[ Writers ]---
   /** Get the writer(s)
-   * @method writing
    * @return array writers (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
@@ -1491,7 +1419,7 @@ class Title extends MdbBase {
    if (!$writing_rows) return array();
    for ( $i = 0; $i < count ($writing_rows); $i++){
      $wrt = array();
-     if ( preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
+     if ( preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims',$writing_rows[$i],$match) ) {
        $wrt['imdb'] = $match[1];
        $wrt['name'] = trim($match[2]);
      } elseif ( preg_match('!<td\s+class="name">(.+?)</td!ims',$writing_rows[$i],$match) ) {
@@ -1549,7 +1477,6 @@ class Title extends MdbBase {
 
  #-------------------------------------------------------------[ Composers ]---
   /** Obtain the composer(s) ("Original Music by...")
-   * @method composer
    * @return array composer (array[0..n] of arrays[imdb,name,role])
    * @see IMDB page /fullcredits
    */
@@ -1563,7 +1490,7 @@ class Title extends MdbBase {
     }
     foreach ($composer_rows as $composer_row) {
       $composer = array();
-      if (preg_match('!<a\s+href="/name/nm(\d{7})/[^>]*>\s*(.+)\s*</a>!ims', $composer_row, $match)) {
+      if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $composer_row, $match)) {
         $composer['imdb'] = $match[1];
         $composer['name'] = trim($match[2]);
       } elseif (preg_match('!<td\s+class="name">(.+?)</td!ims', $composer_row, $match)) {
@@ -1658,7 +1585,6 @@ class Title extends MdbBase {
  #===========================================================[ /goofs page ]===
  #-----------------------------------------------------------[ Goofs Array ]---
   /** Get the goofs
-   * @method goofs
    * @return array goofs (array[0..n] of array[type,content]
    * @see IMDB page /goofs
    * @version Spoilers are currently skipped (differently formatted)
@@ -1673,7 +1599,7 @@ class Title extends MdbBase {
           if ($matches[1][$i]=='Spoilers') continue; // no spoilers, moreover they are differently formatted
           preg_match_all('!<div id="gf.+?>(\s*<div class="sodatext">)?(.+?)\s*</div>\s*<div!ims',$matches[3][$i],$goofy);
           $ic = count($goofy[0]);
-          for ($k=0;$k<$ic;++$k) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>str_replace('href="/','href="http://'.$this->imdbsite.'/',trim($goofy[2][$k])));
+          for ($k=0;$k<$ic;++$k) $this->goofs[] = array("type"=>$matches[1][$i],"content"=>str_replace('href="/','href="https://'.$this->imdbsite.'/',trim($goofy[2][$k])));
         }
       }
     }
@@ -1684,7 +1610,6 @@ class Title extends MdbBase {
  #==========================================================[ /quotes page ]===
  #----------------------------------------------------------[ Quotes Array ]---
   /** Get the quotes for a given movie
-   * @method quotes
    * @return array quotes (array[0..n] of string)
    * @see IMDB page /quotes
    */
@@ -1697,7 +1622,7 @@ class Title extends MdbBase {
 
       if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', str_replace("\n"," ",$page), $matches)) {
         foreach ($matches[1] as $match) {
-          $this->moviequotes[] = str_replace('href="/name/','href="http://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match));
+          $this->moviequotes[] = str_replace('href="/name/','href="https://'.$this->imdbsite.'/name/',preg_replace('!<span class="linksoda".+?</span>!ims','',$match));
         }
       }
     }
@@ -1705,7 +1630,6 @@ class Title extends MdbBase {
   }
   
   /** Get the quotes for a given movie (split-up variant)
-   * @method quotes_split
    * @return array quote array[string quote, array character]; character: array[string url, string name]
    * @see IMDB page /quotes
    */
@@ -1756,7 +1680,7 @@ class Title extends MdbBase {
         foreach ($doc->getElementsByTagName('li') as $trailerNode) {
           $titleNode = $trailerNode->getElementsByTagName('a')->item(1);
           $title = $titleNode->nodeValue;
-          $url = "http://" . $this->imdbsite . $titleNode->getAttribute('href');
+          $url = "https://" . $this->imdbsite . $titleNode->getAttribute('href');
           $imageUrl = $trailerNode->getElementsByTagName('img')->item(0)->getAttribute('loadlate');
           $res = (strpos($imageUrl, 'HDIcon') !== FALSE) ? 'HD' : 'SD';
 
@@ -1775,7 +1699,6 @@ class Title extends MdbBase {
  #===========================================================[ /videosites ]===
  #--------------------------------------------------------[ content helper ]---
  /** Convert IMDB redirect-URLs of external sites to real URLs
-  * @method convertIMDBtoRealURL
   * @param string url redirect-url
   * @return string url real-url
   */
@@ -1783,7 +1706,7 @@ class Title extends MdbBase {
    if (preg_match('/^https?:\/\//', $url)) {
      return $url;
    }
-   $req = new Request("http://".$this->imdbsite.$url, $this->config);
+   $req = new Request("https://".$this->imdbsite.$url, $this->config);
    if ($req->sendRequest()!==FALSE) {
      $head = $req->getLastResponseHeaders();
      foreach ($head as $header) {
@@ -1797,7 +1720,6 @@ class Title extends MdbBase {
  }
 
  /** Parse segments of external information on "VideoSites"
-  * @method protected parse_extcontent
   * @param string title segment title
   * @param array res resultset (passed by reference)
   */
@@ -1825,7 +1747,6 @@ class Title extends MdbBase {
 
  #---------------------------------------------------[ Off-site soundclips ]---
   /** Get the off-site soundclip URLs
-   * @method soundclipsites
    * @return array soundclipsites array[0..n] of array(site,url,type,desc)
    * @see IMDB page /videosites
    */
@@ -1833,12 +1754,11 @@ class Title extends MdbBase {
     if ( empty($this->soundclip_sites) ) {
       $this->parse_extcontent('Sound Clips',$this->soundclip_sites);
     }
-    return $this->video_sites;
+    return $this->soundclip_sites;
   }
 
  #-------------------------------------------------------[ Off-site photos ]---
   /** Get the off-site photo URLs
-   * @method photosites
    * @return array photosites array[0..n] of array(site,url,type,desc)
    * @see IMDB page /videosites
    */
@@ -1851,7 +1771,6 @@ class Title extends MdbBase {
 
  #--------------------------------------------------[ Off-site miscellanea ]---
   /** Get the off-site misc URLs
-   * @method miscsites
    * @return array miscsites array[0..n] of array(site,url,type,desc)
    * @see IMDB page /videosites
    */
@@ -1864,7 +1783,6 @@ class Title extends MdbBase {
 
  #------------------------------------------[ Off-site trailers and videos ]---
   /** Get the off-site videos and trailer URLs
-   * @method videosites
    * @return array videosites array[0..n] of array(site,url,type,desc)
    * @see IMDB page /videosites
    */
@@ -1879,7 +1797,6 @@ class Title extends MdbBase {
  #==========================================================[ /trivia page ]===
  #----------------------------------------------------------[ Trivia Array ]---
   /** Get the trivia info
-   * @method trivia
    * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
    * @return array trivia (array[0..n] string
    * @see IMDB page /trivia
@@ -1896,7 +1813,7 @@ class Title extends MdbBase {
       }
       if ( preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>\s*<div!ims',$block[1],$matches) ) {
         $gc = count($matches[1]);
-        for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="http://'.$this->imdbsite."/",$matches[1][$i]);
+        for ($i=0;$i<$gc;++$i) $this->trivia[] = str_replace('href="/','href="https://'.$this->imdbsite."/",$matches[1][$i]);
       }
     }
     return $this->trivia;
@@ -1906,7 +1823,6 @@ class Title extends MdbBase {
  #======================================================[ /soundtrack page ]===
  #------------------------------------------------------[ Soundtrack Array ]---
   /** Get the soundtrack listing
-   * @method soundtrack
    * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits array[credit_to,desc])
    * @see IMDB page /soundtrack
    */
@@ -1922,19 +1838,19 @@ class Title extends MdbBase {
           if ( preg_match_all('|^\s*(.*?)\s+by\s+(<a href[^>]+>.+?</a>)|i',$matches['desc'][$i],$match1) ) {
             for ($k=0;$k<count($match1[0]);++$k) {
               switch ($match1[1][$k]) {
-                case "Arranged" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'arrangement'); break;
-                case "Composed" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'composer'); break;
-                case "Performed": $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer'); break;
-                case "Written"  : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer'); break;
+                case "Arranged" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'arrangement'); break;
+                case "Composed" : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'composer'); break;
+                case "Performed": $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer'); break;
+                case "Written"  : $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer'); break;
                 case "Written and Produced": {
-                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
-                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'producer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'producer');
                 } break;
                 case "Written and Performed": {
-                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
-                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'writer');
+                  $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'performer');
                 } break;
-                default: $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'**'.$match1[1][$k].'**');
+                default: $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$match1[2][$k]), 'desc'=>'**'.$match1[1][$k].'**');
               }
             }
           } elseif ( preg_match_all('|\s*([^>]*)\s+by\s+([^<]+)|i',$matches['desc'][$i],$match1) ) { // creditors without link
@@ -1942,21 +1858,21 @@ class Title extends MdbBase {
               if ( preg_match('!(.+)\s+and\s+(.+)!',$match1[2][$k],$cr) ) $creds = array($cr[1],$cr[2]);
               else $creds = array($match1[2][$k]);
               switch ($match1[1][$k]) {
-                case "Arranged" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'arrangement'); break;
-                case "Composed" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'composer'); break;
-                case "Performed": foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'performer'); break;
-                case "Written"  : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer'); break;
+                case "Arranged" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'arrangement'); break;
+                case "Composed" : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'composer'); break;
+                case "Performed": foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'performer'); break;
+                case "Written"  : foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'writer'); break;
                 case "Written and Produced": foreach ($creds as $cred) {
-                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
-                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'producer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'producer');
                    }
                    break;
                 case "Written and Performed": foreach ($creds as $cred) {
-                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
-                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'performer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'writer');
+                     $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'performer');
                    }
                    break;
-                default: foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="http://'.$this->imdbsite.'/',$cred), 'desc'=>'**'.$match1[1][$k].'**'); break;
+                default: foreach ($creds as $cred) $s['credits'][] = array('credit_to'=>str_replace('href="/','href="https://'.$this->imdbsite.'/',$cred), 'desc'=>'**'.$match1[1][$k].'**'); break;
               }
             }
           }
@@ -1973,17 +1889,17 @@ class Title extends MdbBase {
  #=================================================[ /movieconnection page ]===
  #----------------------------------------[ Helper: ConnectionBlock Parser ]---
   /** Parse connection block (used by method movieconnection only)
-   * @method protected parseConnection
    * @param string conn connection type
    * @return array [0..n] of array mid,name,year,comment - or empty array if not found
    */
   protected function parseConnection($conn) {
+    $arr = array();
     $tag_s = strpos($this->page["MovieConnections"],"<h4 class=\"li_group\">$conn");
     if (empty($tag_s)) return array(); // no such feature
     $tag_e = strpos($this->page["MovieConnections"],"<h4 class=\"li",$tag_s+4);
-    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<script",$tag_s);
+    if (empty($tag_e)) $tag_e = strpos($this->page["MovieConnections"],"<h2",$tag_s);
     $block = substr($this->page["MovieConnections"],$tag_s,$tag_e-$tag_s);
-    if (preg_match_all('!<a href="(.*?)">(.*?)</a>&nbsp;\((\d{4})\)(.*<br\s*/>(.*?)\s*</div>)?!ims',$block,$matches)) {
+    if (preg_match_all('!<a href="(.*?)">(.*?)</a>(?:&nbsp;\((\d{4})\))?(.*?<br\s*/>(.*?)\s*</div>)?!ims',$block,$matches)) {
       $this->debug_object($matches);
       $mc = count($matches[0]);
       for ($i=0;$i<$mc;++$i) {
@@ -1996,7 +1912,6 @@ class Title extends MdbBase {
 
  #-------------------------------------------------[ MovieConnection Array ]---
   /** Get connected movie information
-   * @method movieconnection
    * @return array connections (versionOf, editedInto, followedBy, spinOff,
    *         spinOffFrom, references, referenced, features, featured, spoofs,
    *         spoofed - each an array of mid, name, year, comment or an empty
@@ -2029,7 +1944,6 @@ class Title extends MdbBase {
  #=================================================[ /externalreviews page ]===
  #-------------------------------------------------[ ExternalReviews Array ]---
   /** Get list of external reviews (if any)
-   * @method extReviews
    * @return array [0..n] of array [url, desc] (or empty array if no data)
    * @see IMDB page /externalreviews
    */
@@ -2046,7 +1960,7 @@ class Title extends MdbBase {
       if (preg_match_all('@href="(.*?)"[^>]*>(.*?)</a>@',$block,$matches)) {
         $mc = count($matches[0]);
         for ($i=0;$i<$mc;++$i) {
-          $this->extreviews[$i] = array("url"=>'http://'.$this->imdbsite.$matches[1][$i], "desc"=>$matches[2][$i]);
+          $this->extreviews[$i] = array("url"=>'https://'.$this->imdbsite.$matches[1][$i], "desc"=>$matches[2][$i]);
         }
       }
     }
@@ -2056,7 +1970,6 @@ class Title extends MdbBase {
  #=====================================================[ /releaseinfo page ]===
  #-----------------------------------------------------[ ReleaseInfo Array ]---
   /** Obtain Release Info (if any)
-   * @method releaseInfo
    * @return array release_info array[0..n] of strings (country,day,month,mon,
              year,comment) - "month" is the month name, "mon" the number
    * @see IMDB page /releaseinfo
@@ -2104,7 +2017,7 @@ class Title extends MdbBase {
       $doc = new \DOMDocument();
       @$doc->loadHTML($page);
       $xp = new \DOMXPath($doc);
-      $cells = $xp->query("//div[@id=\"filming_locations_content\"]//dt");
+      $cells = $xp->query("//section[@id=\"filming_locations\"]//dt");
       foreach ($cells as $cell) {
         $this->locations[] = trim($cell->nodeValue);
       }
@@ -2115,7 +2028,6 @@ class Title extends MdbBase {
  #==================================================[ /companycredits page ]===
  #---------------------------------------------[ Helper: Parse CompanyInfo ]---
   /** Parse company info
-   * @method protected companyParse
    * @param ref string text to parse
    * @param ref array parse target
    */
@@ -2123,13 +2035,12 @@ class Title extends MdbBase {
     preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms',$text,$matches);
     $mc = count($matches[0]);
     for ($i=0;$i<$mc;++$i) {
-      $target[] = array("name"=>$matches[2][$i], "url"=>'http://'.$this->imdbsite.$matches[1][$i], "notes"=>trim($matches[3][$i]));
+      $target[] = array("name"=>$matches[2][$i], "url"=>'https://'.$this->imdbsite.$matches[1][$i], "notes"=>trim($matches[3][$i]));
     }
   }
 
  #---------------------------------------------------[ Producing Companies ]---
   /** Info about Production Companies
-   * @method prodCompany
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
@@ -2146,7 +2057,6 @@ class Title extends MdbBase {
 
  #------------------------------------------------[ Distributing Companies ]---
   /** Info about distributors
-   * @method distCompany
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
@@ -2163,7 +2073,6 @@ class Title extends MdbBase {
 
  #---------------------------------------------[ Special Effects Companies ]---
   /** Info about Special Effects companies
-   * @method specialCompany
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
@@ -2180,7 +2089,6 @@ class Title extends MdbBase {
 
  #-------------------------------------------------------[ Other Companies ]---
   /** Info about other companies
-   * @method otherCompany
    * @return array [0..n] of array (name,url,notes)
    * @see IMDB page /companycredits
    */
@@ -2198,7 +2106,6 @@ class Title extends MdbBase {
  #===================================================[ /parentalguide page ]===
  #------------------------------------------------[ Helper: ParentalGuide Section ]---
   /** Get lists for the Parental Guide section's
-   * @method protected get_section_list_parental_guide
    * @param string html
    * @param string section_id
    * @return array array[0..n] of strings
@@ -2219,7 +2126,6 @@ class Title extends MdbBase {
  
  #-------------------------------------------------[ ParentalGuide Details ]---
   /** Detailed Parental Guide
-   * @method parentalGuide
    * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
    * @return array of strings; keys: Drugs, Sex, Violence, Profanity,
    *         Frightening - and maybe more; values: arguments for the rating
@@ -2254,7 +2160,6 @@ class Title extends MdbBase {
  #===================================================[ /officialsites page ]===
  #---------------------------------------------------[ Official Sites URLs ]---
   /** URLs of Official Sites
-   * @method officialSites
    * @return array [0..n] of url, name
    * @see IMDB page /officialsites
    * @brief now combined with /videosites to /externalsites
@@ -2271,7 +2176,6 @@ class Title extends MdbBase {
  #========================================================[ /keywords page ]===
  #--------------------------------------------------------------[ Keywords ]---
   /** Get the complete keywords for the movie
-   * @method keywords_all
    * @return array keywords
    * @see IMDB page /keywords
    */
@@ -2328,15 +2232,22 @@ class Title extends MdbBase {
         for ($k=0;$k<$ccount;++$k) {
           switch($col['class'][$k]) {
             case "title_award_outcome":
-              $have_title = TRUE; $have_desc = FALSE;
               preg_match('!(?<outcome>.+?)<br\s*/>\s*<span class="award_category">\s*(?<award>.+?)</span>!ims',$col['data'][$k],$data);
               $outcome = trim(strip_tags($data['outcome']));
-              $outcome == "Won" ? $won = TRUE : $won = FALSE;
+              if ($outcome === "Winner" || $outcome === "Won") {
+                $won = true;
+                $outcome = "Won";
+              } else {
+                $won = false;
+                if ($outcome === "Nominee") {
+                  $outcome = "Nominated";
+                }
+              }
               $award = trim($data['award']);
               break;
             case "award_description":
               $desc = trim($col['data'][$k]);
-              if ( preg_match_all( '|<a href\="/name/nm(\d{7})[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
+              if ( preg_match_all( '|<a href\="/name/nm(\d+)[^"]*"\s*>(.*?)</a>|s', $desc, $data) ) {
                 $people = isset( $data[0][0] ) ? array_combine($data[1],$data[2]) : array();
                 preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
                 if (substr($cat,0,3)=='<a ') $cat = '';
@@ -2365,366 +2276,44 @@ class Title extends MdbBase {
     return $this->awards;
   }
 
-  /* Get budget
-  * @param string budg
-  * @return int|null null on failure
-  * @brief Assuming budget is estimated, and in american dollar
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_budget($budg){
-     // Tries to get a single entry
-    if (@preg_match("!(.*?)\s*\(estimated\)!ims", $budg, $opWe)) {
-      $result = $opWe[1];
-      return intval(substr(str_replace(",", "", $result), 1));
-    } else {
-      return null;
-    }
- } // End of get_budget
-
- /* Get budget
+ /*
+  * Get budget
   * @return int|null null on failure / no data
   * @brief Assuming budget is estimated, and in american dollar
   * @see IMDB page / (TitlePage)
   */
   public function budget() {
     if (empty($this->budget)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Budget</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $bud)) { // Opening Weekend
-        $budget = $bud[1];
+      $page = $this->getPage("Title");
+      if (@preg_match("!<h4[^>]+>Budget:</h4>\\$([\d,]+)\n!is", $page, $bud)) { // Opening Weekend
+        $this->budget = intval(str_replace(",", "", $bud[1]));
       } else {
         return null;
       }
-      $this->budget = $this->get_budget($budget);
     }
     return $this->budget;
   }
 
-  #-------------------------------------------------[ Openingbudget ]---
- /** Get opening weekend budget
-  * @param ref string listOpening
-  * @return array[0..n] of array[value,country,date,nbScreens]
-  * @see IMDB page
-  */
- protected function get_openingWeekend(&$listOpening){
-   $result = array();
-   $temp = $listOpening;
-
-   $i = 0;
-   while($temp != NULL){
-     // Tries to get a single entry
-     if (@preg_match("!(.*?)<br/>!ims",$temp,$opWe))
-     $entry = $opWe[1];
-
-     // Tries to extract the value
-     if (@preg_match("!(.*?)\(!ims",$opWe[1],$value))
-       $opWe[1] = str_replace($value,"",$opWe[1]);
-
-     // Tries to extract the country
-     if (@preg_match("!(.*?)\)\s*!ims",$opWe[1],$country))
-       $opWe[1] = str_replace($country,"",$opWe[1]);
-
-     // Tries to extract the date
-     if (@preg_match("!\((.*?)\)\s*!ims",$opWe[1],$date))
-       if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$date[1],$dayMonth))
-         if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$date[1],$year))
-           $dateValue = $year[1].'-'.$dayMonth[1];
-     $opWe[1] = str_replace($date,"",$opWe[1]);
-
-     // Tries to extract the number of screens
-     if (@preg_match("!\((.*?)\)\s*!ims",$opWe[1],$nbScreen))
-       $opWe[1] = str_replace($nbScreen,"",$opWe[1]);
-
-     // Parse the results in an array
-     $result[$i] = array(
-       'value'     => trim($value[1]),
-       'country'   => $country[1],
-       'date'      => $dateValue,
-       'nbScreens' => isset($nbScreen[1]) ? intval(str_replace(",","",$nbScreen[1])) : 0,
-     );
-
-     // Remove the entry from the list of entries
-     if (@preg_match("!<br/>(.*?)$!ims",$temp,$temp))
-       $temp = $temp[1];
-
-     $i++;
-   }
-   return $result;
- } // End of get_openingWeekend
-
-
- /** Opening weekend budget
-   * @return array[0..n] of array[value,country,date,nbScreens]
-   * @see IMDB page
-   * @TODO fix 'value' field .. "&#163;3,384,948" isn't good enough
-   */
-  public function openingWeekend() {
-    if (empty($this->openingWeekend)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Opening Weekend</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $opWe)) // Opening Weekend
-        $openingWeekend = $opWe[1];
-      $this->openingWeekend = $this->get_openingWeekend($openingWeekend);
-    }
-    return $this->openingWeekend;
-  }
-
- #-------------------------------------------------[ Gross ]---
- /** Get gross budget
-  * @param ref string listGross
-  * @return array[0..n] of array[value,country,date]
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_gross(&$listGross) {
-   $result = array();
-   $temp = $listGross;
-   $i = 0;
-   while($temp != NULL){
-     // Tries to get a single entry
-     if (@preg_match("!(.*?)<br/>!ims",$temp,$gr))
-       $entry = $gr[1];
-       //echo 'ici'.$entry.'ici';
-
-     // Tries to extract the value
-     if (@preg_match("!(.*?)\(!ims",$gr[1],$value))
-       $gr[1] = str_replace($value,"",$gr[1]);
-
-     // Tries to extract the country
-     if (@preg_match("!(.*?)\)\s*!ims",$gr[1],$country))
-       $gr[1] = str_replace($country,"",$gr[1]);
-
-     $dateValue = null;
-     // Tries to extract the date
-     if (@preg_match("!\((.*?)\)\s*!ims",$gr[1],$date))
-       if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$date[1],$dayMonth))
-         if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$date[1],$year))
-           $dateValue = $year[1].'-'.$dayMonth[1];
-     $gr[1] = str_replace($date,"",$gr[1]);
-
-     // Parse the results in an array
-     $result[$i] = array(
-       'value'     => trim($value[1]),
-       'country'   => $country[1],
-       'date'      => $dateValue,
-     );
-
-     // Remove the entry from the list of entries
-     if (@preg_match("!<br/>(.*?)$!ims",$temp,$temp))
-       $temp = $temp[1];
-
-     $i++;
-   }
-   return $result;
- }
+  #-------------------------------------------------[ Filming Dates ]---
 
   /**
-   * Gross takings by country and date (usually per week for recent films)
-   * @return array[0..n] of array[value,country,date]
-   * e.g.
-   * [
-   *   [
-   *     'value' => '$171,479,930', // US/UK formatted currency string
-   *     'country' => 'USA', // Full country name such as Netherlands, Italy, UK
-   *     'date' => '1999-09-26' // Can be null if no date is on IMDb
-   *   ]
-   * ]
-   * @see IMDB page /business
-   * @TODO fix 'value' field .. "&#163;3,384,948" isn't good enough
-   */
-  public function gross() {
-    if (empty($this->gross)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Gross</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $gr)) // Gross
-        $gross = $gr[1];
-      $this->gross = $this->get_gross($gross);
-    }
-    return $this->gross;
-  }
-
-  #-------------------------------------------------[ Weekend Gross ]---
- /** Get weekend gross budget
-  * @param ref string listweekendGross
-  * @return array[0..n] of array[value,country,date,nbScreens]
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_weekendGross(&$listweekendGross){
-   $result = array();
-   $temp = $listweekendGross;
-   $i = 0;
-
-   while($temp != NULL){
-     // Tries to get a single entry
-     if (@preg_match("!(.*?)<br/>!ims",$temp,$weGr))
-       $entry = $weGr[1];
-
-     // Tries to extract the value
-     if (@preg_match("!(.*?)\(!ims",$weGr[1],$value))
-       $weGr[1] = str_replace($value,"",$weGr[1]);
-
-     // Tries to extract the country
-     if (@preg_match("!(.*?)\)\s*!ims",$weGr[1],$country))
-       $weGr[1] = str_replace($country,"",$weGr[1]);
-
-     // Tries to extract the date
-     if (@preg_match("!\((.*?)\)\s*!ims",$weGr[1],$date))
-       if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$date[1],$dayMonth))
-         if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$date[1],$year))
-           $dateValue = $year[1].'-'.$dayMonth[1];
-     $weGr[1] = str_replace($date,"",$weGr[1]);
-
-     // Tries to extract the number of screens
-     if (@preg_match("!\((.*?)\)\s*!ims",$weGr[1],$nbScreen))
-       $weGr[1] = str_replace($nbScreen,"",$weGr[1]);
-
-     // Parse the results in an array
-     $result[$i] = array(
-       'value'     => trim($value[1]),
-       'country'   => $country[1],
-       'date'      => $dateValue,
-       'nbScreens' => intval(str_replace(",","",$nbScreen[1]))
-     );
-
-     // Remove the entry from the list of entries
-     if (@preg_match("!<br/>(.*?)$!ims",$temp,$temp))
-       $temp = $temp[1];
-
-     $i++;
-   }
-   return $result;
- } // End of get_weekendGross
-
-
- /** Get weekend gross budget
-   * @return array[0..n] of array[value,country,date,nbScreen]
-   * @see IMDB page / (TitlePage)
-   */
-  public function weekendGross() {
-    if (empty($this->weekendGross)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Weekend Gross</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $weGr)) // Weekend Gross
-        $weekendGross = $weGr[1];
-      $this->weekendGross = $this->get_weekendGross($weekendGross);
-    }
-    return $this->weekendGross;
-  }
-
-  #-------------------------------------------------[ Admissions ]---
- /** Get admissions budget
-  * @param ref string listAdmissions
-  * @return array[0..n] of array[value,country,date]
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_admissions(&$listAdmissions) {
-   $result = array();
-   $temp = $listAdmissions;
-   $i = 0;
-
-   while($temp != NULL){
-     // Tries to get a single entry
-     if (@preg_match("!(.*?)<br/>!ims",$temp,$adm))
-       $entry = $adm[1];
-
-     // Tries to extract the value
-     if (@preg_match("!(.*?)\(!ims",$adm[1],$value))
-       $adm[1] = str_replace($value,"",$adm[1]);
-
-     // Tries to extract the country
-     if (@preg_match("!(.*?)\)\s*!ims",$adm[1],$country))
-       $adm[1] = str_replace($country,"",$adm[1]);
-
-     // Tries to extract the date
-     if (@preg_match("!\((.*?)\)\s*!ims",$adm[1],$date))
-       if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$date[1],$dayMonth))
-         if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$date[1],$year))
-           $dateValue = $year[1].'-'.$dayMonth[1];
-     $adm[1] = str_replace($date,"",$adm[1]);
-
-     // Parse the results in an array
-     $result[$i] = array(
-       'value'     => intval(str_replace(",","",$value[1])),
-       'country'   => $country[1],
-       'date'      => $dateValue,
-     );
-
-     // Remove the entry from the list of entries
-     if (@preg_match("!<br/>(.*?)$!ims",$temp,$temp))
-       $temp = $temp[1];
-
-     $i++;
-   }
-   return $result;
- } // End of get_admissions
-
-
- /** Get admissions budget
-   * @return array[0..n] of array[value,country,date]
-   * @see IMDB page / (business)
-   */
-  public function admissions() {
-    if (empty($this->admissions)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Admissions</h5>\n*(.*?)<br/>\n*<h5!ims", $page, $weGr)) // Admissions
-        $admissions = $weGr[1];
-      $this->admissions = $this->get_admissions($admissions);
-    }
-    return $this->admissions;
-  }
-
-  #-------------------------------------------------[ Filming Dates ]---
- /** Get filming dates
-  * @param ref string listFilmingDates
-  * @return array[0..n] of array[beginning,end]
-  * Time format : YYYY-MM-DD
-  * @see IMDB page / (TitlePage)
-  */
- protected function get_filmingDates($listFilmingDates){
-   $temp = $listFilmingDates;
-
-   // Tries to get the beginning
-   if (@preg_match("!(.*?)&nbsp;-!ims",$temp,$beginning))
-
-     if (@preg_match("#[A-Z0-9]#",$beginning[1])) { // Check if there is a date
-       if (@preg_match("!<a(.*?)&nbsp;-!ims",$temp)) { // Check if there  is a linked date
-         if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$beginning[1],$dayMonthB))
-           if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$beginning[1],$yearB))
-             $beginningDate = $yearB[1].'-'.$dayMonthB[1];
-       } else if (@preg_match("!(.*?)&nbsp;-!ims",$temp,$beginning)) {
-         $beginningDate = date('Y-m-d', strtotime($beginning[1]));
-       }
-     }
-
-   // Tries to get the end
-   if (@preg_match("!-&nbsp;(.*?)$!ims",$temp,$end))
-
-     if (@preg_match("#[A-Z0-9]#",$end[1])) { // Check if there is a date
-       if (@preg_match("!-&nbsp;<a(.*?)!ims",$temp)) { // Check if there  is a linked date
-         if (@preg_match("!<a href=\"/date/(.*?)/\">!ims",$end[1],$dayMonthE))
-           if (@preg_match("!<a href=\"/year/(.*?)/\">!ims",$end[1],$yearE))
-             $endDate = $yearE[1].'-'.$dayMonthE[1];
-       } else if (@preg_match("!-&nbsp;(.*?)$!ims",$temp,$end)) {
-         $endDate = date('Y-m-d', strtotime($end[1]));
-       }
-     }
-
-   // Parse the results in an array
-   $result = array(
-       'beginning' => $beginningDate,
-       'end'       => $endDate
-   );
-
-   return $result;
- }
-
-
- /** Get filming dates
-   * @return array[beginning, end]
+   * Get filming dates
+   * @return null|array[beginning, end]
    * Time format : YYYY-MM-DD
-   * @see IMDB page / (TitlePage)
+   * @see IMDB page / (Locations)
    */
-  public function filmingDates() {
+  public function filmingDates()
+  {
     if (empty($this->filmingDates)) {
-      $page = $this->getPage("BoxOffice");
-      if (@preg_match("!<h5>Filming Dates</h5>\s*\n*(.*?)(<br/>\n*)*<h5!ims", $page, $filDates)) // Filming Dates
-        $filmingDates = $filDates[1];
-      $this->filmingDates = $this->get_filmingDates($filmingDates);
+      $page = $this->getPage("Locations");
+      if (@preg_match("!<h4[^>]+>Filming Dates</h4>\s*\n*(.*?)(<br/>\n*)*</section!ims", $page, $filDates)) {
+        if (preg_match("/(\d+ \w+ \d{4}) - (\d+ \w+ \d{4})/", strip_tags($filDates[1]), $dates)) {
+          $this->filmingDates = array(
+            'beginning' => date('Y-m-d', strtotime($dates[1])),
+            'end' => date('Y-m-d', strtotime($dates[2])),
+          );
+        }
+      }
     }
     return $this->filmingDates;
   }
@@ -2759,6 +2348,16 @@ class Title extends MdbBase {
     $this->page[$page] = parent::getPage($page);
 
     return $this->page[$page];
+  }
+
+  protected function jsonLD() {
+    if ($this->jsonLD) {
+      return $this->jsonLD;
+    }
+    $page = $this->getPage('Title');
+    preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
+    $this->jsonLD = json_decode($matches[1]);
+    return $this->jsonLD;
   }
 
 }

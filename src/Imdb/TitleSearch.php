@@ -70,6 +70,6 @@ class TitleSearch extends MdbBase {
   }
 
   protected function buildUrl($searchTerms = null) {
-    return "http://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
+    return "https://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
   }
 }

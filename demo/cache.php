@@ -14,15 +14,19 @@
 require __DIR__ . "/../bootstrap.php";
 
 use \Imdb\Title;
+use \Imdb\Person;
 use \Imdb\Config;
 
 $config = new Config();
-$movies = array();
+$results = array();
 if (is_dir($config->cachedir)) {
-  $files = glob($config->cachedir . 'title.tt*');
+  $files = glob($config->cachedir . '{title.tt*,name.nm*}', GLOB_BRACE);
   foreach ($files as $file) {
     if (preg_match('!^title\.tt(\d{7})$!i', basename($file), $match)) {
-      $movies[] = new Title($match[1]);
+      $results[] = new Title($match[1]);
+    }
+    if (preg_match('!^name\.nm(\d{7})$!i', basename($file), $match)) {
+      $results[] = new Person($match[1]);
     }
   }
 }
@@ -36,26 +40,39 @@ if (is_dir($config->cachedir)) {
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <?php if (empty($movies)): ?>
+    <?php if (empty($results)): ?>
       <h2 class="text-center">Nothing in cache</h2>
     <?php else: ?>
-	  <h2 class="text-center">Cache Contents</h2>
+      <h2 class="text-center">Cache Contents</h2>
       <table class="table">
         <tr>
-          <th>Movie</th>
+          <th>Name</th>
+          <th>Type</th>
           <th>IMDb</th>
         </tr>
-        <?php foreach ($movies as $movie): ?>
-        <tr>
-          <td><?php echo $movie->title() ?></td>
-          <td class="text-center">
-            <a href="movie.php?mid=<?php echo $movie->imdbid() ?>">Cache</a> |
-            <a href="<?php echo $movie->main_url() ?>">IMDb</a>
-          </td>
-        </tr>
+        <?php foreach ($results as $res): ?>
+            <?php if (get_class($res) === 'Imdb\Title'): ?>
+            <tr>
+              <td><?php echo $res->title() ?></td>
+              <td><?php echo $res->movietype() ?></td>
+              <td class="text-center">
+                <a href="movie.php?mid=<?php echo $res->imdbid() ?>">Cache</a> |
+                <a href="<?php echo $res->main_url() ?>">IMDb</a>
+              </td>
+            </tr>
+            <?php else: ?>
+            <tr>
+              <td><?php echo $res->name() ?></td>
+              <td>Person</td>
+              <td class="text-center">
+                <a href="person.php?mid=<?php echo $res->imdbid() ?>">Cache</a> |
+                <a href="<?php echo $res->main_url() ?>">IMDb</a>
+              </td>
+            </tr>
+            <?php endif; ?>
         <?php endforeach ?>
       </table>
     <?php endif ?>
-	<p class="text-center"><a href="index.html">Go back</a></p>
+    <p class="text-center"><a href="index.html">Go back</a></p>
   </body>
 </html>
