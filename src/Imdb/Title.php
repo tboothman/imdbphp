@@ -565,8 +565,8 @@ class Title extends MdbBase {
    */
   public function genre() {
    if (empty($this->main_genre)) {
-    if (empty($this->moviegenres)) $genres = $this->genres();
-    if (!empty($genres)) $this->main_genre = $this->moviegenres[0];
+    if (empty($this->moviegenres)) $this->genres();
+    if (!empty($this->moviegenres)) $this->main_genre = $this->moviegenres[0];
    }
    return $this->main_genre;
   }
@@ -577,19 +577,18 @@ class Title extends MdbBase {
    */
   public function genres() {
     if (empty($this->moviegenres)) {
-      $this->getPage("Title");
-      if (preg_match_all('!<a href="/genre/[^?][^>]+?>(.*?)\</a>!',$this->page["Title"],$matches)) {
-        $this->moviegenres = $matches[1];
-      } elseif (preg_match('!<div class="infobar">(.*?)</div>!ims',$this->page['Title'],$match)) {
-        if (preg_match_all('!href="/genre/.*?"\s*>(.*?)<!ims',$match[1],$matches)) {
+      $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
+      if( !is_array($genres) )
+        $genres = (array) $genres;
+      $this->moviegenres = $genres;
+    }
+    if (empty($this->moviegenres)) {
+      if (@preg_match('!Genres:</h4>(.*?)</div!ims',$this->page["Title"],$match)) {
+        if (@preg_match_all('!href="[^>]+?>\s*(.*?)\s*<!',$match[1],$matches)) {
           $this->moviegenres = $matches[1];
         }
       }
     }
-    foreach ($this->moviegenres as $i => $val) {
-      $this->moviegenres[$i] = trim(strip_tags($this->moviegenres[$i]));
-    }
-    $this->moviegenres = array_merge(array_unique($this->moviegenres));
     return $this->moviegenres;
   }
 
