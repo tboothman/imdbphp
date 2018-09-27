@@ -107,6 +107,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
 
     // TV Series
     $sherlockHound = $result[20];
+    $sherlockHound = $result[21];
     $this->assertEquals('0088109', $sherlockHound['mid']);
     $this->assertEquals('Sherlock Hound', $sherlockHound['name']);
     $this->assertEquals('', $sherlockHound['year']);
