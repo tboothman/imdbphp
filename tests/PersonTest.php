@@ -85,8 +85,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_director();
     $this->assertInternalType('array', $result);
-    $this->assertCount(29, $result);
-    print_r($result);
+    $this->assertGreaterThan(28, $result);
     $windRises = $result[2];
     $this->assertEquals('2013293', $windRises['mid']);
     $this->assertEquals('The Wind Rises', $windRises['name']);
