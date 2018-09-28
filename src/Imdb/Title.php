@@ -1276,7 +1276,7 @@ class Title extends MdbBase {
  #----------------------------------------------------------------[ Actors ]---
   /**
    * Get the actors/cast members for this title
-   * @param boolean $clean_ws whether to clean white-space inside names
+   * @param boolean $short whether to get only the cast listed on the title page, or to get the full cast listing
    * @return array cast (array[0..n] of array[imdb,name,name_alias,role,role_episodes,role_start_year,role_end_year,thumb,photo])
    * e.g.
    * <pre>
@@ -1296,14 +1296,18 @@ class Title extends MdbBase {
    * </pre>
    * @see IMDB page /fullcredits
    */
-  public function cast() {
+  public function cast($short = false) {
     if (!empty($this->credits_cast)) {
       return $this->credits_cast;
     }
 
-    $page = $this->getPage("Credits");
-    if (empty($page)) {
-      return array(); // no such page
+    if ($short) {
+      $page = $this->getPage("Title");
+    } else {
+      $page = $this->getPage("Credits");
+      if (empty($page)) {
+        return array(); // no such page
+      }
     }
 
     $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
