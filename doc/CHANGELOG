@@ -2,6 +2,14 @@
 History for IMDBPHP
 ====================
 
+v6.0.4 (02.10.2018)
+-------------------
+! Bug `Title:genre()` returned empty array in case it's called after `Title:genres()`
+! Fix `Title:genres()` caused by a site change #139
+! `Title:runtimes()` returned null on some occation as json data aren't always available #135
+! Bug `Title:soundclipsites()` returned information from `Title:videosites()`
+! Fix `Title:storyline()` caused by a site change #134
+
 v6.0.3 (19.08.2018)
 -------------------
 ! Fix `Title::rating()`, `Title::votes()`, `Title::poster()`, `Title::runtime()`, `Title::creator()`, `Title::episodeTitle()`, `Title::episodeAirDate()`, `Title:country()`, `Title:runtimes()`, `Title:colors()` and `Title:sound()` caused by a site change #133
