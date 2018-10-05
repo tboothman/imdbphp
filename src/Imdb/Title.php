@@ -1305,9 +1305,10 @@ class Title extends MdbBase {
       $page = $this->getPage("Title");
     } else {
       $page = $this->getPage("Credits");
-      if (empty($page)) {
-        return array(); // no such page
-      }
+    }
+
+    if (empty($page)) {
+      return array(); // no such page
     }
 
     $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
