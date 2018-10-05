@@ -791,6 +791,17 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(0, $firstCast['role_other']);
     }
 
+    public function testCast_short_cast_list_film_with_role_link() {
+      $imdb = $this->getImdb();
+      $cast = $imdb->cast(true);
+      $firstCast = $cast[0];
+      $this->assertEquals('0000206', $firstCast['imdb']);
+      $this->assertEquals('Keanu Reeves', $firstCast['name']);
+      $this->assertEquals('Neo', $firstCast['role']);
+      $this->assertTrue($firstCast['credited']);
+      $this->assertCount(0, $firstCast['role_other']);
+    }
+
     public function testCast_film_with_role_link_and_as_name() {
       $imdb = $this->getImdb();
       $cast = $imdb->cast();
