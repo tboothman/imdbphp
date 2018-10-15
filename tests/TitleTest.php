@@ -686,11 +686,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPlot() {
       $imdb = $this->getImdb('2039393');
       $plot = $imdb->plot();
-      $this->assertSame(array(0,0),
-            array(
-              strpos($plot[0], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
-              strpos($plot[1], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark.")
-            ));
+      $this->assertCount(2, $plot);
+      $this->assertStringStartsWith("Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark.", $plot[0]);
+      $this->assertStringStartsWith("Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he", $plot[1]);
     }
 
     public function testPlot_split() {
@@ -701,33 +699,33 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
               array(
                 'plot' => 0,
                 'author' => array(
-                  'name' => 'Paramount Pictures',
-                  'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_0'
+                  'name' => '',
+                  'url' => ''
                 )
               ),
               array(
                 'plot' => 0,
                 'author' => array(
-                  'name' => '',
-                  'url' => ''
+                  'name' => 'Paramount Pictures',
+                  'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_1'
                 )
-              ) 
+              )
             ),
             array(
               array(
-                'plot' => strpos($plot[0]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
+                'plot' => strpos($plot[0]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
                 'author' => array(
                   'name' => $plot[0]['author']['name'],
                   'url' => $plot[0]['author']['url']
                 )
               ),
               array(
-                'plot' => strpos($plot[1]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
+                'plot' => strpos($plot[1]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
                 'author' => array(
                   'name' => $plot[1]['author']['name'],
                   'url' => $plot[1]['author']['url']
                 )
-              ) 
+              )
             ));
     }
 
@@ -1167,7 +1165,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             ),
-            $quotes_split[2]);
+            $quotes_split[3]);
     }
 
     public function testTrailers_all() {
