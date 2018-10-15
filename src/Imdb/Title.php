@@ -2183,11 +2183,12 @@ class Title extends MdbBase {
    * @return array keywords
    * @see IMDB page /keywords
    */
-  function keywords_all() {
+  public function keywords_all() {
     if (empty($this->all_keywords)) {
-      $this->getPage("Keywords");
-      if (preg_match_all('|<a href\="/keyword/[\w\?_\=\-\s"]+>(.*?)</a>|',$this->page["Keywords"],$matches))
+      $page = $this->getPage("Keywords");
+      if (preg_match_all('|<a href\="/keyword/[\w\?_\=\-\s"%]+>(.*?)</a>|', $page, $matches)) {
         $this->all_keywords = $matches[1];
+      }
     }
     return $this->all_keywords;
   }
