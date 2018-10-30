@@ -28,7 +28,7 @@ class TitleSearch extends MdbBase {
     $page = $this->getPage($searchTerms);
 
     // Parse & filter results
-    if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(\([^\d]+\)\s*)?(\((?<year>\d{4})(.*?|)\)|)(?<type>[^<]*)!ims', $page, $matches, PREG_SET_ORDER)) {
+    if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([^\d]+\)\s*)?(?:\((?<year>\d{4})(?:.*?|)\)|)(?<type>[^<]*)!ims', $page, $matches, PREG_SET_ORDER)) {
       foreach ($matches as $match) {
         $type = $this->parseTitleType($match['type']);
 

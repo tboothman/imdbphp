@@ -36,17 +36,17 @@ class TitleSearchAdvanced extends MdbBase {
   const SHORT = 'short';
 
   // Sorts
-  const SORT_MOVIEMETER = 'moviemeter';
-  const SORT_ALPHA = 'alpha';
-  const SORT_USER_RATING = 'user_rating';
-  const SORT_NUM_VOTES = 'num_votes';
-  const SORT_US_BOX_OFFICE_GROSS = 'boxoffice_gross_us';
+  const SORT_MOVIEMETER = 'moviemeter,asc';
+  const SORT_ALPHA = 'alpha,asc';
+  const SORT_USER_RATING = 'user_rating,desc';
+  const SORT_NUM_VOTES = 'num_votes,desc';
+  const SORT_US_BOX_OFFICE_GROSS = 'boxoffice_gross_us,desc';
 
   protected $titleTypes = array();
   protected $year = null;
   protected $countries = array();
   protected $languages = array();
-  protected $sort = 'moviemeter';
+  protected $sort = 'moviemeter,asc';
 
   /**
    * Set which types of titles should be returned
