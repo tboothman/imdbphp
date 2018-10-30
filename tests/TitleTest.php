@@ -315,7 +315,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(in_array('baltimore maryland', $keywords));
         $this->assertTrue(in_array('police department politics', $keywords));
         $this->assertTrue(in_array('corruption', $keywords));
-        $this->assertTrue(in_array('homicide department', $keywords));
+        $this->assertTrue(in_array('drug trafficking', $keywords));
         $this->assertTrue(in_array('urban decay', $keywords));
     }
 
@@ -1133,8 +1133,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertGreaterThan(125, count($goofs));
       $this->assertLessThan(140, count($goofs));
 
-      $this->assertEquals('Audio/visual unsynchronised', $goofs[1]['type']);
-      $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[1]['content']);
+      $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
+      $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
     }
 
     public function testQuotes() {
@@ -1220,7 +1220,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $spoil = $imdb->trivia(true);
 
-      $this->assertGreaterThan(10, count($spoil));
+      $this->assertGreaterThan(8, count($spoil));
       $this->assertEquals('Body count: 39.', $spoil[7]);
     }
     
