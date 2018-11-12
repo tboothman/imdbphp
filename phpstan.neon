@@ -1,3 +1,0 @@
-parameters:
-	ignoreErrors:
-		- '/Function array_merge invoked with 1 parameter/'
