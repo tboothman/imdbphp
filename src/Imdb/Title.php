@@ -956,7 +956,7 @@ class Title extends MdbBase {
       $page = $this->getPage("ReleaseInfo");
       if (empty($page)) return array(); // no such page
       
-      $ak_s = strpos($page, "<a id=\"akas\"");
+      $ak_s = strpos($page, "id=\"akas\"");
       if ($ak_s == 0)
         return array();
       $alsoknow_end = strpos($page, "</table>", $ak_s);
