@@ -686,7 +686,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPlot() {
       $imdb = $this->getImdb('2039393');
       $plot = $imdb->plot();
-      $this->assertCount(2, $plot);
+      $this->assertCount(3, $plot);
       $this->assertStringStartsWith("Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark.", $plot[0]);
       $this->assertStringStartsWith("Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he", $plot[1]);
     }
