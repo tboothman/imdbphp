@@ -1982,16 +1982,16 @@ class Title extends MdbBase {
     if (empty($this->release_info)) {
       $page = $this->getPage("ReleaseInfo");
       if (empty($page)) return array(); // no such page
-      $tag_s = strpos($page, "<a id=\"releases\"");
+      $tag_s = strpos($page, "id=\"releases\"");
       if ($tag_s == 0)
         return array();
       $tag_e = strpos($page,'</table',$tag_s);
       $block = substr($page,$tag_s,$tag_e-$tag_s);
       
-      preg_match_all('!<tr[^>]*>\s*<td><a[^>]*>(.*?)</a></td>\s*<td[^>]*>(.*?)</td>\s*<td>(.*?)</td>!ims',$block,$matches);
+      preg_match_all('!<tr[^>]*>\s*<td><a[^>]*>(.*?)</a></td>\s*<td[^>]*>(.*?)</td>\s*<td[^>]*>(.*?)</td>!ims',$block,$matches);
       if( ! empty($matches[0]) && $mc = count($matches[0]) ) {
         for ($i=0;$i<$mc;++$i) {
-          $country = strip_tags($matches[1][$i]);
+          $country = trim(strip_tags($matches[1][$i]));
           $comment = trim(preg_replace('/\s+/', ' ', $matches[3][$i]));
           if ( preg_match('!^(\d{1,2})\s(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // day, month and year
             $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>$match[2],'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$comment);
