@@ -1284,7 +1284,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(array(
         'country' => 'USA',
         'day' => '9',
-        'month' => 'Jun',
+        'month' => 'June',
         'mon' => '06',
         'year' => '1993',
         'comment' => '(Washington, D.C.) (premiere)'
@@ -1293,7 +1293,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(array(
         'country' => 'USA',
         'day' => '11',
-        'month' => 'Jun',
+        'month' => 'June',
         'mon' => '06',
         'year' => '1993',
         'comment' => ''

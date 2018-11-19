@@ -945,47 +945,46 @@ class Title extends MdbBase {
 
 
  #------------------------------------------------------------[ Movie AKAs ]---
-  /** Get movie's alternative names
-   * Note: This may return an empty country or comments.
+  /**
+   * Get movie's alternative names
+   * Note: This may return an empty country or comments. The original title will have a country of '' and a comment of 'original title'
    * comment, year and lang are there for backwards compatibility and should not be used
-   * @return array aka array[0..n] of array[title,country,comments[]]
+   * @return array array[0..n] of array[title,country,comments[]]
    * @see IMDB page ReleaseInfo
    */
   public function alsoknow() {
     if (empty($this->akas)) {
       $page = $this->getPage("ReleaseInfo");
       if (empty($page)) return array(); // no such page
-      
-      $ak_s = strpos($page, "id=\"akas\"");
-      if ($ak_s == 0)
-        return array();
-      $alsoknow_end = strpos($page, "</table>", $ak_s);
-      $alsoknow_all = substr($page, $ak_s, $alsoknow_end - $ak_s);
-      preg_match_all("@<td>(.*?)</td>@i", $alsoknow_all, $matches);
-      for ($i = 0; $i < count($matches[1]); $i+=2) {
-        $description = trim($matches[1][$i]);
-        $titles = explode('/', $matches[1][$i + 1]); // This might not happen anymore
-        if (empty($titles[0])) {
-          continue;
-        }
-        $title = trim($titles[0]);
-        $firstbracket = strpos($description, '(');
-        if ($firstbracket === false) {
-          $country = trim($description);
-          $comments = array();
-        } else {
-          $country = trim(substr($description, 0, $firstbracket));
-          preg_match_all("@\((.+?)\)@", $description, $matches3);
-          $comments = $matches3[1];
-        }
-        $this->akas[] = array(
-          "title" => $title,
-          "country" => $country,
-          "comments" => $comments,
-          "comment" => implode(', ', $comments),
-          "year" => '',
-          "lang" => ''
-        );
+
+      $table = Parsing::table($page, "//*[@id=\"akas\"]/following-sibling::table");
+
+      if (empty($table)) {
+          return array();
+      }
+
+      foreach ($table as $row) {
+          $description = $row[0];
+          $title = $row[1];
+
+          $firstbracket = strpos($description, '(');
+          if ($firstbracket === false) {
+              $country = $description;
+              $comments = array();
+          } else {
+              $country = trim(substr($description, 0, $firstbracket));
+              preg_match_all("@\((.+?)\)@", $description, $matches);
+              $comments = $matches[1];
+          }
+
+          $this->akas[] = array(
+              "title" => $title,
+              "country" => $country,
+              "comments" => $comments,
+              "comment" => implode(', ', $comments),
+              "year" => '',
+              "lang" => ''
+          );
       }
     }
     return $this->akas;
@@ -1982,27 +1981,32 @@ class Title extends MdbBase {
     if (empty($this->release_info)) {
       $page = $this->getPage("ReleaseInfo");
       if (empty($page)) return array(); // no such page
-      $tag_s = strpos($page, "id=\"releases\"");
-      if ($tag_s == 0)
-        return array();
-      $tag_e = strpos($page,'</table',$tag_s);
-      $block = substr($page,$tag_s,$tag_e-$tag_s);
-      
-      preg_match_all('!<tr[^>]*>\s*<td><a[^>]*>(.*?)</a></td>\s*<td[^>]*>(.*?)</td>\s*<td[^>]*>(.*?)</td>!ims',$block,$matches);
-      if( ! empty($matches[0]) && $mc = count($matches[0]) ) {
-        for ($i=0;$i<$mc;++$i) {
-          $country = trim(strip_tags($matches[1][$i]));
-          $comment = trim(preg_replace('/\s+/', ' ', $matches[3][$i]));
-          if ( preg_match('!^(\d{1,2})\s(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // day, month and year
-            $this->release_info[] = array('country'=>$country,'day'=>$match[1],'month'=>$match[2],'mon'=>$this->monthNo(trim($match[2])),'year'=>$match[3],'comment'=>$comment);
-          } elseif ( preg_match('!^(.+?)\s(\d{4})$!s',trim($matches[2][$i]),$match) ) { // month and year
-            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>$match[1],'mon'=>$this->monthNo(trim($match[1])),'year'=>$match[2],'comment'=>$comment);
-          } elseif ( preg_match('!(\d{4})!',trim($matches[2][$i]),$match) ) { // year at least
-            $this->release_info[] = array('country'=>$country,'day'=>'','month'=>'','mon'=>'','year'=>$match[1],'comment'=>$comment);
-          } else {
-            $this->debug_scalar("NO MATCH ON<pre>".htmlentities($matches[2][$i])."</pre>");
+
+      $table = Parsing::table($page, "//*[@id=\"releases\"]/following-sibling::table");
+
+      if (empty($table)) {
+          return array();
+      }
+
+      foreach ($table as $row) {
+          $country = trim(strip_tags($row[0]));
+          $date = $row[1];
+          $comment = preg_replace('/\s+/', ' ', $row[2]);
+
+          if (!preg_match("/(\d{1,2})?\s*(\w+)?\s*(\d{4})/", $date, $matches)) {
+              continue;
           }
-        }
+
+          list(, $day, $month, $year) = $matches;
+
+          $this->release_info[] = array(
+              'country' => $country,
+              'day' => $day,
+              'month' => $month,
+              'mon' => $month ? $this->monthNo($month) : '',
+              'year' => $year,
+              'comment' => $comment
+          );
       }
     }
     return $this->release_info;
