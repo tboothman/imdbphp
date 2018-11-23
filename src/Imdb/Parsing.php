@@ -23,12 +23,12 @@ class Parsing {
         $resultTable = array();
         foreach ($table->childNodes as $row) {
             $resultRow = array();
-			if($row->nodeType == 1) {
-				foreach ($row->getElementsByTagName('td') as $cell) {
-					$resultRow[] = trim($cell->textContent);
-				}
-				$resultTable[] = $resultRow;
-			}
+            if($row->nodeType == 1) {
+                foreach ($row->getElementsByTagName('td') as $cell) {
+                    $resultRow[] = trim($cell->textContent);
+                }
+                $resultTable[] = $resultRow;
+            }
         }
 
         return $resultTable;
