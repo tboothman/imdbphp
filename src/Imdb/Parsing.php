@@ -22,8 +22,8 @@ class Parsing {
 
         $resultTable = array();
         foreach ($table->childNodes as $row) {
-            $resultRow = array();
-            if($row->nodeType == 1) {
+            if($row->nodeType === XML_ELEMENT_NODE) {
+                $resultRow = array();
                 foreach ($row->getElementsByTagName('td') as $cell) {
                     $resultRow[] = trim($cell->textContent);
                 }
