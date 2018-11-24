@@ -26,7 +26,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
 
     foreach ($list as $result) {
       $this->assertNotEmpty($result['title']);
-      $this->assertEquals('TV Series', $result['type']);
+      $this->assertEquals('TV Episode', $result['type']);
       $this->assertTrue($result['serial']);
       $this->assertNotEmpty($result['episode_title']);
       $this->assertNotEmpty($result['episode_imdbid']);
@@ -49,7 +49,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('0303461', $firstResult['imdbid']);
     $this->assertEquals('Firefly', $firstResult['title']);
     $this->assertEquals('2002', $firstResult['year']);
-    $this->assertEquals('TV Series', $firstResult['type']);
+    $this->assertEquals('TV Episode', $firstResult['type']);
     $this->assertEquals('0579540', $firstResult['episode_imdbid']);
     $this->assertEquals('Trash', $firstResult['episode_title']);
     $this->assertEquals(2003, $firstResult['episode_year']);
@@ -60,7 +60,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('0303461', $secondResult['imdbid']);
     $this->assertEquals('Firefly', $secondResult['title']);
     $this->assertEquals('2002', $secondResult['year']);
-    $this->assertEquals('TV Series', $secondResult['type']);
+    $this->assertEquals('TV Episode', $secondResult['type']);
     $this->assertEquals('0579538', $secondResult['episode_imdbid']);
     $this->assertEquals('The Message', $secondResult['episode_title']);
     $this->assertEquals(2003, $secondResult['episode_year']);

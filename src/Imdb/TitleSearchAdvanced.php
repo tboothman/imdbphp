@@ -30,6 +30,7 @@ class TitleSearchAdvanced extends MdbBase {
   const TV_MINI_SERIES = 'mini_series';
   const TV_MOVIE = 'tv_movie';
   const TV_SPECIAL = 'tv_special';
+  const TV_SHORT = 'tv_short';
   const DOCUMENTARY = 'documentary';
   const GAME = 'game';
   const VIDEO = 'video';
@@ -136,6 +137,45 @@ class TitleSearchAdvanced extends MdbBase {
 
     return "https://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
   }
+  
+  protected function parseTitleType($xp, $resultSection) {
+    $typeString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
+    if (preg_match('/\((\d+)(?P<serial>\x{2013}).+\)|\((\d+)\s+(?P<type>.*?)\)/u', $typeString, $match)) {
+      if (isset($match['type'])) {
+        return $match['type'];
+      }
+      if (isset($match['serial'])) {
+        return Title::TV_SERIES;
+      }
+    }
+    if ($xp->query(".//span[contains(@class, 'genre')]", $resultSection)->length) {
+      $genre = strpos($xp->query(".//span[contains(@class, 'genre')]", $resultSection)->item(0)->nodeValue, 'Short');
+      if($genre === 0 OR $genre >= 1) {
+         return Title::SHORT;
+      }
+    }
+    if ($xp->query(".//h3[@class='lister-item-header']/small", $resultSection)->length) {
+      return Title::TV_EPISODE;
+    }
+    
+    return 'Feature Film';
+  }
+  
+  protected function getTitleType($type) {
+    switch($type) {
+      case 'tv_series': return Title::TV_SERIES; break;
+      case 'tv_episode': return Title::TV_EPISODE; break;
+      case 'mini_series': return Title::TV_MINI_SERIES; break;
+      case 'tv_movie': return Title::TV_MOVIE; break;
+      case 'tv_special': return Title::TV_SPECIAL; break;
+      case 'tv_short': return Title::TV_SHORT; break;
+      case 'documentary': return Title::MOVIE; break;
+      case 'game': return Title::GAME; break;
+      case 'video': return Title::VIDEO; break;
+      case 'short': return Title::SHORT; break;
+      default: return 'Feature Film';
+    }
+  }
 
   /**
    * @param string html of page
@@ -145,8 +185,15 @@ class TitleSearchAdvanced extends MdbBase {
     @$doc->loadHTML('<?xml encoding="UTF-8">'.$page);
     $xp = new \DOMXPath($doc);
     $resultSections = $xp->query("//div[@class='article']//div[@class='lister-item mode-advanced']");
-
+    
+    $mtype = null;
     $ret = array();
+    $findTitleType = true;
+    if (count($this->titleTypes) === 1) {
+      $mtype = $this->getTitleType($this->titleTypes[0]);
+      $findTitleType = false;
+    }
+    
     foreach ($resultSections as $resultSection) {
       $titleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(0);
       $title = trim($titleElement->nodeValue);
@@ -155,13 +202,20 @@ class TitleSearchAdvanced extends MdbBase {
       $ep_id = null;
       $ep_name = null;
       $ep_year = null;
-
-      $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
-      if (preg_match('/\((\d+)\x{2013}.+\)/u', $yearString, $match)) {
-        $year = $match[1];
-        $mtype = 'TV Series';
+      $is_serial = false;
+      
+      if( $findTitleType ) {
+        $mtype = $this->parseTitleType($xp, $resultSection);
+      }
+      if( in_array($mtype, array('TV Series', 'TV Episode', 'TV Mini-Series')) ) {
         $is_serial = true;
-
+      }
+      
+      $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
+      preg_match('/\((\d+)/', $yearString, $match);
+      $year = $match[1];
+    
+      if( $mtype === 'TV Episode') {
         $episodeTitleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(1);
         if ($episodeTitleElement) {
           $ep_name = $episodeTitleElement->nodeValue;
@@ -172,11 +226,6 @@ class TitleSearchAdvanced extends MdbBase {
             $ep_year = trim($yearString, '() ');
           }
         }
-      } else {
-        preg_match('/\((\d+)\s*(.*?)\)/', $yearString, $match);
-        $year = $match[1];
-        $mtype = $match[2] ? : 'Feature Film';
-        $is_serial = false;
       }
 
       $ret[] = array('imdbid' => $id, 'title' => $title, 'year' => $year, 'type' => $mtype, 'serial' => $is_serial, 'episode_imdbid' => $ep_id, 'episode_title' => $ep_name, 'episode_year' => $ep_year);
