@@ -27,7 +27,9 @@ class Parsing {
                 foreach ($row->getElementsByTagName('td') as $cell) {
                     $resultRow[] = trim($cell->textContent);
                 }
-                $resultTable[] = $resultRow;
+                if (!empty($resultRow)) {
+                    $resultTable[] = $resultRow;
+                }
             }
         }
 
