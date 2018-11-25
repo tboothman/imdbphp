@@ -88,6 +88,12 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $imdb = $this->getImdb("0306414");
         $this->assertEquals('TV Series', $imdb->movietype());
     }
+    
+    public function testMovieType_on_tv_no_year() {
+      $imdb = $this->getImdb("7587362");
+      $this->assertEquals('TV Series', $imdb->movietype());
+      $this->assertEquals(0, $imdb->year());
+    }
 
     public function testMovietype_on_tvMovie() {
       $imdb = $this->getImdb("284717");

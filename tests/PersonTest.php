@@ -119,7 +119,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase {
     $person = $this->getimdb_person();
     $result = $person->movies_soundtrack();
     $this->assertInternalType('array', $result);
-    $this->assertCount(4, $result);
+    $this->assertGreaterThan(4, $result);
     $this->assertEquals('1798188', $result[0]['mid']);
     $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
     $this->assertEquals('2011', $result[0]['year']);
