@@ -2,10 +2,15 @@
 History for IMDBPHP
 ====================
 
+v6.1.2 (29.11.2018)
+-------------------
+! Fix `Parsing::table()` for returning an empty set
+! Fix `Title::movietype()` for returning wrong movietype #154
+
 v6.1.1 (24.11.2018)
 -------------------
-! Fix `Title::alsoknow()()` for returning an empty set #152
-! Fix `Title::releaseInfo()()` for returning an empty set #153
+! Fix `Title::alsoknow()` for returning an empty set #152
+! Fix `Title::releaseInfo()` for returning an empty set #153
 ! Fix `TitleSearchAdvanced::search()` returned incorrect title type
 
 v6.1.0 (16.11.2018)
