@@ -524,7 +524,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     public function testPlotoutline_strip_see_full_synopsis() {
         $imdb = $this->getImdb('0338187');
         $outline = $imdb->plotoutline();
-        $this->assertSame(0, strpos($outline, 'Lifelong friends Lenny (Dominic Chianese) and Ruben (Dick Latessa) are both in their 70s and dyed-in-the-wool New Yorkers.'));
+        $this->assertSame(0, strpos($outline, "Lenny (Chianese) is a small-time investor who's always managed by rolling the dice on Wall Street, but he just can't keep up with the times."));
         $this->assertFalse(stripos($outline, 'See full synopsis'));
     }
 
