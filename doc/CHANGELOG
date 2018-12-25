@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v6.1.3 (25.12.2018)
+-------------------
+! Fix `Title::keywords()` and `Title::keywords_all()` for returning an empty set
+
 v6.1.2 (29.11.2018)
 -------------------
 ! Fix `Parsing::table()` for returning an empty set
