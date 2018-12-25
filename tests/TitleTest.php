@@ -596,20 +596,20 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('original title', $akas[0]['comments'][0]);
 
         // Country, no comment
-        $this->assertEquals('Naushika iz Doline vjetrova', $akas[3]['title']);
-        $this->assertEquals('Croatia', $akas[3]['country']);
-        $this->assertEmpty($akas[3]['comments']);
+        $this->assertEquals('Naushika iz Doline vjetrova', $akas[6]['title']);
+        $this->assertEquals('Croatia', $akas[6]['country']);
+        $this->assertEmpty($akas[6]['comments']);
 
         // Country with comment
-        $this->assertEquals('Наусика от Долината на вятъра', $akas[43]['title']);
-        $this->assertEquals('Bulgaria', $akas[43]['country']);
-        $this->assertEquals('Bulgarian title', $akas[43]['comments'][0]);
+        $this->assertEquals('Наусика от Долината на вятъра', $akas[3]['title']);
+        $this->assertEquals('Bulgaria', $akas[3]['country']);
+        $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
 
         // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[6]['title']);
-        $this->assertEquals('Switzerland', $akas[6]['country']);
-        $this->assertEquals('German title', $akas[6]['comments'][0]);
-        $this->assertEquals('DVD title', $akas[6]['comments'][1]);
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[34]['title']);
+        $this->assertEquals('Switzerland', $akas[34]['country']);
+        $this->assertEquals('German title', $akas[34]['comments'][0]);
+        $this->assertEquals('DVD title', $akas[34]['comments'][1]);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas() {
@@ -1089,7 +1089,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals('1956132', $episode['imdbid']);
       $this->assertEquals("Mama Mia", $episode['title']);
       $this->assertEquals('', $episode['airdate']);
-      $this->assertEquals("", $episode['plot']);
+      $this->assertEquals("Mr Carburettor is in a panic as his mother is coming to visit and he needs everything to be perfect.", $episode['plot']);
       $this->assertEquals(1, $episode['season']);
       $this->assertEquals(20, $episode['episode']);
     }
@@ -1171,7 +1171,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             ),
-            $quotes_split[3]);
+            $quotes_split[5]);
     }
 
     public function testTrailers_all() {
