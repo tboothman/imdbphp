@@ -509,7 +509,7 @@ class Title extends MdbBase {
   public function keywords() {
     if (empty($this->main_keywords)) {
       $this->getPage("Title");
-      if (preg_match_all('!href="/keyword/.+?"\s*>\s*<span[^>]*>(.*?)</span></a>!',$this->page["Title"],$matches))
+      if (preg_match_all('!href="/search/keyword[^>]+?>\s*<span[^>]*?>(.*?)</span></a>!',$this->page["Title"],$matches))
         $this->main_keywords = $matches[1];
     }
     return $this->main_keywords;
@@ -2195,7 +2195,7 @@ class Title extends MdbBase {
   public function keywords_all() {
     if (empty($this->all_keywords)) {
       $page = $this->getPage("Keywords");
-      if (preg_match_all('|<a href\="/keyword/[\w\?_\=\-\s"%]+>(.*?)</a>|', $page, $matches)) {
+      if (preg_match_all('|<a href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
         $this->all_keywords = $matches[1];
       }
     }
