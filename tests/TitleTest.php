@@ -1325,7 +1325,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
       $imdb = $this->getImdb();
       $prodCompany = $imdb->prodCompany();
       $this->assertEquals('Warner Bros.', $prodCompany[0]['name']);
-      $this->assertEquals('https://www.imdb.com/company/co0026840?ref_=ttco_co_1', $prodCompany[0]['url']);
+      $this->assertEquals('https://www.imdb.com/company/co0025059?ref_=ttco_co_1', $prodCompany[0]['url']);
       $this->assertEquals('(presents)', $prodCompany[0]['notes']);
     }
     
