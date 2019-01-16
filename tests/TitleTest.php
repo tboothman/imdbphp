@@ -1171,7 +1171,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             ),
-            $quotes_split[5]);
+            $quotes_split[4]);
     }
 
     public function testTrailers_all() {
