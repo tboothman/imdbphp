@@ -108,7 +108,7 @@ class TitleSearchAdvanced extends MdbBase {
    * )
    */
   public function search() {
-    $page = $this->getPage('');
+    $page = $this->pages->get($this->buildUrl());
     return $this->parse_results($page);
   }
 
@@ -210,10 +210,17 @@ class TitleSearchAdvanced extends MdbBase {
       if( in_array($mtype, array('TV Series', 'TV Episode', 'TV Mini-Series')) ) {
         $is_serial = true;
       }
+
+      $yearItems = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection);
+      $yearString = $yearItems->item(0)->nodeValue;
       
-      $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(0)->nodeValue;
       preg_match('/\((\d+)/', $yearString, $match);
-      $year = $match[1];
+      if (isset($match[1])) {
+          $year = (int)$match[1];
+      } else {
+          $year = null;
+      }
+      
     
       if( $mtype === 'TV Episode') {
         $episodeTitleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(1);
@@ -221,9 +228,11 @@ class TitleSearchAdvanced extends MdbBase {
           $ep_name = $episodeTitleElement->nodeValue;
           preg_match('/tt(\d{7})/', $episodeTitleElement->getAttribute('href'), $match);
           $ep_id = $match[1];
-          $yearString = $xp->query(".//span[contains(@class, 'lister-item-year')]", $resultSection)->item(1)->nodeValue;
-          if ($yearString) {
-            $ep_year = trim($yearString, '() ');
+          if ($yearItems->length > 1) {
+            $yearString = $yearItems->item(1)->nodeValue;
+            if ($yearString) {
+              $ep_year = trim($yearString, '() ');
+            }
           }
         }
       }
