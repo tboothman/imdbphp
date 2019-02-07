@@ -316,7 +316,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMovie_recommendations_tv_show() {
-        $imdb = $this->getImdb(1520211);
+        $imdb = $this->getImdb(306414);
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
 
