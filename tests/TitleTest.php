@@ -315,6 +315,19 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    public function testMovie_recommendations_tv_show() {
+        $imdb = $this->getImdb(1520211);
+        $recommendations = $imdb->movie_recommendations();
+        $this->assertInternalType('array', $recommendations);
+
+        foreach ($recommendations as $recommendation) {
+          $this->assertInternalType('array', $recommendation);
+          $this->assertTrue(strlen($recommendation['title']) > 0); // title
+          $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
+          $this->assertTrue(strlen($recommendation['year']) === 4); // year
+        }
+    }
+
     public function testKeywords() {
         $imdb = $this->getImdb("0306414");
         $keywords = $imdb->keywords();
