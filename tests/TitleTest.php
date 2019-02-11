@@ -1620,6 +1620,16 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase {
     $this->assertCount(0, $alternateVersions);
   }
 
+    public function test_real_id() {
+        $imdb = $this->getImdb();
+        $this->assertEquals('0133093', $imdb->real_id());
+    }
+
+    public function test_real_id_after_redirect() {
+        $imdb = $this->getImdb('2768262');
+        $this->assertEquals('2386868', $imdb->real_id());
+    }
+
     /**
      * Create an imdb object that uses cached pages
      * The matrix by default

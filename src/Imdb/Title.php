@@ -2373,13 +2373,15 @@ class Title extends MdbBase {
     $this->jsonLD = json_decode($matches[1]);
     return $this->jsonLD;
   }
- 
- public function Get_IMDB_ID(){
+
+  /**
+   * Get the ID for the title we're using. There might have been a redirect from the ID given in the constructor
+   * @return string|null e.g. 0133093
+   */
+  public function real_id(){
     $page = $this->getPage('Title');
-    if(preg_match('~<meta.*?property="pageId".*?content.?=.?[\'"](.*?)[\'"]~i', $page, $matches) && isset($matches[1]) && !empty(trim($matches[1]))){
-      return trim($matches[1]);
-    } else {
-      return null;
+    if (preg_match('#<meta property="pageId" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
+      return $matches[1];
     }
   }
 
