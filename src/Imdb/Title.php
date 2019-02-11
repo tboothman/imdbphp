@@ -2373,5 +2373,14 @@ class Title extends MdbBase {
     $this->jsonLD = json_decode($matches[1]);
     return $this->jsonLD;
   }
+ 
+ public function Get_IMDB_ID(){
+    $page = $this->getPage('Title');
+    if(preg_match('~<meta.*?property="pageId".*?content.?=.?[\'"](.*?)[\'"]~i', $page, $matches) && isset($matches[1]) && !empty(trim($matches[1]))){
+      return trim($matches[1]);
+    } else {
+      return null;
+    }
+  }
 
 }
