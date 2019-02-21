@@ -190,7 +190,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $result = $person->movies_writer();
         $this->assertInternalType('array', $result);
         $this->assertGreaterThan(35, $result);
-        $windRises = $result[3];
+        $windRises = $result[2];
         $this->assertEquals('2013293', $windRises['mid']);
         $this->assertEquals('The Wind Rises', $windRises['name']);
         $this->assertEquals('2013', $windRises['year']);
