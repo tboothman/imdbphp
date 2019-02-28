@@ -14,7 +14,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
      * 2768262 = redirect to 2386868
      * 0416449 = 300 (some multi bracket credits)
      * 0103074 = Thelma & Louise (&amp; in title)
-     * 1576699 = Mirrors 2 - recommends "'Mirrors' I"
+     * 0450385 = 1408 - recommends "Sinister" I (2012)
      * 3110958 = Now You See Me 2 -- Testing german language
      * 107290 = Jurassic Park (location with interesting characters)
      * 0120737 = The Lord of the Rings: The Fellowship of the Ring (historical mpaa)
@@ -350,9 +350,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
     public function testMovie_recommendations()
     {
-        $imdb = $this->getImdb();
+        $imdb = $this->getImdb(450385); // Currently recommends  Sinister I (2012)  (The I is in a seperate span before the year)
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
+        $this->assertCount(12, $recommendations);
 
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
@@ -367,6 +368,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb(306414);
         $recommendations = $imdb->movie_recommendations();
         $this->assertInternalType('array', $recommendations);
+        $this->assertCount(12, $recommendations);
 
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
