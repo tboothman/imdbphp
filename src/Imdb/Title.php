@@ -477,7 +477,7 @@ class Title extends MdbBase {
  #-------------------------------------------------------[ Recommendations ]---
   /**
    * Get recommended movies (People who liked this...also liked)
-   * @return array recommendations (array[title,imdbid,year,endyear,type])
+   * @return array recommendations (array[title,imdbid,year,endyear])
    * @see IMDB page / (TitlePage)
    */
 public function movie_recommendations() {
@@ -485,33 +485,25 @@ public function movie_recommendations() {
 		$doc = new \DOMDocument();
 		@$doc->loadHTML($this->getPage("Title"));
 		$xp = new \DOMXPath($doc);
-		if ($cells = $xp->query("//div[@id=\"title_recs\"]/div[@class=\"rec_overviews\"]/div[@class=\"rec_overview\"]/div[@class=\"rec_details\"]/div[@class=\"rec-info\"]/div[@class=\"rec-jaw-upper\"]/div[@class=\"rec-title\"]")){
-			foreach ($cells as $cell) {
-				if(preg_match('!tt(\d+)!',$cell->getElementsByTagName('a')->item(0)->getAttribute('href'),$ref)){
-					$movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
-					$movie['imdbid'] = $ref[1];
-					if($span = $cell->getElementsByTagName('span')->item(0)->nodeValue){
-						$years = preg_replace('/[^0-9]/','',$span);
-						$type = trim(preg_replace('/[^a-z\s]/i','',strip_tags($span)));
-						if(mb_strlen(trim($years)) >4){
-							$movie['year'] = trim(substr($years, 0, 4));
-							$movie['endyear'] = trim(substr($years, 4));
-							$movie['type'] = $type;
-						}
-						else{
-							$movie['year'] = trim($years);
-							$movie['endyear'] = "";
-							$movie['type'] = $type;
-						}
-						$this->movierecommendations[] = $movie;
-					}
-					else{
-						$movie['year'] = "";
-						$movie['endyear'] = "";
-						$movie['type'] = "";
-						$this->movierecommendations[] = $movie;
-					}
+		$cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
+		foreach ($cells as $cell) {
+			if(preg_match('!tt(\d+)!',$cell->getElementsByTagName('a')->item(0)->getAttribute('href'),$ref)){
+				$movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
+				$movie['imdbid'] = $ref[1];
+				$span = $cell->getElementsByTagName('span')->item(0)->nodeValue;
+				if (strpbrk($span, '1234567890') === FALSE){
+					$span = $cell->getElementsByTagName('span')->item(1)->nodeValue;
 				}
+				$years = preg_replace('/[^0-9]/','',$span);
+				if(mb_strlen(trim($years)) >4){
+					$movie['year'] = trim(substr($years, 0, 4));
+					$movie['endyear'] = trim(substr($years, 4));
+				}
+				else{
+					$movie['year'] = trim($years);
+					$movie['endyear'] = "";
+				}
+				$this->movierecommendations[] = $movie;
 			}
 		}
 	}
