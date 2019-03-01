@@ -486,21 +486,19 @@ public function movie_recommendations() {
 		@$doc->loadHTML($this->getPage("Title"));
 		$xp = new \DOMXPath($doc);
 		$cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
-		foreach ($cells as $cell) {
+        /** @var \DOMElement $cell */
+        foreach ($cells as $cell) {
 			if(preg_match('!tt(\d+)!',$cell->getElementsByTagName('a')->item(0)->getAttribute('href'),$ref)){
 				$movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
 				$movie['imdbid'] = $ref[1];
-				$span = $cell->getElementsByTagName('span')->item(0)->nodeValue;
-				if (strpbrk($span, '1234567890') === FALSE){
-					$span = $cell->getElementsByTagName('span')->item(1)->nodeValue;
-				}
+                $span = $xp->query($cell->getNodePath() . '//span[@class="nobr"]')->item(0)->nodeValue;
 				$years = preg_replace('/[^0-9]/','',$span);
-				if(mb_strlen(trim($years)) >4){
-					$movie['year'] = trim(substr($years, 0, 4));
-					$movie['endyear'] = trim(substr($years, 4));
+				if (strlen($years) > 4) {
+					$movie['year'] = substr($years, 0, 4);
+					$movie['endyear'] = substr($years, 4);
 				}
 				else{
-					$movie['year'] = trim($years);
+					$movie['year'] = $years;
 					$movie['endyear'] = "";
 				}
 				$this->movierecommendations[] = $movie;
