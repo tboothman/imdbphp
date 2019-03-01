@@ -2,6 +2,7 @@
 
 namespace Imdb\Exception;
 
-class Http extends \Imdb\Exception {
-  public $HTTPStatusCode = null;
+class Http extends \Imdb\Exception
+{
+    public $HTTPStatusCode = null;
 }

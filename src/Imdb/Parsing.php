@@ -2,7 +2,8 @@
 
 namespace Imdb;
 
-class Parsing {
+class Parsing
+{
 
     /**
      * Parse a HTML table into an array of rows which are an array of cells containing the string in each <td></td>
@@ -10,7 +11,8 @@ class Parsing {
      * @param string $xpath XPath to the table
      * @return array
      */
-    public static function table($html, $xpath) {
+    public static function table($html, $xpath)
+    {
         $doc = new \DOMDocument();
         @$doc->loadHTML($html);
         $xp = new \DOMXPath($doc);
@@ -22,7 +24,7 @@ class Parsing {
 
         $resultTable = array();
         foreach ($table->childNodes as $row) {
-            if($row->nodeType === XML_ELEMENT_NODE) {
+            if ($row->nodeType === XML_ELEMENT_NODE) {
                 $resultRow = array();
                 foreach ($row->getElementsByTagName('td') as $cell) {
                     $resultRow[] = trim($cell->textContent);
