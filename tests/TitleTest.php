@@ -360,6 +360,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
+            $this->assertEquals("", $recommendation['endyear']);
         }
     }
 
@@ -370,12 +371,18 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $recommendations);
         $this->assertCount(12, $recommendations);
 
+        $titlesWithEndYear = 0;
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
+            $this->assertTrue(strlen($recommendation['endyear']) === 4 || strlen($recommendation['endyear']) === 0);
+            if (strlen($recommendation['endyear']) === 4) {
+                $titlesWithEndYear++;
+            }
         }
+        $this->assertGreaterThan(1, $titlesWithEndYear, "There should be some titles being recommended with an end year");
     }
 
     public function testKeywords()
