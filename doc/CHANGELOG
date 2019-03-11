@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v6.2.0 (11.03.2019)
+-------------------
++ Added method `Title::real_id()`. It returns the IMDb ID of the title the object represents. This can be different to the ID passed to the constructor as IMDb has duplicate IDs for some titles which it later removes one of and redirects to the other title. For example https://www.imdb.com/title/tt7393172/ redirects to https://www.imdb.com/title/tt7384848/
++ Added `endyear` to the results of `Title::movie_recommendations()`
+! TitleSearchAdvanced - Fix error when search results contained an episode without a year
+
 v6.1.3 (25.12.2018)
 -------------------
 ! Fix `Title::keywords()` and `Title::keywords_all()` for returning an empty set
