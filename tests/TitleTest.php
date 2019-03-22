@@ -716,10 +716,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
 
         // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[34]['title']);
-        $this->assertEquals('Switzerland', $akas[34]['country']);
-        $this->assertEquals('German title', $akas[34]['comments'][0]);
-        $this->assertEquals('DVD title', $akas[34]['comments'][1]);
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[35]['title']);
+        $this->assertEquals('Switzerland', $akas[35]['country']);
+        $this->assertEquals('German title', $akas[35]['comments'][0]);
+        $this->assertEquals('DVD title', $akas[35]['comments'][1]);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas()
@@ -1326,7 +1326,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[4]);
+            ), $quotes_split[5]);
     }
 
     public function testTrailers_all()
