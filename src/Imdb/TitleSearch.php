@@ -44,6 +44,10 @@ class TitleSearch extends MdbBase
             }
         }
 
+        // Limit result count
+        if(!is_null($maxResults)){
+            $results = array_slice($results, 0, $maxResults);
+        }
         return $results;
     }
 
