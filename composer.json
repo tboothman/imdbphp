@@ -12,6 +12,7 @@
         "psr/log": "~1.0",
         "ext-curl": "*",
         "ext-dom": "*",
+        "ext-json": "*",
         "psr/simple-cache": "^1.0"
     },
     "require-dev": {
