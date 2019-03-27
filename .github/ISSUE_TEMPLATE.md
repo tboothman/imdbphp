@@ -31,11 +31,9 @@ Feature request:
   - Make a mock-up on how the feature should return it's data inside "Expected Results".
   - Remove "Actual Results".
 
-Check the box by placing a [X] inside the empty box [ ].
+Is this a bug report, a question or a feature request?
 -->
-- [ ] Bug
-- [ ] Question
-- [ ] Feature request
+Bug | Question | Feature request
 
 #### Code
 ```php
