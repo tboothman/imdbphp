@@ -35,8 +35,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
      *
      * 7618100 = Untitled Star Wars Trilogy: Episode III ... has almost no information
      *
-     * 10027990 = Persona  (TV mini-series) (8 digit example)
-     * 10044952 = You vs. Wild  (TV Series) (8 digit example)
      */
     public function testConstruct_from_ini_constructed_config()
     {
@@ -48,37 +46,37 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $imdb->usecache);
     }
 
-    public function test_constructor_with_integer_imdbid_is_coerced_to_7_digit_number()
+    public function test_constructor_with_integer_imdbid_is_coerced_to_7_digit_string()
     {
         $imdb = new \Imdb\Title(133093);
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
-    public function test_constructor_with_ttxxxxxxx_is_coerced_to_7_digit_number()
+    public function test_constructor_with_ttxxxxxxx_is_coerced_to_7_digit_string()
     {
         $imdb = new \Imdb\Title('tt0133093');
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
-    public function test_constructor_with_url_is_coerced_to_7_digit_number()
+    public function test_constructor_with_url_is_coerced_to_7_digit_string()
     {
         $imdb = new \Imdb\Title('https://www.imdb.com/title/tt0133093/');
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
-    public function test_constructor_with_integer_imdbid_is_coerced_to_8_digit_number()
+    public function test_constructor_with_8_digit_integer_imdbid_is_coerced_to_8_digit_string()
     {
         $imdb = new \Imdb\Title(10027990);
         $this->assertEquals('10027990', $imdb->imdbid());
     }
 
-    public function test_constructor_with_ttxxxxxxx_is_coerced_to_8_digit_number()
+    public function test_constructor_with_ttxxxxxxxx_retains_the_8_digit_string()
     {
         $imdb = new \Imdb\Title('tt10027990');
         $this->assertEquals('10027990', $imdb->imdbid());
     }
 
-    public function test_constructor_with_url_is_coerced_to_8_digit_number()
+    public function test_constructor_with_url_retains_the_8_digit_string()
     {
         $imdb = new \Imdb\Title('https://www.imdb.com/title/tt10027990/');
         $this->assertEquals('10027990', $imdb->imdbid());
