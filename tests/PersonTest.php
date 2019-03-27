@@ -109,7 +109,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         // Short
         $mrDough = $result[3];
         $this->assertEquals('1857816', $mrDough['mid']);
-        $this->assertEquals('Pan-dane to Tamago-hime', $mrDough['name']);
+        $this->assertEquals('Mr. Dough and the Egg Princess', $mrDough['name']);
         $this->assertEquals('2010', $mrDough['year']);
         $this->assertEquals(\Imdb\Title::SHORT, $mrDough['title_type']);
         $this->assertEquals('', $mrDough['chid']);
