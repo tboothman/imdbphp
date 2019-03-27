@@ -230,7 +230,7 @@ class TitleSearchAdvanced extends MdbBase
         foreach ($resultSections as $resultSection) {
             $titleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(0);
             $title = trim($titleElement->nodeValue);
-            preg_match('/tt(\d{7})/', $titleElement->getAttribute('href'), $match);
+            preg_match('/tt(\d{7,8})/', $titleElement->getAttribute('href'), $match);
             $id = $match[1];
             $ep_id = null;
             $ep_name = null;
@@ -259,7 +259,7 @@ class TitleSearchAdvanced extends MdbBase
                 $episodeTitleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(1);
                 if ($episodeTitleElement) {
                     $ep_name = $episodeTitleElement->nodeValue;
-                    preg_match('/tt(\d{7})/', $episodeTitleElement->getAttribute('href'), $match);
+                    preg_match('/tt(\d{7,8})/', $episodeTitleElement->getAttribute('href'), $match);
                     $ep_id = $match[1];
                     if ($yearItems->length > 1) {
                         $yearString = $yearItems->item(1)->nodeValue;

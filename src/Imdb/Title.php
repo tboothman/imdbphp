@@ -785,13 +785,13 @@ class Title extends MdbBase
     {
         if ($this->seasoncount == -1) {
             $this->getPage("Title");
-            if (preg_match_all('|href="/title/tt\d{7}/episodes\?season=\d+.*?"\s*>(\d+)</a>|Ui', $this->page["Title"],
+            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season=\d+.*?"\s*>(\d+)</a>|Ui', $this->page["Title"],
               $matches)) {
                 $this->seasoncount = $matches[1][0];
             } else {
                 $this->seasoncount = 0;
             }
-            if (preg_match_all('|href="/title/tt\d{7}/episodes\?season\=unknown"\s*>unknown</a>|Ui',
+            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season\=unknown"\s*>unknown</a>|Ui',
               $this->page["Title"], $matches)) {
                 $this->seasoncount += count($matches[0]);
             }
@@ -811,7 +811,7 @@ class Title extends MdbBase
             return $this->isSerial;
         }
 
-        return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7}/episodes\?|i', $this->getPage("Title"));
+        return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes\?|i', $this->getPage("Title"));
     }
 
     // @TODO do this properly and make this public. Perhaps it could just come from self::movietype() ?
@@ -913,7 +913,7 @@ class Title extends MdbBase
         if (!$this->isEpisode()) {
             return array();
         }
-        $seriesRegex = '!<div class="titleParent">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7})[^"]+"\s*title="(?<seriestitle>[^"]+)"!ims';
+        $seriesRegex = '!<div class="titleParent">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7,8})[^"]+"\s*title="(?<seriestitle>[^"]+)"!ims';
 
         if (preg_match($seriesRegex, $this->getPage("Title"), $match)) {
             return array(
@@ -946,7 +946,7 @@ class Title extends MdbBase
                 $this->main_plotoutline = $this->storyline();
             }
         }
-        $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i',
+        $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7,8}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i',
           '', $this->main_plotoutline);
         $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>&nbsp;&raquo;#', '',
           $this->main_plotoutline);
@@ -1507,7 +1507,7 @@ class Title extends MdbBase
      */
     protected function get_imdbname($href)
     {
-        return preg_replace('!^.*(\d{7}).*$!ims', '$1', $href);
+        return preg_replace('!^.*(\d{7,8}).*$!ims', '$1', $href);
     }
 
     #-------------------------------------------------------------[ Directors ]---
@@ -1862,7 +1862,7 @@ class Title extends MdbBase
                     } // no such page
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                       . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
-                      . '.+?\shref="/title/tt(?<imdbid>\d{7})/.+?"\s+title="(?<title>.+?)"\s+itemprop="name"'
+                      . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/.+?"\s+title="(?<title>.+?)"\s+itemprop="name"'
                       . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {

@@ -266,7 +266,7 @@ class Person extends MdbBase
             for ($i = 0; $i < $mc; ++$i) {
                 $year = '';
                 $type = Title::MOVIE;
-                if (!preg_match('!href="/title/tt(\d{7})/[^"]*"\s*>(.*?)</a>\s*</b>\n?(.*)!ims', $matches[1][$i],
+                if (!preg_match('!href="/title/tt(\d{7,8})/[^"]*"\s*>(.*?)</a>\s*</b>\n?(.*)!ims', $matches[1][$i],
                   $mov)) {
                     continue;
                 }
@@ -274,7 +274,7 @@ class Person extends MdbBase
                 if (preg_match('!<span class="year_column">[^<]*(\d{4})(.*?)</span>!ims', $matches[1][$i], $ty)) {
                     $year = $ty[1];
                 }
-                if (preg_match('!href="/character/ch(\d{7})[^"]*"\s*>(.*?)</a>!ims', $matches[1][$i], $char)) {
+                if (preg_match('!href="/character/ch(\d{7,8})[^"]*"\s*>(.*?)</a>!ims', $matches[1][$i], $char)) {
                     $chid = $char[1];
                     $chname = $char[2];
                 } else {
@@ -793,7 +793,7 @@ class Person extends MdbBase
               $matches)) { // for each table row
                 $mc = count($matches[0]);
                 for ($i = 0; $i < $mc; ++$i) {
-                    if (preg_match("/\/title\/tt(\d{7})\/\">(.*?)<\/a>\s*\((\d{4})\)/", $matches[1][$i], $match)) {
+                    if (preg_match("/\/title\/tt(\d{7,8})\/\">(.*?)<\/a>\s*\((\d{4})\)/", $matches[1][$i], $match)) {
                         $movie["imdb"] = $match[1];
                         $movie["name"] = $match[2];
                         $movie["year"] = $match[3];
