@@ -34,6 +34,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
      * 149937 = Bottom Live (Video)
      *
      * 7618100 = Untitled Star Wars Trilogy: Episode III ... has almost no information
+     *
+     * 10027990 = Persona  (TV mini-series) (8 digit example)
+     * 10044952 = You vs. Wild  (TV Series) (8 digit example)
      */
     public function testConstruct_from_ini_constructed_config()
     {
@@ -61,6 +64,24 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = new \Imdb\Title('https://www.imdb.com/title/tt0133093/');
         $this->assertEquals('0133093', $imdb->imdbid());
+    }
+
+    public function test_constructor_with_integer_imdbid_is_coerced_to_8_digit_number()
+    {
+        $imdb = new \Imdb\Title(10027990);
+        $this->assertEquals('10027990', $imdb->imdbid());
+    }
+
+    public function test_constructor_with_ttxxxxxxx_is_coerced_to_8_digit_number()
+    {
+        $imdb = new \Imdb\Title('tt10027990');
+        $this->assertEquals('10027990', $imdb->imdbid());
+    }
+
+    public function test_constructor_with_url_is_coerced_to_8_digit_number()
+    {
+        $imdb = new \Imdb\Title('https://www.imdb.com/title/tt10027990/');
+        $this->assertEquals('10027990', $imdb->imdbid());
     }
 
     public function test_constructor_with_custom_logger()
@@ -358,7 +379,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
-            $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
+            $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
             $this->assertEquals("", $recommendation['endyear']);
         }
@@ -375,7 +396,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
-            $this->assertTrue(strlen($recommendation['imdbid']) === 7); // imdb number
+            $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
             $this->assertTrue(strlen($recommendation['endyear']) === 4 || strlen($recommendation['endyear']) === 0);
             if (strlen($recommendation['endyear']) === 4) {
