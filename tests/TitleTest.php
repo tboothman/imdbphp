@@ -180,6 +180,12 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Die Unfassbaren 2', $title->title());
     }
 
+    public function testTitleEpisodeTitle()
+    {
+        $imdb = $this->getImdb('0579539');
+        $this->assertEquals('"Firefly" The Train Job', $imdb->title());
+    }
+
     //@TODO tests for titles with non ascii characters. Currently they're
     // html entities, would be nice to decode them
 
