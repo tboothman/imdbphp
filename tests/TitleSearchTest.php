@@ -29,14 +29,14 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $results);
 
         /* @var $firstResult Title */
-        $firstResult = $results[0];
+        $firstResult = $results[1];
         $this->assertInstanceOf('\Imdb\Title', $firstResult);
         $this->assertEquals("0275277", $firstResult->imdbid());
         $this->assertEquals("Cowboy Bebop: The Movie", $firstResult->title());
         $this->assertEquals(2001, $firstResult->year());
 
         /* @var $secondResult Title */
-        $secondResult = $results[1];
+        $secondResult = $results[0];
         $this->assertInstanceOf('\Imdb\Title', $secondResult);
         $this->assertEquals("1267295", $secondResult->imdbid());
         $this->assertEquals("Cowboy Bebop", $secondResult->title());

@@ -13,7 +13,10 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase
         $this->assertCount(10, $moviemeter);
         for ($i = 0; $i < 10; $i++) {
             $this->assertInternalType('string', $moviemeter[$i]);
-            $this->assertEquals(7, strlen($moviemeter[$i]));
+            $this->assertThat(strlen($moviemeter[$i]), $this->logicalOr(
+              $this->equalTo(7),
+              $this->equalTo(8)
+            ), "imdb IDs should be 7 or 8 digits");
         }
     }
 

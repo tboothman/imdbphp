@@ -59,7 +59,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Trash', $firstResult['episode_title']);
         $this->assertEquals(2003, $firstResult['episode_year']);
 
-        $secondResult = $list[1];
+        $secondResult = $list[2];
 
         $this->assertInternalType('array', $secondResult);
         $this->assertEquals('0303461', $secondResult['imdbid']);
