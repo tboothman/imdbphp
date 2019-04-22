@@ -1862,7 +1862,7 @@ class Title extends MdbBase
                     } // no such page
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                       . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
-                      . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/.+?"\s+title="(?<title>.+?)"\s+itemprop="name"'
+                      . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                       . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
