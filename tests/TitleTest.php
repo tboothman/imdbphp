@@ -769,7 +769,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $sound = $imdb->sound();
         $this->assertInternalType('array', $sound);
         $this->assertCount(1, $sound);
-        $this->assertEquals('Mono', $sound[0]);
+        $this->assertEquals('Stereo', $sound[0]);
     }
 
     public function testSound_none()
