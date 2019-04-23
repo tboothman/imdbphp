@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v6.2.1 (23.04.2019)
+-------------------
+! Support 8 digit imdb titles #163
+! Fix `Title::episodes()`'s episode titles containing extra html in some instances #166
+
 v6.2.0 (11.03.2019)
 -------------------
 + Added method `Title::real_id()`. It returns the IMDb ID of the title the object represents. This can be different to the ID passed to the constructor as IMDb has duplicate IDs for some titles which it later removes one of and redirects to the other title. For example https://www.imdb.com/title/tt7393172/ redirects to https://www.imdb.com/title/tt7384848/
