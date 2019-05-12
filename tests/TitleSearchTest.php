@@ -124,6 +124,25 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($found, "Did not find Home(II) 2015 in search results");
     }
 
+    public function test_maxResults_parameter_limit_results_count()
+    {
+        $search = $this->getimdbsearch();
+        $maxResults = 3;
+
+        $results = $search->search('Inception', array(TitleSearch::MOVIE), $maxResults);
+        
+        $this->assertEquals($maxResults, count($results));
+    }
+
+    public function test_default_maxResults_parameter_will_not_limit_results_count()
+    {
+        $search = $this->getimdbsearch();
+
+        $results = $search->search('Inception', array(TitleSearch::MOVIE));
+        
+        $this->assertGreaterThan(30, count($results));
+    }
+    
     protected function getimdbsearch()
     {
         $config = new Config();
