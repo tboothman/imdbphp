@@ -335,8 +335,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb();
         $votes = $imdb->votes();
-        $this->assertGreaterThan(907000, $votes);
-        $this->assertLessThan(1500000, $votes);
+        $this->assertGreaterThan(1500000, $votes);
+        $this->assertLessThan(2000000, $votes);
     }
 
     public function testVotes_no_votes()
@@ -1351,7 +1351,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[5]);
+            ), $quotes_split[4]);
     }
 
     public function testTrailers_all()
