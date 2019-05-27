@@ -63,6 +63,7 @@ class Title extends MdbBase
     protected $main_movietype = "";
     protected $main_title = "";
     protected $original_title = "";
+    protected $english_title = "";
     protected $main_votes = -1;
     protected $main_year = -1;
     protected $main_endyear = -1;
@@ -2971,5 +2972,21 @@ class Title extends MdbBase
             return $matches[1];
         }
     }
-
+    /** Get English movie title
+     * @return string title movie title (name)
+     * @see IMDB page / (TitlePage)
+     */
+    public function en_title()
+    {
+        if ($this->english_title == "") {
+          $this->getPage("Title");
+          if (@preg_match('~<meta property=[\"\']og:title[\"\'] content=[\"\'](.*?)\-.?IMDb[\"\']~i', $this->page["Title"], $imatch)) {
+            $ititle = trim($imatch[1]);
+            $ititle = preg_replace('/(\(\d{4}\))/i', '', $ititle); // remove year
+            $this->english_title = trim($ititle);
+          }
+        }
+        return $this->english_title;
+    }
+  
 }
