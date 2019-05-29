@@ -1507,7 +1507,7 @@ class Title extends MdbBase
      */
     protected function get_imdbname($href)
     {
-        return preg_replace('!^.*(\d{7,8}).*$!ims', '$1', $href);
+        return preg_replace('!^.*nm(\d+).*$!ims', '$1', $href);
     }
 
     #-------------------------------------------------------------[ Directors ]---
