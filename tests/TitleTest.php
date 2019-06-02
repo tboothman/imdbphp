@@ -1122,18 +1122,18 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(
             array('imdb' => '0594503',
                 'name' => 'Hayao Miyazaki',
-                'role' => '(comic)'),
+                'role' => '(based on the manga by)'),
             array('imdb' => '0594503',
                 'name' => 'Hayao Miyazaki',
-                'role' => '(screenplay)'),
+                'role' => '(screenplay by)'),
             array(
                 'imdb' => '1248357',
                 'name' => 'Cindy Davis Hewitt',
-                'role' => '(adaptation) (english version) &'
+                'role' => '(english language adaptation) &'
             ),
             array('imdb' => '1248358',
                 'name' => 'Donald H. Hewitt',
-                'role' => '(adaptation) (english version)'),
+                'role' => '(english language adaptation)'),
             array('imdb' => '0411872',
                 'name' => 'Kazunori Itô',
                 'role' => '(earlier screenplay) (uncredited)')
@@ -1562,7 +1562,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
         $this->assertEquals('9 uses of "hell"', $profanity[4]);
-        $this->assertEquals('The Oracle smokes a cigarette.', $drugs[3]);
+        $this->assertEquals('The Oracle smokes a cigarette.', $drugs[4]);
     }
 
     public function testParentalGuide_spoilers()
