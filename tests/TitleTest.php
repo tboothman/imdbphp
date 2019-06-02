@@ -165,6 +165,12 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('The Matrix', $imdb->title());
     }
 
+    public function testTitle_non_english_title_uses_english_title()
+    {
+        $imdb = $this->getImdb('0087544');
+        $this->assertEquals('Nausicaä of the Valley of the Wind', $imdb->title());
+    }
+
     public function testTitle_removes_html_entities()
     {
         $imdb = $this->getImdb('0103074');
