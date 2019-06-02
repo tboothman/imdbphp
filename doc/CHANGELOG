@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v6.2.2 (02.06.2019)
+-------------------
+! 8 digit ids were not being parsed correctly for `Title::director()` and `Title::producer()` #168
+
 v6.2.1 (23.04.2019)
 -------------------
 ! Support 8 digit imdb titles #163
