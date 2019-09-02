@@ -48,7 +48,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $list);
         $this->assertCount(50, $list);
 
-        $firstResult = $list[0];
+        $firstResult = $list[1];
 
         $this->assertInternalType('array', $firstResult);
         $this->assertEquals('0303461', $firstResult['imdbid']);
