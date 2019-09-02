@@ -588,6 +588,21 @@ class Title extends MdbBase
                         $movie['year'] = $years;
                         $movie['endyear'] = "";
                     }
+
+                    $get_rating = $xp->query('./div[@class="rec-rating"]/div[1]', $cell->parentNode);
+                    $movie['rating'] = "";
+                    $movie['votes'] = "";
+                    if($get_rating && $get_rating[0]->getAttribute('title') != null){
+                      if(preg_match('/this ([0-9\.]{1,3})\/10/i', $get_rating[0]->getAttribute('title'), $mtch_rating)){
+                        $movie['rating'] = trim($mtch_rating[1]);
+                      }
+                      if(preg_match('/\(([0-9\,]+).*?votes/i', $get_rating[0]->getAttribute('title'), $mtch_votes)){
+                        $movie['votes'] = trim(str_replace(',', '', $mtch_votes[1]));
+                      }
+                    }
+
+
+
                     $this->movierecommendations[] = $movie;
                 }
             }
