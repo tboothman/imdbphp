@@ -1532,9 +1532,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb();
         $distCompany = $imdb->distCompany();
-        $this->assertEquals('Roadshow Entertainment', $distCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0152990?ref_=ttco_co_1', $distCompany[0]['url']);
-        $this->assertEquals('(1999) (Australia) (theatrical)', $distCompany[0]['notes']);
+        $this->assertEquals('Roadshow Entertainment', $distCompany[1]['name']);
+        $this->assertEquals('https://www.imdb.com/company/co0152990?ref_=ttco_co_2', $distCompany[1]['url']);
+        $this->assertEquals('(1999) (Australia) (theatrical)', $distCompany[1]['notes']);
     }
 
     public function testSpecialCompany()
