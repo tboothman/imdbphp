@@ -391,6 +391,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
+            $this->assertTrue(floatval($recommendation['rating']) > 0);
+            $this->assertTrue(intval($recommendation['votes']) > 0);
             $this->assertEquals("", $recommendation['endyear']);
         }
     }
@@ -409,6 +411,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
             $this->assertTrue(strlen($recommendation['endyear']) === 4 || strlen($recommendation['endyear']) === 0);
+            $this->assertTrue(floatval($recommendation['rating']) > 0);
+            $this->assertTrue(intval($recommendation['votes']) > 0);
             if (strlen($recommendation['endyear']) === 4) {
                 $titlesWithEndYear++;
             }
