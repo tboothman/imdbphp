@@ -29,18 +29,19 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $results);
 
         /* @var $firstResult Title */
-        $firstResult = $results[1];
+        $firstResult = $results[0];
         $this->assertInstanceOf('\Imdb\Title', $firstResult);
         $this->assertEquals("0275277", $firstResult->imdbid());
         $this->assertEquals("Cowboy Bebop: The Movie", $firstResult->title());
         $this->assertEquals(2001, $firstResult->year());
 
-        /* @var $secondResult Title */
-        $secondResult = $results[0];
-        $this->assertInstanceOf('\Imdb\Title', $secondResult);
-        $this->assertEquals("1267295", $secondResult->imdbid());
-        $this->assertEquals("Cowboy Bebop", $secondResult->title());
-        $this->assertEquals(0, $secondResult->year());
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::MOVIE) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::MOVIE);
     }
 
     public function test_searching_for_a_tv_show_returns_only_tv()
@@ -56,6 +57,14 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("0213338", $firstResult->imdbid());
         $this->assertEquals("Cowboy Bebop", $firstResult->title());
         $this->assertEquals(1998, $firstResult->year());
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::TV_SERIES) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::TV_SERIES);
     }
 
     public function test_searching_for_a_tv_episode_returns_only_tv_episode()
@@ -71,6 +80,14 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("0618966", $firstResult->imdbid());
         $this->assertEquals("Cowboy Funk", $firstResult->title());
         $this->assertEquals(1999, $firstResult->year());
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::TV_EPISODE) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::TV_EPISODE);
     }
 
     public function test_searching_for_a_game_returns_only_games()
@@ -86,6 +103,14 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("1799527", $firstResult->imdbid());
         $this->assertEquals("Doom", $firstResult->title());
         $this->assertEquals(2016, $firstResult->year());
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::GAME) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::GAME);
     }
 
     public function test_searching_for_a_tv_miniseries_returns_only_miniseries()
@@ -101,6 +126,14 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("1985443", $firstResult->imdbid());
         $this->assertEquals("Hatfields & McCoys", $firstResult->title());
         $this->assertEquals(2012, $firstResult->year());
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::TV_MINI_SERIES) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::TV_MINI_SERIES);
     }
 
     // https://github.com/tboothman/imdbphp/pull/24
@@ -122,23 +155,47 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($found, "Did not find Home(II) 2015 in search results");
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::MOVIE) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::MOVIE);
     }
 
     public function test_maxResults_parameter_limit_results_count()
     {
         $maxResults = 3;
         $search = $this->getimdbsearch();
-        $results = $search->search('Inception', array(TitleSearch::MOVIE), $maxResults);
+        $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE), $maxResults);
         
         $this->assertEquals($maxResults, count($results));
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::MOVIE) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::MOVIE);
     }
 
     public function test_default_maxResults_parameter_will_not_limit_results_count()
     {
         $search = $this->getimdbsearch();
-        $results = $search->search('Inception', array(TitleSearch::MOVIE));
+        $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE));
         
-        $this->assertGreaterThan(30, count($results));
+        $this->assertGreaterThan(10, count($results));
+
+        $wrongMovieType = false;
+        foreach ($results as $result) {
+            if($result->movietype() !== TitleSearch::MOVIE) {
+                $wrongMovieType = true;
+            }
+        }
+        $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::MOVIE);
     }
     
     protected function getimdbsearch()
