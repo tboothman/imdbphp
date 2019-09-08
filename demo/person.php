@@ -159,8 +159,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         if (!empty($bio)) {
           if (count($bio)<2) $idx = 0; else $idx = 1;
           $minibio = $bio[$idx]["desc"];
-          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_mbio)?/','?mid=\\1',$minibio);
-          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_mbio)?/','movie.php?mid=\\1',$minibio);
+          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7,8})(\?ref_=nmbio_mbio)?/','?mid=\\1',$minibio);
+          $minibio = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7,8})(\?ref_=nmbio_mbio)?/','movie.php?mid=\\1',$minibio);
         ?>
         <tr>
           <td><b>Mini Bio:</b></td>
@@ -189,8 +189,8 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
               <li>
                 <?php
                 $t = $trivia[$i];
-                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7})(\?ref_=nmbio_trv_\d)?/','?mid=\\1',$t);
-                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7})(\?ref_=nmbio_trv_\d)?/','movie.php?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/name\/nm(\d{7,8})(\?ref_=nmbio_trv_\d)?/','?mid=\\1',$t);
+                $t = preg_replace('/https\:\/\/'.str_replace(".","\.",$person->imdbsite).'\/title\/tt(\d{7,8})(\?ref_=nmbio_trv_\d)?/','movie.php?mid=\\1',$t);
                 echo $t;
                 ?>
               </li>
@@ -236,7 +236,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
                     <?php if (!empty($salary["movie"]["imdb"])) {?>
                       <a href="movie.php?mid=<?php echo $salary["movie"]["imdb"] ?>"><?php $salary["movie"]["name"] ?></a>
                     <?php } else {
-                      echo preg_replace('/\/title\/tt(\d{7})(\?ref_=nmbio_sal_\d)?/','movie.php?mid=\\1',$salary["movie"]["name"]);
+                      echo preg_replace('/\/title\/tt(\d{7,8})(\?ref_=nmbio_sal_\d)?/','movie.php?mid=\\1',$salary["movie"]["name"]);
                     } ?>
                     <?php if (!empty($salary["movie"]["year"])) {
                       echo ' (' . $salary["movie"]["year"] . ')';

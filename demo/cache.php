@@ -22,10 +22,10 @@ $results = array();
 if (is_dir($config->cachedir)) {
   $files = glob($config->cachedir . '{title.tt*,name.nm*}', GLOB_BRACE);
   foreach ($files as $file) {
-    if (preg_match('!^title\.tt(\d{7})$!i', basename($file), $match)) {
+    if (preg_match('!^title\.tt(\d{7,8})$!i', basename($file), $match)) {
       $results[] = new Title($match[1]);
     }
-    if (preg_match('!^name\.nm(\d{7})$!i', basename($file), $match)) {
+    if (preg_match('!^name\.nm(\d{7,8})$!i', basename($file), $match)) {
       $results[] = new Person($match[1]);
     }
   }
