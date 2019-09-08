@@ -27,7 +27,7 @@ class TitleSearch extends MdbBase
     public function search($searchTerms, $wantedTypes = null, $maxResults = -1)
     {
         $results = array();
-
+        $resultsCounter = 0;
         $page = $this->getPage($searchTerms);
 
         // Parse & filter results
@@ -43,7 +43,7 @@ class TitleSearch extends MdbBase
                 $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type,
                   $this->config, $this->logger, $this->cache);
 
-                if (count($results) == $maxResults) {
+                if (++$resultsCounter === $maxResults) {
                     break;
                 }
             }
