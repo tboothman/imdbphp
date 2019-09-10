@@ -386,13 +386,18 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $recommendations);
         $this->assertCount(12, $recommendations);
 
+        $this->assertTrue($recommendations[0]['title'] == 'Silent Hill');
+        $this->assertTrue(floatval($recommendations[0]['rating']) > 6.0);
+        $this->assertTrue(intval($recommendations[0]['votes']) > 204000);
+
+
         foreach ($recommendations as $recommendation) {
             $this->assertInternalType('array', $recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
             $this->assertTrue(strlen($recommendation['year']) === 4); // year
-            $this->assertTrue(floatval($recommendation['rating']) > 0);
-            $this->assertTrue(intval($recommendation['votes']) > 0);
+            $this->assertTrue($recommendation['rating'] != -1);
+            $this->assertTrue($recommendation['votes'] != -1);
             $this->assertEquals("", $recommendation['endyear']);
         }
     }
