@@ -718,6 +718,9 @@ class Person extends MdbBase
     {
         $this->getPage("Bio");
         $pos_s = strpos($this->page["Bio"], '<h4 class="li_group">' . $name);
+        if (!$pos_s) {
+            return $res;
+        }
         $pos_e = strpos($this->page["Bio"], "<h4", $pos_s + 1);
         if (!$pos_e) {
             $pos_e = strpos($this->page["Bio"], "</tbody", $pos_s + 1);
