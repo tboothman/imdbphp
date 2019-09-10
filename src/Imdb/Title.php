@@ -564,50 +564,43 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear])
+     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes])
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
-        if (empty($this->movierecommendations)) {
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($this->getPage("Title"));
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
-            /** @var \DOMElement $cell */
-            foreach ($cells as $cell) {
-                if (preg_match('!tt(\d+)!', $cell->getElementsByTagName('a')->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
-                    $movie['imdbid'] = $ref[1];
-                    $span = $xp->query($cell->getNodePath() . '//span[@class="nobr"]')->item(0)->nodeValue;
-                    $years = preg_replace('/[^0-9]/', '', $span);
-                    if (strlen($years) > 4) {
-                        $movie['year'] = substr($years, 0, 4);
-                        $movie['endyear'] = substr($years, 4);
-                    } else {
-                        $movie['year'] = $years;
-                        $movie['endyear'] = "";
-                    }
-
-                    $get_rating = $xp->query('./div[@class="rec-rating"]/div[1]', $cell->parentNode);
-                    $movie['rating'] = "0";
-                    $movie['votes'] = "0";
-                    if($get_rating && $get_rating[0]->getAttribute('title') != null){
-                      if(preg_match('/this ([0-9\.]{1,3})\/10/i', $get_rating[0]->getAttribute('title'), $mtch_rating)){
-                        $movie['rating'] = trim($mtch_rating[1]);
-                      }
-                      if(preg_match('/\(([0-9\,]+).*?votes/i', $get_rating[0]->getAttribute('title'), $mtch_votes)){
-                        $movie['votes'] = trim(str_replace(',', '', $mtch_votes[1]));
-                      }
-                    }
-
-
-
-                    $this->movierecommendations[] = $movie;
-                }
+      if (empty($this->movierecommendations)) {
+        $doc = new \DOMDocument();
+        @$doc->loadHTML($this->getPage("Title"));
+        $xp = new \DOMXPath($doc);
+        $cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
+        /** @var \DOMElement $cell */
+        foreach ($cells as $cell) {
+          if (preg_match('!tt(\d+)!', $cell->getElementsByTagName('a')->item(0)->getAttribute('href'), $ref)) {
+            $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
+            $movie['imdbid'] = $ref[1];
+            $span = $xp->query($cell->getNodePath() . '//span[@class="nobr"]')->item(0)->nodeValue;
+            $years = preg_replace('/[^0-9]/', '', $span);
+            if (strlen($years) > 4) {
+              $movie['year'] = substr($years, 0, 4);
+              $movie['endyear'] = substr($years, 4);
+            } else {
+              $movie['year'] = $years;
+              $movie['endyear'] = "";
             }
+            $get_rating = $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title');
+            if($get_rating != null && $get_rating && preg_match('/([0-9\.\,]{1,3})\/10\s*\(([0-9\,]+)\s*/i', $get_rating, $mtch_rating)) {
+              $movie['rating'] = trim($mtch_rating[1]);
+              $movie['votes'] = trim(str_replace(',', '', $mtch_rating[2]));
+            } else {
+              $movie['rating'] = -1;
+              $movie['votes'] = -1;
+            }
+            $this->movierecommendations[] = $movie;
+          }
         }
-        return $this->movierecommendations;
+      }
+      return $this->movierecommendations;
     }
 
     #--------------------------------------------------------------[ Keywords ]---
