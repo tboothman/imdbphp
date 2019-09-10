@@ -146,10 +146,10 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
 
         $found = false;
         foreach ($results as $result) {
-            if ("2224026" == $result->imdbid()) {
+            if ("4009278" == $result->imdbid()) {
                 $this->assertInstanceOf('\Imdb\Title', $result);
-                $this->assertEquals("2224026", $result->imdbid());
-                $this->assertEquals("Home", $result->title());
+                $this->assertEquals("4009278", $result->imdbid());
+                $this->assertEquals("Intruders", $result->title());
                 $this->assertEquals(2015, $result->year());
                 $found = true;
             }
