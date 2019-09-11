@@ -234,8 +234,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
     public function testYearspan_for_a_tv_show_that_havent_ended()
     {
-        $imdb = $this->getImdb("5011816");
-        $this->assertEquals(array('start' => 2015, 'end' => 0), $imdb->yearspan());
+        $imdb = $this->getImdb("2442560");
+        $this->assertEquals(array('start' => 2013, 'end' => 0), $imdb->yearspan());
     }
 
     public function testYearspan()
@@ -1363,7 +1363,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[4]);
+            ), $quotes_split[3]);
     }
 
     public function testTrailers_all()
@@ -1538,9 +1538,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb();
         $distCompany = $imdb->distCompany();
-        $this->assertEquals('Roadshow Entertainment', $distCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0152990?ref_=ttco_co_1', $distCompany[0]['url']);
-        $this->assertEquals('(1999) (Australia) (theatrical)', $distCompany[0]['notes']);
+        $this->assertEquals('Mauris Film', $distCompany[0]['name']);
+        $this->assertEquals('https://www.imdb.com/company/co0613366?ref_=ttco_co_1', $distCompany[0]['url']);
+        $this->assertEquals('(2019) (Russia) (theatrical)', $distCompany[0]['notes']);
     }
 
     public function testSpecialCompany()
