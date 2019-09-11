@@ -564,7 +564,7 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear])
+     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes])
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
@@ -587,6 +587,14 @@ class Title extends MdbBase
                     } else {
                         $movie['year'] = $years;
                         $movie['endyear'] = "";
+                    }
+                    if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s,]+)/i', $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
+                      $rating)) {
+                        $movie['rating'] = str_replace(',', '.', $rating[1]);
+                        $movie['votes'] = preg_replace('/[^0-9]/', '', $rating[2]);
+                    } else {
+                        $movie['rating'] = -1;
+                        $movie['votes'] = -1;
                     }
                     $this->movierecommendations[] = $movie;
                 }
