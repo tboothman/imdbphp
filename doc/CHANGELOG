@@ -2,6 +2,15 @@
 History for IMDBPHP
 ====================
 
+v6.3.0 (13.09.2019)
+-------------------
+! Fix `TitleSearch::search()` as `$maxResults` were never being used #111
+! Fix `TitleSearch::search()` as it returned incorrect movietype for TV Episode #154
+! Fix `TitleSearch::search()` as it incorrectly detected year on some titles #178
+! Fix `Person::trivia()`, `Person::quotes()` and `Person::trademark()` for returning default "no content"-text #171
+! 8 digit ids were not being parsed correctly for the demo application #176
++ Added `rating` and `votes` to the results of `Title::movie_recommendations()` #179
+
 v6.2.2 (02.06.2019)
 -------------------
 ! 8 digit ids were not being parsed correctly for `Title::director()` and `Title::producer()` #168

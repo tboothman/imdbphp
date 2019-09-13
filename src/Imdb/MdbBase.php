@@ -21,7 +21,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class MdbBase extends Config
 {
-    public $version = '6.1.3';
+    public $version = '6.3.0';
 
     protected $months = array(
       "January" => "01",
