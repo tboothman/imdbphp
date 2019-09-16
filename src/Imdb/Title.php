@@ -1868,12 +1868,20 @@ class Title extends MdbBase
                     if (empty($page)) {
                         continue;
                     } // no such page
+                    
+                    // fetch episodes images
+					preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
+					$urlIndex = 0;
+                    
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                       . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                       . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                       . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
+                        //Fetch episodes image url
+						preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $url);
+                        
                         $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
                         $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
                           '', $plot);
@@ -1884,8 +1892,10 @@ class Title extends MdbBase
                           'airdate' => $ep['airdate'],
                           'plot' => $plot,
                           'season' => $s,
-                          'episode' => $ep['episodeNumber']
+                          'episode' => $ep['episodeNumber'],
+                          'url' => $url[2]
                         );
+                        $urlIndex = $urlIndex + 1;
 
                         if ($ep['episodeNumber'] == -1) {
                             $this->season_episodes[$s][] = $episode;
