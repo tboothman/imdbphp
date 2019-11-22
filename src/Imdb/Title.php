@@ -588,6 +588,20 @@ class Title extends MdbBase
                         $movie['year'] = $years;
                         $movie['endyear'] = "";
                     }
+                    $rawGenre = explode('|', trim($cell->parentNode->getElementsByTagName('div')->item(1)->nodeValue));
+                    $res = array();
+                    foreach($rawGenre as $genre){
+                        $temp = explode(' ', preg_replace('/\s+/', ' ', trim($genre)));
+                        $res[] = end($temp);
+                    }
+                    $movie['genres'] = $res;
+                    $rawPlotoutline = trim($cell->parentNode->getElementsByTagName('div')->item(4)->nodeValue);
+                    if (stripos($rawPlotoutline, "...") != FALSE){
+                        $movie['plotoutline'] = substr($rawPlotoutline, 0, strpos($rawPlotoutline, "...")+3);
+                    }
+                    else {
+                        $movie['plotoutline'] = $rawPlotoutline;
+                    }
                     if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s,]+)/i', $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
                       $rating)) {
                         $movie['rating'] = str_replace(',', '.', $rating[1]);
