@@ -1,0 +1,22 @@
+name: PHP Composer
+
+on:
+  schedule:
+    - cron: '11 20 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Test
+      run: composer test
