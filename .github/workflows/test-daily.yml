@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Daily test run
 
 on:
   schedule:
