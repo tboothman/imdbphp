@@ -426,10 +426,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb("0306414");
         $keywords = $imdb->keywords();
-        $this->assertTrue(in_array('baltimore maryland', $keywords));
-        $this->assertTrue(in_array('police department politics', $keywords));
         $this->assertTrue(in_array('corruption', $keywords));
         $this->assertTrue(in_array('drug trafficking', $keywords));
+        $this->assertTrue(in_array('drug war', $keywords));
+        $this->assertTrue(in_array('wiretapping', $keywords));
         $this->assertTrue(in_array('urban decay', $keywords));
     }
 
@@ -737,6 +737,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb("0087544");
         $akas = $imdb->alsoknow();
+        print_r($akas);
 
         // No country
         $this->assertEquals('Kaze no tani no Naushika', $akas[0]['title']);
@@ -753,10 +754,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
 
         // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[35]['title']);
-        $this->assertEquals('Switzerland', $akas[35]['country']);
-        $this->assertEquals('German title', $akas[35]['comments'][0]);
-        $this->assertEquals('DVD title', $akas[35]['comments'][1]);
+        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[36]['title']);
+        $this->assertEquals('Switzerland', $akas[36]['country']);
+        $this->assertEquals('German title', $akas[36]['comments'][0]);
+        $this->assertEquals('DVD title', $akas[36]['comments'][1]);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas()
