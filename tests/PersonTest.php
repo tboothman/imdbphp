@@ -262,7 +262,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('1', $result['mon']);
         $this->assertEquals('2008', $result['year']);
         $this->assertEquals('Manhattan, New York City, New York, USA', $result['place']);
-        $this->assertEquals('accidental overdose of prescription drugs', $result['cause']);
+        $this->assertEquals('accidental overdose', $result['cause']);
     }
 
     public function test_movies_died_without_cause()

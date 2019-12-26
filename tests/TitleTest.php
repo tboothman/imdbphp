@@ -769,10 +769,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb();
         $sound = $imdb->sound();
         $this->assertInternalType('array', $sound);
-        $this->assertCount(3, $sound);
+        $this->assertCount(4, $sound);
         $this->assertEquals('DTS', $sound[0]);
         $this->assertEquals('Dolby Digital', $sound[1]);
         $this->assertEquals('SDDS', $sound[2]);
+        $this->assertEquals('Dolby Atmos', $sound[3]);
     }
 
     public function testSound_one_type()
@@ -781,7 +782,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $sound = $imdb->sound();
         $this->assertInternalType('array', $sound);
         $this->assertCount(1, $sound);
-        $this->assertEquals('Stereo', $sound[0]);
+        $this->assertEquals('Dolby Stereo', $sound[0]);
     }
 
     public function testSound_none()
@@ -1134,8 +1135,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                 'role' => '(screenplay by)'),
             array(
                 'imdb' => '1248357',
-                'name' => 'Cindy Davis Hewitt',
-                'role' => '(english language adaptation) &'
+                'name' => 'Cindy Davis',
+                'role' => '(english language adaptation) (as Cindy Davis Hewitt) &'
             ),
             array('imdb' => '1248358',
                 'name' => 'Donald H. Hewitt',
@@ -1512,7 +1513,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb(107290);
         $locations = $imdb->locations();
-        $this->assertCount(16, $locations);
+        $this->assertCount(17, $locations);
         $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[3]);
     }
 
