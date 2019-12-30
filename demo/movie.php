@@ -45,7 +45,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
         </tr>
         <tr>
           <td><b>Original title:</b></td>
-          <td><?= $movie->orig_title() ?></td>
+          <td><?php echo $movie->orig_title() ?></td>
         </tr>
         
         <?php
