@@ -58,12 +58,10 @@ class Title extends MdbBase
     protected $main_poster_thumb = "";
     protected $main_pictures = array();
     protected $main_plotoutline = "";
-    protected $main_rating = -1;
     protected $main_runtime = "";
     protected $main_movietype = "";
     protected $main_title = "";
     protected $original_title = "";
-    protected $main_votes = -1;
     protected $main_year = -1;
     protected $main_endyear = -1;
     protected $main_yearspan = array();
@@ -106,10 +104,6 @@ class Title extends MdbBase
     protected $official_sites = array();
     protected $locations = array();
     protected $budget = null;
-    protected $openingWeekend = array();
-    protected $gross = array();
-    protected $weekendGross = array();
-    protected $admissions = array();
     protected $filmingDates = null;
     protected $moviealternateversions = array();
     protected $isSerial = null;
