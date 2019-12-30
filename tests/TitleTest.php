@@ -737,7 +737,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb("0087544");
         $akas = $imdb->alsoknow();
-        print_r($akas);
 
         // No country
         $this->assertEquals('Kaze no tani no Naushika', $akas[0]['title']);
