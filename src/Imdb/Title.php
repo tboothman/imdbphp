@@ -582,7 +582,7 @@ class Title extends MdbBase
                         $movie['year'] = $years;
                         $movie['endyear'] = "";
                     }
-                    if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s,]+)/i', $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
+                    if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s,\.]+)/i', $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
                       $rating)) {
                         $movie['rating'] = str_replace(',', '.', $rating[1]);
                         $movie['votes'] = preg_replace('/[^0-9]/', '', $rating[2]);
