@@ -386,19 +386,24 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $recommendations);
         $this->assertCount(12, $recommendations);
 
-        $this->assertTrue($recommendations[0]['title'] == 'Silent Hill');
-        $this->assertTrue(floatval($recommendations[0]['rating']) > 6.0);
-        $this->assertTrue(intval($recommendations[0]['votes']) > 204000);
-
+        $matches = 0;
         foreach ($recommendations as $recommendation) {
-            $this->assertInternalType('array', $recommendation);
-            $this->assertTrue(strlen($recommendation['title']) > 0); // title
-            $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
-            $this->assertTrue(strlen($recommendation['year']) === 4); // year
-            $this->assertEquals("", $recommendation['endyear']);
-            $this->assertTrue($recommendation['rating'] != -1);
-            $this->assertTrue($recommendation['votes'] != -1);
+            if ($recommendation['title'] == 'Silent Hill') {
+                $this->assertTrue($recommendation['title'] == 'Silent Hill');
+                $this->assertTrue(floatval($recommendation['rating']) > 6.0);
+                $this->assertTrue(intval($recommendation['votes']) > 204000);
+                ++$matches;
+            } else {
+                $this->assertInternalType('array', $recommendation);
+                $this->assertTrue(strlen($recommendation['title']) > 0); // title
+                $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
+                $this->assertTrue(strlen($recommendation['year']) === 4); // year
+                $this->assertEquals("", $recommendation['endyear']);
+                $this->assertTrue($recommendation['rating'] != -1);
+                $this->assertTrue($recommendation['votes'] != -1);
+            }
         }
+        $this->assertEquals(1, $matches);
     }
 
     public function testMovie_recommendations_tv_show()
@@ -651,7 +656,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb('0284717');
         $outline = $imdb->plotoutline();
-        $this->assertSame(0, strpos($outline, 'Towards the end of the eleventh century, Pope Urban II announces a crusade against the Saracens, who have occupied the holy city of Jerusalem.'));
+        $this->assertSame(0, strpos($outline, 'Towards the end of the'));
         $this->assertFalse(stripos($outline, 'full summary'));
     }
 
@@ -738,25 +743,35 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb("0087544");
         $akas = $imdb->alsoknow();
 
-        // No country
-        $this->assertEquals('Kaze no tani no Naushika', $akas[0]['title']);
-        $this->assertEquals('original title', $akas[0]['comments'][0]);
-
-        // Country, no comment
-        $this->assertEquals('Naushika iz Doline vjetrova', $akas[6]['title']);
-        $this->assertEquals('Croatia', $akas[6]['country']);
-        $this->assertEmpty($akas[6]['comments']);
-
-        // Country with comment
-        $this->assertEquals('Наусика от Долината на вятъра', $akas[3]['title']);
-        $this->assertEquals('Bulgaria', $akas[3]['country']);
-        $this->assertEquals('Bulgarian title', $akas[3]['comments'][0]);
-
-        // Country with two comments
-        $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $akas[36]['title']);
-        $this->assertEquals('Switzerland', $akas[36]['country']);
-        $this->assertEquals('German title', $akas[36]['comments'][0]);
-        $this->assertEquals('DVD title', $akas[36]['comments'][1]);
+        $matches = 0;
+        foreach ($akas as $aka) {
+            if ($aka['title'] == 'Kaze no tani no Naushika') {
+                // No country
+                $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
+                $this->assertEquals('original title', $aka['comments'][0]);
+                ++$matches;
+            } elseif ($aka['title'] == 'Naushika iz Doline vjetrova') {
+                // Country, no comment
+                $this->assertEquals('Naushika iz Doline vjetrova', $aka['title']);
+                $this->assertEquals('Croatia', $aka['country']);
+                $this->assertEmpty($aka['comments']);
+                ++$matches;
+            } elseif ($aka['title'] == 'Наусика от Долината на вятъра') {
+                // Country with comment
+                $this->assertEquals('Наусика от Долината на вятъра', $aka['title']);
+                $this->assertEquals('Bulgaria', $aka['country']);
+                $this->assertEquals('Bulgarian title', $aka['comments'][0]);
+                ++$matches;
+            } elseif ($aka['title'] == 'Nausicaä - Aus dem Tal der Winde' && count($aka['comments']) >= 2) {
+                // Country with two comments
+                $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $aka['title']);
+                $this->assertEquals('Switzerland', $aka['country']);
+                $this->assertEquals('German title', $aka['comments'][0]);
+                $this->assertEquals('DVD title', $aka['comments'][1]);
+                ++$matches;
+            }
+        }
+        $this->assertEquals(4, $matches);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas()
@@ -1513,8 +1528,15 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb(107290);
         $locations = $imdb->locations();
-        $this->assertCount(17, $locations);
-        $this->assertEquals("Kualoa Ranch - 49560 Kamehameha Highway, Ka'a'awa, O'ahu, Hawaii, USA", $locations[3]);
+        $this->assertGreaterThan(17, $locations);
+
+        $matches = 0;
+        foreach ($locations as $location) {
+            if (strpos($location, 'Kualoa Ranch') === 0) {
+                ++$matches;
+            }
+        }
+        $this->assertEquals(1, $matches);
     }
 
     public function testProdCompany_empty_notes()
@@ -1577,14 +1599,14 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb(120737);
         $parentalGuide = $imdb->parentalGuide(TRUE);
         $violence = $parentalGuide['Frightening'][0];
-        $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene is extremely emotional.'));
+        $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene'));
     }
 
     public function testOfficialsites()
     {
         $imdb = $this->getImdb();
         $officialSites = $imdb->officialSites();
-        $this->assertEquals('https://www.facebook.com/TheMatrixMovie', $officialSites[0]['url']);
+        $this->assertEquals('https://www.facebook.com/TheMatrixMovie', trim($officialSites[0]['url'], '/'));
         $this->assertEquals('Official Facebook', $officialSites[0]['name']);
     }
 

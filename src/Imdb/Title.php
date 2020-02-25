@@ -2059,7 +2059,7 @@ class Title extends MdbBase
             foreach ($head as $header) {
                 if (preg_match('/:/', $header)) {
                     list($type, $value) = explode(':', $header, 2);
-                    if ($type == 'Location') {
+                    if ($type == 'Location' || $type == 'location' ) {
                         return preg_replace('/\s/', '', $value);
                     }
                 }
