@@ -7,7 +7,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
      * 0087544 = Nausicaa (foreign, nonascii)
-     * 1570728 = Crazy, Stupid, Love (no runtime in tech details (but has a runtime at top)
      * 0078788 = Apocalypse Now (Two cuts, multiple languages)
      * 0108052 = Schindler's List (multiple colours)
      * 0338187 = The Last New Yorker (see full synopsis...)
@@ -263,12 +262,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(42, $imdb->runtime());
     }
 
-    public function testRuntime_no_runtime_in_technical_details()
-    {
-        $imdb = $this->getImdb('1570728');
-        $this->assertEquals(118, $imdb->runtime());
-    }
-
     public function testRuntime_primary_where_multiple_exist()
     {
         $imdb = $this->getImdb('0087544');
@@ -302,15 +295,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(147, $runtimes[0]['time']);
         $this->assertEquals(196, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
-    }
-
-    // Not containing runtime on title page, but technical instaed
-    public function testRuntimes_on_technical()
-    {
-        $imdb = $this->getImdb('1570728');
-        $runtimes = $imdb->runtimes();
-        $this->assertEquals(118, $runtimes[0]['time']);
-        $this->assertEquals('USA', $runtimes[0]['annotations'][0]);
     }
 
     public function testAspect_ratio()
@@ -857,7 +841,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
     public function testTop250_returns_0_when_not_in_top_250()
     {
-        $imdb = $this->getImdb('1570728');
+        $imdb = $this->getImdb('0103074');
         $top250 = $imdb->top250();
         $this->assertInternalType('integer', $top250);
         $this->assertEquals(0, $top250);
@@ -1590,7 +1574,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $parentalGuide = $imdb->parentalGuide();
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
-        $this->assertEquals('9 uses of "hell"', $profanity[4]);
+        $this->assertEquals('9 uses of "hell"', $profanity[3]);
         $this->assertEquals('The Oracle smokes a cigarette.', $drugs[4]);
     }
 
