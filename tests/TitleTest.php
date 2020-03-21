@@ -1505,7 +1505,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             'mon' => '06',
             'year' => '1993',
             'comment' => ''
-            ), $releaseInfo[1]);
+            ), $releaseInfo[2]);
     }
 
     public function test_locations()
@@ -1575,7 +1575,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
         $this->assertEquals('9 uses of "hell"', $profanity[3]);
-        $this->assertEquals('The Oracle smokes a cigarette.', $drugs[4]);
+        $this->assertEquals('The Oracle smokes a cigarette.', $drugs[5]);
     }
 
     public function testParentalGuide_spoilers()
