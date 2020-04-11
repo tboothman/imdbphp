@@ -1199,6 +1199,19 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             ), $producers[0]);
     }
 
+    public function testCinematographer()
+    {
+        $imdb = $this->getImdb();
+        $cinematographers = $imdb->cinematographer();
+        $this->assertCount(1, $cinematographers);
+
+        $this->assertEquals(array(
+            'imdb' => '0691084',
+            'name' => 'Bill Pope',
+            'role' => 'director of photography'
+        ), $cinematographers[0]);
+    }
+
     public function testComposer_movie()
     {
         $imdb = $this->getImdb();
