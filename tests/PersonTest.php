@@ -180,7 +180,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Jônetsu tairiku', $movie['name']);
         $this->assertEquals('2014', $movie['year']);
         $this->assertEquals('', $movie['chid']);
-        $this->assertEquals('Himself', $movie['chname']);
+        $this->assertEquals('Self', $movie['chname']);
         $this->assertEquals(array(), $movie['addons']);
     }
 
@@ -211,14 +211,14 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
 //    $this->assertEquals('The 87th Annual Academy Awards', $result[0]['name']);
         $this->assertEquals('2015', $result[0]['year']);
         $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('Himself - Honorary Award Recipient', $result[0]['chname']);
+        $this->assertEquals('Self - Honorary Award Recipient', $result[0]['chname']);
         $this->assertEquals(array(), $result[0]['addons']);
 
         $this->assertEquals('0318251', $result[1]['mid']);
         $this->assertEquals('Troldspejlet', $result[1]['name']);
         $this->assertEquals('2009', $result[1]['year']);
         $this->assertEquals('', $result[1]['chid']);
-        $this->assertEquals('Himself', $result[1]['chname']);
+        $this->assertEquals('Self', $result[1]['chname']);
         $this->assertEquals(array(), $result[1]['addons']);
     }
 
