@@ -40,6 +40,7 @@ class Title extends MdbBase
     protected $castlist = array(); // pilot only
     protected $crazy_credits = array();
     protected $credits_cast = array();
+    protected $credits_cinematographer = array();
     protected $credits_composer = array();
     protected $credits_director = array();
     protected $credits_producer = array();
@@ -1768,6 +1769,39 @@ class Title extends MdbBase
             }
         }
         return $this->credits_producer;
+    }
+
+    #-------------------------------------------------------------[ Cinematographers ]---
+
+    /** Obtain the cinematographer(s) ("Cinematography by...")
+     * @return array cinematographer (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function cinematographer()
+    {
+        if (!empty($this->credits_cinematographer)) {
+            return $this->credits_cinematographer;
+        }
+        $cinematographer_rows = $this->get_table_rows($this->getPage('Credits'), "Cinematography by");
+        foreach ($cinematographer_rows as $cinematographer_row) {
+            $cinematographer = array();
+            if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $cinematographer_row, $match)) {
+                $cinematographer['imdb'] = $match[1];
+                $cinematographer['name'] = trim($match[2]);
+            } elseif (preg_match('!<td\s+class="name">(.+?)</td!ims', $cinematographer_row, $match)) {
+                $cinematographer['imdb'] = '';
+                $cinematographer['name'] = trim($match[1]);
+            } else {
+                continue;
+            }
+            if (preg_match('!<td\s+class="credit"\s*>\s*(.+?)\s*</td>!ims', $cinematographer_row, $match)) {
+                $cinematographer['role'] = trim($match[1]);
+            } else {
+                $cinematographer['role'] = null;
+            }
+            $this->credits_cinematographer[] = $cinematographer;
+        }
+        return $this->credits_cinematographer;
     }
 
     #-------------------------------------------------------------[ Composers ]---
