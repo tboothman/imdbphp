@@ -1587,8 +1587,10 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $parentalGuide = $imdb->parentalGuide();
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
-        $this->assertEquals('9 uses of "hell"', $profanity[3]);
-        $this->assertEquals('The Oracle smokes a cigarette.', $drugs[5]);
+        $this->assertCount(8, $profanity);
+        $this->assertCount(6, $drugs);
+        $this->assertContains('9 uses of "hell"', $profanity);
+        $this->assertContains('The Oracle smokes a cigarette.', $drugs);
     }
 
     public function testParentalGuide_spoilers()
