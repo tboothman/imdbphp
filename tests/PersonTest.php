@@ -174,8 +174,8 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_self();
         $this->assertInternalType('array', $result);
-        $this->assertGreaterThan(27, count($result));
-        $this->assertLessThan(30, count($result));
+        $this->assertGreaterThan(29, count($result));
+        $this->assertLessThan(32, count($result));
         $movie = $result[3];
         $this->assertEquals('1095875', $movie['mid']);
         $this->assertEquals('Jônetsu tairiku', $movie['name']);
