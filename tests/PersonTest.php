@@ -176,13 +176,21 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $result);
         $this->assertGreaterThan(29, count($result));
         $this->assertLessThan(32, count($result));
-        $movie = $result[3];
-        $this->assertEquals('1095875', $movie['mid']);
-        $this->assertEquals('Jônetsu tairiku', $movie['name']);
-        $this->assertEquals('2014', $movie['year']);
-        $this->assertEquals('', $movie['chid']);
-        $this->assertEquals('Self', $movie['chname']);
-        $this->assertEquals(array(), $movie['addons']);
+
+        $matches = 0;
+        foreach($result as $movie)
+        {
+            if($movie['mid'] == 1095875)
+            {
+                $this->assertEquals('Jônetsu tairiku', $movie['name']);
+                $this->assertEquals('2014', $movie['year']);
+                $this->assertEquals('', $movie['chid']);
+                $this->assertEquals('Self', $movie['chname']);
+                $this->assertEquals(array(), $movie['addons']);
+                ++$matches;
+            }
+        }
+        $this->assertEquals(1, $matches);
     }
 
     public function test_movies_writer()
