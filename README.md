@@ -18,6 +18,11 @@ Quick Start
 $title = new \Imdb\Title(335266);
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
+
+# Find out about the director
+$person = new \Imdb\Person($title->director()[0]['imdb']);
+$name = $person->name();
+$photo = $person->photo();
 ```
 
 Installation
