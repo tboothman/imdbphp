@@ -633,7 +633,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     public function testPlotoutline()
     {
         $imdb = $this->getImdb();
-        $this->assertEquals('A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.', $imdb->plotoutline());
+        $this->assertEquals('When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.', $imdb->plotoutline());
     }
 
     public function testPlotoutline_strip_see_full_summary()
@@ -732,7 +732,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
             if ($aka['title'] == 'Kaze no tani no Naushika') {
                 // No country
                 $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
-                $this->assertEquals('original title', $aka['comments'][0]);
+                $this->assertThat($aka['comments'][0],
+                    $this->logicalOr(
+                        $this->equalTo('original title'),
+                        $this->equalTo('French title')
+                    ));
                 ++$matches;
             } elseif ($aka['title'] == 'Naushika iz Doline vjetrova') {
                 // Country, no comment
@@ -755,7 +759,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                 ++$matches;
             }
         }
-        $this->assertEquals(4, $matches);
+        $this->assertEquals(5, $matches);
     }
 
     public function testAlsoknow_returns_no_results_when_film_has_no_akas()
@@ -1678,7 +1682,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb();
         $awards = $imdb->awards();
 
-        $this->assertCount(38, $awards);
+        $this->assertCount(39, $awards);
 
         $scifiWritersAward = $awards['Science Fiction and Fantasy Writers of America'];
         $firstEntry = $scifiWritersAward['entries'][0];

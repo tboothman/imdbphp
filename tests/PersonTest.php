@@ -130,14 +130,15 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_soundtrack();
         $this->assertInternalType('array', $result);
-        $this->assertGreaterThan(4, $result);
-        $this->assertEquals('1798188', $result[0]['mid']);
-        $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
-        $this->assertEquals('2011', $result[0]['year']);
+        $this->assertGreaterThanOrEqual(6, $result);
+        $poppyHill = current(array_filter($result, function ($item) { return $item['mid'] == '1798188'; }));
+        $this->assertEquals('1798188', $poppyHill['mid']);
+        $this->assertEquals('From Up on Poppy Hill', $poppyHill['name']);
+        $this->assertEquals('2011', $poppyHill['year']);
         //@TODO where did 'lyrics: "Kon'iro no Uneri ga"' go?
-        $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('', $result[0]['chname']);
-        $this->assertEquals(array(), $result[0]['addons']);
+        $this->assertEquals('', $poppyHill['chid']);
+        $this->assertEquals('', $poppyHill['chname']);
+        $this->assertEquals(array(), $poppyHill['addons']);
     }
 
     public function test_movies_crew()
