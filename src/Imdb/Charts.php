@@ -31,13 +31,17 @@ class Charts extends MdbBase
      */
     public function getChartsTop10()
     {
-        $matchinit = "IMDb MOVIEmeter";
-        $page = $this->getPage();
-        $offset = strpos($page, $matchinit);
+        $page = $this->getPage('moviemeter');
+        $offset = strpos($page, 'Most Popular Movies');
+        $end = strpos($page, 'Our Most Popular charts use data');
         $res = array();
-        for ($i = 0; $i < 10; $i++) {
+        while (count($res) < 10) {
             $matches = null;
-            preg_match("#<a href=\"/title/tt(\d+)#", $page, $matches, PREG_OFFSET_CAPTURE, $offset);
+            preg_match("#<td class=\"titleColumn\">\s+<a\s+href=\"/title/tt(\d+)#", $page, $matches, PREG_OFFSET_CAPTURE, $offset);
+            if (!$matches || $offset > $end) {
+                break;
+            }
+
             $res[] = $matches[1][0];
             $offset = $matches[0][1] + 1;
         }
@@ -58,7 +62,7 @@ class Charts extends MdbBase
      */
     public function getChartsBoxOffice()
     {
-        $page = $this->getPage();
+        $page = $this->getPage('boxoffice');
         $matchinit = '<h1 class="header">Top Box Office';
         $offset = strpos($page, $matchinit);
         $end = strpos($page, 'See more box office results at BoxOfficeMojo.com');
@@ -100,7 +104,7 @@ class Charts extends MdbBase
 
     protected function buildUrl($context = null)
     {
-        return "https://" . $this->config->imdbsite . "/chart/";
+        return "https://" . $this->config->imdbsite . "/chart/$context";
     }
 
 }

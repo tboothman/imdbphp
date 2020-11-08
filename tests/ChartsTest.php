@@ -8,9 +8,10 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase
     {
         $charts = $this->getCharts();
         $moviemeter = $charts->getChartsTop10();
-
         $this->assertInternalType('array', $moviemeter);
+        $this->assertEquals(count($moviemeter), count(array_unique($moviemeter)), "Results contain duplicates");
         $this->assertCount(10, $moviemeter);
+
         for ($i = 0; $i < 10; $i++) {
             $this->assertInternalType('string', $moviemeter[$i]);
             $this->assertThat(strlen($moviemeter[$i]), $this->logicalOr(
