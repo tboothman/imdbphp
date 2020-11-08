@@ -22,6 +22,15 @@ class imdb_person_searchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Forest Whitaker", $firstResult->name());
     }
 
+    public function test_searching_returns_person_with_id_of_8_char()
+    {
+        $search = $this->getimdbpersonsearch();
+        $results = $search->search('John Zuberek');
+
+        $firstResult = $results[0];
+        $this->assertEquals("11373523", $firstResult->imdbid());
+    }
+
     protected function getimdbpersonsearch()
     {
         $config = new Config();
