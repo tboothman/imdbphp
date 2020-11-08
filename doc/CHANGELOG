@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v6.4.2 (08.11.2020)
+-------------------
+! Fix Person ID length is always 7 in PersonSearch::results() #201 (Some newer people have 9 digit IDs)
+! Fix Charts::getChartsTop10() showing the box office instead of the popular ranking and also showing 2 of each films
+
 v6.4.1 (29.10.2020)
 -------------------
 ! Fix `Charts::getChartsBoxOffice()` erroring when a gross or weekend amount was shown in thousands ($300K)
