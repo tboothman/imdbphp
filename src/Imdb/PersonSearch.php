@@ -55,7 +55,7 @@ class PersonSearch extends MdbBase
 
         // make sure to catch col #3, not #1 (pic only)
         //                        photo           name                   1=id        2=name        3=details
-        preg_match_all('|<tr.*>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d{7,8})[^>]*>([^<]+)</a>\s*(.*)</td>|Uims',
+        preg_match_all('|<tr.*>\s*<td.*>.*</td>\s*<td.*<a href="/name/nm(\d+?)[^>]*>([^<]+)</a>\s*(.*)</td>|Uims',
           $page, $matches);
         $mc = count($matches[0]);
         $this->logger->debug("[Person Search] $mc matches");
