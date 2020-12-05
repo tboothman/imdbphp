@@ -2203,8 +2203,9 @@ class Title extends MdbBase
 
     #==========================================================[ /trivia page ]===
     #----------------------------------------------------------[ Trivia Array ]---
-    /** Get the trivia info
-     * @param boolean $spoil Whether to retrieve the spoilers (TRUE) or the non-spoilers (FALSE, default)
+    /**
+     * Get the trivia info
+     * @param boolean $spoil *Deprecated*. There are no longer spoiler trivia on imdb
      * @return array trivia (array[0..n] string
      * @see IMDB page /trivia
      */
@@ -2216,7 +2217,7 @@ class Title extends MdbBase
                 return array();
             } // no such page
             if ($spoil) {
-                preg_match('!<a id="spoilers"(.+?)\s*<div class="article!ims', $this->page["Trivia"], $block);
+                return [];
             } else {
                 preg_match('!<div id="trivia_content"(.+?)<a id="spoilers"!ims', $this->page["Trivia"], $block);
                 if (empty($block)) {

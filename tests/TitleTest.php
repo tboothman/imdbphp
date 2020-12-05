@@ -1433,9 +1433,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb();
         $spoil = $imdb->trivia(true);
-
-        $this->assertGreaterThan(8, count($spoil));
-        $this->assertEquals('Body count: 39.', $spoil[7]);
+        // There aren't spoilers anymore, so this is just empty
+        $this->assertCount(0, $spoil);
     }
 
     public function testMovieconnection_followed_by()
