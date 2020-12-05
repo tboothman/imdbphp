@@ -2,6 +2,8 @@
 
 use \Imdb\Title;
 
+require_once __DIR__ . "/helpers.php";
+
 class imdb_personTest extends PHPUnit_Framework_TestCase
 {
     public function test_constructor()
@@ -161,7 +163,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $result = $person->movies_thanx();
         $this->assertInternalType('array', $result);
         $this->assertCount(6, $result);
-        $laLuna = $result[2];
+        $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
         $this->assertEquals('La Luna', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
@@ -200,7 +202,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $result = $person->movies_writer();
         $this->assertInternalType('array', $result);
         $this->assertGreaterThan(35, $result);
-        $windRises = $result[2];
+        $windRises = array_find_item($result, 'mid', '2013293');
         $this->assertEquals('2013293', $windRises['mid']);
         $this->assertEquals('The Wind Rises', $windRises['name']);
         $this->assertEquals('2013', $windRises['year']);

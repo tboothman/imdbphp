@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/helpers.php";
+
 class imdb_titleTest extends PHPUnit_Framework_TestCase
 {
 
@@ -1038,15 +1040,6 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertCount(0, $castMember['role_other']);
     }
 
-    private function findCastByImdbNo($cast, $imdbNo)
-    {
-        foreach ($cast as $castMember) {
-            if ($castMember['imdb'] == $imdbNo) {
-                return $castMember;
-            }
-        }
-    }
-
     public function testCast_film_multiple_roles()
     {
         $imdb = $this->getImdb('2015381');
@@ -1065,7 +1058,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb('2015381');
         $cast = $imdb->cast();
-        $castMember = $this->findCastByImdbNo($cast, '0001293');
+        $castMember = array_find_item($cast, 'imdb', '0001293');
         $this->assertEquals('0001293', $castMember['imdb']);
         $this->assertEquals('Seth Green', $castMember['name']);
         $this->assertEquals(null, $castMember['name_alias']);
@@ -1080,7 +1073,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb('0306414');
         $cast = $imdb->cast();
-        $firstCast = $cast[0];
+        $firstCast = array_find_item($cast, 'imdb', '0922035');
 
         $this->assertEquals('0922035', $firstCast['imdb']);
         $this->assertEquals('Dominic West', $firstCast['name']);
@@ -1097,7 +1090,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     public function testCast_tv_multi_episode_one_year()
     {
         $imdb = $this->getImdb('0306414');
-        $castMember = $this->findCastByImdbNo($imdb->cast(), '1370480');
+        $cast = $imdb->cast();
+        $castMember = array_find_item($cast, 'imdb', '1370480');
 
         $this->assertEquals('1370480', $castMember['imdb']);
         $this->assertEquals('Dan DeLuca', $castMember['name']);
@@ -1113,7 +1107,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb('0306414');
         $cast = $imdb->cast();
-        $castMember = $cast[271];
+        $castMember = array_find_item($cast, 'imdb', '0661449');
 
         $this->assertEquals('0661449', $castMember['imdb']);
         $this->assertEquals('Neko Parham', $castMember['name']);
@@ -1609,8 +1603,12 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb();
         $officialSites = $imdb->officialSites();
-        $this->assertEquals('https://www.facebook.com/TheMatrixMovie', trim($officialSites[0]['url'], '/'));
-        $this->assertEquals('Official Facebook', $officialSites[0]['name']);
+        $this->assertContains(
+            [
+                'url' => 'https://www.facebook.com/TheMatrixMovie/',
+                'name' => 'Official Facebook'
+            ],
+            $officialSites);
     }
 
     public function testKeywords_all()
