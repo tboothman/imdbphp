@@ -12,6 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Swap to php 7.4
+      run: rm /usr/bin/php && ln -s /usr/bin/php7.4 /usr/bin/php
+
     - name: Validate composer.json and composer.lock
       run: composer validate
 
