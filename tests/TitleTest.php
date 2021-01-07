@@ -1094,9 +1094,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $castMember = array_find_item($cast, 'imdb', '1370480');
 
         $this->assertEquals('1370480', $castMember['imdb']);
-        $this->assertEquals('Dan DeLuca', $castMember['name']);
+        $this->assertEquals('Dan De Luca', $castMember['name']);
         $this->assertEquals("David Parenti", $castMember['role']);
-        $this->assertEquals(11, $castMember['role_episodes']);
+        $this->assertEquals(10, $castMember['role_episodes']);
         $this->assertEquals(2006, $castMember['role_start_year']);
         $this->assertEquals(2006, $castMember['role_end_year']);
         $this->assertInternalType('array', $castMember['role_other']);
@@ -1374,7 +1374,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[4]);
+            ), $quotes_split[3]);
     }
 
     public function testTrailers_all()
