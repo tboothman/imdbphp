@@ -1,8 +1,8 @@
 name: Daily test run
 
 on:
-  schedule:
-    - cron: '11 20 * * *'
+  push:
+    branches: [ $default-branch ]
 
 jobs:
   build:
@@ -12,8 +12,12 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Swap to php 7.4
-      run: rm /usr/bin/php && ln -s /usr/bin/php7.4 /usr/bin/php
+    - name: Setup PHP 7.4 with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        extensions: curl, dom, json
+        tools: composer
 
     - name: Validate composer.json and composer.lock
       run: composer validate
