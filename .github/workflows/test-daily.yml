@@ -1,8 +1,8 @@
 name: Daily test run
 
 on:
-  push:
-    branches: [ $default-branch ]
+  schedule:
+    - cron: '11 20 * * *'
 
 jobs:
   build:
