@@ -896,6 +896,20 @@ class Title extends MdbBase
     }
 
     /**
+     * The date when this movie published
+     * @return string An ISO 8601 date e.g. 2015-01-01. Will be an empty string if not available
+    */
+
+    public function moviePublishedDate()
+    {
+        if(!isset($this->jsonLD()->datePublished)) {
+            return '';
+        }
+        return $this->jsonLD()->datePublished;
+    }
+
+
+    /**
      * Extra information about this episode (if this title is an episode)
      * @return array [imdbid,seriestitle,episodetitle,season,episode,airdate]
      * e.g.
