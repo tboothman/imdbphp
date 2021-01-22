@@ -24,7 +24,7 @@
     "scripts": {
         "test": "phpunit -c tests/phpunit.xml tests",
         "phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/"
-    }
+    },
     "repositories": [
     {
         "type": "git",
