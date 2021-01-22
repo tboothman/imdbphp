@@ -26,7 +26,7 @@
 		"phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/"
 	},
 	"repositories": [{
-		"type": "git",
+		"type": "vcs",
 		"url": "https://github.com/Ibrram/imdbphp"
 	}]
 }
