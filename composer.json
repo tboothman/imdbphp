@@ -1,5 +1,5 @@
 {
-	"name": "piro/imdbphp",
+	"name": "imdbphp/imdbphp",
 	"description": "Library for retrieving film and tv information from IMDb",
 	"license": "GPL-2.0-or-later",
 	"autoload": {
@@ -25,9 +25,5 @@
 	"scripts": {
 		"test": "phpunit -c tests/phpunit.xml tests",
 		"phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/"
-	},
-	"repositories": [{
-		"type": "vcs",
-		"url": "https://github.com/Ibrram/imdbphp"
-	}]
+	}
 }
