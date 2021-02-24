@@ -1119,6 +1119,17 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertCount(0, $castMember['role_other']);
     }
 
+    public function testStars_Cast()
+    {
+        $imdb = $this->getImdb('0075314');
+        $stars = $imdb->actor_stars();
+        $castMember = array_find_item($stars, 'imdb', '0000134');
+
+        $this->assertEquals('0000134', $castMember['imdb']);
+        $this->assertEquals('Robert De Niro', $castMember['name']);
+        $this->assertCount(3, $stars);
+    }
+
     // @TODO Why keep the brackets?
     public function testWriting_multiple_withrole()
     {
