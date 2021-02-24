@@ -1127,7 +1127,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('0000134', $castMember['imdb']);
         $this->assertEquals('Robert De Niro', $castMember['name']);
-        $this->assertCount(3, $stars);
+        $this->assertCount(4, $stars);
     }
 
     // @TODO Why keep the brackets?
