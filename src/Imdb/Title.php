@@ -3008,5 +3008,36 @@ class Title extends MdbBase
             return $matches[1];
         }
     }
+    
+    /*
+    * Get the Stars members for this title
+    * @return empty array OR array Stars (array[0..n] of array[imdb,name])
+     * e.g.
+     * <pre>
+     * array (
+     *  'imdb' => '0000134',
+     *  'name' => 'Robert De Niro', // Actor's name on imdb
+     * )
+     * </pre>
+    */
+    public function actor_stars(){
+        $stars = array();
+        if(!isset($this->jsonLD()->actor) || empty($this->jsonLD()->actor) || !$this->getPage('Title') || empty($this->getPage('Title')))
+            return $stars;
+        $page = $this->getPage('Title');
+        
+        foreach($this->jsonLD()->actor as $actor){
+            $act = array(
+                'imdb' => null,
+                'name' => null,
+            );
+            $act["imdb"] = preg_replace('!.*?/name/nm(\d+)/.*!ims', '$1', $actor->url);
+            $act["name"] = trim(strip_tags($actor->name));
+            if (empty($act['name']))
+                continue;
+            $stars[] = $act;
+        }
+        return $stars;
+    }
 
 }
