@@ -8,9 +8,10 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase
     {
         $charts = $this->getCharts();
         $moviemeter = $charts->getChartsTop10();
-
         $this->assertInternalType('array', $moviemeter);
+        $this->assertEquals(count($moviemeter), count(array_unique($moviemeter)), "Results contain duplicates");
         $this->assertCount(10, $moviemeter);
+
         for ($i = 0; $i < 10; $i++) {
             $this->assertInternalType('string', $moviemeter[$i]);
             $this->assertThat(strlen($moviemeter[$i]), $this->logicalOr(
@@ -26,8 +27,9 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase
         $boxOffice = $charts->getChartsBoxOffice();
 
         $this->assertInternalType('array', $boxOffice);
-        $this->assertTrue(count($boxOffice) >= 9);
-        $this->assertTrue(count($boxOffice) < 11);
+        // Commented out while cinemas are closed
+//        $this->assertTrue(count($boxOffice) >= 9);
+//        $this->assertTrue(count($boxOffice) < 11);
         foreach ($boxOffice as $film) {
             $this->assertInternalType('array', $film);
             $this->assertCount(3, $film);

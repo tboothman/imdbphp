@@ -83,6 +83,7 @@ class Request
         $this->responseHeaders = array();
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
         $this->page = curl_exec($this->ch);
+        curl_close($this->ch);
         if ($this->page !== false) {
             return true;
         }

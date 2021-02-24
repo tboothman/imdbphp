@@ -31,13 +31,17 @@ class Charts extends MdbBase
      */
     public function getChartsTop10()
     {
-        $matchinit = "IMDb MOVIEmeter";
-        $page = $this->getPage();
-        $offset = strpos($page, $matchinit);
+        $page = $this->getPage('moviemeter');
+        $offset = strpos($page, 'Most Popular Movies');
+        $end = strpos($page, 'Our Most Popular charts use data');
         $res = array();
-        for ($i = 0; $i < 10; $i++) {
+        while (count($res) < 10) {
             $matches = null;
-            preg_match("#<a href=\"/title/tt(\d+)#", $page, $matches, PREG_OFFSET_CAPTURE, $offset);
+            preg_match("#<td class=\"titleColumn\">\s+<a\s+href=\"/title/tt(\d+)#", $page, $matches, PREG_OFFSET_CAPTURE, $offset);
+            if (!$matches || $offset > $end) {
+                break;
+            }
+
             $res[] = $matches[1][0];
             $offset = $matches[0][1] + 1;
         }
@@ -58,7 +62,7 @@ class Charts extends MdbBase
      */
     public function getChartsBoxOffice()
     {
-        $page = $this->getPage();
+        $page = $this->getPage('boxoffice');
         $matchinit = '<h1 class="header">Top Box Office';
         $offset = strpos($page, $matchinit);
         $end = strpos($page, 'See more box office results at BoxOfficeMojo.com');
@@ -81,16 +85,16 @@ class Charts extends MdbBase
             }
 
             //weekend
-            $moneyPattern = "/[\$£]([\d\.]+)M/";
+            $moneyPattern = "/[\$£]([\d\.]+)(M|K)/";
             $matches1 = null;
             preg_match($moneyPattern, $page, $matches1, PREG_OFFSET_CAPTURE, $offset);
-            $title['weekend'] = $matches1[1][0];
+            $title['weekend'] = $matches1[2][0] === 'M' ? $matches1[1][0] : $matches1[1][0] / 1000;
             $offset = $matches1[1][1] + 10;
 
             //all
             $matches2 = null;
             preg_match($moneyPattern, $page, $matches2, PREG_OFFSET_CAPTURE, $offset);
-            $title['gross'] = $matches2[1][0];
+            $title['gross'] = $matches2[2][0] === 'M' ? $matches2[1][0] : $matches2[1][0] / 1000;
             $offset = $matches2[1][1] + 10;
 
             $chart[] = $title;
@@ -100,7 +104,7 @@ class Charts extends MdbBase
 
     protected function buildUrl($context = null)
     {
-        return "https://" . $this->config->imdbsite . "/chart/";
+        return "https://" . $this->config->imdbsite . "/chart/$context";
     }
 
 }

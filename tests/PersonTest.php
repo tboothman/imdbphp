@@ -2,6 +2,8 @@
 
 use \Imdb\Title;
 
+require_once __DIR__ . "/helpers.php";
+
 class imdb_personTest extends PHPUnit_Framework_TestCase
 {
     public function test_constructor()
@@ -130,14 +132,15 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_soundtrack();
         $this->assertInternalType('array', $result);
-        $this->assertGreaterThan(4, $result);
-        $this->assertEquals('1798188', $result[0]['mid']);
-        $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
-        $this->assertEquals('2011', $result[0]['year']);
+        $this->assertGreaterThanOrEqual(6, $result);
+        $poppyHill = current(array_filter($result, function ($item) { return $item['mid'] == '1798188'; }));
+        $this->assertEquals('1798188', $poppyHill['mid']);
+        $this->assertEquals('From Up on Poppy Hill', $poppyHill['name']);
+        $this->assertEquals('2011', $poppyHill['year']);
         //@TODO where did 'lyrics: "Kon'iro no Uneri ga"' go?
-        $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('', $result[0]['chname']);
-        $this->assertEquals(array(), $result[0]['addons']);
+        $this->assertEquals('', $poppyHill['chid']);
+        $this->assertEquals('', $poppyHill['chname']);
+        $this->assertEquals(array(), $poppyHill['addons']);
     }
 
     public function test_movies_crew()
@@ -160,7 +163,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $result = $person->movies_thanx();
         $this->assertInternalType('array', $result);
         $this->assertCount(6, $result);
-        $laLuna = $result[2];
+        $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
         $this->assertEquals('La Luna', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
@@ -174,14 +177,23 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_self();
         $this->assertInternalType('array', $result);
-        $this->assertGreaterThan(26, count($result));
-        $movie = $result[2];
-        $this->assertEquals('1095875', $movie['mid']);
-        $this->assertEquals('Jônetsu tairiku', $movie['name']);
-        $this->assertEquals('2014', $movie['year']);
-        $this->assertEquals('', $movie['chid']);
-        $this->assertEquals('Himself', $movie['chname']);
-        $this->assertEquals(array(), $movie['addons']);
+        $this->assertGreaterThan(29, count($result));
+        $this->assertLessThan(32, count($result));
+
+        $matches = 0;
+        foreach($result as $movie)
+        {
+            if($movie['mid'] == 1095875)
+            {
+                $this->assertEquals('Jônetsu tairiku', $movie['name']);
+                $this->assertEquals('2014', $movie['year']);
+                $this->assertEquals('', $movie['chid']);
+                $this->assertEquals('Self', $movie['chname']);
+                $this->assertEquals(array(), $movie['addons']);
+                ++$matches;
+            }
+        }
+        $this->assertEquals(1, $matches);
     }
 
     public function test_movies_writer()
@@ -190,7 +202,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $result = $person->movies_writer();
         $this->assertInternalType('array', $result);
         $this->assertGreaterThan(35, $result);
-        $windRises = $result[2];
+        $windRises = array_find_item($result, 'mid', '2013293');
         $this->assertEquals('2013293', $windRises['mid']);
         $this->assertEquals('The Wind Rises', $windRises['name']);
         $this->assertEquals('2013', $windRises['year']);
@@ -211,14 +223,14 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
 //    $this->assertEquals('The 87th Annual Academy Awards', $result[0]['name']);
         $this->assertEquals('2015', $result[0]['year']);
         $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('Himself - Honorary Award Recipient', $result[0]['chname']);
+        $this->assertEquals('Self - Honorary Award Recipient', $result[0]['chname']);
         $this->assertEquals(array(), $result[0]['addons']);
 
         $this->assertEquals('0318251', $result[1]['mid']);
         $this->assertEquals('Troldspejlet', $result[1]['name']);
         $this->assertEquals('2009', $result[1]['year']);
         $this->assertEquals('', $result[1]['chid']);
-        $this->assertEquals('Himself', $result[1]['chname']);
+        $this->assertEquals('Self', $result[1]['chname']);
         $this->assertEquals(array(), $result[1]['addons']);
     }
 
@@ -262,20 +274,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('1', $result['mon']);
         $this->assertEquals('2008', $result['year']);
         $this->assertEquals('Manhattan, New York City, New York, USA', $result['place']);
-        $this->assertEquals('accidental overdose of prescription drugs', $result['cause']);
-    }
-
-    public function test_movies_died_without_cause()
-    {
-        $person = $this->getimdb_person('0662730');
-        $result = $person->died();
-        $this->assertCount(6, $result);
-        $this->assertEquals('19', $result['day']);
-        $this->assertEquals('October', $result['month']);
-        $this->assertEquals('10', $result['mon']);
-        $this->assertEquals('2014', $result['year']);
-        $this->assertEquals('Toronto, Ontario, Canada', $result['place']);
-        $this->assertEquals(null, $result['cause']);
+        $this->assertEquals('accidental overdose', $result['cause']);
     }
 
     public function test_height()
