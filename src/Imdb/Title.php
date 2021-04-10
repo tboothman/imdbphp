@@ -817,10 +817,13 @@ class Title extends MdbBase
         return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes\?|i', $this->getPage("Title"));
     }
 
-    // @TODO do this properly and make this public. Perhaps it could just come from self::movietype() ?
-    protected function isEpisode()
+    /**
+     * Is this title a TV Show episode?
+     * @return false|int
+     */
+    public function isEpisode()
     {
-        return $this->is_serial();
+        return stripos(self::movietype(), 'episode');
     }
 
     /**
