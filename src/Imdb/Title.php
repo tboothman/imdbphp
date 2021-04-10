@@ -2124,7 +2124,7 @@ class Title extends MdbBase
                           'site' => $entry['site'],
                           'url' => $entry['url'],
                           'type' => $entry['type'],
-                          'desc' => $entry['desc']
+                          'desc' => trim($entry['desc'])
                         );
                     } elseif (preg_match('!<a .*href="(?<url>.+?)".*?>(?<site>.*?) - (?<desc>.+)</a>!s',
                       $matches[1][$i], $entry)) {
@@ -2133,11 +2133,11 @@ class Title extends MdbBase
                           'site' => $entry['site'],
                           'url' => $entry['url'],
                           'type' => '',
-                          'desc' => $entry['desc']
+                          'desc' => trim($entry['desc'])
                         );
                     } elseif (preg_match('!<a .*href="(?<url>.+?)".*?>(?<desc>.+)</a>!s', $matches[1][$i], $entry)) {
                         $entry['url'] = $this->convertIMDBtoRealURL($entry['url']);
-                        $res[] = array('site' => '', 'url' => $entry['url'], 'type' => '', 'desc' => $entry['desc']);
+                        $res[] = array('site' => '', 'url' => $entry['url'], 'type' => '', 'desc' => trim($entry['desc']));
                     }
                 }
             }
