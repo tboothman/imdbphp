@@ -1553,6 +1553,36 @@ class Title extends MdbBase
 
     #----------------------------------------------------------------[ Actors ]---
 
+    /*
+    * Get the Stars members for this title
+    * @return empty array OR array Stars (array[0..n] of array[imdb,name])
+     * e.g.
+     * <pre>
+     * array (
+     *  'imdb' => '0000134',
+     *  'name' => 'Robert De Niro', // Actor's name on imdb
+     * )
+     * </pre>
+    */
+    public function actor_stars()
+    {
+        $stars = array();
+        if (empty($this->jsonLD()->actor)) {
+            return $stars;
+        }
+        foreach ($this->jsonLD()->actor as $actor) {
+            $act = array(
+                'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $actor->url),
+                'name' => $actor->name,
+            );
+            if (empty($act['name'])) {
+                continue;
+            }
+            $stars[] = $act;
+        }
+        return $stars;
+    }
+    
     /**
      * Get the actors/cast members for this title
      * @param boolean $short whether to get only the cast listed on the title page, or to get the full cast listing
@@ -3011,5 +3041,4 @@ class Title extends MdbBase
             return $matches[1];
         }
     }
-
 }
