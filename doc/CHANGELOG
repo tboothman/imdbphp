@@ -2,6 +2,14 @@
 History for IMDBPHP
 ====================
 
+v6.5.0 (10.04.2021)
+-------------------
++ Fixed `Title::isEpisode()` returning true for series' and made it public. Thanks @amirsasani #213
++ New method `Title::actor_stars()` to get only the stars of the title rather than all cast members. Thanks @M0H4MM4D0UTIS #211
+! Fix `Title::extReviews()` not returning anything (broken due to html changes on imdb)
+! Remove excess whitespace on `Title::officialSites()`
+! Deprecate spoilers on `Title::trivia()`. They're no longer on IMDb
+
 v6.4.2 (08.11.2020)
 -------------------
 ! Fix Person ID length is always 7 in PersonSearch::results() #201 (Some newer people have 9 digit IDs)
