@@ -1121,12 +1121,11 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
     public function testStars_Cast()
     {
-        $imdb = $this->getImdb('0075314');
+        $imdb = $this->getImdb();
         $stars = $imdb->actor_stars();
-        $castMember = array_find_item($stars, 'imdb', '0000134');
-
-        $this->assertEquals('0000134', $castMember['imdb']);
-        $this->assertEquals('Robert De Niro', $castMember['name']);
+        $castMember = array_find_item($stars, 'imdb', '0000206');
+        $this->assertEquals('0000206', $castMember['imdb']);
+        $this->assertEquals('Keanu Reeves', $castMember['name']);
         $this->assertCount(4, $stars);
     }
 
@@ -1349,8 +1348,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
         $goofs = $imdb->goofs();
         $this->assertInternalType('array', $goofs);
-        $this->assertGreaterThan(135, count($goofs));
-        $this->assertLessThan(146, count($goofs));
+        $this->assertGreaterThan(140, count($goofs));
+        $this->assertLessThan(150, count($goofs));
 
         $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
         $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
