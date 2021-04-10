@@ -819,11 +819,11 @@ class Title extends MdbBase
 
     /**
      * Is this title a TV Show episode?
-     * @return false|int
+     * @return boolean
      */
     public function isEpisode()
     {
-        return stripos(self::movietype(), 'episode');
+        return self::movietype() === self::TV_EPISODE;
     }
 
     /**
