@@ -1487,7 +1487,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $imdb = $this->getImdb();
         $extReviews = $imdb->extReviews();
 
-        $this->assertSame(0, strpos($extReviews[0]['url'], 'https://www.imdb.com/offsite/?page-action=offsite-rogerebert&token='));
+        $this->assertEquals('http://www.rogerebert.com/reviews/the-matrix-1999', $extReviews[0]['url']);
         $this->assertEquals('rogerebert.com [Roger Ebert]', $extReviews[0]['desc']);
     }
 

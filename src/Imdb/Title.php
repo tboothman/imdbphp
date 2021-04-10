@@ -2512,12 +2512,12 @@ class Title extends MdbBase
             $tag_e = strpos($page, '</ul', $tag_s);
             $block = substr($page, $tag_s, $tag_e - $tag_s);
 
-            if (preg_match_all('@href="(.*?)"[^>]*>(.*?)</a>@', $block, $matches)) {
+            if (preg_match_all('@href="(.*?)"[^>]*>([^<]*)</a>@', $block, $matches)) {
                 $mc = count($matches[0]);
                 for ($i = 0; $i < $mc; ++$i) {
                     $this->extreviews[$i] = array(
-                      "url" => 'https://' . $this->imdbsite . $matches[1][$i],
-                      "desc" => $matches[2][$i]
+                      "url" => $matches[1][$i],
+                      "desc" => trim($matches[2][$i])
                     );
                 }
             }
