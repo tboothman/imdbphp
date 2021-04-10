@@ -1148,7 +1148,7 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
     {
         $imdb = $this->getImdb('0306414');
         $credits = $imdb->writing();
-        $this->assertEquals(array('imdb' => '0800108', 'name' => 'David Simon', 'role' => '(creator) (60 episodes, 2002-2008)'), $credits[0]);
+        $this->assertEquals(array('imdb' => '0800108', 'name' => 'David Simon', 'role' => '(created by) (60 episodes, 2002-2008)'), $credits[0]);
     }
 
     public function testWriting()
@@ -1338,8 +1338,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
         $goofs = $imdb->goofs();
         $this->assertInternalType('array', $goofs);
-        $this->assertGreaterThan(135, count($goofs));
-        $this->assertLessThan(145, count($goofs));
+        $this->assertGreaterThan(140, count($goofs));
+        $this->assertLessThan(150, count($goofs));
 
         $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
         $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
@@ -1701,33 +1701,38 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
         $award = $awards['Online Film & Television Association'];
 
-        $this->assertCount(5, $award['entries']);
+        $this->assertCount(6, $award['entries']);
 
-        $firstEntry = $award['entries'][0];
+        // Merges in award from 2021 with the ones from 2000
+        $award2021 = $award['entries'][0];
 
-        $this->assertEquals(2000, $firstEntry['year']);
-        $this->assertEquals(true, $firstEntry['won']);
-        $this->assertEquals('Best Sound Mixing', $firstEntry['category']);
-        $this->assertEquals('OFTA Film Award', $firstEntry['award']);
-        $this->assertCount(4, $firstEntry['people']);
-        $this->assertEquals('John T. Reitz', $firstEntry['people']['0718676']);
-        $this->assertEquals('Gregg Rudloff', $firstEntry['people']['0748832']);
-        $this->assertEquals('David E. Campbell', $firstEntry['people']['0132372']);
-        $this->assertEquals('David Lee Fein', $firstEntry['people']['0270646']);
-        $this->assertEquals('Won', $firstEntry['outcome']);
+        $this->assertEquals(2021, $award2021['year']);
 
-        $secondEntry = $award['entries'][1];
+        $firstEntry2000 = $award['entries'][1];
 
-        $this->assertEquals(2000, $secondEntry['year']);
-        $this->assertEquals(true, $secondEntry['won']);
-        $this->assertEquals('Best Visual Effects', $secondEntry['category']);
-        $this->assertEquals('OFTA Film Award', $secondEntry['award']);
-        $this->assertCount(4, $secondEntry['people']);
-        $this->assertEquals('John Gaeta', $secondEntry['people']['0300665']);
-        $this->assertEquals('Janek Sirrs', $secondEntry['people']['0802938']);
-        $this->assertEquals('Steve Courtley', $secondEntry['people']['0183871']);
-        $this->assertEquals('Jon Thum', $secondEntry['people']['0862039']);
-        $this->assertEquals('Won', $secondEntry['outcome']);
+        $this->assertEquals(2000, $firstEntry2000['year']);
+        $this->assertEquals(true, $firstEntry2000['won']);
+        $this->assertEquals('Best Sound Mixing', $firstEntry2000['category']);
+        $this->assertEquals('OFTA Film Award', $firstEntry2000['award']);
+        $this->assertCount(4, $firstEntry2000['people']);
+        $this->assertEquals('John T. Reitz', $firstEntry2000['people']['0718676']);
+        $this->assertEquals('Gregg Rudloff', $firstEntry2000['people']['0748832']);
+        $this->assertEquals('David E. Campbell', $firstEntry2000['people']['0132372']);
+        $this->assertEquals('David Lee Fein', $firstEntry2000['people']['0270646']);
+        $this->assertEquals('Won', $firstEntry2000['outcome']);
+
+        $secondEntry2000 = $award['entries'][2];
+
+        $this->assertEquals(2000, $secondEntry2000['year']);
+        $this->assertEquals(true, $secondEntry2000['won']);
+        $this->assertEquals('Best Visual Effects', $secondEntry2000['category']);
+        $this->assertEquals('OFTA Film Award', $secondEntry2000['award']);
+        $this->assertCount(4, $secondEntry2000['people']);
+        $this->assertEquals('John Gaeta', $secondEntry2000['people']['0300665']);
+        $this->assertEquals('Janek Sirrs', $secondEntry2000['people']['0802938']);
+        $this->assertEquals('Steve Courtley', $secondEntry2000['people']['0183871']);
+        $this->assertEquals('Jon Thum', $secondEntry2000['people']['0862039']);
+        $this->assertEquals('Won', $secondEntry2000['outcome']);
     }
 
     public function testAwards_correctly_parses_an_entry_with_no_people()
@@ -1737,9 +1742,9 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
 
         $award = $awards['Online Film & Television Association'];
 
-        $this->assertCount(5, $award['entries']);
+        $this->assertCount(6, $award['entries']);
 
-        $fifthEntry = $award['entries'][4];
+        $fifthEntry = $award['entries'][5];
 
         $this->assertEquals(2000, $fifthEntry['year']);
         $this->assertEquals(false, $fifthEntry['won']);

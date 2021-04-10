@@ -217,21 +217,24 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_archive();
         $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
+        $this->assertGreaterThanOrEqual(3, count($result));
+        $this->assertLessThan(5, count($result));
 
-        $this->assertEquals('3674910', $result[0]['mid']);
-//    $this->assertEquals('The 87th Annual Academy Awards', $result[0]['name']);
-        $this->assertEquals('2015', $result[0]['year']);
-        $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('Self - Honorary Award Recipient', $result[0]['chname']);
-        $this->assertEquals(array(), $result[0]['addons']);
+        $oscars = array_find_item($result, 'mid', '3674910');
+        $this->assertEquals('3674910', $oscars['mid']);
+        $this->assertEquals('The Oscars', $oscars['name']);
+        $this->assertEquals('2015', $oscars['year']);
+        $this->assertEquals('', $oscars['chid']);
+        $this->assertEquals('Self - Honorary Award Recipient', $oscars['chname']);
+        $this->assertEquals(array(), $oscars['addons']);
 
-        $this->assertEquals('0318251', $result[1]['mid']);
-        $this->assertEquals('Troldspejlet', $result[1]['name']);
-        $this->assertEquals('2009', $result[1]['year']);
-        $this->assertEquals('', $result[1]['chid']);
-        $this->assertEquals('Self', $result[1]['chname']);
-        $this->assertEquals(array(), $result[1]['addons']);
+        $troldspejlet = array_find_item($result, 'mid', '0318251');
+        $this->assertEquals('0318251',$troldspejlet['mid']);
+        $this->assertEquals('Troldspejlet', $troldspejlet['name']);
+        $this->assertEquals('2009', $troldspejlet['year']);
+        $this->assertEquals('', $troldspejlet['chid']);
+        $this->assertEquals('Self', $troldspejlet['chname']);
+        $this->assertEquals(array(), $troldspejlet['addons']);
     }
 
     public function test_birthname()
