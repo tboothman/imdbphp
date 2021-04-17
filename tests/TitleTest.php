@@ -36,6 +36,8 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
      *
      * 7618100 = Untitled Star Wars Trilogy: Episode III ... has almost no information
      *
+     * 2832384 = Jochem Myjer: Adéhadé (Only one actor)
+     *
      */
     public function testConstruct_from_ini_constructed_config()
     {
@@ -1127,6 +1129,16 @@ class imdb_titleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('0000206', $castMember['imdb']);
         $this->assertEquals('Keanu Reeves', $castMember['name']);
         $this->assertCount(4, $stars);
+    }
+
+    public function testStars_Cast_one_cast()
+    {
+        $imdb = $this->getImdb('2832384');
+        $stars = $imdb->actor_stars();
+        $this->assertCount(1, $stars);
+        $castMember = $stars[0];
+        $this->assertEquals('2926122', $castMember['imdb']);
+        $this->assertEquals('Jochem Myjer', $castMember['name']);
     }
 
     // @TODO Why keep the brackets?
