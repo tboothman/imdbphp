@@ -3,20 +3,15 @@
 use Imdb\Config;
 use Imdb\TitleSearchAdvanced;
 
-class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
+class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
 {
-    public function test_constructor()
-    {
-        $this->getTitleSearchAdvanced();
-    }
-
     public function test_by_language_year()
     {
         $search = $this->getTitleSearchAdvanced();
         $search->setLanguages(array('en'));
         $search->setYear(2000);
         $list = $search->search();
-        $this->assertInternalType('array', $list);
+        $this->assertIsArray($list);
         $this->assertCount(50, $list);
     }
 
@@ -25,7 +20,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
         $search = $this->getTitleSearchAdvanced();
         $search->setTitleTypes(array(TitleSearchAdvanced::TV_EPISODE));
         $list = $search->search();
-        $this->assertInternalType('array', $list);
+        $this->assertIsArray($list);
         $this->assertCount(50, $list);
 
         foreach ($list as $result) {
@@ -49,12 +44,12 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
         $search->setTitleTypes(array(TitleSearchAdvanced::TV_EPISODE));
         $list = $search->search();
 
-        $this->assertInternalType('array', $list);
+        $this->assertIsArray($list);
         $this->assertCount(50, $list);
 
         $trash = current(array_filter($list, function ($item) { return $item['episode_imdbid'] == '0579540'; }));
 
-        $this->assertInternalType('array', $trash);
+        $this->assertIsArray($trash);
         $this->assertEquals('0303461', $trash['imdbid']);
         $this->assertEquals('Firefly', $trash['title']);
         $this->assertEquals('2002', $trash['year']);
@@ -65,7 +60,7 @@ class imdb_titlesearchadvancedTest extends PHPUnit_Framework_TestCase
 
         $theMessage = current(array_filter($list, function ($item) { return $item['episode_imdbid'] == '0579538'; }));
 
-        $this->assertInternalType('array', $theMessage);
+        $this->assertIsArray($theMessage);
         $this->assertEquals('0303461', $theMessage['imdbid']);
         $this->assertEquals('Firefly', $theMessage['title']);
         $this->assertEquals('2002', $theMessage['year']);

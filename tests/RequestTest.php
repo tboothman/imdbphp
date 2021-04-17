@@ -2,7 +2,7 @@
 
 use \Imdb\Request;
 
-class imdb_requestTest extends PHPUnit_Framework_TestCase
+class RequestTest extends PHPUnit\Framework\TestCase
 {
     public function test_get()
     {

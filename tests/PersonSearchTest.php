@@ -4,14 +4,14 @@ use Imdb\Config;
 use Imdb\Person;
 use Imdb\PersonSearch;
 
-class imdb_person_searchTest extends PHPUnit_Framework_TestCase
+class PersonSearchTest extends PHPUnit\Framework\TestCase
 {
     public function test_searching_for_a_specific_actor_returns_him()
     {
         $search = $this->getimdbpersonsearch();
         $results = $search->search('Forest Whitaker');
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
         //print_r($results);
         /* @var $firstResult \Imdb\Person */
         $firstResult = $results[0];
