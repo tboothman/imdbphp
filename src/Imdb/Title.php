@@ -1570,7 +1570,11 @@ class Title extends MdbBase
         if (empty($this->jsonLD()->actor)) {
             return $stars;
         }
-        foreach ($this->jsonLD()->actor as $actor) {
+        $actors =  $this->jsonLD()->actor;
+        if(is_object($this->jsonLD()->actor) && !is_array($this->jsonLD()->actor) && isset($this->jsonLD()->actor->name)){
+            $actors = array($this->jsonLD()->actor);
+        }
+        foreach ($actors as $actor) {
             $act = array(
                 'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $actor->url),
                 'name' => $actor->name,
