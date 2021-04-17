@@ -1898,7 +1898,7 @@ class Title extends MdbBase
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,url])
      * @see IMDB page /episodes
      * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
      */
@@ -1930,12 +1930,24 @@ class Title extends MdbBase
                     if (empty($page)) {
                         continue;
                     } // no such page
+
+                    // fetch episodes images
+                    preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
+                    $urlIndex = 0;
+
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                       . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                       . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                       . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
+                        //Fetch episodes image url
+                        if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
+                            $url = $foundUrl[2];
+                        } else {
+                            $url = "";
+                        }
+
                         $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
                         $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
                           '', $plot);
@@ -1944,10 +1956,12 @@ class Title extends MdbBase
                           'imdbid' => $ep['imdbid'],
                           'title' => trim($ep['title']),
                           'airdate' => $ep['airdate'],
-                          'plot' => $plot,
+                          'plot' => strip_tags($plot),
                           'season' => $s,
-                          'episode' => $ep['episodeNumber']
+                          'episode' => $ep['episodeNumber'],
+                          'url' => $url
                         );
+                        $urlIndex = $urlIndex + 1;
 
                         if ($ep['episodeNumber'] == -1) {
                             $this->season_episodes[$s][] = $episode;
