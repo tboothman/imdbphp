@@ -1064,6 +1064,9 @@ class Person extends MdbBase
             case "Publicity"   :
                 $urlname = "/publicity";
                 break;
+            case "Awards":
+                $urlname = "/awards";
+                break;
             default            :
                 throw new \Exception("Could not find URL for page $pageName");
         }
@@ -1084,6 +1087,85 @@ class Person extends MdbBase
         $this->page[$page] = parent::getPage($page);
 
         return $this->page[$page];
+    }
+
+#========================================================[ /awards page ]===
+  #--------------------------------------------------------------[ Awards ]---
+  /** Get the complete awards for the person
+   * @method awards
+   * @param optional boolean compat whether stay backward compatible to the original format of Qvist. Default: TRUE
+   * @return array awards array[festivalName]['entries'][0..n] of array[year,won,category,award,pictures[],comment]
+   * @see IMDB page /awards
+   * @brief array[festivalName] is array[name,entries] - where name is a string,
+   *        and entries is above described array. people is an array of imdbid=>name.
+   *        comment is currently empty, and just kept for backward compatibility,
+   *        unless you passed FALSE for 'compat' – then comment is omitted, as
+   *        well as the "intermediate" 'entries' level.
+   */
+  public function awards($compat=TRUE) {
+    if (empty($this->awards)) {
+	  $this->getPage ("Awards");
+      $row_s = strpos($this->page["Awards"],'<h1 class="header">Awards</h1>');
+      $row_e = strpos($this->page["Awards"],'<div class="article" id="see_also"',$row_s);
+      $block = substr($this->page["Awards"],$row_s,$row_e - $row_s);
+      preg_match_all('!<h3>\s*(?<festival>.+?)</h3>\s*<table [^>]+>(?<table>.+?)</table>!ims',$block,$matches);
+      $acount = count($matches[0]);
+      for ( $i=0,$rec=0; $i < $acount; $i++) {
+        $festival = $matches['festival'][$i];
+        //Let's try a different approach and proceed one row at a time
+        $this_table=$matches['table'][$i];
+        preg_match_all('!<tr>(?<fila>.*?)</tr>!ims',$this_table,$rows);
+        $num_rows=count($rows[0]);
+        $row_year='X';//Each row will have a year, let's initialize it
+        $row_outcome='Y';
+        $row_data='Z';
+        $row_award='K';
+        for($c_row=0;$c_row<$num_rows;++$c_row){
+        	$row=$rows['fila'][$c_row];
+        	preg_match_all('!<td class="(?<class>.+?)"(?<attrs>[^>]*)>\s*(?<data>.+?)\s*</td>!ims',$row,$cells);
+        	//Now we hace $cells with 'class', 'attrs' and 'data'
+        	//In some cases we'll have a rowspan which is important
+        	$ccells=count($cells['class']);
+        	for($c_cell=0;$c_cell<$ccells;++$c_cell){
+        		$cell_class=$cells['class'][$c_cell];
+        		$cell_attrs=$cells['attrs'][$c_cell];
+        		$cell_data=$cells['data'][$c_cell];
+        		//Now we evaluate the class of the cell to proceed
+        		switch($cell_class) {
+        			case "award_year":
+        				//We found the year, let's set the year for the whole row
+        				preg_match('!<a .*>\s*(?<year>\d{4})\s*</a>!ims',$cell_data,$row_year_a);
+        				$row_year=$row_year_a['year'];
+        				break;
+        			case "award_outcome":
+        				$have_title = TRUE; $have_desc = FALSE;
+        				preg_match('!(?<outcome>.+?)<br\s*/>\s*<span class="award_category">\s*(?<award>.+?)</span>!ims',$cell_data,$data);
+        				$row_outcome = trim(strip_tags($data['outcome']));
+        				$row_award = trim($data['award']);
+        				break;
+        			case "award_description":
+        				$desc = trim($cell_data);
+        				preg_match_all( '!<a href\="/title/tt(?<id>\d{7})\?ref_=nmawd_awd_\d{1,2}"\s*>(?<name>.*?)</a>!ims', $desc, $data );
+        				$pictures = isset( $data['id'][0] )?array_combine( $data['id'], $data['name'] ):array();
+        				preg_match('!(.+?)<br!ims',$desc,$data) ? $cat=$data[1] : $cat='';
+        				if (substr($cat,0,3)=='<a ') $cat = '';
+        				break;
+        		}
+        	}
+        	$row_outcome == "Winner" ? $won = TRUE : $won = FALSE;
+        	if ($compat) {
+        		$this->awards[$festival]['entries'][] = array (
+        			'year'=>$row_year, 'won'=>$won, 'category'=>$cat, 'award'=>$row_award, 'pictures'=>$pictures, 'comment'=>'', 'outcome'=>$row_outcome
+        		);
+        	} else {
+        		$this->awards[$festival][] = array (
+        			'year'=>$row_year, 'won'=>$won, 'category'=>$cat, 'award'=>$row_award, 'pictures'=>$pictures, 'outcome'=>$row_outcome
+        		);
+        	}
+        }
+      }
+    }
+    return isset($this->awards)?$this->awards:'';
     }
 
 }
