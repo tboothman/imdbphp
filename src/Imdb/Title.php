@@ -993,8 +993,11 @@ class Title extends MdbBase
         if (isset($this->jsonLD()->image)) {
             $this->main_poster = $this->jsonLD()->image;
         }
-        preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match);
-        if (!empty($match[1])) {
+        if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
+            && !empty($match[1])) {
+            $this->main_poster_thumb = $match[1];
+        } elseif (preg_match('#data-testid="hero-media__poster">.*?<img .*?class="ipc-image".*src="(.*?\.jpg)"#im', $this->getPage("Title"), $match)
+            && !empty($match[1])){
             $this->main_poster_thumb = $match[1];
         }
     }
