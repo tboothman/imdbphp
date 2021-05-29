@@ -3048,6 +3048,8 @@ class Title extends MdbBase
         $page = $this->getPage('Title');
         if (preg_match('#<meta property="pageId" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
+        } elseif (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
+            return $matches[1];
         }
     }
 }
