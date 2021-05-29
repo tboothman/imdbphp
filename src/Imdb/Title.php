@@ -946,7 +946,7 @@ class Title extends MdbBase
     {
         if ($this->main_plotoutline == "") {
             if (isset($this->jsonLD()->description)) {
-                $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description);
+                $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description, ENT_QUOTES| ENT_HTML5);
             } else {
                 $page = $this->getPage("Title");
                 if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
@@ -975,7 +975,7 @@ class Title extends MdbBase
             if (@preg_match('~Storyline</h2>.*?<div.*?<p>.*?<span>(.*?)</span>.*?</p>~ims', $page, $match)) {
                 $this->main_storyline = trim($match[1]);
             } elseif (@preg_match('#data-testid="storyline-plot-summary">(.*?)<div class="ipc-overflowText-overlay">#ims', $page, $match)) {
-                $this->main_storyline = trim(strip_tags(preg_replace('#<span style="display:inline-block"(.*?)</span>#ims', '', $match[1])));
+                $this->main_storyline = htmlspecialchars_decode(trim(strip_tags(preg_replace('#<span style="display:inline-block"(.*?)</span>#ims', '', $match[1]))), ENT_QUOTES| ENT_HTML5);
             }
             
         }
