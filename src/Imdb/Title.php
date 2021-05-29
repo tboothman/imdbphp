@@ -945,12 +945,17 @@ class Title extends MdbBase
     public function plotoutline($fallback = false)
     {
         if ($this->main_plotoutline == "") {
-            $page = $this->getPage("Title");
-            if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
-                $this->main_plotoutline = trim($match[1]);
-            } elseif ($fallback) {
-                $this->main_plotoutline = $this->storyline();
+            if (isset($this->jsonLD()->description)) {
+                $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description);
+            } else {
+                $page = $this->getPage("Title");
+                if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
+                    $this->main_plotoutline = trim($match[1]);
+                } elseif ($fallback) {
+                    $this->main_plotoutline = $this->storyline();
+                }
             }
+            
         }
         $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7,8}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i',
           '', $this->main_plotoutline);
@@ -969,7 +974,10 @@ class Title extends MdbBase
             $page = $this->getPage("Title");
             if (@preg_match('~Storyline</h2>.*?<div.*?<p>.*?<span>(.*?)</span>.*?</p>~ims', $page, $match)) {
                 $this->main_storyline = trim($match[1]);
+            } elseif (@preg_match('#data-testid="storyline-plot-summary">(.*?)<div class="ipc-overflowText-overlay">#ims', $page, $match)) {
+                $this->main_storyline = trim(strip_tags(preg_replace('#<span style="display:inline-block"(.*?)</span>#ims', '', $match[1])));
             }
+            
         }
         return $this->main_storyline;
     }
