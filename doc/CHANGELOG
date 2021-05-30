@@ -2,6 +2,9 @@
 History for IMDBPHP
 ====================
 
+v6.5.1 (30.05.2021)
+! Force the old site layout to keep the library working
+
 v6.5.0 (10.04.2021)
 -------------------
 + Fixed `Title::isEpisode()` returning true for series' and made it public. Thanks @amirsasani #213
