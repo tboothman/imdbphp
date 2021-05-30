@@ -720,7 +720,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testCountry()
     {
         $imdb = $this->getImdb();
-        $this->assertEquals(array('USA'), $imdb->country());
+        $this->assertEquals(array('United States', 'Australia'), $imdb->country());
     }
 
 //    public function testCountry_nocountries()

@@ -1140,10 +1140,8 @@ class Title extends MdbBase
     public function country()
     {
         if (empty($this->countries)) {
-            if (preg_match_all('!/search/title\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"),
+            if (preg_match_all('!/search/title\/?\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"),
               $matches)) {
-                $this->countries = $matches[1];
-            } elseif (preg_match_all('!/search/title\/\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"), $matches)) {
                 $this->countries = $matches[1];
             }
         }
