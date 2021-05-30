@@ -66,6 +66,8 @@ class Request
         if ($config->ip_address) {
             $this->addHeaderLine('X-Forwarded-For', $config->ip_address);
         }
+        // Disable the new site layout
+        $this->addHeaderLine('Cookie', 'beta-control=""');
     }
 
     public function addHeaderLine($name, $value)
