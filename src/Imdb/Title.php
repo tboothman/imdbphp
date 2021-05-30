@@ -3055,4 +3055,13 @@ class Title extends MdbBase
             return $matches[1];
         }
     }
+
+    public function detect_new_version_imdb()
+    {
+        $page = $this->getPage('Title');
+        if (stripos($page, 'xmlns:og="http://opengraphprotocol.org/schema/"') !== false) {
+            return true;
+        }
+        return false;
+    }
 }
