@@ -1632,6 +1632,59 @@ class Title extends MdbBase
         if (empty($page)) {
             return array(); // no such page
         }
+        if ($short && $this->detect_new_version_imdb()) {
+            $xpath = $this->getXpathPage("Title");
+            $nodes = $xpath->query("//section[@data-testid='title-cast']/div[2]/div[@data-testid='title-cast-item']");
+            foreach ($nodes as $i => $node) {
+                $dir = array(
+                    'imdb' => null,
+                    'name' => null,
+                    'name_alias' => null,
+                    'credited' => true,
+                    'role' => null,
+                    'role_episodes' => null,
+                    'role_start_year' => null,
+                    'role_end_year' => null,
+                    'role_other' => array(),
+                    'thumb' => null,
+                    'photo' => null
+                  );
+                $get_name_and_id = $xpath->query(".//a[@data-testid='title-cast-item__actor']", $node)->item(0);
+                $dir['imdb'] = preg_replace('/\/?name\/nm(\d+)[\/\?]+.*?$/is', '$1', $get_name_and_id->getAttribute("href"));
+                $dir["name"] = trim($get_name_and_id->nodeValue);
+                if (empty($dir['name'])) {
+                    continue;
+                }
+                $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
+                if($get_role != null){
+                    $dir["role"] = $get_role->item(0)->nodeValue;
+                }
+
+                $get_img = $xpath->query(".//img[@class='ipc-image']", $node);
+                if($get_img != null && $get_img->item(0)->getAttribute("src") != null){
+                    $dir["thumb"] = trim($get_img->item(0)->getAttribute("src"));
+                    if (strpos($dir["thumb"], '._V1')) {
+                        $dir["photo"] = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $dir["thumb"]);
+                    }
+                } else {
+                    $dir["thumb"] = $dir["photo"] = "";
+                }
+                $get_role_episodes = $xpath->query(".//a[@data-testid='title-cast-item__eps-toggle']/span[1]/span[@data-testid='title-cast-item__episodes']", $node);
+                $get_role_start_year = $xpath->query(".//a[@data-testid='title-cast-item__eps-toggle']/span[1]/span[@data-testid='title-cast-item__tenure']", $node);
+                if($get_role_episodes->item(0) != null){
+                    $dir["role_episodes"] = intval(trim(str_ireplace('episodes', '', $get_role_episodes->item(0)->nodeValue)));
+                }
+                if($get_role_start_year->item(0) != null){
+                    $year = explode('–', utf8_decode(trim($get_role_start_year->item(0)->nodeValue)));
+                    $dir["role_start_year"] = intval($year[0]);
+                    $dir["role_end_year"] = (isset($year[1]) ? intval($year[1]) : null);
+                }
+    
+                $this->credits_cast[] = $dir;
+            }
+
+            return $this->credits_cast;
+        }
 
         $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
         foreach ($cast_rows as $cast_row) {
