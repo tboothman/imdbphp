@@ -3031,6 +3031,22 @@ class Title extends MdbBase
         return $this->page[$page];
     }
 
+    protected function getXpathPage($page = null)
+    {
+        if (!empty($this->xpathPage[$page])) {
+            return $this->xpathPage[$page];
+        }
+        $source = $this->getPage($page);
+        libxml_use_internal_errors(true);
+        /* Createa a new DomDocument object */
+        $dom = new \DomDocument;
+        /* Load the HTML */
+        $dom->loadHTML($source);
+        /* Create a new XPath object */
+        $this->xpathPage[$page] = new \DomXPath($dom);
+        return $this->xpathPage[$page];
+    }
+
     protected function jsonLD()
     {
         if ($this->jsonLD) {

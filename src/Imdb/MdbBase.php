@@ -71,6 +71,8 @@ class MdbBase extends Config
 
     protected $page = array();
 
+    protected $xpathPage = array();
+
     /**
      * @var string 7 digit identifier for this person
      */
