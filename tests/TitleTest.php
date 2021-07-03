@@ -8,6 +8,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     /**
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
+     * 1375666 = Inception (multiple genres)
      * 0087544 = Nausicaa (foreign, nonascii)
      * 0078788 = Apocalypse Now (Two cuts, multiple languages)
      * 0108052 = Schindler's List (multiple colours)
@@ -289,8 +290,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $runtimes = $imdb->runtimes();
         $this->assertEquals(117, $runtimes[0]['time']);
         $this->assertEquals(95, $runtimes[1]['time']);
-        $this->assertEquals(1985, $runtimes[1]['annotations'][0]);
-        $this->assertEquals('edited', $runtimes[1]['annotations'][1]);
+        $this->assertEquals('edited', $runtimes[1]['annotations'][0]);
+        $this->assertEquals(1985, $runtimes[1]['annotations'][1]);
+        $this->assertEquals('USA', $runtimes[1]['annotations'][2]);
     }
 
     // Apocalypse now "147 min | 196 min (Redux)"
@@ -496,10 +498,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
     // Primary match is to the genre listing just under the title, which this tests
     public function testGenres_multiple()
     {
-        $imdb = $this->getImdb();
+        $imdb = $this->getImdb('0087544');
         $genres = $imdb->genres();
-        $this->assertTrue(in_array('Action', $genres));
+        $this->assertTrue(in_array('Animation', $genres));
         $this->assertTrue(in_array('Sci-Fi', $genres));
+        $this->assertTrue(count($genres) == 4);
     }
 
 //    public function testGenres_none()
@@ -694,7 +697,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb();
         // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX182_CR0,0,182,268_AL_.jpg', $imdb->photo(true));
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_QL75_UX190_CR0,2,190,281_.jpg', $imdb->photo(true));
     }
 
     public function testSavephoto()
@@ -778,11 +781,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb();
         $sound = $imdb->sound();
         $this->assertIsArray($sound);
-        $this->assertCount(4, $sound);
-        $this->assertEquals('DTS', $sound[0]);
-        $this->assertEquals('Dolby Digital', $sound[1]);
-        $this->assertEquals('SDDS', $sound[2]);
-        $this->assertEquals('Dolby Atmos', $sound[3]);
+        $this->assertCount(3, $sound);
+        $this->assertEquals('Dolby Digital', $sound[0]);
+        $this->assertEquals('SDDS', $sound[1]);
+        $this->assertEquals('Dolby Atmos', $sound[2]);
     }
 
     public function testSound_one_type()

@@ -111,6 +111,7 @@ class Title extends MdbBase
     protected $episodeSeason = null;
     protected $episodeEpisode = null;
     protected $jsonLD = null;
+    protected $XmlNextJson = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -419,11 +420,11 @@ class Title extends MdbBase
             $this->movieruntimes = array();
             $rt = $this->runtime_all();
             foreach (preg_split('!(\||<br>)!', strip_tags($rt, '<br>')) as $runtimestring) {
-                if (preg_match_all("/(\d+\s+hr\s+\d+\s+min)?\((\d+)\s+min\)|(\d+)\s+min/", $runtimestring, $matches,
+                if (preg_match_all('/(\d+\s+hr\s+\d+\s+min)? ?\((\d+)\s+min\)|(\d+)\s+min/', trim($runtimestring), $matches,
                     PREG_SET_ORDER, 0)) {
-                    $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][3]) ? $matches[0][3] : 0);
+                    $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][2]) ? $matches[0][2] : 0);
                     $annotations = array();
-                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", $runtimestring, $matches)) {
+                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", trim($runtimestring), $matches)) {
                         $annotations = $matches[1];
                     }
                     $this->movieruntimes[] = array(
@@ -448,9 +449,11 @@ class Title extends MdbBase
     public function aspect_ratio()
     {
         if (empty($this->aspectratio)) {
-            $page = $this->getPage("Title");
-            if (preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s+</div>!ims', $page, $match)) {
-                $this->aspectratio = $match[1];
+
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//li[@data-testid='title-techspec_aspectratio']//span[@class='ipc-metadata-list-item__list-content-item']");
+            if($extract && $extract->item(0) != null){
+                $this->aspectratio = trim($extract->item(0)->nodeValue);
             }
         }
         return $this->aspectratio;
@@ -484,8 +487,10 @@ class Title extends MdbBase
     public function metacriticRating()
     {
         $page = $this->getPage('Title');
-        if (preg_match('!"metacriticScore.+>\n.+?(\d+)!im', $page, $match)) {
-            return (int)$match[1];
+        $xpath = $this->getXpathPage("Title");
+        $extract = $xpath->query("//span[@class='score-meta']");
+        if($extract && $extract->item(0) != null){
+            return intval(trim($extract->item(0)->nodeValue));
         }
         return null;
     }
@@ -559,38 +564,50 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes])
+     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes,type,originaltitle,img,runtime,certificate])
+     * sample type result: tvMiniSeries - tvSeries - movie
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
         if (empty($this->movierecommendations)) {
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($this->getPage("Title"));
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
+            $xpath = $this->XmlNextJson()->xpath('//moreLikeThisTitles');
+            if($xpath && isset($xpath[0]->edges->e)){
+                foreach ($xpath[0]->edges->e as $record){
+                    $movie = array();
+                    $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
+                    $movie['title'] = trim($record->node->titleText->text);
+                    $movie['originaltitle'] = trim($record->node->originalTitleText->text);
+                    $movie['img'] = trim($record->node->primaryImage->url);
+                    $movie['type'] = trim($record->node->titleType->id);
+                    $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
+                    $movie['votes'] = trim($record->node->ratingsSummary->voteCount);
+                    $movie['runtime'] = trim($record->node->runtime->seconds);
+                    $movie['certificate'] = trim($record->node->certificate->rating); //maybe return 'Not Rated'
+                    $movie['year'] = trim($record->node->releaseYear->year);
+                    $movie['endyear'] = trim($record->node->releaseYear->endYear);
+                    if(empty($movie['rating'])){
+                        $movie['rating'] = -1;
+                    }
+                    $this->movierecommendations[] = $movie;
+                }
+            }
+        }
+        if (empty($this->movierecommendations)) {
+            $xp = $this->getXpathPage("Title");
+            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
             /** @var \DOMElement $cell */
             foreach ($cells as $cell) {
-                if (preg_match('!tt(\d+)!', $cell->getElementsByTagName('a')->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
+                $movie = array();
+                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
+                if (!empty($get_link_and_name) && preg_match('!tt(\d+)!', $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
+                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
                     $movie['imdbid'] = $ref[1];
-                    $span = $xp->query($cell->getNodePath() . '//span[@class="nobr"]')->item(0)->nodeValue;
-                    $years = preg_replace('/[^0-9]/', '', $span);
-                    if (strlen($years) > 4) {
-                        $movie['year'] = substr($years, 0, 4);
-                        $movie['endyear'] = substr($years, 4);
-                    } else {
-                        $movie['year'] = $years;
-                        $movie['endyear'] = "";
-                    }
-                    if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s.,]+)/iu',
-                        $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
-                        $rating)) {
-                        $movie['rating'] = str_replace(',', '.', $rating[1]);
-                        $movie['votes'] = preg_replace('/[^0-9]/', '', $rating[2]);
+                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
+                    if (!empty($get_rating)) {
+                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
                     } else {
                         $movie['rating'] = -1;
-                        $movie['votes'] = -1;
                     }
                     $this->movierecommendations[] = $movie;
                 }
@@ -704,6 +721,18 @@ class Title extends MdbBase
     public function genres()
     {
         if (empty($this->moviegenres)) {
+            $xpath = $this->getXpathPage("Title");
+            $extract_genres = $xpath->query("//li[@data-testid='storyline-genres']//li[@class='ipc-inline-list__item']/a");
+            $genres = array();
+            foreach($extract_genres as $genre){
+                if(!empty($genre->nodeValue)){
+                    $genres[] = trim($genre->nodeValue);
+                }
+            }
+            if(count($genres) > 0)
+                $this->moviegenres = $genres;
+        }
+        if (empty($this->moviegenres)) {
             $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
             if (!is_array($genres)) {
                 $genres = (array)$genres;
@@ -732,7 +761,7 @@ class Title extends MdbBase
     {
         if (empty($this->moviecolors)) {
             $this->getPage("Title");
-            if (preg_match_all("|/search/title\?colors=[^>]+?>\s?(.*?)</a|", $this->page["Title"], $matches)) {
+            if (preg_match_all("|/search/title\/?\?colors=[^>]+?>\s?(.*?)</a|", $this->page["Title"], $matches)) {
                 $this->moviecolors = $matches[1];
             }
         }
@@ -771,9 +800,10 @@ class Title extends MdbBase
     public function tagline()
     {
         if ($this->main_tagline == "") {
-            $this->getPage("Title");
-            if (@preg_match('!Taglines:</h4>\s*(.*?)\s*<!ims', $this->page["Title"], $match)) {
-                $this->main_tagline = trim($match[1]);
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//li[@data-testid='storyline-taglines']//span[@class='ipc-metadata-list-item__list-content-item']");
+            if($extract && $extract->item(0) != null){
+                $this->main_tagline = trim($extract->item(0)->nodeValue);
             }
         }
         return $this->main_tagline;
@@ -788,16 +818,13 @@ class Title extends MdbBase
     public function seasons()
     {
         if ($this->seasoncount == -1) {
-            $this->getPage("Title");
-            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season=\d+.*?"\s*>(\d+)</a>|Ui', $this->page["Title"],
-                $matches)) {
-                $this->seasoncount = $matches[1][0];
-            } else {
-                $this->seasoncount = 0;
-            }
-            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season\=unknown"\s*>unknown</a>|Ui',
-                $this->page["Title"], $matches)) {
-                $this->seasoncount += count($matches[0]);
+            $xpath = $this->getXpathPage("Title");
+            $dom_xpath_result = $xpath->query('//select[@id="browse-episodes-season"]//option');
+            $this->seasoncount = 0;
+            foreach($dom_xpath_result as $xnode){
+                if(!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount){
+                    $this->seasoncount = intval($xnode->getAttribute('value'));
+                }
             }
         }
         return $this->seasoncount;
@@ -843,10 +870,11 @@ class Title extends MdbBase
     private function populateEpisodeSeasonEpisode()
     {
         if (!isset($this->episodeEpisode) || !isset($this->episodeSeason)) {
-            if (preg_match("@<div class=\"bp_heading\">Season (\d+) <span class=\"ghost\">\|</span> Episode (\d+)</div>@",
-                $this->getPage("Title"), $matches)) {
-                $this->episodeSeason = (int)$matches[1];
-                $this->episodeEpisode = (int)$matches[2];
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//ul[@data-testid='hero-subnav-bar-season-episode-numbers-section']//span");
+            if($extract && $extract->item(0) != null && $extract->item(1) != null){
+                $this->episodeSeason = intval(str_ireplace('S', '', $extract->item(0)->nodeValue));
+                $this->episodeEpisode = intval(str_ireplace('E', '', $extract->item(1)->nodeValue));
             } else {
                 $this->episodeSeason = 0;
                 $this->episodeEpisode = 0;
@@ -920,12 +948,11 @@ class Title extends MdbBase
         if (!$this->isEpisode()) {
             return array();
         }
-        $seriesRegex = '!<div class="titleParent">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7,8})[^"]+"\s*title="(?<seriestitle>[^"]+)"!ims';
-
-        if (preg_match($seriesRegex, $this->getPage("Title"), $match)) {
+        $query = $this->XmlNextJson()->xpath("//series/series/titleText/parent::*/parent::*");
+        if(!empty($query) && isset($query[0])){
             return array(
-                "imdbid" => $match['seriesimdbid'],
-                "seriestitle" => $match['seriestitle'],
+                "imdbid" => str_ireplace('tt', '', trim(trim($query[0]->series->id))),
+                "seriestitle" => trim(trim($query[0]->series->titleText->text)),
                 "episodetitle" => $this->episodeTitle(),
                 "season" => $this->episodeSeason(),
                 "episode" => $this->episodeEpisode(),
@@ -999,10 +1026,12 @@ class Title extends MdbBase
         if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
             && !empty($match[1])) {
             $this->main_poster_thumb = $match[1];
-        } elseif (preg_match('#data-testid="hero-media__poster">.*?<img .*?class="ipc-image".*src="(.*?\.jpg)"#im',
-                $this->getPage("Title"), $match)
-            && !empty($match[1])) {
-            $this->main_poster_thumb = $match[1];
+        } else {
+            $xpath = $this->getXpathPage("Title");
+            $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
+            if(!empty($thumb) && $thumb->item(0) != null){
+                $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
+            }
         }
     }
 
@@ -1214,7 +1243,7 @@ class Title extends MdbBase
     {
         if (empty($this->sound)) {
             $this->getPage("Title");
-            if (preg_match_all("|/search/title\?sound_mixes=[^>]+>\s*(.*?)</|", $this->page["Title"], $matches)) {
+            if (preg_match_all("|/search/title\/?\?sound_mixes=[^>]+>\s*(.*?)</|", $this->page["Title"], $matches)) {
                 $this->sound = $matches[1];
             }
         }
@@ -1764,6 +1793,7 @@ class Title extends MdbBase
             if (empty($dir['name'])) {
                 continue;
             }
+            $dir["name"] = utf8_decode($dir['name']);
             $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
             if ($get_role != null) {
                 $dir["role"] = $get_role->item(0)->nodeValue;
@@ -3033,9 +3063,9 @@ class Title extends MdbBase
     public function budget()
     {
         if (empty($this->budget)) {
-            $page = $this->getPage("Title");
-            if (@preg_match("!<h4[^>]+>Budget:</h4>\\$([\d,]+)\n!is", $page, $bud)) { // Opening Weekend
-                $this->budget = intval(str_replace(",", "", $bud[1]));
+            $query = $this->XmlNextJson()->xpath("//productionBudget/budget/amount");
+            if(!empty($query) && isset($query[0])){
+                $this->budget = intval(str_replace(",", "", $query[0]));
             } else {
                 return null;
             }
@@ -3130,6 +3160,33 @@ class Title extends MdbBase
         preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
         $this->jsonLD = json_decode($matches[1]);
         return $this->jsonLD;
+    }
+
+    protected function arrayToXml($array, &$xml){
+        foreach ($array as $key => $value) {
+            if(is_int($key)){
+                $key = "e";
+            }
+            if(is_array($value)){
+                $label = $xml->addChild($key);
+                $this->arrayToXml($value, $label);
+            }
+            else {
+                $xml->addChild($key, $value);
+            }
+        }
+    }
+    protected function XmlNextJson(){
+        if ($this->XmlNextJson) {
+            return $this->XmlNextJson;
+        }
+        $xpath = $this->getXpathPage("Title");
+        $script = $xpath->query("//script[@id='__NEXT_DATA__']")->item(0)->nodeValue;
+        $decode = json_decode($script, true);
+        $xml = new \SimpleXMLElement('<root/>');
+        $this->arrayToXml($decode, $xml);
+        $this->XmlNextJson = $xml;
+        return $this->XmlNextJson;
     }
 
     /**
