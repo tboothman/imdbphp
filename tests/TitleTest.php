@@ -497,9 +497,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
     // Primary match is to the genre listing just under the title, which this tests
     public function testGenres_multiple()
     {
-        $imdb = $this->getImdb('1375666');
+        $imdb = $this->getImdb('0087544');
         $genres = $imdb->genres();
-        $this->assertTrue(in_array('Action', $genres));
+        $this->assertTrue(in_array('Animation', $genres));
         $this->assertTrue(in_array('Sci-Fi', $genres));
         $this->assertTrue(count($genres) == 4);
     }
