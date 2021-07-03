@@ -1788,6 +1788,7 @@ class Title extends MdbBase
             if (empty($dir['name'])) {
                 continue;
             }
+            $dir["name"] = utf8_decode($dir['name']);
             $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
             if ($get_role != null) {
                 $dir["role"] = $get_role->item(0)->nodeValue;
