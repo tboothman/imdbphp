@@ -1128,7 +1128,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $castMember = array_find_item($stars, 'imdb', '0000206');
         $this->assertEquals('0000206', $castMember['imdb']);
         $this->assertEquals('Keanu Reeves', $castMember['name']);
-        $this->assertCount(4, $stars);
+        $this->assertCount(3, $stars);
     }
 
     public function testStars_Cast_one_cast()
@@ -1600,9 +1600,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $parentalGuide = $imdb->parentalGuide();
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
-        $this->assertGreaterThan(5, $profanity);
+        $this->assertGreaterThanOrEqual(3, $profanity);
         $this->assertGreaterThan(5, $drugs);
-        $this->assertContains('9 uses of "hell"', $profanity);
+        $this->assertContains('Around 8 uses of Godd***n.', $profanity);
         $this->assertContains('The Oracle smokes a cigarette.', $drugs);
     }
 

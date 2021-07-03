@@ -143,7 +143,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_crew();
         $this->assertIsArray($result);
-        $this->assertCount(8, $result);
+        $this->assertCount(9, $result);
         $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
         $this->assertEquals('2011', $result[0]['year']);
         //@TODO where did 'planning' go?
@@ -172,8 +172,8 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_self();
         $this->assertIsArray($result);
-        $this->assertGreaterThan(29, count($result));
-        $this->assertLessThan(32, count($result));
+        $this->assertGreaterThan(31, count($result));
+        $this->assertLessThan(35, count($result));
 
         $matches = 0;
         foreach($result as $movie)
