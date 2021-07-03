@@ -813,16 +813,13 @@ class Title extends MdbBase
     public function seasons()
     {
         if ($this->seasoncount == -1) {
-            $this->getPage("Title");
-            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season=\d+.*?"\s*>(\d+)</a>|Ui', $this->page["Title"],
-                $matches)) {
-                $this->seasoncount = $matches[1][0];
-            } else {
-                $this->seasoncount = 0;
-            }
-            if (preg_match_all('|href="/title/tt\d{7,8}/episodes\?season\=unknown"\s*>unknown</a>|Ui',
-                $this->page["Title"], $matches)) {
-                $this->seasoncount += count($matches[0]);
+            $xpath = $this->getXpathPage("Title");
+            $dom_xpath_result = $xpath->query('//select[@id="browse-episodes-season"]//option');
+            $this->seasoncount = 0;
+            foreach($dom_xpath_result as $xnode){
+                if(!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount){
+                    $this->seasoncount = intval($xnode->getAttribute('value'));
+                }
             }
         }
         return $this->seasoncount;
