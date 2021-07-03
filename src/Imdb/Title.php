@@ -111,6 +111,7 @@ class Title extends MdbBase
     protected $episodeSeason = null;
     protected $episodeEpisode = null;
     protected $jsonLD = null;
+    protected $XmlNextJson = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -3142,6 +3143,33 @@ class Title extends MdbBase
         preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
         $this->jsonLD = json_decode($matches[1]);
         return $this->jsonLD;
+    }
+
+    protected function arrayToXml($array, &$xml){
+        foreach ($array as $key => $value) {
+            if(is_int($key)){
+                $key = "e";
+            }
+            if(is_array($value)){
+                $label = $xml->addChild($key);
+                $this->arrayToXml($value, $label);
+            }
+            else {
+                $xml->addChild($key, $value);
+            }
+        }
+    }
+    protected function XmlNextJson(){
+        if ($this->XmlNextJson) {
+            return $this->XmlNextJson;
+        }
+        $xpath = $this->getXpathPage("Title");
+        $script = $xpath->query("//script[@id='__NEXT_DATA__']")->item(0)->nodeValue;
+        $decode = json_decode($script, true);
+        $xml = new \SimpleXMLElement('<root/>');
+        $this->arrayToXml($decode, $xml);
+        $this->XmlNextJson = $xml;
+        return $this->XmlNextJson;
     }
 
     /**
