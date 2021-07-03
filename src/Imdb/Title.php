@@ -870,10 +870,11 @@ class Title extends MdbBase
     private function populateEpisodeSeasonEpisode()
     {
         if (!isset($this->episodeEpisode) || !isset($this->episodeSeason)) {
-            if (preg_match("@<div class=\"bp_heading\">Season (\d+) <span class=\"ghost\">\|</span> Episode (\d+)</div>@",
-                $this->getPage("Title"), $matches)) {
-                $this->episodeSeason = (int)$matches[1];
-                $this->episodeEpisode = (int)$matches[2];
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//ul[@data-testid='hero-subnav-bar-season-episode-numbers-section']//span");
+            if($extract && $extract->item(0) != null && $extract->item(1) != null){
+                $this->episodeSeason = intval(str_ireplace('S', '', $extract->item(0)->nodeValue));
+                $this->episodeEpisode = intval(str_ireplace('E', '', $extract->item(1)->nodeValue));
             } else {
                 $this->episodeSeason = 0;
                 $this->episodeEpisode = 0;
@@ -947,12 +948,11 @@ class Title extends MdbBase
         if (!$this->isEpisode()) {
             return array();
         }
-        $seriesRegex = '!<div class="titleParent">\s*<a\s+href="/title/tt(?<seriesimdbid>\d{7,8})[^"]+"\s*title="(?<seriestitle>[^"]+)"!ims';
-
-        if (preg_match($seriesRegex, $this->getPage("Title"), $match)) {
+        $query = $this->XmlNextJson()->xpath("//series/series/titleText/parent::*/parent::*");
+        if(!empty($query) && isset($query[0])){
             return array(
-                "imdbid" => $match['seriesimdbid'],
-                "seriestitle" => $match['seriestitle'],
+                "imdbid" => str_ireplace('tt', '', trim(trim($query[0]->series->id))),
+                "seriestitle" => trim(trim($query[0]->series->titleText->text)),
                 "episodetitle" => $this->episodeTitle(),
                 "season" => $this->episodeSeason(),
                 "episode" => $this->episodeEpisode(),
