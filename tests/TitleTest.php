@@ -1390,7 +1390,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[3]);
+            ), $quotes_split[2]);
     }
 
     public function testTrailers_all()
