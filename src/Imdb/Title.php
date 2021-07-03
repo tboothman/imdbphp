@@ -487,7 +487,6 @@ class Title extends MdbBase
      */
     public function metacriticRating()
     {
-        $page = $this->getPage('Title');
         $xpath = $this->getXpathPage("Title");
         $extract = $xpath->query("//span[@class='score-meta']");
         if ($extract && $extract->item(0) != null) {
@@ -3160,7 +3159,7 @@ class Title extends MdbBase
         if ($this->jsonLD) {
             return $this->jsonLD;
         }
-        $page = $this->getPage('Title');
+        $page = $this->getPage("Title");
         preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
         $this->jsonLD = json_decode($matches[1]);
         return $this->jsonLD;
@@ -3208,7 +3207,7 @@ class Title extends MdbBase
      */
     public function real_id()
     {
-        $page = $this->getPage('Title');
+        $page = $this->getPage("Title");
         if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
         }
