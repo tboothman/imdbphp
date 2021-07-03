@@ -800,9 +800,10 @@ class Title extends MdbBase
     public function tagline()
     {
         if ($this->main_tagline == "") {
-            $this->getPage("Title");
-            if (@preg_match('!Taglines:</h4>\s*(.*?)\s*<!ims', $this->page["Title"], $match)) {
-                $this->main_tagline = trim($match[1]);
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//li[@data-testid='storyline-taglines']//span[@class='ipc-metadata-list-item__list-content-item']");
+            if($extract && $extract->item(0) != null){
+                $this->main_tagline = trim($extract->item(0)->nodeValue);
             }
         }
         return $this->main_tagline;
