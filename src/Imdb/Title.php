@@ -449,9 +449,11 @@ class Title extends MdbBase
     public function aspect_ratio()
     {
         if (empty($this->aspectratio)) {
-            $page = $this->getPage("Title");
-            if (preg_match('!<h4 class="inline">Aspect Ratio:</h4>\s*(.*?)\s+</div>!ims', $page, $match)) {
-                $this->aspectratio = $match[1];
+
+            $xpath = $this->getXpathPage("Title");
+            $extract = $xpath->query("//li[@data-testid='title-techspec_aspectratio']//span[@class='ipc-metadata-list-item__list-content-item']");
+            if($extract && $extract->item(0) != null){
+                $this->aspectratio = trim($extract->item(0)->nodeValue);
             }
         }
         return $this->aspectratio;
