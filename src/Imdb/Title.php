@@ -1348,8 +1348,9 @@ class Title extends MdbBase
     public function top250()
     {
         if ($this->main_top250 == -1) {
-            if (@preg_match('!<a href="[^"]*/chart/top.*>\s*Top Rated (?:Movies|TV) #(\d+)\s*</a>!si',
-                $this->getPage("Title"), $match)) {
+            $xpath = $this->getXpathPage("Title");
+            $topRated = $xpath->query("//a[@data-testid='award_top-rated']")->item(0);
+            if ($topRated && preg_match('/#(\d+)/', $topRated->nodeValue, $match)) {
                 $this->main_top250 = (int)$match[1];
             } else {
                 $this->main_top250 = 0;
@@ -3139,10 +3140,7 @@ class Title extends MdbBase
     public function real_id()
     {
         $page = $this->getPage('Title');
-        if (preg_match('#<meta property="pageId" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
-            return $matches[1];
-        } elseif (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page,
-                $matches) && !empty($matches[1])) {
+        if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page,$matches) && !empty($matches[1])) {
             return $matches[1];
         }
     }
