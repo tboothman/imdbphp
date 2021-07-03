@@ -945,12 +945,17 @@ class Title extends MdbBase
     public function plotoutline($fallback = false)
     {
         if ($this->main_plotoutline == "") {
-            $page = $this->getPage("Title");
-            if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
-                $this->main_plotoutline = trim($match[1]);
-            } elseif ($fallback) {
-                $this->main_plotoutline = $this->storyline();
+            if (isset($this->jsonLD()->description)) {
+                $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description, ENT_QUOTES| ENT_HTML5);
+            } else {
+                $page = $this->getPage("Title");
+                if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
+                    $this->main_plotoutline = trim($match[1]);
+                } elseif ($fallback) {
+                    $this->main_plotoutline = $this->storyline();
+                }
             }
+            
         }
         $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7,8}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i',
           '', $this->main_plotoutline);
@@ -969,7 +974,10 @@ class Title extends MdbBase
             $page = $this->getPage("Title");
             if (@preg_match('~Storyline</h2>.*?<div.*?<p>.*?<span>(.*?)</span>.*?</p>~ims', $page, $match)) {
                 $this->main_storyline = trim($match[1]);
+            } elseif (@preg_match('#data-testid="storyline-plot-summary">(.*?)<div class="ipc-overflowText-overlay">#ims', $page, $match)) {
+                $this->main_storyline = htmlspecialchars_decode(trim(strip_tags(preg_replace('#<span style="display:inline-block"(.*?)</span>#ims', '', $match[1]))), ENT_QUOTES| ENT_HTML5);
             }
+            
         }
         return $this->main_storyline;
     }
@@ -985,8 +993,11 @@ class Title extends MdbBase
         if (isset($this->jsonLD()->image)) {
             $this->main_poster = $this->jsonLD()->image;
         }
-        preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match);
-        if (!empty($match[1])) {
+        if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
+            && !empty($match[1])) {
+            $this->main_poster_thumb = $match[1];
+        } elseif (preg_match('#data-testid="hero-media__poster">.*?<img .*?class="ipc-image".*src="(.*?\.jpg)"#im', $this->getPage("Title"), $match)
+            && !empty($match[1])){
             $this->main_poster_thumb = $match[1];
         }
     }
@@ -1129,7 +1140,7 @@ class Title extends MdbBase
     public function country()
     {
         if (empty($this->countries)) {
-            if (preg_match_all('!/search/title\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"),
+            if (preg_match_all('!/search/title\/?\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"),
               $matches)) {
                 $this->countries = $matches[1];
             }
@@ -1620,6 +1631,59 @@ class Title extends MdbBase
 
         if (empty($page)) {
             return array(); // no such page
+        }
+        if ($short && $this->detect_new_version_imdb()) {
+            $xpath = $this->getXpathPage("Title");
+            $nodes = $xpath->query("//section[@data-testid='title-cast']/div[2]/div[@data-testid='title-cast-item']");
+            foreach ($nodes as $i => $node) {
+                $dir = array(
+                    'imdb' => null,
+                    'name' => null,
+                    'name_alias' => null,
+                    'credited' => true,
+                    'role' => null,
+                    'role_episodes' => null,
+                    'role_start_year' => null,
+                    'role_end_year' => null,
+                    'role_other' => array(),
+                    'thumb' => null,
+                    'photo' => null
+                  );
+                $get_name_and_id = $xpath->query(".//a[@data-testid='title-cast-item__actor']", $node)->item(0);
+                $dir['imdb'] = preg_replace('/\/?name\/nm(\d+)[\/\?]+.*?$/is', '$1', $get_name_and_id->getAttribute("href"));
+                $dir["name"] = trim($get_name_and_id->nodeValue);
+                if (empty($dir['name'])) {
+                    continue;
+                }
+                $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
+                if($get_role != null){
+                    $dir["role"] = $get_role->item(0)->nodeValue;
+                }
+
+                $get_img = $xpath->query(".//img[@class='ipc-image']", $node);
+                if($get_img != null && $get_img->item(0)->getAttribute("src") != null){
+                    $dir["thumb"] = trim($get_img->item(0)->getAttribute("src"));
+                    if (strpos($dir["thumb"], '._V1')) {
+                        $dir["photo"] = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $dir["thumb"]);
+                    }
+                } else {
+                    $dir["thumb"] = $dir["photo"] = "";
+                }
+                $get_role_episodes = $xpath->query(".//a[@data-testid='title-cast-item__eps-toggle']/span[1]/span[@data-testid='title-cast-item__episodes']", $node);
+                $get_role_start_year = $xpath->query(".//a[@data-testid='title-cast-item__eps-toggle']/span[1]/span[@data-testid='title-cast-item__tenure']", $node);
+                if($get_role_episodes->item(0) != null){
+                    $dir["role_episodes"] = intval(trim(str_ireplace('episodes', '', $get_role_episodes->item(0)->nodeValue)));
+                }
+                if($get_role_start_year->item(0) != null){
+                    $year = explode('–', utf8_decode(trim($get_role_start_year->item(0)->nodeValue)));
+                    $dir["role_start_year"] = intval($year[0]);
+                    $dir["role_end_year"] = (isset($year[1]) ? intval($year[1]) : null);
+                }
+    
+                $this->credits_cast[] = $dir;
+            }
+
+            return $this->credits_cast;
         }
 
         $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
@@ -3020,6 +3084,22 @@ class Title extends MdbBase
         return $this->page[$page];
     }
 
+    protected function getXpathPage($page = null)
+    {
+        if (!empty($this->xpathPage[$page])) {
+            return $this->xpathPage[$page];
+        }
+        $source = $this->getPage($page);
+        libxml_use_internal_errors(true);
+        /* Createa a new DomDocument object */
+        $dom = new \DomDocument;
+        /* Load the HTML */
+        $dom->loadHTML($source);
+        /* Create a new XPath object */
+        $this->xpathPage[$page] = new \DomXPath($dom);
+        return $this->xpathPage[$page];
+    }
+
     protected function jsonLD()
     {
         if ($this->jsonLD) {
@@ -3040,6 +3120,17 @@ class Title extends MdbBase
         $page = $this->getPage('Title');
         if (preg_match('#<meta property="pageId" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
+        } elseif (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
+            return $matches[1];
         }
+    }
+
+    public function detect_new_version_imdb()
+    {
+        $page = $this->getPage('Title');
+        if (stripos($page, 'xmlns:og="http://opengraphprotocol.org/schema/"') !== false) {
+            return true;
+        }
+        return false;
     }
 }

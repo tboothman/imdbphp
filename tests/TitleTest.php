@@ -149,7 +149,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testMovietype_on_TVMiniseries()
     {
         $imdb = $this->getImdb("0314979");
-        $this->assertEquals('TV Mini-Series', $imdb->movietype());
+        $this->assertTrue(in_array($imdb->movietype(), array('TV Mini-Series', 'TV Mini Series')));
     }
 
     public function testMovietype_on_videoGame()
@@ -720,7 +720,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testCountry()
     {
         $imdb = $this->getImdb();
-        $this->assertEquals(array('USA'), $imdb->country());
+        $this->assertEquals(array('United States', 'Australia'), $imdb->country());
     }
 
 //    public function testCountry_nocountries()
