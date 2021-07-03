@@ -487,8 +487,10 @@ class Title extends MdbBase
     public function metacriticRating()
     {
         $page = $this->getPage('Title');
-        if (preg_match('!"metacriticScore.+>\n.+?(\d+)!im', $page, $match)) {
-            return (int)$match[1];
+        $xpath = $this->getXpathPage("Title");
+        $extract = $xpath->query("//span[@class='score-meta']");
+        if($extract && $extract->item(0) != null){
+            return intval(trim($extract->item(0)->nodeValue));
         }
         return null;
     }
