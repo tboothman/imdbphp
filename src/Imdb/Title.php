@@ -1243,7 +1243,7 @@ class Title extends MdbBase
     {
         if (empty($this->sound)) {
             $this->getPage("Title");
-            if (preg_match_all("|/search/title\?sound_mixes=[^>]+>\s*(.*?)</|", $this->page["Title"], $matches)) {
+            if (preg_match_all("|/search/title\/?\?sound_mixes=[^>]+>\s*(.*?)</|", $this->page["Title"], $matches)) {
                 $this->sound = $matches[1];
             }
         }
@@ -3063,9 +3063,9 @@ class Title extends MdbBase
     public function budget()
     {
         if (empty($this->budget)) {
-            $page = $this->getPage("Title");
-            if (@preg_match("!<h4[^>]+>Budget:</h4>\\$([\d,]+)\n!is", $page, $bud)) { // Opening Weekend
-                $this->budget = intval(str_replace(",", "", $bud[1]));
+            $query = $this->XmlNextJson()->xpath("//productionBudget/budget/amount");
+            if(!empty($query) && isset($query[0])){
+                $this->budget = intval(str_replace(",", "", $query[0]));
             } else {
                 return null;
             }
