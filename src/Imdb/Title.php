@@ -560,38 +560,50 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes])
+     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes,type,originaltitle,img,runtime,certificate])
+     * sample type result: tvMiniSeries - tvSeries - movie
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
         if (empty($this->movierecommendations)) {
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($this->getPage("Title"));
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//div[@id=\"title_recs\"]//div[@class=\"rec-title\"]");
+            $xpath = $this->XmlNextJson()->xpath('//moreLikeThisTitles');
+            if($xpath && isset($xpath[0]->edges->e)){
+                foreach ($xpath[0]->edges->e as $record){
+                    $movie = array();
+                    $movie['imdbid'] = trim($record->node->id);
+                    $movie['title'] = trim($record->node->titleText->text);
+                    $movie['originaltitle'] = trim($record->node->originalTitleText->text);
+                    $movie['img'] = trim($record->node->primaryImage->url);
+                    $movie['type'] = trim($record->node->titleType->id);
+                    $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
+                    $movie['votes'] = trim($record->node->ratingsSummary->voteCount);
+                    $movie['runtime'] = trim($record->node->runtime->seconds);
+                    $movie['certificate'] = trim($record->node->certificate->rating); //maybe return 'Not Rated'
+                    $movie['year'] = trim($record->node->releaseYear->year);
+                    $movie['endyear'] = trim($record->node->releaseYear->endYear);
+                    if(empty($movie['rating'])){
+                        $movie['rating'] = -1;
+                    }
+                    $this->movierecommendations[] = $movie;
+                }
+            }
+        }
+        if (empty($this->movierecommendations)) {
+            $xp = $this->getXpathPage("Title");
+            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
             /** @var \DOMElement $cell */
             foreach ($cells as $cell) {
-                if (preg_match('!tt(\d+)!', $cell->getElementsByTagName('a')->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($cell->getElementsByTagName('a')->item(0)->nodeValue);
+                $movie = array();
+                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
+                if (!empty($get_link_and_name) && preg_match('!tt(\d+)!', $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
+                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
                     $movie['imdbid'] = $ref[1];
-                    $span = $xp->query($cell->getNodePath() . '//span[@class="nobr"]')->item(0)->nodeValue;
-                    $years = preg_replace('/[^0-9]/', '', $span);
-                    if (strlen($years) > 4) {
-                        $movie['year'] = substr($years, 0, 4);
-                        $movie['endyear'] = substr($years, 4);
-                    } else {
-                        $movie['year'] = $years;
-                        $movie['endyear'] = "";
-                    }
-                    if (preg_match('/([0-9.,]{1,3})\/10\s*\(([0-9\s.,]+)/iu',
-                        $cell->parentNode->getElementsByTagName('div')->item(3)->getAttribute('title'),
-                        $rating)) {
-                        $movie['rating'] = str_replace(',', '.', $rating[1]);
-                        $movie['votes'] = preg_replace('/[^0-9]/', '', $rating[2]);
+                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
+                    if (!empty($get_rating)) {
+                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
                     } else {
                         $movie['rating'] = -1;
-                        $movie['votes'] = -1;
                     }
                     $this->movierecommendations[] = $movie;
                 }
