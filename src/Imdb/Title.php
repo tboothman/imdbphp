@@ -420,11 +420,11 @@ class Title extends MdbBase
             $this->movieruntimes = array();
             $rt = $this->runtime_all();
             foreach (preg_split('!(\||<br>)!', strip_tags($rt, '<br>')) as $runtimestring) {
-                if (preg_match_all("/(\d+\s+hr\s+\d+\s+min)?\((\d+)\s+min\)|(\d+)\s+min/", $runtimestring, $matches,
+                if (preg_match_all('/(\d+\s+hr\s+\d+\s+min)? ?\((\d+)\s+min\)|(\d+)\s+min/', trim($runtimestring), $matches,
                     PREG_SET_ORDER, 0)) {
-                    $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][3]) ? $matches[0][3] : 0);
+                    $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][2]) ? $matches[0][2] : 0);
                     $annotations = array();
-                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", $runtimestring, $matches)) {
+                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", trim($runtimestring), $matches)) {
                         $annotations = $matches[1];
                     }
                     $this->movieruntimes[] = array(
