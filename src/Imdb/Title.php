@@ -2608,22 +2608,21 @@ class Title extends MdbBase
 
     /**
      * Filming locations
-     * @return string[]
+     * @return array[] => array[location, movielocation]
      * @see IMDB page /locations
      */
     public function locations()
     {
         if (empty($this->locations)) {
-            $page = $this->getPage("Locations");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Locations");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($page);
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//section[@id=\"filming_locations\"]//dt");
+            $cells = $xpath->query("//div[@class=\"soda sodavote odd\" or @class=\"soda sodavote even\"]");
             foreach ($cells as $cell) {
-                $this->locations[] = trim($cell->nodeValue);
+                $dt = $xpath->query($cell->getNodePath() . '//dt')->item(0)->nodeValue;
+                $dd = $xpath->query($cell->getNodePath() . '//dd')->item(0)->nodeValue;
+                $this->locations[] = array('location'=>trim($dt), 'movielocation'=>trim($dd));
             }
         }
         return $this->locations;
