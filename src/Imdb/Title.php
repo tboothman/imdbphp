@@ -3143,8 +3143,4 @@ class Title extends MdbBase
             return $matches[1];
         }
     }
-
-    private function normaliseMovieType($rawMovieType) {
-        return $rawMovieType;
-    }
 }
