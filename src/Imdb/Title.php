@@ -571,7 +571,7 @@ class Title extends MdbBase
             if($xpath && isset($xpath[0]->edges->e)){
                 foreach ($xpath[0]->edges->e as $record){
                     $movie = array();
-                    $movie['imdbid'] = trim($record->node->id);
+                    $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
                     $movie['title'] = trim($record->node->titleText->text);
                     $movie['originaltitle'] = trim($record->node->originalTitleText->text);
                     $movie['img'] = trim($record->node->primaryImage->url);
