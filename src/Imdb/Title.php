@@ -1024,10 +1024,12 @@ class Title extends MdbBase
         if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
             && !empty($match[1])) {
             $this->main_poster_thumb = $match[1];
-        } elseif (preg_match('#data-testid="hero-media__poster">.*?<img .*?class="ipc-image".*src="(.*?\.jpg)"#im',
-                $this->getPage("Title"), $match)
-            && !empty($match[1])) {
-            $this->main_poster_thumb = $match[1];
+        } else {
+            $xpath = $this->getXpathPage("Title");
+            $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
+            if(!empty($thumb)){
+                $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
+            }
         }
     }
 
