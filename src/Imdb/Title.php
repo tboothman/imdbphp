@@ -26,7 +26,7 @@ class Title extends MdbBase
     const MOVIE = 'Movie';
     const TV_SERIES = 'TV Series';
     const TV_EPISODE = 'TV Episode';
-    const TV_MINI_SERIES = 'TV Mini-Series';
+    const TV_MINI_SERIES = 'TV Mini Series';
     const TV_MOVIE = 'TV Movie';
     const TV_SPECIAL = 'TV Special';
     const TV_SHORT = 'TV Short';
@@ -63,7 +63,6 @@ class Title extends MdbBase
     protected $main_runtime = "";
     protected $main_movietype = "";
     protected $main_title = "";
-    protected $original_title = "";
     protected $main_year = -1;
     protected $main_endyear = -1;
     protected $main_yearspan = array();
@@ -247,9 +246,6 @@ class Title extends MdbBase
                 $this->main_year = '0';
                 $this->main_endyear = '0';
             }
-            if (preg_match('!class="originalTitle">(.+?)<span!s', $this->page["Title"], $otitle)) {
-                $this->original_title = trim($otitle[1]);
-            }
             if ($this->main_year == "????") {
                 $this->main_year = "";
             }
@@ -294,16 +290,19 @@ class Title extends MdbBase
         return $this->main_title;
     }
 
-    /** Get movie original title
-     * @return string title original movie title (name), if available
+    /**
+     * Get movie original title
+     * @return string original movie title (name), if it differs from the result of title(). null otherwise
      * @see IMDB page / (TitlePage)
      */
     public function orig_title()
     {
-        if ($this->original_title == "") {
-            $this->title_year();
+        $jsonLD = $this->jsonLD();
+        $originalName = $jsonLD->name;
+        $displayName = $jsonLD->alternateName ?? null;
+        if ($originalName && $displayName && $originalName != $displayName) {
+            return $originalName;
         }
-        return $this->original_title;
     }
 
     /** Get year
@@ -3143,5 +3142,9 @@ class Title extends MdbBase
         if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page,$matches) && !empty($matches[1])) {
             return $matches[1];
         }
+    }
+
+    private function normaliseMovieType($rawMovieType) {
+        return $rawMovieType;
     }
 }

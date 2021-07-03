@@ -149,7 +149,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testMovietype_on_TVMiniseries()
     {
         $imdb = $this->getImdb("0314979");
-        $this->assertTrue(in_array($imdb->movietype(), array('TV Mini-Series', 'TV Mini Series')));
+        $this->assertEquals($imdb->movietype(), \Imdb\Title::TV_MINI_SERIES);
     }
 
     public function testMovietype_on_videoGame()
