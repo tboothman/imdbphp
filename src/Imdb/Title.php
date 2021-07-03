@@ -1029,7 +1029,7 @@ class Title extends MdbBase
         } else {
             $xpath = $this->getXpathPage("Title");
             $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
-            if(!empty($thumb)){
+            if(!empty($thumb) && $thumb->item(0) != null){
                 $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
             }
         }
