@@ -290,8 +290,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $runtimes = $imdb->runtimes();
         $this->assertEquals(117, $runtimes[0]['time']);
         $this->assertEquals(95, $runtimes[1]['time']);
-        $this->assertEquals(1985, $runtimes[1]['annotations'][0]);
-        $this->assertEquals('edited', $runtimes[1]['annotations'][1]);
+        $this->assertEquals('edited', $runtimes[1]['annotations'][0]);
+        $this->assertEquals(1985, $runtimes[1]['annotations'][1]);
+        $this->assertEquals('USA', $runtimes[1]['annotations'][2]);
     }
 
     // Apocalypse now "147 min | 196 min (Redux)"
@@ -696,7 +697,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb();
         // This is a little brittle. What if the image changes? what if the size of the poster changes? ...
-        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX182_CR0,0,182,268_AL_.jpg', $imdb->photo(true));
+        $this->assertEquals('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_QL75_UX190_CR0,2,190,281_.jpg', $imdb->photo(true));
     }
 
     public function testSavephoto()
@@ -780,11 +781,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb();
         $sound = $imdb->sound();
         $this->assertIsArray($sound);
-        $this->assertCount(4, $sound);
-        $this->assertEquals('DTS', $sound[0]);
-        $this->assertEquals('Dolby Digital', $sound[1]);
-        $this->assertEquals('SDDS', $sound[2]);
-        $this->assertEquals('Dolby Atmos', $sound[3]);
+        $this->assertCount(3, $sound);
+        $this->assertEquals('Dolby Digital', $sound[0]);
+        $this->assertEquals('SDDS', $sound[1]);
+        $this->assertEquals('Dolby Atmos', $sound[2]);
     }
 
     public function testSound_one_type()
