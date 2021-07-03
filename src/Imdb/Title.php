@@ -704,6 +704,18 @@ class Title extends MdbBase
     public function genres()
     {
         if (empty($this->moviegenres)) {
+            $xpath = $this->getXpathPage("Title");
+            $extract_genres = $xpath->query("//li[@data-testid='storyline-genres']//li[@class='ipc-inline-list__item']/a");
+            $genres = array();
+            foreach($extract_genres as $genre){
+                if(!empty($genre->nodeValue)){
+                    $genres[] = trim($genre->nodeValue);
+                }
+            }
+            if(count($genres) > 0)
+                $this->moviegenres = $genres;
+        }
+        if (empty($this->moviegenres)) {
             $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
             if (!is_array($genres)) {
                 $genres = (array)$genres;

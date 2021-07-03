@@ -8,6 +8,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     /**
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
+     * 1375666 = Inception (multiple genres)
      * 0087544 = Nausicaa (foreign, nonascii)
      * 0078788 = Apocalypse Now (Two cuts, multiple languages)
      * 0108052 = Schindler's List (multiple colours)
@@ -496,10 +497,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
     // Primary match is to the genre listing just under the title, which this tests
     public function testGenres_multiple()
     {
-        $imdb = $this->getImdb();
+        $imdb = $this->getImdb('1375666');
         $genres = $imdb->genres();
         $this->assertTrue(in_array('Action', $genres));
         $this->assertTrue(in_array('Sci-Fi', $genres));
+        $this->assertTrue(count($genres) == 4);
     }
 
 //    public function testGenres_none()
