@@ -300,7 +300,7 @@ class Title extends MdbBase
     {
         $jsonLD = $this->jsonLD();
         $originalName = $jsonLD->name;
-        $displayName = isset($jsonLD->alternateName)? $jsonLD->alternateName  : null;
+        $displayName = isset($jsonLD->alternateName) ? $jsonLD->alternateName : null;
         if ($originalName && $displayName && $originalName != $displayName) {
             return $originalName;
         }
