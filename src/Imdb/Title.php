@@ -2618,11 +2618,10 @@ class Title extends MdbBase
             if (empty($xpath)) {
                 return array();
             } // no such page
-            $cells = $xpath->query("//div[@class=\"soda sodavote odd\" or @class=\"soda sodavote even\"]");
+            $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
             foreach ($cells as $cell) {
                 $dt = $xpath->query($cell->getNodePath() . '//dt')->item(0)->nodeValue;
-                $dd = $xpath->query($cell->getNodePath() . '//dd')->item(0)->nodeValue;
-                $this->locations[] = array('location'=>trim($dt), 'movielocation'=>trim($dd));
+                $this->locations[] = trim($cell->nodeValue);
             }
         }
         return $this->locations;
