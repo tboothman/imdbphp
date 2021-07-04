@@ -2608,7 +2608,7 @@ class Title extends MdbBase
 
     /**
      * Filming locations
-     * @return array[] => array[location, movielocation]
+     * @return string[]
      * @see IMDB page /locations
      */
     public function locations()
