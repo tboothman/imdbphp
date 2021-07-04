@@ -2994,16 +2994,15 @@ class Title extends MdbBase
     public function alternateVersions()
     {
         if (empty($this->moviealternateversions)) {
-            $page = $this->getPage('AlternateVersions');
-
-            if (false !== strpos($page, 'id="no_content"')) {
+            $xpath = $this->getXpathPage("AlternateVersions");
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count() ) {
                 return array();
             }
-
-            if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', $page, $matches)) {
-                foreach ($matches[2] as $match) {
-                    $this->moviealternateversions[] = trim(str_replace("\n", " ", $match));
-                }
+            $check = array("<ul><li>", "</li><li>");
+            $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
+            foreach ($cells as $cell) {
+                $alt = strip_tags(trim(str_replace("\n", " ", $cell->nodeValue)), $check);
+                $this->moviealternateversions[] = $alt;
             }
         }
         return $this->moviealternateversions;
