@@ -1262,13 +1262,14 @@ class Title extends MdbBase
     public function mpaa()
     {
         if (empty($this->mpaas)) {
-            $this->getPage("ParentalGuide");
-            if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|", $this->page["ParentalGuide"],
-                $matches)) {
-                $cc = count($matches[0]);
-                for ($i = 0; $i < $cc; ++$i) {
-                    $this->mpaas[$matches[1][$i]] = $matches[2][$i];
-                }
+            $xpath = $this->getXpathPage("ParentalGuide");
+            if (empty($xpath)) {
+                return array();
+            } // no such page
+            $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
+            foreach ($cells as $cell) {
+                $te = explode(":", $cell->getElementsByTagName('a')->item(0)->nodeValue);
+                $this->mpaas[trim($te[0])] = $te[1];
             }
         }
         return $this->mpaas;
