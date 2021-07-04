@@ -2620,7 +2620,6 @@ class Title extends MdbBase
             } // no such page
             $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
             foreach ($cells as $cell) {
-                $dt = $xpath->query($cell->getNodePath() . '//dt')->item(0)->nodeValue;
                 $this->locations[] = trim($cell->nodeValue);
             }
         }
