@@ -2728,14 +2728,11 @@ class Title extends MdbBase
     public function locations()
     {
         if (empty($this->locations)) {
-            $page = $this->getPage("Locations");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Locations");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($page);
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//section[@id=\"filming_locations\"]//dt");
+            $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
             foreach ($cells as $cell) {
                 $this->locations[] = trim($cell->nodeValue);
             }
