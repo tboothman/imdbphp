@@ -5,13 +5,8 @@ use Imdb\Config;
 use Imdb\Cache;
 use Imdb\Logger;
 
-class PagesTest extends PHPUnit_Framework_TestCase
+class PagesTest extends PHPUnit\Framework\TestCase
 {
-    public function testConstructor()
-    {
-        $pages = new Pages(new Config(), new Cache(new Config(), new Logger(false)), new Logger(false));
-    }
-
     public function testGetRetrievesFromCache()
     {
         $cache = Mockery::mock('\Imdb\Cache', array(
@@ -88,11 +83,9 @@ class PagesTest extends PHPUnit_Framework_TestCase
         \Mockery::close();
     }
 
-    /**
-     * @expectedException \Imdb\Exception\Http
-     */
     public function testGetThrowsExceptionIfHttpFails()
     {
+        $this->expectException(\Imdb\Exception\Http::class);
         $cache = Mockery::mock('\Imdb\Cache', array(
                 'get' => null,
                 'set' => true
@@ -121,5 +114,6 @@ class PagesTest extends PHPUnit_Framework_TestCase
         $pages->shouldAllowMockingProtectedMethods();
         $pages->shouldReceive('buildRequest')->once()->andReturn($request);
         $pages->get('test');
+        $this->assertTrue(true);
     }
 }

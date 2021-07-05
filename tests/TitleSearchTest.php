@@ -4,14 +4,14 @@ use Imdb\Config;
 use Imdb\Title;
 use Imdb\TitleSearch;
 
-class TitleSearchTest extends PHPUnit_Framework_TestCase
+class TitleSearchTest extends PHPUnit\Framework\TestCase
 {
     public function test_searching_for_a_specific_film_returns_its_imdb_class_with_title_prepopulated()
     {
         $search = $this->getimdbsearch();
         $results = $search->search('The Lord of the Rings: The Fellowship of the Ring');
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
         /* @var $firstResult Title */
         $firstResult = $results[0];
         $this->assertInstanceOf('\Imdb\Title', $firstResult);
@@ -26,7 +26,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
     {
         $search = $this->getimdbsearch();
         $results = $search->search('Cowboy Bebop', array(TitleSearch::MOVIE));
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         /* @var $firstResult Title */
         $firstResult = $results[0];
@@ -49,7 +49,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('Cowboy Bebop', array(TitleSearch::TV_SERIES));
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         /* @var $firstResult Title */
         $firstResult = $results[0];
@@ -72,7 +72,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('Cowboy Funk', array(TitleSearch::TV_EPISODE));
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         /* @var $firstResult Title */
         $firstResult = $results[0];
@@ -95,7 +95,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('Doom', array(TitleSearch::GAME));
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         /* @var $firstResult Title */
         $firstResult = $results[0];
@@ -118,7 +118,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('Hatfields & McCoys', array(TitleSearch::TV_MINI_SERIES));
 
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         /* @var $firstResult Title */
         $firstResult = $results[0];
@@ -142,7 +142,7 @@ class TitleSearchTest extends PHPUnit_Framework_TestCase
     {
         $search = $this->getimdbsearch();
         $results = $search->search('Home 2015', array(TitleSearch::MOVIE));
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
 
         $found = false;
         foreach ($results as $result) {
