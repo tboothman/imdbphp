@@ -3114,11 +3114,10 @@ class Title extends MdbBase
                 $count = $cell->getElementsByTagName('li')->count();
                 if ($count) {
                     $listHeader = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]/text()");
-                    $listItems = trim($listHeader->item($key)->nodeValue);
-                    $listItems .= '&#10;';
+                    $listItems = trim($listHeader->item($key)->nodeValue) . '&#10;';
                     $items = $cell->getElementsByTagName('li');
                     foreach ($items as $key => $value) {
-                        $listItems .= '# ' . trim($value->nodeValue);
+                        $listItems .= '&bull; ' . trim($value->nodeValue);
                         if ($key < $count - 1) {
                             $listItems .= '&#10;';
                         }
