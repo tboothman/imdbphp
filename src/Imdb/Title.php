@@ -3106,14 +3106,25 @@ class Title extends MdbBase
     {
         if (empty($this->moviealternateversions)) {
             $xpath = $this->getXpathPage("AlternateVersions");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count() ) {
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array();
             }
-            $check = array("<ul><li>", "</li><li>");
             $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
             foreach ($cells as $cell) {
-                $alt = strip_tags(trim(str_replace("\n", " ", $cell->nodeValue)), $check);
-                $this->moviealternateversions[] = $alt;
+                $count = $cell->getElementsByTagName('li')->count();
+                if ($count) {
+                    // here i need the only the text from div, nothing else.
+                    $items = $cell->getElementsByTagName('li');
+                    foreach ($items as $key => $value) {
+                        $listItems .= '# ' . trim($value->nodeValue);
+                        if ($key < $count - 1) {
+                            $listItems .= '&#10;';
+                        }
+                    }
+                    $this->moviealternateversions[] = $listItems;
+                } else {
+                    $this->moviealternateversions[] = trim($cell->nodeValue);
+                }
             }
         }
         return $this->moviealternateversions;
