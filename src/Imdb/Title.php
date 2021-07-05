@@ -3110,10 +3110,11 @@ class Title extends MdbBase
                 return array();
             }
             $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
-            foreach ($cells as $cell) {
+            foreach ($cells as $key => $cell) {
                 $count = $cell->getElementsByTagName('li')->count();
                 if ($count) {
-                    // here i need the only the text from div, nothing else.
+                    $listHeader = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]/text()");
+                    $listItems = trim($listHeader->item($key)->nodeValue) . '&#10;';
                     $items = $cell->getElementsByTagName('li');
                     foreach ($items as $key => $value) {
                         $listItems .= '# ' . trim($value->nodeValue);
