@@ -575,7 +575,11 @@ class Title extends MdbBase
             if ($xpath && isset($xpath[0]->edges->e)) {
                 foreach ($xpath[0]->edges->e as $record) {
                     $sec = trim($record->node->runtime->seconds);
-                    $minutes = floor($sec / 60); // convert runtime to minutes
+                    if (is_numeric($sec)) {
+                        $minutes = floor($sec / 60); // convert runtime to minutes
+                    } else {
+                        $minutes = 0;
+                    }
                     $movie = array();
                     $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
                     $movie['title'] = trim($record->node->titleText->text);
