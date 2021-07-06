@@ -1900,7 +1900,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     protected function getImdb($imdbId = '0133093')
     {
         $config = new \Imdb\Config();
-        $config->language = 'En';
+        $config->language = 'En-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
