@@ -574,6 +574,8 @@ class Title extends MdbBase
             $xpath = $this->XmlNextJson()->xpath('//moreLikeThisTitles');
             if ($xpath && isset($xpath[0]->edges->e)) {
                 foreach ($xpath[0]->edges->e as $record) {
+                    $sec = trim($record->node->runtime->seconds);
+                    $minutes = floor($sec / 60); // convert runtime to minutes
                     $movie = array();
                     $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
                     $movie['title'] = trim($record->node->titleText->text);
@@ -582,7 +584,7 @@ class Title extends MdbBase
                     $movie['type'] = trim($record->node->titleType->id);
                     $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
                     $movie['votes'] = trim($record->node->ratingsSummary->voteCount);
-                    $movie['runtime'] = trim($record->node->runtime->seconds);
+                    $movie['runtime'] = $minutes;
                     $movie['certificate'] = trim($record->node->certificate->rating); //maybe return 'Not Rated'
                     $movie['year'] = trim($record->node->releaseYear->year);
                     $movie['endyear'] = trim($record->node->releaseYear->endYear);
@@ -610,6 +612,8 @@ class Title extends MdbBase
                     } else {
                         $movie['rating'] = -1;
                     }
+                    $get_img = $xp->query(".//img[contains(@class, 'ipc-image')]", $cell);
+                    $movie['img'] = $get_img->item(0)->getAttribute('src');
                     $this->movierecommendations[] = $movie;
                 }
             }
