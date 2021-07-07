@@ -582,8 +582,8 @@ class Title extends MdbBase
                     }
                     $movie = array();
                     $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
-                    $movie['title'] = trim($record->node->titleText->text);
-                    $movie['originaltitle'] = trim($record->node->originalTitleText->text);
+                    $movie['title'] = utf8_decode(trim($record->node->titleText->text));
+                    $movie['originaltitle'] = utf8_decode(trim($record->node->originalTitleText->text));
                     $movie['img'] = trim($record->node->primaryImage->url);
                     $movie['type'] = trim($record->node->titleType->id);
                     $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
