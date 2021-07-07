@@ -1428,6 +1428,8 @@ class Title extends MdbBase
      */
     public function plot_split()
     {
+        $search  = array(' <', '<', '>',' (', '(', ')', ' {', '}');
+        $replace  = array(', ', '', '',', ', '', '', ', ', '');
         if (empty($this->split_plot)) {
             if (empty($this->plot_plot)) {
                 $this->plot_plot = $this->plot();
@@ -1435,9 +1437,10 @@ class Title extends MdbBase
             foreach ($this->plot_plot as $plot) {
                 if (preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims', $plot,
                     $match)) {
+                    $authorName = trim(str_replace($search, $replace, $match['author_name']));
                     $this->split_plot[] = array(
                         "plot" => $match['plot'],
-                        "author" => array("name" => $match['author_name'], "url" => $match['author_url'])
+                        "author" => array("name" => $authorName, "url" => $match['author_url'])
                     );
                 } else {
                     $this->split_plot[] = array("plot" => $plot, "author" => array("name" => '', "url" => ''));
