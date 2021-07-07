@@ -599,29 +599,6 @@ class Title extends MdbBase
                 }
             }
         }
-        if (empty($this->movierecommendations)) {
-            $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
-            /** @var \DOMElement $cell */
-            foreach ($cells as $cell) {
-                $movie = array();
-                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
-                if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
-                        $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
-                    $movie['imdbid'] = $ref[1];
-                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
-                    if (!empty($get_rating)) {
-                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
-                    } else {
-                        $movie['rating'] = -1;
-                    }
-                    $get_img = $xp->query(".//img[contains(@class, 'ipc-image')]", $cell);
-                    $movie['img'] = $get_img->item(0)->getAttribute('src');
-                    $this->movierecommendations[] = $movie;
-                }
-            }
-        }
         return $this->movierecommendations;
     }
 
