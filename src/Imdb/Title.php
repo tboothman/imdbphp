@@ -1407,13 +1407,10 @@ class Title extends MdbBase
             $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
             foreach ($cells as $cell) {
                 $link = '';
-                $q = $cell->getElementsByTagName('a')->length;
-                if (isset($q) && count((array)$q) > 0) {
-                    $a = $cell->getElementsByTagName('a')->item($q - 1);
+                if ($a = $cell->getElementsByTagName('a')->item(0)) {
                     $href = preg_replace('!/search/title!i', 'https://' . $this->imdbsite . '/search/title',
                         $a->getAttribute('href'));
-                    $link = "\n-\n" . '<a href="' . $href . '">' .
-                        trim($cell->getElementsByTagName('a')->item($q - 1)->nodeValue) . '</a>';
+                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
                 }
                 $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
