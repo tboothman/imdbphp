@@ -1268,9 +1268,11 @@ class Title extends MdbBase
             }
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
             foreach ($cells as $cell) {
-                $value = $cell->getElementsByTagName('a')->item(0)->nodeValue;
-                $te = explode(":", $value);
-                $this->mpaas[trim($te[0])] = $te[1];
+                if ($cell->getElementsByTagName('a')->item(0)) {
+                    $value = $cell->getElementsByTagName('a')->item(0)->nodeValue;
+                    $te = explode(":", $value);
+                    $this->mpaas[trim($te[0])] = $te[1];
+                }
             }
         }
         return $this->mpaas;
