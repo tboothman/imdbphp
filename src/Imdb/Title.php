@@ -1265,7 +1265,7 @@ class Title extends MdbBase
             $xpath = $this->getXpathPage("ParentalGuide");
             if (empty($xpath)) {
                 return array();
-            } // no such page
+            }
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
             foreach ($cells as $cell) {
                 $value = $cell->getElementsByTagName('a')->item(0)->nodeValue;
