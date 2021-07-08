@@ -791,7 +791,7 @@ class Title extends MdbBase
 
     #---------------------------------------------------------------[ Seasons ]---
 
-    /** Get the number of seasons or 0 if not a series
+    /** Get the number of seasons or 0 if not a series (Test if something is a series first with Title::is_serial())
      * @return int seasons number of seasons
      * @see IMDB page / (TitlePage)
      */
@@ -804,6 +804,13 @@ class Title extends MdbBase
             foreach ($dom_xpath_result as $xnode) {
                 if (!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount) {
                     $this->seasoncount = intval($xnode->getAttribute('value'));
+                }
+            }
+
+            if ($this->seasoncount === 0) {
+                $seasonLinkCount = preg_match_all('|href="/title/tt\d{7,8}/episodes\?season=\d{1,3}|i', $this->getPage("Title"));
+                if ($seasonLinkCount) {
+                    $this->seasoncount = $seasonLinkCount;
                 }
             }
         }
@@ -831,7 +838,7 @@ class Title extends MdbBase
      */
     public function isEpisode()
     {
-        return self::movietype() === self::TV_EPISODE;
+        return $this->movietype() === self::TV_EPISODE;
     }
 
     /**
@@ -1903,12 +1910,12 @@ class Title extends MdbBase
      */
     public function episodes()
     {
-        if (!$this->is_serial() && !$this->seasons()) {
+        if (!$this->is_serial() && !$this->isEpisode()) {
             return array();
         }
 
         if (empty($this->season_episodes)) {
-            if (!$this->seasons()) {
+            if ($this->isEpisode()) {
                 $ser = $this->get_episode_details();
                 if (isset($ser['imdbid'])) {
                     $show = new Title($ser['imdbid'], $this->config);

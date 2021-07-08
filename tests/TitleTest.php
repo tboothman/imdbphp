@@ -24,6 +24,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
      * 0306414 = The Wire (TV / has everything)
      * 1286039 = Stargate Universe (multiple creators)
      * 1027544 = Roary the Racing Car (TV show, almost everything missing)
+     * 303461 = Firefly (Tv show, one season)
      *
      * 0579539 = A TV episode (train job, firefly)
      *
@@ -572,7 +573,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testSeasons()
     {
         $imdb = $this->getImdb("0306414");
-        $this->assertEquals('5', $imdb->seasons());
+        $this->assertEquals(5, $imdb->seasons());
+    }
+
+    public function testSeasons_single_season_show()
+    {
+        $imdb = $this->getImdb(303461);
+        $this->assertEquals(1, $imdb->seasons());
     }
 
     public function testIs_serial()
@@ -1275,6 +1282,24 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $episodes = $imdb->episodes();
         $this->assertIsArray($episodes);
         $this->assertEmpty($episodes);
+    }
+
+    public function testEpisodes_returns_episodes_for_a_single_season_show()
+    {
+        $imdb = $this->getImdb(303461);
+        $seasons = $imdb->episodes();
+        $this->assertIsArray($seasons);
+        $this->assertCount(1, $seasons);
+        $this->assertCount(14, $seasons[1]);
+    }
+
+    public function testEpisodes_returns_episodes_for_a_episode_of_a_single_season_show()
+    {
+        $imdb = $this->getImdb('0579539'); // This is an episode of firefly, not the show
+        $seasons = $imdb->episodes();
+        $this->assertIsArray($seasons);
+        $this->assertCount(1, $seasons);
+        $this->assertCount(14, $seasons[1]);
     }
 
     public function testEpisodes_returns_episodes_for_a_multiseason_show()
