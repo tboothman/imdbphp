@@ -390,16 +390,14 @@ class TitleTest extends PHPUnit\Framework\TestCase
             if ($recommendation['title'] == 'Silent Hill') {
                 $this->assertTrue($recommendation['title'] == 'Silent Hill');
                 $this->assertTrue(floatval($recommendation['rating']) > 6.0);
-                $this->assertTrue(intval($recommendation['votes']) > 204000);
+                $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
             } else {
                 $this->assertIsArray($recommendation);
                 $this->assertTrue(strlen($recommendation['title']) > 0); // title
                 $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
-                $this->assertTrue(strlen($recommendation['year']) === 4); // year
-                $this->assertEquals("", $recommendation['endyear']);
-                $this->assertTrue($recommendation['rating'] != -1);
-                $this->assertTrue($recommendation['votes'] != -1);
+                $this->assertTrue($recommendation['rating'] != -1); // rating
+                $this->assertTrue($recommendation['img'] != ""); // img url
             }
         }
         $this->assertEquals(1, $matches);
@@ -417,11 +415,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
             $this->assertIsArray($recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
-            $this->assertTrue(strlen($recommendation['year']) === 4); // year
-            $this->assertTrue(strlen($recommendation['endyear']) === 4 || strlen($recommendation['endyear']) === 0);
-            if (strlen($recommendation['endyear']) === 4) {
-                $titlesWithEndYear++;
-            }
+            $this->assertTrue($recommendation['rating'] != -1); // rating
+            $this->assertTrue($recommendation['img'] != ""); // img url
         }
         $this->assertGreaterThan(1, $titlesWithEndYear, "There should be some titles being recommended with an end year");
     }
