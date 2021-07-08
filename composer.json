@@ -25,6 +25,7 @@
     },
     "scripts": {
         "test": "phpunit -c tests/phpunit.xml tests",
+        "test:clean": "php tests/clearCache.php && composer test",
         "phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/"
     }
 }
