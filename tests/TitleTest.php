@@ -418,7 +418,6 @@ class TitleTest extends PHPUnit\Framework\TestCase
             $this->assertTrue($recommendation['rating'] != -1); // rating
             $this->assertTrue($recommendation['img'] != ""); // img url
         }
-        $this->assertGreaterThan(1, $titlesWithEndYear, "There should be some titles being recommended with an end year");
     }
 
     public function testKeywords()
