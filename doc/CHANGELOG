@@ -2,6 +2,11 @@
 History for IMDBPHP
 ====================
 
+v7.0.0 (07.07.2021)
+-------------------
+- `Title::mainPictures()` and `Title::prodNotes()` have been removed
+- `Title::movie_recommendations()` no longer returns year, endyear and votes
+
 v6.5.1 (30.05.2021)
 ! Force the old site layout to keep the library working
 
