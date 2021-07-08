@@ -928,11 +928,14 @@ class Title extends MdbBase
         if (!$this->isEpisode()) {
             return array();
         }
-        $query = $this->XmlNextJson()->xpath("//series/series/titleText/parent::*/parent::*");
-        if (!empty($query) && isset($query[0])) {
+
+        /* @var $element \DomElement */
+        $element = $this->getXpathPage("Title")->query("//a[@data-testid='hero-title-block__series-link']")->item(0);
+        if (!empty($element)) {
+            preg_match("/(?:nm|tt)(\d{7,8})/", $element->getAttribute("href"), $matches);
             return array(
-                "imdbid" => str_ireplace('tt', '', trim(trim($query[0]->series->id))),
-                "seriestitle" => trim(trim($query[0]->series->titleText->text)),
+                "imdbid" => $matches[1],
+                "seriestitle" => trim($element->textContent),
                 "episodetitle" => $this->episodeTitle(),
                 "season" => $this->episodeSeason(),
                 "episode" => $this->episodeEpisode(),
