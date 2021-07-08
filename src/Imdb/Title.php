@@ -801,10 +801,9 @@ class Title extends MdbBase
         if ($this->seasoncount == -1) {
             $xpath = $this->getXpathPage("Title");
             $dom_xpath_result = $xpath->query('//select[@id="browse-episodes-season"]//option');
-            $this->seasoncount = -1;
+            $this->seasoncount = 0;
             foreach ($dom_xpath_result as $xnode) {
-                if (!empty($xnode->getAttribute('value'))
-                    && intval($xnode->getAttribute('value')) > $this->seasoncount) {
+                if (!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount) {
                     $this->seasoncount = intval($xnode->getAttribute('value'));
                 }
             }
@@ -816,18 +815,6 @@ class Title extends MdbBase
                 }
             }
         }
-        
-        if ($this->seasoncount == -1) {
-            $xpath = $this->getXpathPage("Title");
-            $dom_xpath_result = $xpath->query('//div[@data-testid="episodes-browse-episodes"]//a[contains(@href, "/episodes?season=")]');
-            if(!empty($dom_xpath_result) && !empty($dom_xpath_result->item(0))){
-                $seasoncount = intval(trim(str_ireplace("Season", "", $dom_xpath_result->item(0)->nodeValue)));
-                if($seasoncount > 0){
-                    $this->seasoncount = $seasoncount;
-                }
-            }
-        }
-        
         return $this->seasoncount;
     }
 
