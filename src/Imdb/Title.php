@@ -587,7 +587,8 @@ class Title extends MdbBase
                         $movie['rating'] = -1;
                     }
                     $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
-                    $movie['img'] = $getImage->item(0)->getAttribute('src');
+                    if(!empty($getImage) && $getImage->item(0) != null && !empty($getImage->item(0)->getAttribute('src')))
+                        $movie['img'] = $getImage->item(0)->getAttribute('src');
                     $this->movierecommendations[] = $movie;
                 }
             }
