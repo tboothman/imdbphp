@@ -1411,7 +1411,7 @@ class Title extends MdbBase
                 if ($a = $cell->getElementsByTagName('a')->item($q)) {
                     $href = preg_replace('!/search/title!i', 'https://' . $this->imdbsite . '/search/title',
                         $a->getAttribute('href'));
-                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($cell->getElementsByTagName('a')->item($q)->nodeValue) . '</a>';
+                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
                 }
                 $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
