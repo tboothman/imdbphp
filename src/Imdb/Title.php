@@ -3114,12 +3114,12 @@ class Title extends MdbBase
                 $count = $cell->getElementsByTagName('li')->count();
                 if ($count) {
                     $listHeader = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]/text()");
-                    $listItems = trim($listHeader->item($key)->nodeValue) . '&#10;';
+                    $listItems = trim($listHeader->item($key)->nodeValue) . "\n";
                     $items = $cell->getElementsByTagName('li');
                     foreach ($items as $key => $value) {
                         $listItems .= '- ' . trim($value->nodeValue);
                         if ($key < $count - 1) {
-                            $listItems .= '&#10;';
+                            $listItems .= "\n";
                         }
                     }
                     $this->moviealternateversions[] = $listItems;
