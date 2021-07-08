@@ -283,6 +283,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(136, $runtimes[0]['time']);
     }
 
+    public function testRuntimes_tv_show()
+    {
+        $imdb = $this->getImdb('0306414');
+        $runtimes = $imdb->runtimes();
+        $this->assertEquals(59, $runtimes[0]['time']);
+    }
+
     // Nausicaa's runtimes are "117 min | 95 min (1985) (edited)"
     public function testRuntimes_two_runtimes_multiple_annotations()
     {
@@ -1900,7 +1907,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     protected function getImdb($imdbId = '0133093')
     {
         $config = new \Imdb\Config();
-        $config->language = 'En';
+        $config->language = 'En-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
