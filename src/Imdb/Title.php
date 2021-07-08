@@ -1910,7 +1910,7 @@ class Title extends MdbBase
      */
     public function episodes()
     {
-        if (!$this->is_serial() && !$this->isEpisode()) {
+        if (!($this->is_serial() || $this->isEpisode())) {
             return array();
         }
 
