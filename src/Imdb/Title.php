@@ -1400,7 +1400,6 @@ class Title extends MdbBase
     {
         if (empty($this->plot_plot)) {
             $xpath = $this->getXpathPage("Plot");
-            //$page = $this->getPage("Plot");
             if (empty($xpath)) {
                 return array();
             } // no such page
