@@ -564,37 +564,30 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes,type,originaltitle,img,runtime,certificate])
-     * sample type result: tvMiniSeries - tvSeries - movie
+     * @return array recommendations (array[title,imdbid,rating,img])
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
         if (empty($this->movierecommendations)) {
-            $xpath = $this->XmlNextJson()->xpath('//moreLikeThisTitles');
-            if ($xpath && isset($xpath[0]->edges->e)) {
-                foreach ($xpath[0]->edges->e as $record) {
-                    $sec = trim($record->node->runtime->seconds);
-                    if (is_numeric($sec)) {
-                        $minutes = floor($sec / 60); // convert runtime to minutes
+            $xp = $this->getXpathPage("Title");
+            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
+            /** @var \DOMElement $cell */
+            foreach ($cells as $key => $cell) {
+                $movie = array();
+                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
+                if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
+                        $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
+                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
+                    $movie['imdbid'] = $ref[1];
+                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
+                    if (!empty($get_rating)) {
+                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
                     } else {
-                        $minutes = 0;
-                    }
-                    $movie = array();
-                    $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
-                    $movie['title'] = utf8_decode(trim($record->node->titleText->text));
-                    $movie['originaltitle'] = utf8_decode(trim($record->node->originalTitleText->text));
-                    $movie['img'] = trim($record->node->primaryImage->url);
-                    $movie['type'] = trim($record->node->titleType->id);
-                    $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
-                    $movie['votes'] = trim($record->node->ratingsSummary->voteCount);
-                    $movie['runtime'] = $minutes;
-                    $movie['certificate'] = trim($record->node->certificate->rating); //maybe return 'Not Rated'
-                    $movie['year'] = trim($record->node->releaseYear->year);
-                    $movie['endyear'] = trim($record->node->releaseYear->endYear);
-                    if (empty($movie['rating'])) {
                         $movie['rating'] = -1;
                     }
+                    $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
+                    $movie['img'] = $getImage->item(0)->getAttribute('src');
                     $this->movierecommendations[] = $movie;
                 }
             }
