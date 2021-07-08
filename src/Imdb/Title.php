@@ -423,7 +423,7 @@ class Title extends MdbBase
                 if (preg_match_all('/(\d+\s+hr\s+\d+\s+min)? ?\((\d+)\s+min\)|(\d+)\s+min/', trim($runtimestring),
                     $matches,
                     PREG_SET_ORDER, 0)) {
-                    $runtime = isset($matches[1][2]) ? $matches[1][2] : (isset($matches[0][2]) ? $matches[0][2] : 0);
+                    $runtime = (!empty($matches[1][2]) ? $matches[1][2] : (!empty($matches[0][2]) ? $matches[0][2] : (!empty($matches[0][3]) ? $matches[0][3] : 0)));
                     $annotations = array();
                     if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", trim($runtimestring), $matches)) {
                         $annotations = $matches[1];
