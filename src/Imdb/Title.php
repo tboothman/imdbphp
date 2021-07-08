@@ -1131,41 +1131,6 @@ class Title extends MdbBase
         return false;
     }
 
-    /** Get URLs for the pictures on the main page
-     * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
-     *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
-     *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
-     *    <LI>bigsrc is the URL of the "big size" image itself</LI>
-     * @author moonface
-     * @author izzy
-     */
-    public function mainPictures()
-    {
-        $this->getPage("Title");
-        if (empty($this->main_pictures)) {
-            preg_match('!<div class="mediastrip">\s*(.*?)\s*</div>!ims', $this->page["Title"], $match);
-            if (@preg_match_all('!<a .*?href="(?<href>.*?)".*?<img.*?src="(.*?)".*?loadlate="(?<imgsrc>.*?)"!ims',
-                $match[1], $matches)) {
-                for ($i = 0; $i < count($matches[0]); ++$i) {
-                    $this->main_pictures[$i]["imgsrc"] = $matches['imgsrc'][$i];
-                    if (substr($matches['href'][$i], 0, 4) != "http") {
-                        $matches['href'][$i] = "https://" . $this->imdbsite . $matches[1][$i];
-                    }
-                    $this->main_pictures[$i]["imglink"] = $matches['href'][$i];
-                    preg_match('|(.*\._V1).*|iUs', $matches['imgsrc'][$i], $big);
-                    $ext = substr($matches[2][$i], -3);
-                    $this->main_pictures[$i]["bigsrc"] = $big[1] . ".${ext}";
-                    /*          // Get bigsrc from linked photo page. (proposed by ticket:327 -- seems to result in the same as above, so keeping it just-in-case)
-          //preg_match('!<div id="photo-container".*?>\s*(.*?)\s*</div>!ims',$this->getWebPage("Bigsrc", $matches[1][$i]),$match2);
-          //if (@preg_match_all('!<img.*?id="primary-img".*?src="(.*?)".*?!ims',$match2[1],$matches2)) {
-          //  $this->main_pictures[$i]["bigsrc"] = $matches2[1][0];
-          //} */
-                }
-            }
-        }
-        return $this->main_pictures;
-    }
-
     #-------------------------------------------------[ Country of Production ]---
 
     /** Get country of production
@@ -1309,62 +1274,6 @@ class Title extends MdbBase
             }
         }
         return $this->mpaa_justification;
-    }
-
-    #------------------------------------------------------[ Production Notes ]---
-
-    /** For not-yet completed movies, we can get the production state
-     * @return array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
-     * @see IMDB page / (TitlePage)
-     */
-    public function prodNotes()
-    {
-        if (empty($this->main_prodnotes)) {
-            $this->getPage("Title");
-            if (!preg_match('!(<h2>Production Notes.*?)\s*</div!ims', $this->page["Title"], $match)) {
-                return $this->main_prodnotes;
-            } // no info available
-            if (preg_match('!<b>Status:\s*</b>\s*(.*?)\s*<br!ims', $match[1], $tmp)) {
-                if (preg_match('!(.*?)\s*<span class="ghost">\|</span>\s*(.*)!ims', $tmp[1], $tmp2)) {
-                    $status = trim($tmp2[1]);
-                    $statnote = trim($tmp2[2]);
-                } else {
-                    $status = trim($tmp);
-                    $statnote = '';
-                }
-            } else {
-                $status = '';
-            }
-            if (preg_match('!<b>Updated:\s*</b>\s*(\d+)\s*(\D+)\s+(\d{4})!ims', $match[1], $tmp)) {
-                $update = array(
-                    "day" => $tmp[1],
-                    "month" => $tmp[2],
-                    "mon" => $this->monthNo($tmp[2]),
-                    "year" => $tmp[3]
-                );
-            } else {
-                $update = array();
-            }
-            if (preg_match('!<b>More Info:\s*</b>\s*(.*)!ims', $match[1], $tmp)) {
-                $more = preg_replace('!\s*onclick=".*?"!ims', '', trim($tmp[1]));
-                $more = preg_replace('!href="/!ims', 'href="https://' . $this->imdbsite . '/', $more);
-            } else {
-                $more = '';
-            }
-            if (preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims', $match[1], $tmp)) {
-                $note = trim($tmp[1]);
-            } else {
-                $note = '';
-            }
-            $this->main_prodnotes = array(
-                "status" => $status,
-                "statnote" => $statnote,
-                "lastUpdate" => $update,
-                "more" => $more,
-                "note" => $note
-            );
-        }
-        return $this->main_prodnotes;
     }
 
     #----------------------------------------------[ Position in the "Top250" ]---
