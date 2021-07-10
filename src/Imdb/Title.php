@@ -581,13 +581,14 @@ class Title extends MdbBase
                     $movie['title'] = utf8_decode(trim($get_link_and_name->item(0)->nodeValue));
                     $movie['imdbid'] = $ref[1];
                     $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
-                    if (!empty($get_rating)) {
+                    if (!empty($get_rating->item(0))) {
                         $movie['rating'] = trim($get_rating->item(0)->nodeValue);
                     } else {
                         $movie['rating'] = -1;
                     }
                     $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
-                    $movie['img'] = $getImage->item(0)->getAttribute('src');
+                    if(!empty($getImage->item(0)) &&  !empty($getImage->item(0)->getAttribute('src')))
+                        $movie['img'] = $getImage->item(0)->getAttribute('src');
                     $this->movierecommendations[] = $movie;
                 }
             }
