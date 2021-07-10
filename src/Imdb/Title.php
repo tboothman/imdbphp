@@ -1950,7 +1950,8 @@ class Title extends MdbBase
 
             if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
                 preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
-                for ($i = 0; $i < count($matches[0]); ++$i) {
+                $count = count($matches[0]);
+                for ($i = 0; $i < $count; ++$i) {
                     $s = $matches[2][$i];
                     $page = $this->getPage("Episodes-$s");
                     if (empty($page)) {
