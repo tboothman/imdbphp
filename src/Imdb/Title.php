@@ -568,51 +568,33 @@ class Title extends MdbBase
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,year,endyear,rating,votes,type,originaltitle,img,runtime,certificate])
-     * sample type result: tvMiniSeries - tvSeries - movie
+     * @return array recommendations (array[title,imdbid,rating,img])
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
         if (empty($this->movierecommendations)) {
-            $xpath = $this->XmlNextJson()->xpath('//moreLikeThisTitles');
-            if ($xpath && isset($xpath[0]->edges->e)) {
-                foreach ($xpath[0]->edges->e as $record) {
-                    $movie = array();
-                    $movie['imdbid'] = str_ireplace('tt', '', trim($record->node->id));
-                    $movie['title'] = trim($record->node->titleText->text);
-                    $movie['originaltitle'] = trim($record->node->originalTitleText->text);
-                    $movie['img'] = trim($record->node->primaryImage->url);
-                    $movie['type'] = trim($record->node->titleType->id);
-                    $movie['rating'] = trim($record->node->ratingsSummary->aggregateRating);
-                    $movie['votes'] = trim($record->node->ratingsSummary->voteCount);
-                    $movie['runtime'] = trim($record->node->runtime->seconds);
-                    $movie['certificate'] = trim($record->node->certificate->rating); //maybe return 'Not Rated'
-                    $movie['year'] = trim($record->node->releaseYear->year);
-                    $movie['endyear'] = trim($record->node->releaseYear->endYear);
-                    if (empty($movie['rating'])) {
-                        $movie['rating'] = -1;
-                    }
-                    $this->movierecommendations[] = $movie;
-                }
-            }
-        }
-        if (empty($this->movierecommendations)) {
             $xp = $this->getXpathPage("Title");
             $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
             /** @var \DOMElement $cell */
-            foreach ($cells as $cell) {
+            foreach ($cells as $key => $cell) {
                 $movie = array();
                 $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
                 if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
                         $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
+                    $movie['title'] = utf8_decode(trim($get_link_and_name->item(0)->nodeValue));
                     $movie['imdbid'] = $ref[1];
                     $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
-                    if (!empty($get_rating)) {
+                    if (!empty($get_rating->item(0))) {
                         $movie['rating'] = trim($get_rating->item(0)->nodeValue);
                     } else {
                         $movie['rating'] = -1;
+                    }
+                    $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
+                    if (!empty($getImage->item(0)) && !empty($getImage->item(0)->getAttribute('src'))) {
+                        $movie['img'] = $getImage->item(0)->getAttribute('src');
+                    } else {
+                        $movie['img'] = "";
                     }
                     $this->movierecommendations[] = $movie;
                 }
@@ -817,7 +799,7 @@ class Title extends MdbBase
 
     #---------------------------------------------------------------[ Seasons ]---
 
-    /** Get the number of seasons or 0 if not a series
+    /** Get the number of seasons or 0 if not a series (Test if something is a series first with Title::is_serial())
      * @return int seasons number of seasons
      * @see IMDB page / (TitlePage)
      */
@@ -830,6 +812,13 @@ class Title extends MdbBase
             foreach ($dom_xpath_result as $xnode) {
                 if (!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount) {
                     $this->seasoncount = intval($xnode->getAttribute('value'));
+                }
+            }
+
+            if ($this->seasoncount === 0) {
+                // Single season shows have a link rather than a select box
+                if (preg_match('|href="/title/tt\d{7,8}/episodes\?season=\d+|i', $this->getPage("Title"))) {
+                    $this->seasoncount = 1;
                 }
             }
         }
@@ -857,7 +846,7 @@ class Title extends MdbBase
      */
     public function isEpisode()
     {
-        return self::movietype() === self::TV_EPISODE;
+        return $this->movietype() === self::TV_EPISODE;
     }
 
     /**
@@ -954,11 +943,14 @@ class Title extends MdbBase
         if (!$this->isEpisode()) {
             return array();
         }
-        $query = $this->XmlNextJson()->xpath("//series/series/titleText/parent::*/parent::*");
-        if (!empty($query) && isset($query[0])) {
+
+        /* @var $element \DomElement */
+        $element = $this->getXpathPage("Title")->query("//a[@data-testid='hero-title-block__series-link']")->item(0);
+        if (!empty($element)) {
+            preg_match("/(?:nm|tt)(\d{7,8})/", $element->getAttribute("href"), $matches);
             return array(
-                "imdbid" => str_ireplace('tt', '', trim(trim($query[0]->series->id))),
-                "seriestitle" => trim(trim($query[0]->series->titleText->text)),
+                "imdbid" => $matches[1],
+                "seriestitle" => trim($element->textContent),
                 "episodetitle" => $this->episodeTitle(),
                 "season" => $this->episodeSeason(),
                 "episode" => $this->episodeEpisode(),
@@ -1135,41 +1127,6 @@ class Title extends MdbBase
         return false;
     }
 
-    /** Get URLs for the pictures on the main page
-     * @return array [0..n] of [imgsrc, imglink, bigsrc], where<UL>
-     *    <LI>imgsrc is the URL of the thumbnail IMG as displayed on main page</LI>
-     *    <LI>imglink is the link to the <b><i>page</i></b> with the "big image"</LI>
-     *    <LI>bigsrc is the URL of the "big size" image itself</LI>
-     * @author moonface
-     * @author izzy
-     */
-    public function mainPictures()
-    {
-        $this->getPage("Title");
-        if (empty($this->main_pictures)) {
-            preg_match('!<div class="mediastrip">\s*(.*?)\s*</div>!ims', $this->page["Title"], $match);
-            if (@preg_match_all('!<a .*?href="(?<href>.*?)".*?<img.*?src="(.*?)".*?loadlate="(?<imgsrc>.*?)"!ims',
-                $match[1], $matches)) {
-                for ($i = 0; $i < count($matches[0]); ++$i) {
-                    $this->main_pictures[$i]["imgsrc"] = $matches['imgsrc'][$i];
-                    if (substr($matches['href'][$i], 0, 4) != "http") {
-                        $matches['href'][$i] = "https://" . $this->imdbsite . $matches[1][$i];
-                    }
-                    $this->main_pictures[$i]["imglink"] = $matches['href'][$i];
-                    preg_match('|(.*\._V1).*|iUs', $matches['imgsrc'][$i], $big);
-                    $ext = substr($matches[2][$i], -3);
-                    $this->main_pictures[$i]["bigsrc"] = $big[1] . ".${ext}";
-                    /*          // Get bigsrc from linked photo page. (proposed by ticket:327 -- seems to result in the same as above, so keeping it just-in-case)
-          //preg_match('!<div id="photo-container".*?>\s*(.*?)\s*</div>!ims',$this->getWebPage("Bigsrc", $matches[1][$i]),$match2);
-          //if (@preg_match_all('!<img.*?id="primary-img".*?src="(.*?)".*?!ims',$match2[1],$matches2)) {
-          //  $this->main_pictures[$i]["bigsrc"] = $matches2[1][0];
-          //} */
-                }
-            }
-        }
-        return $this->main_pictures;
-    }
-
     #-------------------------------------------------[ Country of Production ]---
 
     /** Get country of production
@@ -1313,62 +1270,6 @@ class Title extends MdbBase
             }
         }
         return $this->mpaa_justification;
-    }
-
-    #------------------------------------------------------[ Production Notes ]---
-
-    /** For not-yet completed movies, we can get the production state
-     * @return array production notes [status,statnote,lastupdate[day,month,mon,year],more,note]
-     * @see IMDB page / (TitlePage)
-     */
-    public function prodNotes()
-    {
-        if (empty($this->main_prodnotes)) {
-            $this->getPage("Title");
-            if (!preg_match('!(<h2>Production Notes.*?)\s*</div!ims', $this->page["Title"], $match)) {
-                return $this->main_prodnotes;
-            } // no info available
-            if (preg_match('!<b>Status:\s*</b>\s*(.*?)\s*<br!ims', $match[1], $tmp)) {
-                if (preg_match('!(.*?)\s*<span class="ghost">\|</span>\s*(.*)!ims', $tmp[1], $tmp2)) {
-                    $status = trim($tmp2[1]);
-                    $statnote = trim($tmp2[2]);
-                } else {
-                    $status = trim($tmp);
-                    $statnote = '';
-                }
-            } else {
-                $status = '';
-            }
-            if (preg_match('!<b>Updated:\s*</b>\s*(\d+)\s*(\D+)\s+(\d{4})!ims', $match[1], $tmp)) {
-                $update = array(
-                    "day" => $tmp[1],
-                    "month" => $tmp[2],
-                    "mon" => $this->monthNo($tmp[2]),
-                    "year" => $tmp[3]
-                );
-            } else {
-                $update = array();
-            }
-            if (preg_match('!<b>More Info:\s*</b>\s*(.*)!ims', $match[1], $tmp)) {
-                $more = preg_replace('!\s*onclick=".*?"!ims', '', trim($tmp[1]));
-                $more = preg_replace('!href="/!ims', 'href="https://' . $this->imdbsite . '/', $more);
-            } else {
-                $more = '';
-            }
-            if (preg_match('!<b>Note:\s*</b>\s*(.*?)</!ims', $match[1], $tmp)) {
-                $note = trim($tmp[1]);
-            } else {
-                $note = '';
-            }
-            $this->main_prodnotes = array(
-                "status" => $status,
-                "statnote" => $statnote,
-                "lastUpdate" => $update,
-                "more" => $more,
-                "note" => $note
-            );
-        }
-        return $this->main_prodnotes;
     }
 
     #----------------------------------------------[ Position in the "Top250" ]---

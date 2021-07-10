@@ -24,6 +24,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
      * 0306414 = The Wire (TV / has everything)
      * 1286039 = Stargate Universe (multiple creators)
      * 1027544 = Roary the Racing Car (TV show, almost everything missing)
+     * 303461 = Firefly (Tv show, one season)
      *
      * 0579539 = A TV episode (train job, firefly)
      *
@@ -390,16 +391,14 @@ class TitleTest extends PHPUnit\Framework\TestCase
             if ($recommendation['title'] == 'Silent Hill') {
                 $this->assertTrue($recommendation['title'] == 'Silent Hill');
                 $this->assertTrue(floatval($recommendation['rating']) > 6.0);
-                $this->assertTrue(intval($recommendation['votes']) > 204000);
+                $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
             } else {
                 $this->assertIsArray($recommendation);
                 $this->assertTrue(strlen($recommendation['title']) > 0); // title
                 $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
-                $this->assertTrue(strlen($recommendation['year']) === 4); // year
-                $this->assertEquals("", $recommendation['endyear']);
-                $this->assertTrue($recommendation['rating'] != -1);
-                $this->assertTrue($recommendation['votes'] != -1);
+                $this->assertTrue($recommendation['rating'] != -1); // rating
+                $this->assertTrue($recommendation['img'] != ""); // img url
             }
         }
         $this->assertEquals(1, $matches);
@@ -417,13 +416,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
             $this->assertIsArray($recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
             $this->assertTrue(strlen($recommendation['imdbid']) === 7 || strlen($recommendation['imdbid']) === 8); // imdb number
-            $this->assertTrue(strlen($recommendation['year']) === 4); // year
-            $this->assertTrue(strlen($recommendation['endyear']) === 4 || strlen($recommendation['endyear']) === 0);
-            if (strlen($recommendation['endyear']) === 4) {
-                $titlesWithEndYear++;
-            }
+            $this->assertTrue($recommendation['rating'] != -1); // rating
+            $this->assertTrue($recommendation['img'] != ""); // img url
         }
-        $this->assertGreaterThan(1, $titlesWithEndYear, "There should be some titles being recommended with an end year");
     }
 
     public function testKeywords()
@@ -578,7 +573,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testSeasons()
     {
         $imdb = $this->getImdb("0306414");
-        $this->assertEquals('5', $imdb->seasons());
+        $this->assertEquals(5, $imdb->seasons());
+    }
+
+    public function testSeasons_single_season_show()
+    {
+        $imdb = $this->getImdb(303461);
+        $this->assertEquals(1, $imdb->seasons());
     }
 
     public function testIs_serial()
@@ -1283,6 +1284,24 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEmpty($episodes);
     }
 
+    public function testEpisodes_returns_episodes_for_a_single_season_show()
+    {
+        $imdb = $this->getImdb(303461);
+        $seasons = $imdb->episodes();
+        $this->assertIsArray($seasons);
+        $this->assertCount(1, $seasons);
+        $this->assertCount(14, $seasons[1]);
+    }
+
+    public function testEpisodes_returns_episodes_for_a_episode_of_a_single_season_show()
+    {
+        $imdb = $this->getImdb('0579539'); // This is an episode of firefly, not the show
+        $seasons = $imdb->episodes();
+        $this->assertIsArray($seasons);
+        $this->assertCount(1, $seasons);
+        $this->assertCount(14, $seasons[1]);
+    }
+
     public function testEpisodes_returns_episodes_for_a_multiseason_show()
     {
         $imdb = $this->getImdb('0306414');
@@ -1384,6 +1403,14 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $quotes_split = $imdb->quotes_split();
 
         $this->assertGreaterThan(10, count($quotes_split));
+
+        $allInTheGame = null;
+        foreach ($quotes_split as $quote_split) {
+            if (2 == count($quote_split) && $quote_split[1]['quote'] === 'All in the game yo, all in the game.') {
+                $allInTheGame = $quote_split;
+            }
+        }
+
         $this->assertEquals(array(
             array(
                 'quote' => '[repeated line]',
@@ -1399,7 +1426,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[2]);
+            ), $allInTheGame);
     }
 
     public function testTrailers_all()
