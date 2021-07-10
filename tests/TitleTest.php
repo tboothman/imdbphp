@@ -1403,6 +1403,14 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $quotes_split = $imdb->quotes_split();
 
         $this->assertGreaterThan(10, count($quotes_split));
+
+        $allInTheGame = null;
+        foreach ($quotes_split as $quote_split) {
+            if (2 == count($quote_split) && $quote_split[1]['quote'] === 'All in the game yo, all in the game.') {
+                $allInTheGame = $quote_split;
+            }
+        }
+
         $this->assertEquals(array(
             array(
                 'quote' => '[repeated line]',
@@ -1418,7 +1426,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
                     'name' => 'Omar'
                 )
             )
-            ), $quotes_split[2]);
+            ), $allInTheGame);
     }
 
     public function testTrailers_all()
