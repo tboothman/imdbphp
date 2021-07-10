@@ -201,7 +201,11 @@ class Title extends MdbBase
         }
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
-            return '/episodes?season=' . $match[1];
+            if (strlen($match[1]) == 4) {
+                return '/episodes?year=' . $match[1];
+            } else {
+                return '/episodes?season=' . $match[1];
+            }
         }
 
         throw new \Exception("Could not find URL for page $pageName");
@@ -2013,12 +2017,12 @@ class Title extends MdbBase
      */
     public function episodes()
     {
-        if (!$this->is_serial() && !$this->seasons()) {
+        if (!($this->is_serial() || $this->isEpisode())) {
             return array();
         }
 
         if (empty($this->season_episodes)) {
-            if (!$this->seasons()) {
+            if ($this->isEpisode()) {
                 $ser = $this->get_episode_details();
                 if (isset($ser['imdbid'])) {
                     $show = new Title($ser['imdbid'], $this->config);
@@ -2030,8 +2034,20 @@ class Title extends MdbBase
             $page = $this->getPage("Episodes");
             if (empty($page)) {
                 return $this->season_episodes;
-            } // no such page
-            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $match)) {
+            }
+            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
+                preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
+                if (is_numeric(trim($matchOptionSeason[1][0]))) {
+                    //season based
+                    $selectId = 'id="bySeason"';
+                } else {
+                    // year based
+                    $selectId = 'id="byYear"';
+                }
+            }
+
+
+            if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
                 preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
                 for ($i = 0; $i < count($matches[0]); ++$i) {
                     $s = $matches[2][$i];
