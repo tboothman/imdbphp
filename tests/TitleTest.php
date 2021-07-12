@@ -24,7 +24,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
      * 0306414 = The Wire (TV / has everything)
      * 1286039 = Stargate Universe (multiple creators)
      * 1027544 = Roary the Racing Car (TV show, almost everything missing)
-     * 303461 = Firefly (Tv show, one season)
+     * 303461  = Firefly (TV show, one season)
+     * 988824  = Naruto (TV show, one massive season)
      *
      * 0579539 = A TV episode (train job, firefly)
      *
@@ -1374,6 +1375,35 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals("", $episode['plot']);
         $this->assertEquals(-1, $episode['season']);
         $this->assertEquals(-1, $episode['episode']);
+    }
+
+    // Some shows don't work on seasons and so have many episodes assigned to season 1. Imdb used to just timeout rendering the page but they now cut the request off and don't render the page
+    // Instead the episodes need to be fetched by year - which have far fewer per page and do load
+    public function testEpisodes_many_episodes_season_1()
+    {
+        $imdb = $this->getImdb(988824);
+        $years = $imdb->episodes();
+
+        $this->assertIsArray($years);
+        $this->assertCount(10, $years);
+
+        $episode = $years[2009][1];
+
+        $episodeCount = array_reduce($years, function ($count, $episodes) {
+            return $count + count($episodes);
+        }, 0);
+
+        $this->assertEquals(502, $episodeCount);
+
+        $this->assertEquals([
+            "imdbid" => "0990165",
+            "title" => "Kikyô",
+            "airdate" => "28 Oct. 2009",
+            "plot" => "Naruto returns to Konoha after a two-and-a-half-year training journey with Jiraiya and is reunited with Sakura.",
+            "season" => 2009,
+            "episode" => 1,
+            "image_url" => 'https://m.media-amazon.com/images/M/MV5BNWJiY2ZkYzUtMmZhMy00ZDAwLWE1MmQtMjkzZmJhZWI5Zjk3XkEyXkFqcGdeQXVyMjM0NTM5MTA@._V1_UX224_CR0,0,224,126_AL_.jpg',
+        ], $episode);
     }
 
     public function testGoofs()

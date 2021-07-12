@@ -1912,7 +1912,7 @@ class Title extends MdbBase
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode, imgUrl])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
      * @see IMDB page /episodes
      * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
      */
@@ -1926,7 +1926,7 @@ class Title extends MdbBase
             if ($this->isEpisode()) {
                 $ser = $this->get_episode_details();
                 if (isset($ser['imdbid'])) {
-                    $show = new Title($ser['imdbid'], $this->config);
+                    $show = new Title($ser['imdbid'], $this->config, $this->logger, $this->cache);
                     return $this->season_episodes = $show->episodes();
                 } else {
                     return array();
@@ -1936,6 +1936,10 @@ class Title extends MdbBase
             if (empty($page)) {
                 return $this->season_episodes;
             }
+
+            // There are two select boxes: one per season and one per year. IMDb picks one select to use by default and the other starts with an empty option.
+            // The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
+            // (e.g. a show without seasons might have 100s of episodes in season 1 and its page won't load)
             if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
                 preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
                 if (is_numeric(trim($matchOptionSeason[1][0]))) {
@@ -1946,7 +1950,6 @@ class Title extends MdbBase
                     $selectId = 'id="byYear"';
                 }
             }
-
 
             if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
                 preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
@@ -1968,9 +1971,9 @@ class Title extends MdbBase
                     foreach ($eps as $ep) {
                         //Fetch episodes image url
                         if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
-                            $url = $foundUrl[2];
+                            $image_url = $foundUrl[2];
                         } else {
-                            $url = "";
+                            $image_url = "";
                         }
                         $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
                         $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
@@ -1981,9 +1984,9 @@ class Title extends MdbBase
                             'title' => trim($ep['title']),
                             'airdate' => $ep['airdate'],
                             'plot' => strip_tags($plot),
-                            'season' => $s,
-                            'episode' => $ep['episodeNumber'],
-                            'url' => $url
+                            'season' => (int)$s,
+                            'episode' => (int)$ep['episodeNumber'],
+                            'image_url' => $image_url
                         );
                         $urlIndex = $urlIndex + 1;
 
