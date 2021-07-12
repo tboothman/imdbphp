@@ -2,8 +2,16 @@
 History for IMDBPHP
 ====================
 
+v7.1.0 (12.07.2021)
+-------------------
++ `Title::episodes()` now has a image_url field on each episode with a url pointing to the picture for that episode
+! Fix `Title::episodes()` failing when a season had a lot of episodes. Thanks @duck7000  #242
+! Fix `Title::episodes()` for shows with only one season #239
+! Fix `Title::movie_recommendations()` throwing errors when data such as rating was missing from the recommendation. Thanks @M0H4MM4D0UTIS #240
+
 v7.0.0 (07.07.2021)
 -------------------
+! Many fixes due to the redesign of the title page
 - `Title::mainPictures()` and `Title::prodNotes()` have been removed
 - `Title::movie_recommendations()` no longer returns year, endyear and votes
 
