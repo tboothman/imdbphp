@@ -1304,20 +1304,19 @@ class Title extends MdbBase
     public function plot()
     {
         if (empty($this->plot_plot)) {
-            $page = $this->getPage("Plot");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Plot");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($page);
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
+            $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
             foreach ($cells as $cell) {
                 $link = '';
-                if ($a = $cell->getElementsByTagName('a')->item(0)) {
+                $length = $cell->getElementsByTagName('a')->length;
+                $authorLinkIndex = $length - 1;
+                if ($a = $cell->getElementsByTagName('a')->item($authorLinkIndex)) {
                     $href = preg_replace('!/search/title!i', 'https://' . $this->imdbsite . '/search/title',
                         $a->getAttribute('href'));
-                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
+                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
                 }
                 $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
