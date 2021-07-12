@@ -820,6 +820,51 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('PG-13', $mpaa['United States']);
     }
 
+    public function testMpaa_should_return_the_last_rating_for_each_country_when_no_bool_param()
+    {
+        $imdb = $this->getImdb('0120737');
+        $expected = [
+            'Canada' => 'G',
+            'Germany' => 12,
+        ];
+
+        $mpaa = $imdb->mpaa();
+
+        $this->assertArraySubset($expected, $mpaa);
+    }
+
+    public function testMpaa_on_series_with_multiple_value_for_a_country_should_reserve_all_ratings_when_true_passed()
+    {
+        $imdb = $this->getImdb('436992');
+        $expected = [
+            'Argentina' => [13],
+            'Australia' => ['PG', 'M'],
+            'Brazil' => [10, 12],
+            'Canada' => ['PG', 'G'],
+            'Finland' => ['K-11'],
+            'France' => ['Tous publics'],
+            'Germany' => [12, 16],
+            'India' => ['12+'],
+            'Ireland' => ['G'],
+            'Italy' => ['T'],
+            'Japan' => ['G'],
+            'Netherlands' => [9,6],
+            'New Zealand' => ['PG', 'M'],
+            'Norway' => [12],
+            'Russia' => ['16+'],
+            'Singapore' => ['PG', 'PG13', 'NC16'],
+            'South Africa' => [13],
+            'South Korea' => [15],
+            'Spain' => [13],
+            'United Kingdom' => ['PG', 'U', 12],
+            'United States' => ['TV-PG', 'TV-Y7-FV'],
+        ];
+
+        $mpaa = $imdb->mpaa(true);
+
+        $this->assertEquals($expected, $mpaa);
+    }
+
     public function testMpaa_hist()
     {
         $imdb = $this->getImdb('0120737');
@@ -1937,7 +1982,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $config->language = 'En-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 999999;
         $config->debug = false;
         $imdb = new \Imdb\Title($imdbId, $config);
         return $imdb;
