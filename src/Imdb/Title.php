@@ -3006,15 +3006,26 @@ class Title extends MdbBase
     public function alternateVersions()
     {
         if (empty($this->moviealternateversions)) {
-            $page = $this->getPage('AlternateVersions');
-
-            if (false !== strpos($page, 'id="no_content"')) {
+            $xpath = $this->getXpathPage("AlternateVersions");
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array();
             }
-
-            if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', $page, $matches)) {
-                foreach ($matches[2] as $match) {
-                    $this->moviealternateversions[] = trim(str_replace("\n", " ", $match));
+            $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
+            foreach ($cells as $key => $cell) {
+                $count = $cell->getElementsByTagName('li')->count();
+                if ($count) {
+                    $listHeader = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]/text()");
+                    $listItems = trim($listHeader->item($key)->nodeValue) . "\n";
+                    $items = $cell->getElementsByTagName('li');
+                    foreach ($items as $key => $value) {
+                        $listItems .= '- ' . trim($value->nodeValue);
+                        if ($key < $count - 1) {
+                            $listItems .= "\n";
+                        }
+                    }
+                    $this->moviealternateversions[] = $listItems;
+                } else {
+                    $this->moviealternateversions[] = trim($cell->nodeValue);
                 }
             }
         }
