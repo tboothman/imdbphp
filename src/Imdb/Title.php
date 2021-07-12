@@ -201,7 +201,11 @@ class Title extends MdbBase
         }
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
-            return '/episodes?season=' . $match[1];
+            if (strlen($match[1]) == 4) {
+                return '/episodes?year=' . $match[1];
+            } else {
+                return '/episodes?season=' . $match[1];
+            }
         }
 
         throw new \Exception("Could not find URL for page $pageName");
@@ -1908,7 +1912,7 @@ class Title extends MdbBase
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode, imgUrl])
      * @see IMDB page /episodes
      * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
      */
@@ -1931,21 +1935,43 @@ class Title extends MdbBase
             $page = $this->getPage("Episodes");
             if (empty($page)) {
                 return $this->season_episodes;
-            } // no such page
-            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $match)) {
+            }
+            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
+                preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
+                if (is_numeric(trim($matchOptionSeason[1][0]))) {
+                    //season based
+                    $selectId = 'id="bySeason"';
+                } else {
+                    // year based
+                    $selectId = 'id="byYear"';
+                }
+            }
+
+
+            if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
                 preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
-                for ($i = 0; $i < count($matches[0]); ++$i) {
+                $count = count($matches[0]);
+                for ($i = 0; $i < $count; ++$i) {
                     $s = $matches[2][$i];
                     $page = $this->getPage("Episodes-$s");
                     if (empty($page)) {
-                        continue;
-                    } // no such page
+                        continue; // no such page
+                    }
+                    // fetch episodes images
+                    preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
+                    $urlIndex = 0;
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                         . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                         . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                         . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
+                        //Fetch episodes image url
+                        if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
+                            $url = $foundUrl[2];
+                        } else {
+                            $url = "";
+                        }
                         $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
                         $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
                             '', $plot);
@@ -1954,10 +1980,12 @@ class Title extends MdbBase
                             'imdbid' => $ep['imdbid'],
                             'title' => trim($ep['title']),
                             'airdate' => $ep['airdate'],
-                            'plot' => $plot,
+                            'plot' => strip_tags($plot),
                             'season' => $s,
-                            'episode' => $ep['episodeNumber']
+                            'episode' => $ep['episodeNumber'],
+                            'url' => $url
                         );
+                        $urlIndex = $urlIndex + 1;
 
                         if ($ep['episodeNumber'] == -1) {
                             $this->season_episodes[$s][] = $episode;
