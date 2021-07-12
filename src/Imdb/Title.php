@@ -293,7 +293,7 @@ class Title extends MdbBase
 
     /**
      * Get movie original title
-     * @return string original movie title (name), if it differs from the result of title(). null otherwise
+     * @return string|null original movie title (name), if it differs from the result of title(). null otherwise
      * @see IMDB page / (TitlePage)
      */
     public function orig_title()
@@ -1008,8 +1008,8 @@ class Title extends MdbBase
 
     #--------------------------------------------------------[ Photo specific ]---
 
-    /** Setup cover photo (thumbnail and big variant)
-     * @return boolean success (TRUE if found, FALSE otherwise)
+    /**
+     * Setup cover photo (thumbnail and big variant)
      * @see IMDB page / (TitlePage)
      */
     private function populatePoster()
