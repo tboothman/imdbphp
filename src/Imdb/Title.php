@@ -1406,12 +1406,16 @@ class Title extends MdbBase
             $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
             foreach ($cells as $cell) {
                 $link = '';
-                $length = $cell->getElementsByTagName('a')->length;
-                $authorLinkIndex = $length - 1;
-                if ($a = $cell->getElementsByTagName('a')->item($authorLinkIndex)) {
-                    $href = preg_replace('!/search/title!i', 'https://' . $this->imdbsite . '/search/title',
-                        $a->getAttribute('href'));
-                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
+                $anchors = $cell->getElementsByTagName('a');
+                if ($a = $anchors->item($anchors->length-1)) {
+                    if (preg_match('!/search/title!i', $a->getAttribute('href'))) {
+                        $href = preg_replace(
+                            '!/search/title!i',
+                            'https://' . $this->imdbsite . '/search/title',
+                            $a->getAttribute('href')
+                        );
+                        $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
+                    }
                 }
                 $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
