@@ -30,10 +30,9 @@ Installation
 
 This library scrapes imdb.com so changes their site can cause parts of this library to fail. You will probably need to update a few times a year. Keep this in mind when choosing how to install/configure.
 
-Install the files:
+Get the files with one of:
 * [Composer](https://www.getcomposer.org) (recommended). Include the [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) package.
 * Git clone. Checkout the latest release tag.
-* [APT/RPM/ARK packages](http://apt.izzysoft.de/). Updated soon after a release.
 * [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
 
 ### Requirements

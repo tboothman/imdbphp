@@ -2,18 +2,18 @@
 
 use Imdb\Charts;
 
-class imdb_chartsTest extends PHPUnit_Framework_TestCase
+class ChartsTest extends PHPUnit\Framework\TestCase
 {
     public function test_getChartsTop10()
     {
         $charts = $this->getCharts();
         $moviemeter = $charts->getChartsTop10();
-        $this->assertInternalType('array', $moviemeter);
+        $this->assertIsArray($moviemeter);
         $this->assertEquals(count($moviemeter), count(array_unique($moviemeter)), "Results contain duplicates");
         $this->assertCount(10, $moviemeter);
 
         for ($i = 0; $i < 10; $i++) {
-            $this->assertInternalType('string', $moviemeter[$i]);
+            $this->assertIsString($moviemeter[$i]);
             $this->assertThat(strlen($moviemeter[$i]), $this->logicalOr(
               $this->equalTo(7),
               $this->equalTo(8)
@@ -26,12 +26,12 @@ class imdb_chartsTest extends PHPUnit_Framework_TestCase
         $charts = $this->getCharts();
         $boxOffice = $charts->getChartsBoxOffice();
 
-        $this->assertInternalType('array', $boxOffice);
+        $this->assertIsArray($boxOffice);
         // Commented out while cinemas are closed
 //        $this->assertTrue(count($boxOffice) >= 9);
 //        $this->assertTrue(count($boxOffice) < 11);
         foreach ($boxOffice as $film) {
-            $this->assertInternalType('array', $film);
+            $this->assertIsArray($film);
             $this->assertCount(3, $film);
             $this->assertTrue(is_numeric($film['weekend']));
             $this->assertTrue(is_numeric($film['gross']));

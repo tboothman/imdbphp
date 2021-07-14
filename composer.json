@@ -13,16 +13,19 @@
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-json": "*",
-        "psr/simple-cache": "^1.0"
+        "psr/simple-cache": "^1.0",
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.4.8",
         "cache/array-adapter": "^1.0",
-        "phpstan/phpstan": "^0.9.2",
-        "mockery/mockery": "1.3.3"
+        "mockery/mockery": "1.3.3",
+        "phpstan/phpstan": "^0.12.83",
+        "phpunit/phpunit": "^9.5"
     },
     "scripts": {
         "test": "phpunit -c tests/phpunit.xml tests",
+        "test:clean": "php tests/clearCache.php && composer test",
         "phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/"
     }
 }

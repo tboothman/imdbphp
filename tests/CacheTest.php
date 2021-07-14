@@ -4,7 +4,7 @@ use Imdb\Cache;
 use Imdb\Config;
 use Imdb\Logger;
 
-class CacheTest extends PHPUnit_Framework_TestCase
+class CacheTest extends PHPUnit\Framework\TestCase
 {
     private function getConfig()
     {
@@ -13,11 +13,9 @@ class CacheTest extends PHPUnit_Framework_TestCase
         return $config;
     }
 
-    /**
-     * @expectedException \Imdb\Exception
-     */
     public function test_configured_directory_does_not_exist_and_cannot_be_created_causes_exception()
     {
+        $this->expectException(\Imdb\Exception::class);
         $config = new Config();
         $config->usezip = true;
         $config->cachedir = dirname(__FILE__) . '/cache_nonwriteable/nonnonexistingfolder/';
@@ -37,11 +35,9 @@ class CacheTest extends PHPUnit_Framework_TestCase
         rmdir($cacheDir);
     }
 
-    /**
-     * @expectedException \Imdb\Exception
-     */
     public function test_configured_directory_non_writeable_causes_exception()
     {
+        $this->expectException(\Imdb\Exception::class);
         $config = new Config();
         $config->usezip = true;
         $config->cachedir = dirname(__FILE__) . '/cache_nonwriteable/';

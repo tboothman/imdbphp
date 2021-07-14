@@ -2,13 +2,10 @@
 
 use \Imdb\Title;
 
-class imdb_personTest extends PHPUnit_Framework_TestCase
-{
-    public function test_constructor()
-    {
-        $this->getimdb_person();
-    }
+require_once __DIR__ . "/helpers.php";
 
+class PersonTest extends PHPUnit\Framework\TestCase
+{
     public function test_main_url()
     {
         $person = $this->getimdb_person();
@@ -21,19 +18,19 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Hayao Miyazaki', $person->name());
     }
 
-    public function test_savephoto()
-    {
-        //@todo
-        return;
-        $person = $this->getimdb_person();
-        $this->assertEquals('', $person->savephoto());
-    }
+//    public function test_savephoto()
+//    {
+//        //@todo
+//        return;
+//        $person = $this->getimdb_person();
+//        $this->assertEquals('', $person->savephoto());
+//    }
 
     public function test_movies_all()
     {
         $person = $this->getimdb_person();
         $result = $person->movies_all();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertGreaterThan(170, count($result));
     }
 
@@ -41,7 +38,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_actress();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(0, $result);
     }
 
@@ -49,7 +46,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_actor();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(3, $result);
         $this->assertEquals('2511906', $result[0]['mid']);
         $this->assertEquals('Giant God Warrior Appears in Tokyo', $result[0]['name']);
@@ -64,7 +61,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_producer();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(12, $result);
         $arrietty = $result[1];
         $this->assertEquals('1568921', $arrietty['mid']);
@@ -94,7 +91,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_director();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertGreaterThan(28, $result);
         $windRises = $result[2];
         $this->assertEquals('2013293', $windRises['mid']);
@@ -129,7 +126,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_soundtrack();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertGreaterThanOrEqual(6, $result);
         $poppyHill = current(array_filter($result, function ($item) { return $item['mid'] == '1798188'; }));
         $this->assertEquals('1798188', $poppyHill['mid']);
@@ -145,8 +142,8 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_crew();
-        $this->assertInternalType('array', $result);
-        $this->assertCount(8, $result);
+        $this->assertIsArray($result);
+        $this->assertCount(9, $result);
         $this->assertEquals('From Up on Poppy Hill', $result[0]['name']);
         $this->assertEquals('2011', $result[0]['year']);
         //@TODO where did 'planning' go?
@@ -159,9 +156,9 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_thanx();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(6, $result);
-        $laLuna = $result[2];
+        $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
         $this->assertEquals('La Luna', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
@@ -174,9 +171,9 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_self();
-        $this->assertInternalType('array', $result);
-        $this->assertGreaterThan(29, count($result));
-        $this->assertLessThan(32, count($result));
+        $this->assertIsArray($result);
+        $this->assertGreaterThan(31, count($result));
+        $this->assertLessThan(35, count($result));
 
         $matches = 0;
         foreach($result as $movie)
@@ -198,9 +195,9 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_writer();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertGreaterThan(35, $result);
-        $windRises = $result[2];
+        $windRises = array_find_item($result, 'mid', '2013293');
         $this->assertEquals('2013293', $windRises['mid']);
         $this->assertEquals('The Wind Rises', $windRises['name']);
         $this->assertEquals('2013', $windRises['year']);
@@ -214,22 +211,25 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->movies_archive();
-        $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
+        $this->assertIsArray($result);
+        $this->assertGreaterThanOrEqual(3, count($result));
+        $this->assertLessThan(5, count($result));
 
-        $this->assertEquals('3674910', $result[0]['mid']);
-//    $this->assertEquals('The 87th Annual Academy Awards', $result[0]['name']);
-        $this->assertEquals('2015', $result[0]['year']);
-        $this->assertEquals('', $result[0]['chid']);
-        $this->assertEquals('Self - Honorary Award Recipient', $result[0]['chname']);
-        $this->assertEquals(array(), $result[0]['addons']);
+        $oscars = array_find_item($result, 'mid', '3674910');
+        $this->assertEquals('3674910', $oscars['mid']);
+        $this->assertEquals('The Oscars', $oscars['name']);
+        $this->assertEquals('2015', $oscars['year']);
+        $this->assertEquals('', $oscars['chid']);
+        $this->assertEquals('Self - Honorary Award Recipient', $oscars['chname']);
+        $this->assertEquals(array(), $oscars['addons']);
 
-        $this->assertEquals('0318251', $result[1]['mid']);
-        $this->assertEquals('Troldspejlet', $result[1]['name']);
-        $this->assertEquals('2009', $result[1]['year']);
-        $this->assertEquals('', $result[1]['chid']);
-        $this->assertEquals('Self', $result[1]['chname']);
-        $this->assertEquals(array(), $result[1]['addons']);
+        $troldspejlet = array_find_item($result, 'mid', '0318251');
+        $this->assertEquals('0318251',$troldspejlet['mid']);
+        $this->assertEquals('Troldspejlet', $troldspejlet['name']);
+        $this->assertEquals('2009', $troldspejlet['year']);
+        $this->assertEquals('', $troldspejlet['chid']);
+        $this->assertEquals('Self', $troldspejlet['chname']);
+        $this->assertEquals(array(), $troldspejlet['addons']);
     }
 
     public function test_birthname()
@@ -244,7 +244,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->nickname();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(1, $result);
         $this->assertEquals('the Japanese Walt Disney', $result[0]);
     }
@@ -253,7 +253,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->born();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(5, $result);
         $this->assertEquals('5', $result['day']);
         $this->assertEquals('January', $result['month']);
@@ -279,7 +279,7 @@ class imdb_personTest extends PHPUnit_Framework_TestCase
     {
         $person = $this->getimdb_person();
         $result = $person->height();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals("5' 4½\"", $result['imperial']);
         $this->assertEquals('1.64 m', $result['metric']);
     }

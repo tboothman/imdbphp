@@ -2,6 +2,30 @@
 History for IMDBPHP
 ====================
 
+v7.1.0 (12.07.2021)
+-------------------
++ `Title::episodes()` now has a image_url field on each episode with a url pointing to the picture for that episode
+! Fix `Title::episodes()` failing when a season had a lot of episodes. Thanks @duck7000  #242
+! Fix `Title::episodes()` for shows with only one season #239
+! Fix `Title::movie_recommendations()` throwing errors when data such as rating was missing from the recommendation. Thanks @M0H4MM4D0UTIS #240
+
+v7.0.0 (07.07.2021)
+-------------------
+! Many fixes due to the redesign of the title page
+- `Title::mainPictures()` and `Title::prodNotes()` have been removed
+- `Title::movie_recommendations()` no longer returns year, endyear and votes
+
+v6.5.1 (30.05.2021)
+! Force the old site layout to keep the library working
+
+v6.5.0 (10.04.2021)
+-------------------
++ Fixed `Title::isEpisode()` returning true for series' and made it public. Thanks @amirsasani #213
++ New method `Title::actor_stars()` to get only the stars of the title rather than all cast members. Thanks @M0H4MM4D0UTIS #211
+! Fix `Title::extReviews()` not returning anything (broken due to html changes on imdb)
+! Remove excess whitespace on `Title::officialSites()`
+! Deprecate spoilers on `Title::trivia()`. They're no longer on IMDb
+
 v6.4.2 (08.11.2020)
 -------------------
 ! Fix Person ID length is always 7 in PersonSearch::results() #201 (Some newer people have 9 digit IDs)

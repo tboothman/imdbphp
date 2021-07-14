@@ -2,7 +2,7 @@
 
 use \Imdb\Parsing;
 
-class ParsingTest extends PHPUnit_Framework_TestCase
+class ParsingTest extends PHPUnit\Framework\TestCase
 {
     public function test_table()
     {

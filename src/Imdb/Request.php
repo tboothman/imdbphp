@@ -127,6 +127,7 @@ class Request
                 return $head;
             }
         }
+        return '';
     }
 
     /**

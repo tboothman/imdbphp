@@ -21,7 +21,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class MdbBase extends Config
 {
-    public $version = '6.4.2';
+    public $version = '7.1.0';
 
     protected $months = array(
       "January" => "01",
@@ -70,6 +70,8 @@ class MdbBase extends Config
     protected $pages;
 
     protected $page = array();
+
+    protected $xpathPage = array();
 
     /**
      * @var string 7 digit identifier for this person

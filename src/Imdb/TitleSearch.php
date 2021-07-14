@@ -66,7 +66,7 @@ class TitleSearch extends MdbBase
             return self::VIDEO;
         } elseif (strpos($string, '(SHORT)') !== false) {
             return self::SHORT;
-        } elseif (strpos($string, 'TV MINI-SERIES)') !== false) {
+        } elseif (strpos($string, 'TV MINI SERIES)') !== false) {
             return self::TV_MINI_SERIES;
         } elseif (strpos($string, 'TV MOVIE)') !== false) {
             return self::TV_MOVIE;
