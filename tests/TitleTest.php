@@ -817,8 +817,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb('0120737');
         $mpaa = $imdb->mpaa();
-        $this->assertArrayHasKey('United States', $mpaa);
-        $this->assertEquals('PG-13', $mpaa['United States']);
+        $this->assertArrayHasKey('Denmark', $mpaa);
+        $this->assertEquals('15', $mpaa['Denmark']);
+    }
+
+    public function testMpaa_ratings()
+    {
+        $imdb = $this->getImdb('0120737');
+        $mpaa = $imdb->mpaa(true);
+        $this->assertArrayHasKey('Denmark', $mpaa);
+        $this->assertEquals(['11', '15'], $mpaa['Denmark']);
     }
 
     public function testMpaa_hist()

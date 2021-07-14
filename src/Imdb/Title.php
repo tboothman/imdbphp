@@ -1217,10 +1217,12 @@ class Title extends MdbBase
 
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
-     * @return array [country => rating]
+     * @param bool $ratings On false it will return the last rating for each country,
+     *                      otherwise return every rating in an array.
+     * @return array [country => rating] or [country => [rating,]]
      * @see IMDB Parental Guidance page / (parentalguide)
      */
-    public function mpaa()
+    public function mpaa($ratings = false)
     {
         if (empty($this->mpaas)) {
             $xpath = $this->getXpathPage("ParentalGuide");
@@ -1231,7 +1233,18 @@ class Title extends MdbBase
             foreach ($cells as $cell) {
                 if ($a = $cell->getElementsByTagName('a')->item(0)) {
                     $mpaa = explode(':', $a->nodeValue, 2);
-                    $this->mpaas[trim($mpaa[0])] = $mpaa[1];
+                    $country = trim($mpaa[0]);
+                    $rating = isset($mpaa[1]) ? $mpaa[1] : '';
+
+                    if ($ratings) {
+                        if (!isset($this->mpaas[$country])) {
+                            $this->mpaas[$country] = [];
+                        }
+
+                        $this->mpaas[$country][] = $rating;
+                    } else {
+                        $this->mpaas[$country] = $rating;
+                    }
                 }
             }
         }
