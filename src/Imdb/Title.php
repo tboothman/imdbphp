@@ -3110,22 +3110,16 @@ class Title extends MdbBase
                 return array();
             }
             $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
-            foreach ($cells as $key => $cell) {
-                $count = $cell->getElementsByTagName('li')->count();
-                if ($count) {
-                    $listHeader = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]/text()");
-                    $listItems = trim($listHeader->item($key)->nodeValue) . "\n";
-                    $items = $cell->getElementsByTagName('li');
-                    foreach ($items as $key => $value) {
-                        $listItems .= '- ' . trim($value->nodeValue);
-                        if ($key < $count - 1) {
-                            $listItems .= "\n";
-                        }
+            foreach ($cells as $cell) {
+                $output = '';
+                $nodes = $xpath->query(".//text()", $cell);
+                foreach ($nodes as $node) {
+                    if ($node->parentNode->nodeName === 'li') {
+                        $output .= '- ';
                     }
-                    $this->moviealternateversions[] = $listItems;
-                } else {
-                    $this->moviealternateversions[] = trim($cell->nodeValue);
+                    $output .= trim($node->nodeValue) . "\n";
                 }
+                $this->moviealternateversions[] = trim($output);
             }
         }
         return $this->moviealternateversions;
