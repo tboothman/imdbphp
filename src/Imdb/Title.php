@@ -1956,17 +1956,20 @@ class Title extends MdbBase
                 return $this->season_episodes;
             }
 
-            // There are two select boxes: one per season and one per year. IMDb picks one select to use by default and the other starts with an empty option.
-            // The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
-            // (e.g. a show without seasons might have 100s of episodes in season 1 and its page won't load)
+            /*
+             * There are (sometimes) two select boxes: one per season and one per year.
+             * IMDb picks one select to use by default and the other starts with an empty option.
+             * The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
+             * (e.g. a show without seasons might have 100s of episodes in season 1 and its page won't load)
+             *
+             * default to year based
+             */
+            $selectId = 'id="byYear"';
             if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
                 preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
                 if (is_numeric(trim($matchOptionSeason[1][0]))) {
                     //season based
                     $selectId = 'id="bySeason"';
-                } else {
-                    // year based
-                    $selectId = 'id="byYear"';
                 }
             }
 
