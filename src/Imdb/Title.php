@@ -1269,7 +1269,7 @@ class Title extends MdbBase
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
             foreach ($cells as $cell) {
                 if ($a = $cell->getElementsByTagName('a')->item(0)) {
-                    $mpaa = explode(':', $a->nodeValue);
+                    $mpaa = explode(':', $a->nodeValue, 2);
                     $this->mpaas[trim($mpaa[0])] = $mpaa[1];
                 }
             }
