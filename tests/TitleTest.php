@@ -1952,6 +1952,21 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertCount(0, $alternateVersions);
     }
 
+    public function test_alternateversions_list()
+    {
+        $imdb = $this->getImdb('0120737');
+        $alternateVersions = $imdb->alternateVersions();
+
+        $this->assertGreaterThan(7, count($alternateVersions));
+        $this->assertLessThan(12, count($alternateVersions));
+
+        $this->assertSame(0, strpos($alternateVersions[1], "The Extended Edition DVD includes the following changes to the film.\n- During the prologue"));
+
+        foreach ($alternateVersions as $alternateVersion) {
+            $this->assertNotEmpty($alternateVersion);
+        }
+    }
+
     public function test_real_id()
     {
         $imdb = $this->getImdb();
