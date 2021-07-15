@@ -2959,7 +2959,7 @@ class Title extends MdbBase
 
     /**
     * Get budget
-    * @return string|null null on failure / no data
+    * @return int|null null on failure / no data
     * @brief Assuming budget is estimated, and in american dollar
     * @see IMDB page / (TitlePage)
     */
@@ -2970,16 +2970,11 @@ class Title extends MdbBase
             if (empty($xpath)) {
                 return array(); // no such page
             }
-            $labels = $xpath->query("//span[@class=\"ipc-metadata-list-item__label\"]");
-            foreach ($labels as $label) {
-                if ($label->nodeValue == "Budget") {
-                    $budgetListItems = $xpath->query("//li[@class=\"ipc-metadata-list__item BoxOffice__MetaDataListItemBoxOffice-sc-40s2pl-2 gwNUHl\"]//li");
-                    if (!empty($budgetListItems) && isset($budgetListItems[0])) {
-                        $this->budget = filter_var($budgetListItems[0]->nodeValue, FILTER_SANITIZE_NUMBER_INT);
-                    } else {
-                        return null;
-                    }
-                }
+            $budgetListItems = $xpath->query("//li[@data-testid=\"title-boxoffice-budget\"]//li");
+            if (!empty($budgetListItems) && isset($budgetListItems[0])) {
+                $this->budget = (int) filter_var($budgetListItems[0]->nodeValue, FILTER_SANITIZE_NUMBER_INT);
+            } else {
+                return null;
             }
         }
         return $this->budget;
