@@ -24,7 +24,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
      * 0306414 = The Wire (TV / has everything)
      * 1286039 = Stargate Universe (multiple creators)
      * 1027544 = Roary the Racing Car (TV show, almost everything missing)
-     * 303461 = Firefly (Tv show, one season)
+     * 303461  = Firefly (TV show, one season)
+     * 988824  = Naruto (TV show, one massive season)
      *
      * 0579539 = A TV episode (train job, firefly)
      *
@@ -816,8 +817,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb('0120737');
         $mpaa = $imdb->mpaa();
-        $this->assertArrayHasKey('United States', $mpaa);
-        $this->assertEquals('PG-13', $mpaa['United States']);
+        $this->assertArrayHasKey('Denmark', $mpaa);
+        $this->assertEquals('15', $mpaa['Denmark']);
+    }
+
+    public function testMpaa_ratings()
+    {
+        $imdb = $this->getImdb('0120737');
+        $mpaa = $imdb->mpaa(true);
+        $this->assertArrayHasKey('Denmark', $mpaa);
+        $this->assertEquals(['11', '15'], $mpaa['Denmark']);
     }
 
     public function testMpaa_hist()
@@ -1376,6 +1385,35 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(-1, $episode['episode']);
     }
 
+    // Some shows don't work on seasons and so have many episodes assigned to season 1. Imdb used to just timeout rendering the page but they now cut the request off and don't render the page
+    // Instead the episodes need to be fetched by year - which have far fewer per page and do load
+    public function testEpisodes_many_episodes_season_1()
+    {
+        $imdb = $this->getImdb(988824);
+        $years = $imdb->episodes();
+
+        $this->assertIsArray($years);
+        $this->assertCount(10, $years);
+
+        $episode = $years[2009][1];
+
+        $episodeCount = array_reduce($years, function ($count, $episodes) {
+            return $count + count($episodes);
+        }, 0);
+
+        $this->assertEquals(502, $episodeCount);
+
+        $this->assertEquals([
+            "imdbid" => "0990165",
+            "title" => "Kikyô",
+            "airdate" => "28 Oct. 2009",
+            "plot" => "Naruto returns to Konoha after a two-and-a-half-year training journey with Jiraiya and is reunited with Sakura.",
+            "season" => 2009,
+            "episode" => 1,
+            "image_url" => 'https://m.media-amazon.com/images/M/MV5BNWJiY2ZkYzUtMmZhMy00ZDAwLWE1MmQtMjkzZmJhZWI5Zjk3XkEyXkFqcGdeQXVyMjM0NTM5MTA@._V1_UX224_CR0,0,224,126_AL_.jpg',
+        ], $episode);
+    }
+
     public function testGoofs()
     {
         $imdb = $this->getImdb();
@@ -1914,6 +1952,21 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertCount(0, $alternateVersions);
     }
 
+    public function test_alternateversions_list()
+    {
+        $imdb = $this->getImdb('0120737');
+        $alternateVersions = $imdb->alternateVersions();
+
+        $this->assertGreaterThan(7, count($alternateVersions));
+        $this->assertLessThan(12, count($alternateVersions));
+
+        $this->assertSame(0, strpos($alternateVersions[1], "The Extended Edition DVD includes the following changes to the film.\n- During the prologue"));
+
+        foreach ($alternateVersions as $alternateVersion) {
+            $this->assertNotEmpty($alternateVersion);
+        }
+    }
+
     public function test_real_id()
     {
         $imdb = $this->getImdb();
@@ -1934,7 +1987,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     protected function getImdb($imdbId = '0133093')
     {
         $config = new \Imdb\Config();
-        $config->language = 'En-US';
+        $config->language = 'en-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
