@@ -1140,31 +1140,37 @@ class Title extends MdbBase
     {
         if (empty($this->main_pictures)) {
             $xpath = $this->getXpathPage("Title");
-            $cells = $xpath->query("//div[@class='ipc-photo ipc-photo--base ipc-photo--dynamic-width photos-image ipc-sub-grid-item ipc-sub-grid-item--span-2']");
-            if ($cells->length > 0) {
-                foreach ($cells as $cell) {
-                    $imgThumb = '';
-                    $imgBig = '';
-                    $link = '';
-                    if ($img = $cell->getElementsByTagName('img')->item(0)) {
-                        if ($src = $img->getAttribute('src')) {
-                            if (preg_match('|(.*\._V1_).*|iUs', $src, $big)) {
-                                $ext = pathinfo($src, PATHINFO_EXTENSION);
-                                $imgBig = $big[1] . '.' . $ext;
-                                $imgThumb = $src;
+            if ($header = $xpath->query('//div[@data-testid="photos-header"]')) {
+                if ($header->length > 0) {
+                    $cells = $xpath->query('.//div[contains(@class, "photos-image")]', $header[0]->parentNode);
+                    if ($cells->length > 0) {
+                        foreach ($cells as $cell) {
+                            $imgThumb = '';
+                            $imgBig = '';
+                            $link = '';
+                            if ($img = $cell->getElementsByTagName('img')->item(0)) {
+                                if ($src = $img->getAttribute('src')) {
+                                    if (preg_match('|(.*\._V1_).*|iUs', $src, $big)) {
+                                        $ext = pathinfo($src, PATHINFO_EXTENSION);
+                                        $imgBig = $big[1] . '.' . $ext;
+                                        $imgThumb = $src;
+                                    }
+                                }
+                            }
+                            if ($a = $cell->getElementsByTagName('a')->item(0)) {
+                                if ($href = $a->getAttribute('href')) {
+                                    $link = "https://" . $this->imdbsite . $href;
+                                }
+                            }
+                            if ($imgThumb != "" || $link != "") {
+                                $this->main_pictures[] = array(
+                                    "imgsrc" => $imgThumb,
+                                    "imglink" => $link,
+                                    "bigsrc" => $imgBig
+                                );
                             }
                         }
                     }
-                    if ($a = $cell->getElementsByTagName('a')->item(0)) {
-                        if ($href = $a->getAttribute('href')) {
-                            $link = "https://" . $this->imdbsite . $href;
-                        }
-                    }
-                    $this->main_pictures[] = array(
-                        "imgsrc" => $imgThumb,
-                        "imglink" => $link,
-                        "bigsrc" => $imgBig
-                    );
                 }
             }
         }
