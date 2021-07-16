@@ -1126,6 +1126,52 @@ class Title extends MdbBase
         }
         return false;
     }
+    
+    #-------------------------------------------------[ Main images on title page ]---
+
+    /** Get URLs for the 12 pictures on the title page
+     * @return array [0..n] of [imgsrc, imglink, bigsrc], where
+     *    imgsrc is the URL of the thumbnail IMG as displayed on main page.
+     *    imglink is the link to the page with the "big image".
+     *    bigsrc is the URL of the "big size" image itself.
+     * @author moonface
+     * @author izzy
+     * @author Ed
+     */
+    public function mainPictures()
+    {
+        if (empty($this->main_pictures)) {
+            $xpath = $this->getXpathPage("Title");
+            $cells = $xpath->query("//div[@class='ipc-photo ipc-photo--base ipc-photo--dynamic-width photos-image ipc-sub-grid-item ipc-sub-grid-item--span-2']");
+            if ($cells->length > 0) {
+                foreach ($cells as $cell) {
+                    $imgThumb = '';
+                    $imgBig = '';
+                    $link = '';
+                    if ($cell->getElementsByTagName('img')->item(0)) {
+                        if ($cell->getElementsByTagName('img')->item(0)->getAttribute('src')) {
+                            $imgThumb = $cell->getElementsByTagName('img')->item(0)->getAttribute('src');
+                            preg_match('|(.*\._V1_).*|iUs', $imgThumb, $big);
+                            $ext = substr($imgThumb, -3);
+                            $imgBig = $big[1] . '.' . $ext;
+                        }
+                    }
+                    if ($cell->getElementsByTagName('a')->item(0)) {
+                        if ($cell->getElementsByTagName('a')->item(0)->getAttribute('href')) {
+                            $href = $cell->getElementsByTagName('a')->item(0)->getAttribute('href');
+                            $link = "https://" . $this->imdbsite . $href;
+                        }
+                    }
+                    $this->main_pictures[] = array(
+                        "imgsrc" => $imgThumb,
+                        "imglink" => $link,
+                        "bigsrc" => $imgBig
+                    );
+                }
+            }
+        }
+        return $this->main_pictures;
+    }
 
     #-------------------------------------------------[ Country of Production ]---
 
