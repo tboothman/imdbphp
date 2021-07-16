@@ -84,7 +84,7 @@ class Title extends MdbBase
     protected $synopsis_wiki = "";
     protected $release_info = array();
     protected $seasoncount = -1;
-    protected $seasoncountByYear = -1;
+    protected $yearCount = -1;
     protected $season_episodes = array();
     protected $sound = array();
     protected $soundtracks = array();
@@ -829,19 +829,19 @@ class Title extends MdbBase
      * @return int years count of seasons by year
      * @see IMDB page / (TitlePage)
      */
-    public function seasonsByYear()
+    public function tvSeriesByYearCount()
     {
-        if ($this->seasoncountByYear == -1) {
+        if ($this->yearCount == -1) {
             $xpath = $this->getXpathPage("Title");
             $dom_xpath_result = $xpath->query('//select[@id="browse-episodes-year"]//option');
-            $this->seasoncountByYear = 0;
+            $this->yearCount = 0;
             foreach ($dom_xpath_result as $xnode) {
                 if (!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value'))) {
-                    $this->seasoncountByYear++; // count every valid year.
+                    $this->yearCount++; // count every valid year.
                 }
             }
         }
-        return $this->seasoncountByYear;
+        return $this->yearCount;
     }
 
     /**
