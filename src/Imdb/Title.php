@@ -3024,10 +3024,13 @@ class Title extends MdbBase
                 return array(); // no such page
             }
             $budgetListItems = $xpath->query("//li[@data-testid=\"title-boxoffice-budget\"]//li");
-            if (!empty($budgetListItems) && isset($budgetListItems[0])) {
-                $this->budget = (int) filter_var($budgetListItems[0]->nodeValue, FILTER_SANITIZE_NUMBER_INT);
-            } else {
-                return null;
+            if (preg_match('/^(?<currency>[^0-9\s]+)?\s*(?<amount>[0-9,]+)\s*(?<comment>.{1,})?$/',
+                    $budgetListItems->item(0)->nodeValue, $match)) {
+                if (isset($match['amount']) && !empty($match['amount'])) {
+                    $this->budget = intval(str_replace(',', '', $match['amount']));
+                } else {
+                    return null;
+                }
             }
         }
         return $this->budget;
