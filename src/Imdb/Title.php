@@ -1129,14 +1129,12 @@ class Title extends MdbBase
     
     #-------------------------------------------------[ Main images on title page ]---
 
-    /** Get URLs for the 12 pictures on the title page
+    /**
+     * Get URLs for the 12 pictures on the title page
      * @return array [0..n] of [imgsrc, imglink, bigsrc], where
      *    imgsrc is the URL of the thumbnail IMG as displayed on main page.
      *    imglink is the link to the page with the "big image".
      *    bigsrc is the URL of the "big size" image itself.
-     * @author moonface
-     * @author izzy
-     * @author Ed
      */
     public function mainPictures()
     {
@@ -1148,17 +1146,17 @@ class Title extends MdbBase
                     $imgThumb = '';
                     $imgBig = '';
                     $link = '';
-                    if ($cell->getElementsByTagName('img')->item(0)) {
-                        if ($cell->getElementsByTagName('img')->item(0)->getAttribute('src')) {
-                            $imgThumb = $cell->getElementsByTagName('img')->item(0)->getAttribute('src');
-                            preg_match('|(.*\._V1_).*|iUs', $imgThumb, $big);
-                            $ext = substr($imgThumb, -3);
-                            $imgBig = $big[1] . '.' . $ext;
+                    if ($img = $cell->getElementsByTagName('img')->item(0)) {
+                        if ($src = $img->getAttribute('src')) {
+                            if (preg_match('|(.*\._V1_).*|iUs', $src, $big)) {
+                                $ext = pathinfo($src, PATHINFO_EXTENSION);
+                                $imgBig = $big[1] . '.' . $ext;
+                                $imgThumb = $src;
+                            }
                         }
                     }
-                    if ($cell->getElementsByTagName('a')->item(0)) {
-                        if ($cell->getElementsByTagName('a')->item(0)->getAttribute('href')) {
-                            $href = $cell->getElementsByTagName('a')->item(0)->getAttribute('href');
+                    if ($a = $cell->getElementsByTagName('a')->item(0)) {
+                        if ($href = $a->getAttribute('href')) {
                             $link = "https://" . $this->imdbsite . $href;
                         }
                     }
