@@ -2339,185 +2339,43 @@ class Title extends MdbBase
 
     #======================================================[ /soundtrack page ]===
     #------------------------------------------------------[ Soundtrack Array ]---
-    /** Get the soundtrack listing
-     * @return array soundtracks (array[0..n] of array(soundtrack,array[0..n] of credits array[credit_to,desc])
+    /**
+     * Get the soundtrack listing
+     * @return array soundtracks
+     * [ soundtrack : name of the track
+     *   credits : Full text only description of the credits. Contains newline characters
+     * ]
      * @see IMDB page /soundtrack
      */
     public function soundtrack()
     {
         if (empty($this->soundtracks)) {
-            $page = $this->getPage("Soundtrack");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if (preg_match_all('!class="soundTrack soda (odd|even)"\s*>\s*(?<title>.+?)<br\s*/>(?<desc>.+?)</div>!ims',
-                str_replace("\n", " ", $this->page["Soundtrack"]), $matches)) {
-                $mc = count($matches[0]);
-                for ($i = 0; $i < $mc; ++$i) {
-                    $s['soundtrack'] = $matches['title'][$i];
-                    $s['credits'] = array();
-                    if (preg_match_all('|^\s*(.*?)\s+by\s+(<a href[^>]+>.+?</a>)|i', $matches['desc'][$i], $match1)) {
-                        for ($k = 0; $k < count($match1[0]); ++$k) {
-                            switch ($match1[1][$k]) {
-                                case "Arranged" :
-                                    $s['credits'][] = array(
-                                        'credit_to' => str_replace('href="/', 'href="https://' . $this->imdbsite . '/',
-                                            $match1[2][$k]),
-                                        'desc' => 'arrangement'
-                                    );
-                                    break;
-                                case "Composed" :
-                                    $s['credits'][] = array(
-                                        'credit_to' => str_replace('href="/', 'href="https://' . $this->imdbsite . '/',
-                                            $match1[2][$k]),
-                                        'desc' => 'composer'
-                                    );
-                                    break;
-                                case "Performed":
-                                    $s['credits'][] = array(
-                                        'credit_to' => str_replace('href="/', 'href="https://' . $this->imdbsite . '/',
-                                            $match1[2][$k]),
-                                        'desc' => 'performer'
-                                    );
-                                    break;
-                                case "Written"  :
-                                    $s['credits'][] = array(
-                                        'credit_to' => str_replace('href="/', 'href="https://' . $this->imdbsite . '/',
-                                            $match1[2][$k]),
-                                        'desc' => 'writer'
-                                    );
-                                    break;
-                                case "Written and Produced":
-                                    {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $match1[2][$k]),
-                                            'desc' => 'writer'
-                                        );
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $match1[2][$k]),
-                                            'desc' => 'producer'
-                                        );
-                                    }
-                                    break;
-                                case "Written and Performed":
-                                    {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $match1[2][$k]),
-                                            'desc' => 'writer'
-                                        );
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $match1[2][$k]),
-                                            'desc' => 'performer'
-                                        );
-                                    }
-                                    break;
-                                default:
-                                    $s['credits'][] = array(
-                                        'credit_to' => str_replace('href="/', 'href="https://' . $this->imdbsite . '/',
-                                            $match1[2][$k]),
-                                        'desc' => '**' . $match1[1][$k] . '**'
-                                    );
-                            }
-                        }
-                    } elseif (preg_match_all('|\s*([^>]*)\s+by\s+([^<]+)|i', $matches['desc'][$i],
-                        $match1)) { // creditors without link
-                        for ($k = 0; $k < count($match1[0]); ++$k) {
-                            if (preg_match('!(.+)\s+and\s+(.+)!', $match1[2][$k], $cr)) {
-                                $creds = array($cr[1], $cr[2]);
-                            } else {
-                                $creds = array($match1[2][$k]);
-                            }
-                            switch ($match1[1][$k]) {
-                                case "Arranged" :
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'arrangement'
-                                        );
-                                    }
-                                    break;
-                                case "Composed" :
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'composer'
-                                        );
-                                    }
-                                    break;
-                                case "Performed":
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'performer'
-                                        );
-                                    }
-                                    break;
-                                case "Written"  :
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'writer'
-                                        );
-                                    }
-                                    break;
-                                case "Written and Produced":
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'writer'
-                                        );
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'producer'
-                                        );
-                                    }
-                                    break;
-                                case "Written and Performed":
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'writer'
-                                        );
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => 'performer'
-                                        );
-                                    }
-                                    break;
-                                default:
-                                    foreach ($creds as $cred) {
-                                        $s['credits'][] = array(
-                                            'credit_to' => str_replace('href="/',
-                                                'href="https://' . $this->imdbsite . '/', $cred),
-                                            'desc' => '**' . $match1[1][$k] . '**'
-                                        );
-                                    }
-                                    break;
-                            }
+            $xpath = $this->getXpathPage("Soundtrack");
+            if (empty($xpath)) {
+                return array(); // no such page
+            }
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            $cells = $xpath->query("//div[@class=\"soundTrack soda odd\" or @class=\"soundTrack soda even\"]");
+            if (!empty($cells)) {
+                foreach ($cells as $cell) {
+                    // Get all html from xpath query and ensure soundtrack is sepparated from credits
+                    $html = explode("<br>", $cell->c14n(), 2);
+                    $creditsExp = explode("<br>", $html[1]); // explode all credit lines to array.
+                    $count = count($creditsExp);
+                    $credits = '';
+                    foreach ($creditsExp as $key => $value) {
+                        $credits .= trim(strip_tags($value));
+                        if ($key < $count -1) {
+                            $credits .= "\n";
                         }
                     }
-                    if (preg_match('|Courtesy of\s+([^<]+)<|i', $matches['desc'][$i], $match)) {
-                        $s['credits'][] = array('credit_to' => $match[1], 'desc' => 'courtesy');
-                    }
-                    if (preg_match('|By Arrangement with\s+([^<]+)<|i', $matches['desc'][$i], $match)) {
-                        $s['credits'][] = array('credit_to' => $match[1], 'desc' => 'arrangement');
-                    }
-                    if (preg_match('|Under license from\s+([^<]+)<|i', $matches['desc'][$i], $match)) {
-                        $s['credits'][] = array('credit_to' => $match[1], 'desc' => 'license');
-                    }
-                    $this->soundtracks[] = $s;
+                    $this->soundtracks[] = array(
+                        'soundtrack' => trim(strip_tags($html[0])),
+                        'credits' => trim($credits)
+                    );
+
                 }
             }
         }
