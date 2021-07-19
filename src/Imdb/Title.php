@@ -2064,23 +2064,30 @@ class Title extends MdbBase
 
     #==========================================================[ /quotes page ]===
     #----------------------------------------------------------[ Quotes Array ]---
-    /** Get the quotes for a given movie
+    /**
+     * Get the quotes for a given movie
      * @return array quotes (array[0..n] of string)
      * @see IMDB page /quotes
      */
     public function quotes()
     {
         if (empty($this->moviequotes)) {
-            $page = $this->getPage("Quotes");
-            if (empty($page)) {
-                return array();
+            $xpath = $this->getXpathPage("Quotes");
+            if (empty($xpath)) {
+                return array(); // no such page
             }
-
-            if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', str_replace("\n", " ", $page),
-                $matches)) {
-                foreach ($matches[1] as $match) {
-                    $this->moviequotes[] = str_replace('href="/name/', 'href="https://' . $this->imdbsite . '/name/',
-                        preg_replace('!<span class="linksoda".+?</span>!ims', '', $match));
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            if ($quotesContent = $xpath->query("//div[@class='sodatext']")) {
+                foreach ($quotesContent as $value) {
+                    $p = $value->getElementsByTagName('p');
+                    $quote = '';
+                    foreach ($p as $quoteItem) {
+                        $quote .= str_replace("\n", " ", $quoteItem->c14n());
+                        $quoteLink = str_replace('href="/name/', 'href="https://' . $this->imdbsite . '/name/', $quote);
+                    }
+                    $this->moviequotes[] = $quoteLink;
                 }
             }
         }
