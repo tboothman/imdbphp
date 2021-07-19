@@ -2302,40 +2302,48 @@ class Title extends MdbBase
         return $this->video_sites;
     }
 
-
     #==========================================================[ /trivia page ]===
     #----------------------------------------------------------[ Trivia Array ]---
     /**
      * Get the trivia info
-     * @param boolean $spoil *Deprecated*. There are no longer spoiler trivia on imdb
+     * @param boolean $spoil if true spoilers are also included.
      * @return array trivia (array[0..n] string
      * @see IMDB page /trivia
      */
     public function trivia($spoil = false)
     {
         if (empty($this->trivia)) {
-            $page = $this->getPage("Trivia");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if ($spoil) {
-                return [];
-            } else {
-                preg_match('!<div id="trivia_content"(.+?)<a id="spoilers"!ims', $this->page["Trivia"], $block);
-                if (empty($block)) {
-                    preg_match('!<div id="trivia_content"(.+?)<div id="sidebar">!ims', $this->page["Trivia"], $block);
-                }
+            $xpath = $this->getXpathPage("Trivia");
+            if (empty($xpath)) {
+                return array(); // no such page
             }
-            if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>\s*<div!ims', $block[1], $matches)) {
-                $gc = count($matches[1]);
-                for ($i = 0; $i < $gc; ++$i) {
-                    $this->trivia[] = str_replace('href="/', 'href="https://' . $this->imdbsite . "/", $matches[1][$i]);
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            if ($triviaContent = $xpath->query("//div[@id='trivia_content']//div[@class='list']")) {
+                foreach ($triviaContent as $value) {
+                    if ($value->getElementsByTagName('a')->item(0)->getAttribute('id') != "spoilers") {
+                        if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
+                            foreach ($cells as $cell) {
+                                if ($cell->nodeValue != "") {
+                                    $this->trivia[] = trim($cell->nodeValue);
+                                }
+                            }
+                        }
+                    } elseif ($spoil == true) {
+                        if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
+                            foreach ($cells as $cell) {
+                                if ($cell->nodeValue != "") {
+                                    $this->trivia[] = trim($cell->nodeValue);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         return $this->trivia;
     }
-
 
     #======================================================[ /soundtrack page ]===
     #------------------------------------------------------[ Soundtrack Array ]---
