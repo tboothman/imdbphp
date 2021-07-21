@@ -1723,7 +1723,7 @@ class Title extends MdbBase
             $dir["name"] = utf8_decode($dir['name']);
             $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
             if ($get_role != null) {
-                $dir["role"] = $get_role->item(0)->nodeValue;
+                $dir["role"] = utf8_decode(trim($get_role->item(0)->nodeValue));
             }
 
             $img = $xpath->query(".//img[@class='ipc-image']", $node)->item(0);
