@@ -2372,8 +2372,8 @@ class Title extends MdbBase
                         }
                     }
                     $this->soundtracks[] = array(
-                        'soundtrack' => trim(strip_tags($html[0])),
-                        'credits' => trim($credits)
+                        'soundtrack' => utf8_decode(trim(strip_tags($html[0]))),
+                        'credits' => utf8_decode(trim($credits))
                     );
 
                 }
