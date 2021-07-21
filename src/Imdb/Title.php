@@ -2887,16 +2887,24 @@ class Title extends MdbBase
 
     #========================================================[ /keywords page ]===
     #--------------------------------------------------------------[ Keywords ]---
-    /** Get the complete keywords for the movie
+    /**
+     * Get all keywords from movie
      * @return array keywords
      * @see IMDB page /keywords
      */
     public function keywords_all()
     {
         if (empty($this->all_keywords)) {
-            $page = $this->getPage("Keywords");
-            if (preg_match_all('|<a href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
-                $this->all_keywords = $matches[1];
+            $xpath = $this->getXpathPage("Keywords");
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array();
+            }
+            if ($cells = $xpath->query("//div[@class=\"sodatext\"]/a")) {
+                foreach ($cells as $cell) {
+                    if ($cell->nodeValue != "") {
+                        $this->all_keywords[] = utf8_decode(trim($cell->nodeValue));
+                    }
+                }
             }
         }
         return $this->all_keywords;
