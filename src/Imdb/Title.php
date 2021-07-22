@@ -1393,19 +1393,27 @@ class Title extends MdbBase
 
     #========================================================[ /taglines page ]===
     #--------------------------------------------------------[ Taglines Array ]---
-    /** Get all available taglines for the movie
+    /**
+     * Get all available taglines for the movie
      * @return array taglines (array[0..n] of strings)
      * @see IMDB page /taglines
      */
     public function taglines()
     {
         if (empty($this->taglines)) {
-            $this->getPage("Taglines");
-            if ($this->page["Taglines"] == "cannot open page") {
-                return array();
-            } // no such page
-            if (preg_match_all('!<div class="soda[^>]+>\s*(.*)\s*</div!U', $this->page["Taglines"], $matches)) {
-                $this->taglines = array_map('trim', $matches[1]);
+            $xpath = $this->getXpathPage("Taglines");
+            if (empty($xpath)) {
+                return array(); // no such page
+            }
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            if ($taglinesContent = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]")) {
+                foreach ($taglinesContent as $tagline) {
+                    if ($tagline->nodeValue != "") {
+                        $this->taglines[] = utf8_decode(trim($tagline->nodeValue));
+                    }
+                }
             }
         }
         return $this->taglines;
