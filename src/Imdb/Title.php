@@ -1753,10 +1753,10 @@ class Title extends MdbBase
         return $this->credits_cast_short;
     }
 
-
     #---------------------------------------------------------------[ Writers ]---
 
-    /** Get the writer(s)
+    /**
+     * Get the writer(s)
      * @return array writers (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
      */
@@ -1775,7 +1775,8 @@ class Title extends MdbBase
         if (!$writing_rows) {
             return array();
         }
-        for ($i = 0; $i < count($writing_rows); $i++) {
+        $rowCount = count($writing_rows);
+        for ($i = 0; $i < $rowCount; $i++) {
             $wrt = array();
             if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $writing_rows[$i], $match)) {
                 $wrt['imdb'] = $match[1];
