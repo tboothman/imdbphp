@@ -1411,7 +1411,7 @@ class Title extends MdbBase
             if ($taglinesContent = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]")) {
                 foreach ($taglinesContent as $tagline) {
                     if ($tagline->nodeValue != "") {
-                        $this->taglines[] = utf8_decode(trim($tagline->nodeValue));
+                        $this->taglines[] = trim($tagline->nodeValue);
                     }
                 }
             }
