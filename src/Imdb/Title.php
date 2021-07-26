@@ -2902,7 +2902,7 @@ class Title extends MdbBase
             if ($cells = $xpath->query("//div[@class=\"sodatext\"]/a")) {
                 foreach ($cells as $cell) {
                     if ($cell->nodeValue != "") {
-                        $this->all_keywords[] = utf8_decode(trim($cell->nodeValue));
+                        $this->all_keywords[] = trim($cell->nodeValue);
                     }
                 }
             }
