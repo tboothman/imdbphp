@@ -2326,7 +2326,7 @@ class Title extends MdbBase
                         if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
                             foreach ($cells as $cell) {
                                 if ($cell->nodeValue != "") {
-                                    $this->trivia[] = utf8_decode(trim($cell->nodeValue));
+                                    $this->trivia[] = trim($cell->nodeValue);
                                 }
                             }
                         }
@@ -2334,7 +2334,7 @@ class Title extends MdbBase
                         if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
                             foreach ($cells as $cell) {
                                 if ($cell->nodeValue != "") {
-                                    $this->trivia[] = utf8_decode(trim($cell->nodeValue));
+                                    $this->trivia[] = trim($cell->nodeValue);
                                 }
                             }
                         }
