@@ -1135,6 +1135,8 @@ class Title extends MdbBase
      *    imgsrc is the URL of the thumbnail IMG as displayed on main page.
      *    imglink is the link to the page with the "big image".
      *    bigsrc is the URL of the "big size" image itself.
+     *    imglink is the link to the page with the "big image".
+     *    imgId is the rm id number of a image.
      */
     public function mainPictures()
     {
@@ -1160,13 +1162,15 @@ class Title extends MdbBase
                             if ($a = $cell->getElementsByTagName('a')->item(0)) {
                                 if ($href = $a->getAttribute('href')) {
                                     $link = "https://" . $this->imdbsite . $href;
+                                    $imgId = preg_replace('!^.*rm(\d+).*$!ims', '$1', $href);
                                 }
                             }
                             if ($imgThumb != "" || $link != "") {
                                 $this->main_pictures[] = array(
                                     "imgsrc" => $imgThumb,
                                     "imglink" => $link,
-                                    "bigsrc" => $imgBig
+                                    "bigsrc" => $imgBig,
+                                    "imgId" => $imgId
                                 );
                             }
                         }
