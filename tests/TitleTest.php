@@ -1410,7 +1410,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
             "plot" => "Naruto returns to Konoha after a two-and-a-half-year training journey with Jiraiya and is reunited with Sakura.",
             "season" => 2009,
             "episode" => 1,
-            "image_url" => 'https://m.media-amazon.com/images/M/MV5BNWJiY2ZkYzUtMmZhMy00ZDAwLWE1MmQtMjkzZmJhZWI5Zjk3XkEyXkFqcGdeQXVyMjM0NTM5MTA@._V1_UX224_CR0,0,224,126_AL_.jpg',
+            "image_url" => 'https://m.media-amazon.com/images/M/MV5BYjE4YWE3ODYtNTE3MC00NzlhLWExZmEtZjU0MDk1ZThiOTA5XkEyXkFqcGdeQXVyNDk3NDEzMzk@._V1_UX224_CR0,0,224,126_AL_.jpg',
         ], $episode);
     }
 
