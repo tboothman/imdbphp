@@ -466,8 +466,9 @@ class Title extends MdbBase
 
     #----------------------------------------------------------[ Movie Rating ]---
 
-    /** Get movie rating
-     * @return string rating current rating as given by IMDB site
+    /**
+     * Get movie rating
+     * @return float|string rating current rating as given by IMDB site
      * @see IMDB page / (TitlePage)
      */
     public function rating()
