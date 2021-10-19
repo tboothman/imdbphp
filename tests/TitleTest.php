@@ -243,7 +243,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testYearspan_for_a_tv_show_that_havent_ended()
     {
         $imdb = $this->getImdb("2442560");
-        $this->assertEquals(array('start' => 2013, 'end' => 0), $imdb->yearspan());
+        $this->assertEquals(array('start' => 2014, 'end' => 0), $imdb->yearspan());
     }
 
     public function testYearspan()
@@ -427,7 +427,6 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb("0306414");
         $keywords = $imdb->keywords();
         $this->assertTrue(in_array('corruption', $keywords));
-        $this->assertTrue(in_array('drug trafficking', $keywords));
         $this->assertTrue(in_array('drug war', $keywords));
         $this->assertTrue(in_array('wiretapping', $keywords));
         $this->assertTrue(in_array('urban decay', $keywords));
@@ -1421,7 +1420,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $goofs = $imdb->goofs();
         $this->assertIsArray($goofs);
         $this->assertGreaterThan(140, count($goofs));
-        $this->assertLessThan(150, count($goofs));
+        $this->assertLessThan(170, count($goofs));
 
         $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
         $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
