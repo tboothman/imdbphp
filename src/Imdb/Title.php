@@ -583,7 +583,7 @@ class Title extends MdbBase
                 $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
                 if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
                         $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = utf8_decode(trim($get_link_and_name->item(0)->nodeValue));
+                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
                     $movie['imdbid'] = $ref[1];
                     $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
                     if (!empty($get_rating->item(0))) {
@@ -1329,7 +1329,7 @@ class Title extends MdbBase
             foreach ($cells as $cell) {
                 $link = '';
                 $anchors = $cell->getElementsByTagName('a');
-                if ($a = $anchors->item($anchors->length-1)) {
+                if ($a = $anchors->item($anchors->length - 1)) {
                     if (preg_match('!/search/title!i', $a->getAttribute('href'))) {
                         $href = preg_replace(
                             '!/search/title!i',
@@ -1721,7 +1721,7 @@ class Title extends MdbBase
             if (empty($dir['name'])) {
                 continue;
             }
-            $dir["name"] = utf8_decode($dir['name']);
+
             $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
             if ($get_role != null) {
                 $dir["role"] = $get_role->item(0)->nodeValue;
@@ -1743,7 +1743,7 @@ class Title extends MdbBase
                     $get_role_episodes->item(0)->nodeValue)));
             }
             if ($get_role_start_year->item(0) != null) {
-                $year = explode('–', utf8_decode(trim($get_role_start_year->item(0)->nodeValue)));
+                $year = explode('–', trim($get_role_start_year->item(0)->nodeValue));
                 $dir["role_start_year"] = intval($year[0]);
                 $dir["role_end_year"] = (isset($year[1]) ? intval($year[1]) : null);
             }
@@ -3105,7 +3105,7 @@ class Title extends MdbBase
         /* Createa a new DomDocument object */
         $dom = new \DomDocument;
         /* Load the HTML */
-        $dom->loadHTML($source);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' .$source);
         /* Create a new XPath object */
         $this->xpathPage[$page] = new \DomXPath($dom);
         return $this->xpathPage[$page];

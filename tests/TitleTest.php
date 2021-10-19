@@ -984,6 +984,26 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertCount(0, $firstCast['role_other']);
     }
 
+    public function testCast_short_nonascii()
+    {
+        $imdb = $this->getImdb('0087544');
+        $cast = $imdb->cast(true);
+
+        $sumi = $cast[0];
+        $this->assertEquals('0793585', $sumi['imdb']);
+        $this->assertEquals('Sumi Shimamoto', $sumi['name']);
+        $this->assertEquals('Nausicaä', $sumi['role']);
+        $this->assertTrue($sumi['credited']);
+        $this->assertCount(0, $sumi['role_other']);
+
+        $hisako = $cast[2];
+        $this->assertEquals('0477449', $hisako['imdb']);
+        $this->assertEquals('Hisako Kyôda', $hisako['name']);
+        $this->assertEquals('Oh-Baba', $hisako['role']);
+        $this->assertTrue($hisako['credited']);
+        $this->assertCount(0, $hisako['role_other']);
+    }
+
     public function testCast_short_cast_list_film_with_role_link()
     {
         $imdb = $this->getImdb();
