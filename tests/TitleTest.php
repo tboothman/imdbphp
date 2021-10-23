@@ -184,6 +184,12 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Thelma & Louise', $imdb->title());
     }
 
+    public function testTitle_removes_escaped_quotes()
+    {
+        $imdb = $this->getImdb('0108052');
+        $this->assertEquals('Schindler\'s List', $imdb->title());
+    }
+
     public function testTitle_different_language()
     {
         $config = new \Imdb\Config();
