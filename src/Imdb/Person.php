@@ -831,9 +831,9 @@ class Person extends MdbBase
                   $arr[$i], $match)) {
                     $this->pub_prints[] = array(
                       "author" => $match[1],
-                      "title" => htmlspecialchars_decode($match[2]),
+                      "title" => htmlspecialchars_decode($match[2], ENT_QUOTES),
                       "place" => trim($match[4]),
-                      "publisher" => htmlspecialchars_decode(trim($match[6])),
+                      "publisher" => htmlspecialchars_decode(trim($match[6]), ENT_QUOTES),
                       "year" => $match[8],
                       "isbn" => $match[10],
                       "url" => $match[9]
@@ -841,9 +841,9 @@ class Person extends MdbBase
                 } elseif (preg_match('/(.*).\s*<i>(.*)<\/i>\s*((.*):|)((.*),|)\s*((\d+)\.)/iU', $arr[$i], $match)) {
                     $this->pub_prints[] = array(
                       "author" => $match[1],
-                      "title" => htmlspecialchars_decode($match[2]),
+                      "title" => htmlspecialchars_decode($match[2], ENT_QUOTES),
                       "place" => trim($match[4]),
-                      "publisher" => htmlspecialchars_decode(trim($match[6])),
+                      "publisher" => htmlspecialchars_decode(trim($match[6]), ENT_QUOTES),
                       "year" => $match[8],
                       "isbn" => "",
                       "url" => ""
