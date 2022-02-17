@@ -576,14 +576,14 @@ class Title extends MdbBase
     {
         if (empty($this->movierecommendations)) {
             $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
+            $cells = $xp->query("//div[contains(@class, 'ipc-poster-card ipc-poster-card--base')]");
             /** @var \DOMElement $cell */
             foreach ($cells as $key => $cell) {
                 $movie = array();
                 $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
                 if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
                         $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
+                    $movie['title'] = utf8_decode(trim($get_link_and_name->item(0)->nodeValue));
                     $movie['imdbid'] = $ref[1];
                     $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
                     if (!empty($get_rating->item(0))) {
