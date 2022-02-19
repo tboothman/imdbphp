@@ -2903,7 +2903,52 @@ class Title extends MdbBase
         return $this->all_keywords;
     }
 
-    #========================================================[ /awards page ]===
+    #========================================================[ /awards page ]===   
+    #-------------------------------------------------------[ Main Awards ]---
+    /**
+     * Get main awards from yellow block at title page
+     * @return array main_awards (array[string awards,int wins,int nominations])
+     * @see IMDB page / (TitlePage)
+     */
+    public function mainAwards()
+    {
+        if (empty($this->main_awards)) {
+            $xp = $this->getXpathPage("Title");
+            $awards = $xp->query("//li[contains(@data-testid, 'award_information')]//a");
+            if ($awards->item(0)->nodeValue !== NULL) {
+                if ($awards->item(0)->nodeValue == "Awards") {
+                    $this->main_awards['awards'] = "";
+                } else {
+                    $this->main_awards['awards'] = trim($awards->item(0)->nodeValue);
+                }
+                if ($wins_nom = $xp->query("//li[contains(@data-testid, 'award_information')]//span")) {
+                    if( strpos( $wins_nom_split = $wins_nom->item(0)->nodeValue, '&' ) !== false) {
+                        $split = explode('&', $wins_nom_split);
+                        $this->main_awards['wins'] = trim(intval($split[0]));
+                        $this->main_awards['nominations'] = trim(intval($split[1]));
+                    } else {
+                        if ($wins_nom_split !== "") {
+                            if( strpos( $wins_nom_split, 'win' ) !== false) {
+                                $this->main_awards['nominations'] = -1;
+                                $this->main_awards['wins'] = trim(intval($wins_nom_split));
+                            } else {
+                                $this->main_awards['wins'] = -1;
+                                $this->main_awards['nominations'] = trim(intval($wins_nom_split));
+                            }
+                        } else {
+                            $this->main_awards['wins'] = -1;
+                            $this->main_awards['nominations'] = -1;
+                        }
+                    }
+                } else {
+                    $this->main_awards['wins'] = -1;
+                    $this->main_awards['nominations'] = -1;
+                }
+            }
+        }
+        return $this->main_awards;
+    }
+
     #--------------------------------------------------------------[ Awards ]---
     /** Get all awards this title was nominated for or won
      * @param boolean $compat whether stay backward compatible to the original format of Qvist. Default: TRUE
