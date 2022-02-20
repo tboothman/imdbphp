@@ -2924,25 +2924,25 @@ class Title extends MdbBase
                 if ($wins_nom = $xp->query("//li[contains(@data-testid, 'award_information')]//span")) {
                     if( strpos( $wins_nom_split = $wins_nom->item(0)->nodeValue, '&' ) !== false) {
                         $split = explode('&', $wins_nom_split);
-                        $this->main_awards['wins'] = trim(intval($split[0]));
-                        $this->main_awards['nominations'] = trim(intval($split[1]));
+                        $this->main_awards['wins'] = trim(preg_replace('/\D/', '', $split[0]));
+                        $this->main_awards['nominations'] = trim(preg_replace('/\D/', '', $split[1]));
                     } else {
                         if ($wins_nom_split !== "") {
                             if( strpos( $wins_nom_split, 'win' ) !== false) {
-                                $this->main_awards['nominations'] = -1;
-                                $this->main_awards['wins'] = trim(intval($wins_nom_split));
+                                $this->main_awards['nominations'] = "";
+                                $this->main_awards['wins'] = trim(preg_replace('/\D/', '', $wins_nom_split));
                             } else {
-                                $this->main_awards['wins'] = -1;
-                                $this->main_awards['nominations'] = trim(intval($wins_nom_split));
+                                $this->main_awards['wins'] = "";
+                                $this->main_awards['nominations'] = trim(preg_replace('/\D/', '', $wins_nom_split));
                             }
                         } else {
-                            $this->main_awards['wins'] = -1;
-                            $this->main_awards['nominations'] = -1;
+                            $this->main_awards['wins'] = "";
+                            $this->main_awards['nominations'] = "";
                         }
                     }
                 } else {
-                    $this->main_awards['wins'] = -1;
-                    $this->main_awards['nominations'] = -1;
+                    $this->main_awards['wins'] = "";
+                    $this->main_awards['nominations'] = "";
                 }
             }
         }
