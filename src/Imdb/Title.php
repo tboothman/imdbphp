@@ -512,22 +512,17 @@ class Title extends MdbBase
 
     #------------------------------------------------------[ Movie Comment(s) ]---
 
-    /** Get movie main comment (from title page)
+    /** 
+     * Get movie main comment (from title page)
      * @return string comment full text of movie comment from the movies main page
      * @see IMDB page / (TitlePage)
      */
     public function comment()
     {
-        // this stuff whent into a frame in 2011! _ajax/iframe?component=footer
         if ($this->main_comment == "") {
-            $this->getPage("Title");
-            if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<hr\s*/>\s*<div class\="yn"!ms',
-                $this->page["Title"], $match)) {
-                $this->main_comment = preg_replace("/a href\=\"\//i", "a href=\"https://" . $this->imdbsite . "/",
-                    $match[1]);
-            }
-            $this->main_comment = str_replace("https://i.media-imdb.com/images/showtimes",
-                $this->imdb_img_url . "/showtimes", $this->main_comment);
+            $t = $this->getXpathPage('Title');
+            $reviewRaw = $t->query("//div[@data-testid='review-overflow']/div/div");
+            $this->main_comment = $reviewRaw->item(0)->textContent;
         }
         return $this->main_comment;
     }
