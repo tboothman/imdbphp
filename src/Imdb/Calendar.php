@@ -34,7 +34,7 @@ class Calendar extends MdbBase
      * Get upcomming movie releases as seen on imdB
      * @return array (array[string date, array releases] of arrays[title,year,imdbid])
      * @parameter $country, This defines wich country list is returned
-     * for example de, nl, us as they appear on https://www.imdb.com/calendar
+     * for example DE, NL, US as they appear on https://www.imdb.com/calendar
      */
     public function upcommingReleases($country)
     {
