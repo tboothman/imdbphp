@@ -28,8 +28,6 @@ namespace Imdb;
 class Calendar extends MdbBase
 {
 
-    protected $page = null;
-
     /**
      * Get upcomming movie releases as seen on imdB
      * @return array (array[string date, array releases] of arrays[title,year,imdbid])
