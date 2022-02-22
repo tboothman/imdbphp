@@ -374,10 +374,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(null, $imdb->metacriticNumReviews());
     }
 
-//    public function testComment()
-//    {
-//        //@TODO
-//    }
+    public function testComment()
+    {
+        $imdb = $this->getImdb();
+        $this->assertNotEmpty($imdb->comment());
+    }
 
     // Taking different comments every time. Need to validate what it should look like.
 //    public function testComment_split()
