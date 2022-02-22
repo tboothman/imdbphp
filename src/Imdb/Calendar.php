@@ -20,7 +20,7 @@
 namespace Imdb;
 
 /**
- * Obtaining information about upcomming movie releases as seen on imdB
+ * Obtains information about upcoming movie releases as seen on IMDb
  * https://www.imdb.com/calendar
  * @author Ricardo Silva (banzap) <banzap@gmail.com>
  * @author Ed (github user: duck7000)
