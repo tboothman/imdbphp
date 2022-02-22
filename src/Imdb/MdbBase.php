@@ -182,6 +182,26 @@ class MdbBase extends Config
     }
 
     /**
+     * @param string $page
+     * @return \DomXPath
+     */
+    protected function getXpathPage($page)
+    {
+        if (!empty($this->xpathPage[$page])) {
+            return $this->xpathPage[$page];
+        }
+        $source = $this->getPage($page);
+        libxml_use_internal_errors(true);
+        /* Creates a new DomDocument object */
+        $dom = new \DomDocument;
+        /* Load the HTML */
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' .$source);
+        /* Create a new XPath object */
+        $this->xpathPage[$page] = new \DomXPath($dom);
+        return $this->xpathPage[$page];
+    }
+
+    /**
      * Overrideable method to build the URL used by getPage
      * @param string $context OPTIONAL
      * @return string
