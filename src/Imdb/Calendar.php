@@ -59,7 +59,6 @@ class Calendar extends MdbBase
                 'releases' => $titles
             );
         }
-        var_dump($calendar[0]);
         return $calendar;
     }
 
