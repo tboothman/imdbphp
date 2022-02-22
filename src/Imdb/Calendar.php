@@ -10,7 +10,7 @@
 # written by Ricardo Silva (banzap) <banzap@gmail.com>                      #
 # http://www.ricardosilva.pt.tl/                                            #
 # ------------------------------------------------------------------------- #
-# IMDBPHP UPCOMMING RELEASES (based on IMDBPHP TOP CHARTS (c)Ricardo Silva) #
+# IMDBPHP UPCOMING RELEASES (based on IMDBPHP TOP CHARTS (c)Ricardo Silva) #
 # written/modified/extended by Ed (github user: duck7000)                   #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
