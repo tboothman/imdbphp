@@ -34,7 +34,7 @@ class Calendar extends MdbBase
      * @parameter $country, This defines wich country list is returned
      * for example DE, NL, US as they appear on https://www.imdb.com/calendar
      */
-    public function upcommingReleases($country)
+    public function upcomingReleases($country)
     {
         $page = $this->getXpathPage($country);
         $calendar = array();
