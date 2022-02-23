@@ -8,13 +8,18 @@ class CalendarTest extends PHPUnit\Framework\TestCase
     {
         $cal = $this->getCalendar();
         $calendar = $cal->upcomingReleases("GB");
+
         $this->assertIsArray($calendar);
         $this->assertTrue(count($calendar) >= 1);
-        $this->assertTrue(count($calendar[0]) >= 1);
-        $this->assertTrue($calendar[0]['date']) != "");
-        $this->assertTrue($calendar[0]['title']) != "");
-        $this->assertTrue(is_numeric($calendar[0]['year']));
-        $this->assertTrue(is_numeric($calendar[0]['imdb']));
+
+        foreach ($calendar as $calendarItem) {
+            $this->assertIsArray($calendarItem);
+            $this->assertInstanceOf('DateTime', $calendarItem['release_date']);
+            $this->assertTrue($calendarItem['title'] != "");
+            $this->assertTrue(is_numeric($calendarItem['year']));
+            $this->assertTrue(is_numeric($calendarItem['imdbid']));
+        }
+
     }
 
     protected function getCalendar()

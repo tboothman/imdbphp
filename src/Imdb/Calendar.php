@@ -30,9 +30,16 @@ class Calendar extends MdbBase
 
     /**
      * Get upcoming movie releases as seen on IMDb
-     * @return array (array[string date, array releases] of arrays[title,year,imdbid])
      * @parameter $country This defines which country's releases are returned
      * for example DE, NL, US as they appear on https://www.imdb.com/calendar
+     * @return array[] (a list of releases in the form [title, year, imdbid, release_date])
+     * e.g. Array( Array(
+        [date] => DateTime Object
+        [title] => Babylon
+        [year] => 2022
+        [imdbid] => 10640346
+        ) )
+     *
      */
     public function upcomingReleases($country)
     {
@@ -42,21 +49,18 @@ class Calendar extends MdbBase
         foreach ($dates as $key => $date) {
             $key++;
             $titlesRaw = $page->query("//*[@id='main']/ul[$key]//li");
-            $titles = array();
             foreach ($titlesRaw as $value) {
                 $href = $value->getElementsByTagName('a')->item(0)->getAttribute('href');
                 preg_match('!.*?/title/tt(\d+)/.*!', $href, $imdbid);
                 $title = trim($value->getElementsByTagName('a')->item(0)->nodeValue);
                 preg_match('#\((.*?)\)#', $value->nodeValue, $year);
-                $d = \DateTime::createFromFormat("d F Y", trim($date->nodeValue));
-                $titles[] = array(
-                    'date' => $d->format('d F Y'),
+                $calendar[] = array(
+                    'release_date' => \DateTime::createFromFormat("d F Y", trim($date->nodeValue)),
                     'title' => $title,
                     'year' => $year[1],
                     'imdbid' => $imdbid[1]
                 );
             }
-            $calendar[] = $titles;
         }
         return $calendar;
     }
