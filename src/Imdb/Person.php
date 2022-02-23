@@ -1085,6 +1085,14 @@ class Person extends MdbBase
 
         return $this->page[$page];
     }
-
+    
+    // this will, in case of a redirect by imdb site) get the new person id
+    public function real_id()
+	{
+		$page = $this->getPage('Name');
+		if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
+		    return $matches[1];
+		}
+	}
 }
 
