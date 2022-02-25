@@ -388,16 +388,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function testMovie_recommendations()
     {
-        $imdb = $this->getImdb(450385); // Currently recommends  Sinister I (2012)  (The I is in a seperate span before the year)
+        $imdb = $this->getImdb();
         $recommendations = $imdb->movie_recommendations();
         $this->assertIsArray($recommendations);
         $this->assertCount(12, $recommendations);
 
         $matches = 0;
         foreach ($recommendations as $recommendation) {
-            if ($recommendation['title'] == 'Silent Hill') {
-                $this->assertTrue($recommendation['title'] == 'Silent Hill');
-                $this->assertTrue(floatval($recommendation['rating']) > 6.0);
+            if ($recommendation['title'] == 'The Matrix Reloaded') {
+                $this->assertTrue($recommendation['title'] == 'The Matrix Reloaded');
+                $this->assertTrue(floatval($recommendation['rating']) > 7.0);
                 $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
             } else {
