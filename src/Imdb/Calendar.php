@@ -34,7 +34,7 @@ class Calendar extends MdbBase
      * for example DE, NL, US as they appear on https://www.imdb.com/calendar
      * @return array[] (a list of releases in the form [title, year, imdbid, release_date])
      * e.g. Array( Array(
-        [date] => DateTime Object
+        [release_date] => DateTime Object
         [title] => Babylon
         [year] => 2022
         [imdbid] => 10640346
