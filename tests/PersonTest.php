@@ -160,7 +160,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertCount(6, $result);
         $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
-        $this->assertEquals('La Luna', $laLuna['name']);
+        $this->assertEquals('Boy on the Moon', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
         $this->assertEquals('', $laLuna['chid']);
         $this->assertEquals('', $laLuna['chname']);

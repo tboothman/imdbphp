@@ -2693,10 +2693,10 @@ class Title extends MdbBase
     #==================================================[ /companycredits page ]===
     #---------------------------------------------[ Helper: Parse CompanyInfo ]---
     /** Parse company info
-     * @param ref string text to parse
+     * @param string text to parse
      * @param ref array parse target
      */
-    protected function companyParse(&$text, &$target)
+    protected function companyParse($text, &$target)
     {
         preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms', $text, $matches);
         $mc = count($matches[0]);
