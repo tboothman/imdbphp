@@ -571,7 +571,7 @@ class Title extends MdbBase
     {
         if (empty($this->movierecommendations)) {
             $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
+            $cells = $xp->query("//div[contains(@class, 'ipc-poster-card ipc-poster-card--base')]");
             /** @var \DOMElement $cell */
             foreach ($cells as $key => $cell) {
                 $movie = array();
