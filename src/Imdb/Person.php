@@ -1059,6 +1059,8 @@ class Person extends MdbBase
         if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
             if (preg_match('~[0-9]+~', $matches[1]) && strlen($matches[1]) >= 7) {
                 return $matches[1];
+            } else {
+                return null;
             }
         } else {
             return null;
