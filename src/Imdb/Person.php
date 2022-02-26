@@ -1049,6 +1049,18 @@ class Person extends MdbBase
     }
 
     /**
+     * Get the ID for the title we're using. There might have been a redirect from the ID given in the constructor
+     * @return string|null e.g. 0133093
+     */
+    public function real_id()
+    {
+        $page = $this->getPage('Name');
+        if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
+            return $matches[1];
+        }
+    }
+
+    /**
      * @param string $pageName internal name of the page
      * @return string
      */
@@ -1085,14 +1097,5 @@ class Person extends MdbBase
 
         return $this->page[$page];
     }
-    
-    // this will, in case of a redirect by imdb site) get the new person id
-    public function real_id()
-	{
-		$page = $this->getPage('Name');
-		if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
-		    return $matches[1];
-		}
-	}
 }
 
