@@ -1050,20 +1050,13 @@ class Person extends MdbBase
 
     /**
      * Get the ID for the title we're using. There might have been a redirect from the ID given in the constructor
-     * @return in case of redirect: string 0133093 not including nm!
-     * @return in case of no redirect: null
+     * @return string|null e.g. 0133093 not including nm!
      */
     public function real_id()
     {
         $page = $this->getPage('Name');
         if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
-            if (preg_match('~[0-9]+~', $matches[1]) && strlen($matches[1]) >= 7) {
-                return $matches[1];
-            } else {
-                return null;
-            }
-        } else {
-            return null;
+            return $matches[1];
         }
     }
 
