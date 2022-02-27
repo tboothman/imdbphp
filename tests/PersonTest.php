@@ -396,6 +396,18 @@ class PersonTest extends PHPUnit\Framework\TestCase
             'author' => '',
             ), $first);
     }
+    
+    public function test_real_id()
+    {
+        $personRedirect = $this->getimdb_person('8484559');
+        $person = $this->getimdb_person('0000314');
+        $NoRedirect = $person->real_id();
+        $redirect = $personRedirect->real_id();
+        $this->assertNotEmpty($redirect);
+        $this->assertEquals('2092886', $redirect);
+        
+        $this->assertEquals('null', $NoRedirect);
+    }
 
     protected function getimdb_person($id = '0594503')
     {
