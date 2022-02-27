@@ -406,7 +406,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertNotEmpty($redirect);
         $this->assertEquals('2092886', $redirect);
         
-        $this->assertEquals('null', $NoRedirect);
+        $this->assertEquals('0000314', $NoRedirect);
     }
 
     protected function getimdb_person($id = '0594503')
