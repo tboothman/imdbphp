@@ -924,37 +924,67 @@ class Person extends MdbBase
         }
         $pos_e = strpos($page, "</table", $pos_s);
         $block = substr($page, $pos_s, $pos_e - $pos_s);
-        @preg_match_all("|<tr(.*)</tr>|ims", $block, $matches); // get the rows
+        preg_match_all("#<tr[^>]*>(.*?)</tr>#is", $block, $matches); // get the rows
         $res = array();
         foreach ($matches[0] as $row) {
             if (@preg_match('|<td.*?>(.*?)</td>.*<td.*?>(.*?)</td>|ms', $row, $match)) {
-                @preg_match('/(\d{1,2}|)\s*(\S+|)\s*(\d{4}|)/i', $match[2], $dat);
-                $datum = array(
-                  "day" => $dat[1],
-                  "month" => trim($dat[2]),
-                  "mon" => $this->monthNo(trim($dat[2])),
-                  "year" => trim($dat[3]),
-                  "full" => trim($dat[0])
-                );
-                if (strlen($dat[0])) {
-                    $match[2] = trim(substr($match[2], strlen($dat[0]) + 1));
-                }
-                @preg_match('|<a name="author">(.*?)</a>|ims', $match[2], $author);
-                if (!empty($author) && strlen($author[0])) {
-                    $match[2] = trim(str_replace(', by: ' . $author[0], '', $match[2]));
-                }
-                if (!empty($author)) {
-                    $resauthor = $author[1];
+                $data = explode(',', $match[2], 2);
+                $dates = array_filter(explode(' ', $data[0]));
+                $count = count($dates);
+                if ($count == 1) {
+                    $month = '';
+                    $day = '';
+                    $year = trim($dates[0]);
+                } elseif ($count == 2) {
+                    $month = trim($dates[0]);
+                    $day = '';
+                    $year = trim($dates[1]);
+                } elseif ($count == 3) {
+                    $month = trim($dates[0]);
+                    $day = trim($dates[1]);
+                    $year = trim($dates[2]);
                 } else {
-                    $resauthor = '';
+                    $month = '';
+                    $day = '';
+                    $year = '';
+                }
+                $datum = array(
+                  "day" => $day,
+                  "month" => $month,
+                  "mon" => $this->monthNo($month),
+                  "year" => $year,
+                  "full" => trim($data[0])
+                );
+                unset($day);
+                unset($month);
+                unset($year);
+                $details = '';
+                $author = '';
+                if (array_key_exists(1, $data) && !empty($data[1])) {
+                    $detailsRaw = explode(',', $data[1]);
+                    $details = '';
+                    $author = '';
+                    foreach ($detailsRaw as $key => $value) {
+                        if (strpos($value, 'by:') !== false) {
+                            $author = trim(str_replace('by: ', '', $value));
+                        } else {
+                            if (!empty($value)) {
+                                if ($key === array_key_last($detailsRaw)) {
+                                    $details .= trim($value);
+                                } else {
+                                    $details .= trim($value) . ', ';
+                                }
+                            }
+                        }
+                    }
                 }
                 $res[] = array(
                   "inturl" => '',
                   "name" => trim(strip_tags($match[1])),
                   "date" => $datum,
-                  "details" => trim($match[2]),
+                  "details" => $details,
                   "auturl" => '',
-                  "author" => $resauthor
+                  "author" => $author
                 );
             }
         }
