@@ -15,9 +15,9 @@ class CalendarTest extends PHPUnit\Framework\TestCase
         foreach ($calendar as $calendarItem) {
             $this->assertIsArray($calendarItem);
             $this->assertInstanceOf('DateTime', $calendarItem['release_date']);
-            $this->assertTrue($calendarItem['title'] != "");
-            $this->assertTrue(is_numeric($calendarItem['year']));
-            $this->assertTrue(is_numeric($calendarItem['imdbid']));
+            $this->assertNotEmpty($calendarItem['title']);
+            $this->assertIsNumeric($calendarItem['year']);
+            $this->assertIsNumeric($calendarItem['imdbid']);
         }
 
     }
