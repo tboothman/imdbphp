@@ -54,8 +54,10 @@ class Calendar extends MdbBase
                 preg_match('!.*?/title/tt(\d+)/.*!', $href, $imdbid);
                 $title = trim($value->getElementsByTagName('a')->item(0)->nodeValue);
                 preg_match('#\((\d{4})\)$#', trim($value->nodeValue), $year);
+                $release_date = \DateTime::createFromFormat("d F Y", trim($date->nodeValue));
+                $release_date->setTime(0, 0, 0);
                 $calendar[] = array(
-                    'release_date' => \DateTime::createFromFormat("d F Y", trim($date->nodeValue)),
+                    'release_date' => $release_date,
                     'title' => $title,
                     'year' => $year[1],
                     'imdbid' => $imdbid[1]
