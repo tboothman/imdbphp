@@ -284,13 +284,35 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('1.64 m', $result['metric']);
     }
 
-    // @TODO Write proper tests for this method
-    // @TODO this method doesn't work
-//    public function test_spouse()
-//    {
-//        $person = $this->getimdb_person();
-//        $this->assertNotEmpty($person->spouse());
-//    }
+    public function test_spouse()
+    {
+        $person = $this->getimdb_person();
+        $result = $person->spouse();
+        $this->assertNotEmpty($result);
+        $this->assertCount(1, $result);
+        $first = $result[0];
+        $this->assertEquals(array(
+            'imdb' => '1088112',
+            'name' => 'Akemi Ôta',
+            'from' =>
+            array(
+                'day' => '',
+                'month' => 'October',
+                'mon' => '10',
+                'year' => '1965',
+            ),
+            'to' => 
+            array(
+                'day' => '',
+                'month' => '',
+                'mon' => '',
+                'year' => '',
+            ),
+            'comment' => '',
+            'children' => '2',
+            ), $first);
+        
+    }
 
     //@TODO Write proper tests for this method
     public function test_bio()
