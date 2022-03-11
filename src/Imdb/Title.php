@@ -2343,7 +2343,7 @@ class Title extends MdbBase
      * Get the soundtrack listing
      * @return array soundtracks
      * [ soundtrack : name of the track
-     *   credits : Full text only description of the credits. Contains newline characters
+     *   credits : array with all credit lines.
      * ]
      * @see IMDB page /soundtrack
      */
@@ -2361,20 +2361,21 @@ class Title extends MdbBase
             if (!empty($cells)) {
                 foreach ($cells as $cell) {
                     // Get all html from xpath query and ensure soundtrack is sepparated from credits
-                    $html = explode("<br>", $cell->c14n(), 2);
-                    $creditsExp = explode("<br>", $html[1]); // explode all credit lines to array.
-                    $count = count($creditsExp);
-                    $credits = '';
-                    foreach ($creditsExp as $key => $value) {
-                        $credits .= trim(strip_tags($value));
-                        if ($key < $count -1) {
-                            $credits .= "\n";
+                    $html = explode("<br>", $cell->ownerDocument->saveHTML($cell), 2);
+                    if (array_key_exists(1, $html)) {
+                        $creditsExp = explode("<br>", $html[1]); // explode all credit lines to array.
+                        $credits = array();
+                        foreach ($creditsExp as $value) {
+                            $cr = trim(strip_tags($value));
+                            if (!empty($cr)) {
+                                $credits[] = $cr;
+                            }
                         }
+                        $this->soundtracks[] = array(
+                            'soundtrack' => trim(strip_tags($html[0])),
+                            'credits' => $credits
+                        );
                     }
-                    $this->soundtracks[] = array(
-                        'soundtrack' => trim(strip_tags($html[0])),
-                        'credits' => trim($credits)
-                    );
 
                 }
             }
