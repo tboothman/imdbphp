@@ -1608,11 +1608,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function test_releaseInfo()
     {
-        $imdb = $this->getImdb(0107290);
+        $imdb = $this->getImdb(107290);
         $releaseInfo = $imdb->releaseInfo();
 
         $this->assertGreaterThanOrEqual(150, count($releaseInfo));
-        $this->assertLessThanOrEqual(170, count($releaseInfo));
+        $this->assertLessThanOrEqual(171, count($releaseInfo));
 
         $this->assertEquals(array(
             'country' => 'USA',
