@@ -311,7 +311,6 @@ class PersonTest extends PHPUnit\Framework\TestCase
             'comment' => '',
             'children' => '2',
             ), $first);
-        
     }
 
     //@TODO Write proper tests for this method
