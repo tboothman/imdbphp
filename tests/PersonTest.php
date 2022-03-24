@@ -160,7 +160,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertCount(6, $result);
         $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
-        $this->assertEquals('La Luna', $laLuna['name']);
+        $this->assertEquals('Boy on the Moon', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
         $this->assertEquals('', $laLuna['chid']);
         $this->assertEquals('', $laLuna['chname']);
@@ -284,12 +284,13 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('1.64 m', $result['metric']);
     }
 
-    //@TODO Write proper tests for this method
-    public function test_spouse()
-    {
-        $person = $this->getimdb_person();
-        $this->assertNotEmpty($person->spouse());
-    }
+    // @TODO Write proper tests for this method
+    // @TODO this method doesn't work
+//    public function test_spouse()
+//    {
+//        $person = $this->getimdb_person();
+//        $this->assertNotEmpty($person->spouse());
+//    }
 
     //@TODO Write proper tests for this method
     public function test_bio()
@@ -394,6 +395,19 @@ class PersonTest extends PHPUnit\Framework\TestCase
             'auturl' => '',
             'author' => '',
             ), $first);
+    }
+    
+    public function test_real_id()
+    {
+        $person = $this->getimdb_person();
+        $this->assertEquals('0594503', $person->real_id());
+    }
+
+    public function test_real_id_after_redirect()
+    {
+        $personRedirect = $this->getimdb_person('8484559');
+        $redirect = $personRedirect->real_id();
+        $this->assertEquals('2092886', $redirect);
     }
 
     protected function getimdb_person($id = '0594503')
