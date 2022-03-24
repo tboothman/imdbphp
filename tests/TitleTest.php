@@ -1612,7 +1612,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $releaseInfo = $imdb->releaseInfo();
 
         $this->assertGreaterThanOrEqual(150, count($releaseInfo));
-        $this->assertLessThanOrEqual(170, count($releaseInfo));
+        $this->assertLessThanOrEqual(171, count($releaseInfo));
 
         $this->assertEquals(array(
             'country' => 'USA',
