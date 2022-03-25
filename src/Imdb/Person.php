@@ -600,136 +600,138 @@ class Person extends MdbBase
         if (empty($this->spouses)) {
             $xp = $this->getXpathPage("Bio");
             $spouse = $xp->query("//table[contains(@id, 'tableFamily')]/tr[1]/td[1]");
-            if (trim($spouse->item(0)->nodeValue) == "Spouse") {
-                if ($tab = $xp->query("//table[contains(@id, 'tableFamily')]/tr[1]/td[2]")) {
-                    $html = $tab->item(0)->ownerDocument->saveXML($tab->item(0));
-                    $htmlParts = explode("<br/>", $html);
-                    foreach ($htmlParts as $parts) {
-                        // imdbid
-                        $mid = '';
-                        if (preg_match('/<a href="\/name\/nm(\d+).*">/', $parts, $url)) {
-                            $mid = $url[1];
-                        }
-                        // spouse name
-                        $name = '';
-                        if (preg_match('![^(]*\([^(\d]*!', $parts, $nameRaw)) {
-                            $nameClean = preg_replace('/[^A-Za-z0-9().\-\"\"\W ]/', '', strip_tags($nameRaw[0]));
-                            if (strpos($nameClean, ')') && !strpos($nameClean, '?')) {
-                                $name = trim($nameClean);
-                                echo 'name';
+            if ($spouse->count()) {
+                if (trim($spouse->item(0)->nodeValue) == "Spouse") {
+                    if ($tab = $xp->query("//table[contains(@id, 'tableFamily')]/tr[1]/td[2]")) {
+                        $html = $tab->item(0)->ownerDocument->saveXML($tab->item(0));
+                        $htmlParts = explode("<br/>", $html);
+                        foreach ($htmlParts as $parts) {
+                            // imdbid
+                            $mid = '';
+                            if (preg_match('/<a href="\/name\/nm(\d+).*">/', $parts, $url)) {
+                                $mid = $url[1];
+                            }
+                            // spouse name
+                            $name = '';
+                            if (preg_match('![^(]*\([^(\d]*!', $parts, $nameRaw)) {
+                                $nameClean = preg_replace('/[^A-Za-z0-9().\-\"\"\W ]/', '', strip_tags($nameRaw[0]));
+                                if (strpos($nameClean, ')') && !strpos($nameClean, '?')) {
+                                    $name = trim($nameClean);
+                                    echo 'name';
+                                } else {
+                                    $nameClean = explode('(', $nameClean);
+                                    if (!strpos($nameClean[0], '?')) {
+                                        $name = trim($nameClean[0]);
+                                    }
+                                }
+                            }
+                            //Dates, comment and children
+                            preg_match_all('!(\(.+?\))!ms', strip_tags($parts), $matches);
+                            // remove leftover spouse name parts (imdbid 0001228 extra name between brackets)
+                            if (!preg_match('~[0-9]+~', $matches[0][0]) && !strpos($matches[0][0], '?')) {
+                                unset($matches[0][0]);
+                                sort($matches[0]);
+                            }
+                            $datesRaw = preg_replace('/[^A-Za-z0-9-]/', ' ', $matches[0][0]);
+                            //from date
+                            $fromDay = '';
+                            $fromMonth = '';
+                            $fromYear = '';
+                            $fromDateRaw = explode('-', $datesRaw);
+                            if (array_key_exists(0, $fromDateRaw) && preg_match('~[0-9]+~', $fromDateRaw[0])) {
+                                $fromDate = array_values(array_filter(explode(' ', trim($fromDateRaw[0]))));
+                                $count = count($fromDate);
+                                if ($count == 1) {
+                                    if (preg_match('~[0-9]+~', $fromDate[0])) {
+                                        $fromYear = $fromDate[0];
+                                    }
+                                } elseif ($count == 2) {
+                                    $fromMonth = trim($fromDate[0]);
+                                    if (preg_match('~[0-9]+~', $fromDate[1])) {
+                                        $fromYear = $fromDate[1];
+                                    }
+                                } elseif ($count == 3) {
+                                    if (preg_match('~[0-9]+~', $fromDate[0])) {
+                                        $fromDay = $fromDate[0];
+                                    }
+                                    $fromMonth = trim($fromDate[1]);
+                                    if (preg_match('~[0-9]+~', $fromDate[2])) {
+                                        $fromYear = $fromDate[2];
+                                    }
+                                }
+                                $from = array(
+                                      "day" => $fromDay,
+                                      "month" => $fromMonth,
+                                      "mon" => $this->monthNo($fromMonth),
+                                      "year" => $fromYear
+                                    );
                             } else {
-                                $nameClean = explode('(', $nameClean);
-                                if (!strpos($nameClean[0], '?')) {
-                                    $name = trim($nameClean[0]);
-                                }
+                                    $from = array("day" => '', "month" => '', "mon" => '', "year" => '');
                             }
-                        }
-                        //Dates, comment and children
-                        preg_match_all('!(\(.+?\))!ms', strip_tags($parts), $matches);
-                        // remove leftover spouse name parts (imdbid 0001228 extra name between brackets)
-                        if (!preg_match('~[0-9]+~', $matches[0][0]) && !strpos($matches[0][0], '?')) {
-                            unset($matches[0][0]);
-                            sort($matches[0]);
-                        }
-                        $datesRaw = preg_replace('/[^A-Za-z0-9-]/', ' ', $matches[0][0]);
-                        //from date
-                        $fromDay = '';
-                        $fromMonth = '';
-                        $fromYear = '';
-                        $fromDateRaw = explode('-', $datesRaw);
-                        if (array_key_exists(0, $fromDateRaw) && preg_match('~[0-9]+~', $fromDateRaw[0])) {
-                            $fromDate = array_values(array_filter(explode(' ', trim($fromDateRaw[0]))));
-                            $count = count($fromDate);
-                            if ($count == 1) {
-                                if (preg_match('~[0-9]+~', $fromDate[0])) {
-                                    $fromYear = $fromDate[0];
+                            //to date
+                            $toDay = '';
+                            $toMonth = '';
+                            $toYear = '';
+                            $toDateRaw = explode('-', $datesRaw);
+                            if (array_key_exists(1, $toDateRaw) && preg_match('~[0-9]+~', $toDateRaw[1])) {
+                                $toDate = array_values(array_filter(explode(' ', trim($toDateRaw[1]))));
+                                $count = count($toDate);
+                                if ($count == 1) {
+                                    if (preg_match('~[0-9]+~', $toDate[0])) {
+                                        $toYear = $toDate[0];
+                                    }
+                                } elseif ($count == 2) {
+                                    $toMonth = trim($toDate[0]);
+                                    if (preg_match('~[0-9]+~', $toDate[1])) {
+                                        $toYear = $toDate[1];
+                                    }
+                                } elseif ($count == 3) {
+                                    if (preg_match('~[0-9]+~', $toDate[0])) {
+                                        $toDay = $toDate[0];
+                                    }
+                                    $toMonth = trim($toDate[1]);
+                                    if (preg_match('~[0-9]+~', $toDate[2])) {
+                                        $toYear = $toDate[2];
+                                    }
                                 }
-                            } elseif ($count == 2) {
-                                $fromMonth = trim($fromDate[0]);
-                                if (preg_match('~[0-9]+~', $fromDate[1])) {
-                                    $fromYear = $fromDate[1];
-                                }
-                            } elseif ($count == 3) {
-                                if (preg_match('~[0-9]+~', $fromDate[0])) {
-                                    $fromDay = $fromDate[0];
-                                }
-                                $fromMonth = trim($fromDate[1]);
-                                if (preg_match('~[0-9]+~', $fromDate[2])) {
-                                    $fromYear = $fromDate[2];
-                                }
-                            }
-                            $from = array(
-                                  "day" => $fromDay,
-                                  "month" => $fromMonth,
-                                  "mon" => $this->monthNo($fromMonth),
-                                  "year" => $fromYear
-                                );
-                        } else {
-                                $from = array("day" => '', "month" => '', "mon" => '', "year" => '');
-                        }
-                        //to date
-                        $toDay = '';
-                        $toMonth = '';
-                        $toYear = '';
-                        $toDateRaw = explode('-', $datesRaw);
-                        if (array_key_exists(1, $toDateRaw) && preg_match('~[0-9]+~', $toDateRaw[1])) {
-                            $toDate = array_values(array_filter(explode(' ', trim($toDateRaw[1]))));
-                            $count = count($toDate);
-                            if ($count == 1) {
-                                if (preg_match('~[0-9]+~', $toDate[0])) {
-                                    $toYear = $toDate[0];
-                                }
-                            } elseif ($count == 2) {
-                                $toMonth = trim($toDate[0]);
-                                if (preg_match('~[0-9]+~', $toDate[1])) {
-                                    $toYear = $toDate[1];
-                                }
-                            } elseif ($count == 3) {
-                                if (preg_match('~[0-9]+~', $toDate[0])) {
-                                    $toDay = $toDate[0];
-                                }
-                                $toMonth = trim($toDate[1]);
-                                if (preg_match('~[0-9]+~', $toDate[2])) {
-                                    $toYear = $toDate[2];
-                                }
-                            }
-                            $to = array(
-                                  "day" => $toDay,
-                                  "month" => $toMonth,
-                                  "mon" => $this->monthNo($toMonth),
-                                  "year" => $toYear
-                                );
-                        } else {
-                                $to = array("day" => '', "month" => '', "mon" => '', "year" => '');
-                        }
-                        // Comment and Children
-                        $elements = count($matches[0]) - 1; //count remaining elements after dates
-                        $comment = '';
-                        $children = '';
-                        if ($elements == 1) {
-                            if (preg_match('!(\d+) child!', $matches[0][1], $match)) {
-                                $children = $match[1];
+                                $to = array(
+                                      "day" => $toDay,
+                                      "month" => $toMonth,
+                                      "mon" => $this->monthNo($toMonth),
+                                      "year" => $toYear
+                                    );
                             } else {
-                                $comment = trim($matches[0][1], " ()");
+                                    $to = array("day" => '', "month" => '', "mon" => '', "year" => '');
                             }
-                        } elseif ($elements == 2) {
-                            //sometimes those 2 values are reversed, don't know why, so have to check.
-                            if (preg_match('!(\d+) child!', $matches[0][1], $match)) {
-                                $children = $match[1];
-                                $comment = trim($matches[0][2], " ()");
-                            } elseif (preg_match('!(\d+) child!', $matches[0][2], $match)) {
-                                $children = $match[1];
-                                $comment = trim($matches[0][1], " ()");
+                            // Comment and Children
+                            $elements = count($matches[0]) - 1; //count remaining elements after dates
+                            $comment = '';
+                            $children = '';
+                            if ($elements == 1) {
+                                if (preg_match('!(\d+) child!', $matches[0][1], $match)) {
+                                    $children = $match[1];
+                                } else {
+                                    $comment = trim($matches[0][1], " ()");
+                                }
+                            } elseif ($elements == 2) {
+                                //sometimes those 2 values are reversed, don't know why, so have to check.
+                                if (preg_match('!(\d+) child!', $matches[0][1], $match)) {
+                                    $children = $match[1];
+                                    $comment = trim($matches[0][2], " ()");
+                                } elseif (preg_match('!(\d+) child!', $matches[0][2], $match)) {
+                                    $children = $match[1];
+                                    $comment = trim($matches[0][1], " ()");
+                                }
                             }
+                            $this->spouses[] = array(
+                              'imdb' => $mid,
+                              'name' => $name,
+                              'from' => $from,
+                              'to' => $to,
+                              'comment' => $comment,
+                              'children' => $children
+                            );
                         }
-                        $this->spouses[] = array(
-                          'imdb' => $mid,
-                          'name' => $name,
-                          'from' => $from,
-                          'to' => $to,
-                          'comment' => $comment,
-                          'children' => $children
-                        );
                     }
                 }
             }
