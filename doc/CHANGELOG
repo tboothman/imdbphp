@@ -2,8 +2,34 @@
 History for IMDBPHP
 ====================
 
+v7.3.0 (03.03.2022)
+-------------------
++ `Person::real_id()` gives the imdb ID of a person after following any redirects from the ID requested. Thanks @duck7000
++ New class `Calendar` with method `upcomingReleases($country)` that lets you see the upcoming releases for a country as seen on https://www.imdb.com/calendar?region=gb. Thanks @duck7000
+! Fix character encoding in methods that use xpath. (Affected `Title::cast()` names and role names, maybe more) #262 #253
+! Decode html single quotes in `Title::title()` #264
+! Fix `Title::comment()`. #258 #270
+! Fix title redirects not being followed (Sometimes imdb pages are redirected to one with a different ID)
+! Fix `Title::movie_recommendations()`. Thanks @duck7000  #268
+
+v7.2.0 (15.07.2021)
+-------------------
++ Added $ratings parameter to `Title::mpaa()` to get all ratings instead of just the last one. @PoLaKoSz #204
++ Format list items using "- " instead of returning "<li>" in `Title::alternateVersions()`. @duck7000 #228
+! Fix `Title::mpaa()` due to new design. @duck7000 #231
+! Fix `Title::plot()` as it returned incorrect author. @duck7000 #237
+! Fix `Title::episodes()` could crash as `bySeason` weren't always available.
+
+v7.1.0 (12.07.2021)
+-------------------
++ `Title::episodes()` now has a image_url field on each episode with a url pointing to the picture for that episode
+! Fix `Title::episodes()` failing when a season had a lot of episodes. Thanks @duck7000  #242
+! Fix `Title::episodes()` for shows with only one season #239
+! Fix `Title::movie_recommendations()` throwing errors when data such as rating was missing from the recommendation. Thanks @M0H4MM4D0UTIS #240
+
 v7.0.0 (07.07.2021)
 -------------------
+! Many fixes due to the redesign of the title page
 - `Title::mainPictures()` and `Title::prodNotes()` have been removed
 - `Title::movie_recommendations()` no longer returns year, endyear and votes
 
@@ -76,12 +102,12 @@ v6.1.1 (24.11.2018)
 
 v6.1.0 (16.11.2018)
 -------------------
-+ Added $short parameter to `Title::cast()` to get the cast listed on the title page, rather than the cast page. This will save you a http request if you use nothing else from the cast page, but gives fewer cast members. Thanks @sebastian-king 
++ Added $short parameter to `Title::cast()` to get the cast listed on the title page, rather than the cast page. This will save you a http request if you use nothing else from the cast page, but gives fewer cast members. Thanks @sebastian-king
 ! Fix `Title::keywords_all()` for keywords with spaces in them
 ! Fix `TitleSearch::search()` to ignore (in development) and empty year
 ! Fix `TitleSearchAdvanced::setSort()` as they changed the order
 ! Fix `Title::alsoknow()` for returning an empty set #150
-! Fix `Title::releaseInfo()` for returning an empty set #149 
+! Fix `Title::releaseInfo()` for returning an empty set #149
 ! Drop tests for PHP < 7.0
 
 v6.0.4 (02.10.2018)

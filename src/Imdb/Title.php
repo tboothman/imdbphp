@@ -202,7 +202,11 @@ class Title extends MdbBase
         }
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
-            return '/episodes?season=' . $match[1];
+            if (strlen($match[1]) == 4) {
+                return '/episodes?year=' . $match[1];
+            } else {
+                return '/episodes?season=' . $match[1];
+            }
         }
 
         throw new \Exception("Could not find URL for page $pageName");
@@ -230,21 +234,21 @@ class Title extends MdbBase
                 $this->main_movietype = trim($match['movietype']);
                 $this->main_year = $match['year'];
                 $this->main_endyear = $match['endyear'] ? $match['endyear'] : '0';
-                $this->main_title = htmlspecialchars_decode($match['title']);
+                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
             } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!', $ititle, $match)) {
                 $this->main_movietype = trim($match['movietype']);
                 $this->main_year = $match['year'];
                 $this->main_endyear = $match['year'];
-                $this->main_title = htmlspecialchars_decode($match['title']);
+                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
             } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)\)(.*)!', $ititle,
                 $match)) { // not yet released, but have been given a movietype.
                 $this->main_movietype = trim($match['movietype']);
-                $this->main_title = htmlspecialchars_decode($match['title']);
+                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
                 $this->main_year = '0';
                 $this->main_endyear = '0';
             } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!', $this->page["Title"],
                 $match)) { // not yet released, so no dates etc.
-                $this->main_title = htmlspecialchars_decode($match['title']);
+                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
                 $this->main_year = '0';
                 $this->main_endyear = '0';
             }
@@ -294,7 +298,7 @@ class Title extends MdbBase
 
     /**
      * Get movie original title
-     * @return string original movie title (name), if it differs from the result of title(). null otherwise
+     * @return string|null original movie title (name), if it differs from the result of title(). null otherwise
      * @see IMDB page / (TitlePage)
      */
     public function orig_title()
@@ -463,8 +467,9 @@ class Title extends MdbBase
 
     #----------------------------------------------------------[ Movie Rating ]---
 
-    /** Get movie rating
-     * @return string rating current rating as given by IMDB site
+    /**
+     * Get movie rating
+     * @return float|string rating current rating as given by IMDB site
      * @see IMDB page / (TitlePage)
      */
     public function rating()
@@ -508,22 +513,17 @@ class Title extends MdbBase
 
     #------------------------------------------------------[ Movie Comment(s) ]---
 
-    /** Get movie main comment (from title page)
+    /**
+     * Get movie main comment (from title page)
      * @return string comment full text of movie comment from the movies main page
      * @see IMDB page / (TitlePage)
      */
     public function comment()
     {
-        // this stuff whent into a frame in 2011! _ajax/iframe?component=footer
         if ($this->main_comment == "") {
-            $this->getPage("Title");
-            if (@preg_match('!<div class\="user-comments">\s*(.*?)\s*<hr\s*/>\s*<div class\="yn"!ms',
-                $this->page["Title"], $match)) {
-                $this->main_comment = preg_replace("/a href\=\"\//i", "a href=\"https://" . $this->imdbsite . "/",
-                    $match[1]);
-            }
-            $this->main_comment = str_replace("https://i.media-imdb.com/images/showtimes",
-                $this->imdb_img_url . "/showtimes", $this->main_comment);
+            $t = $this->getXpathPage('Title');
+            $reviewRaw = $t->query("//div[@data-testid='review-overflow']");
+            $this->main_comment = $reviewRaw->item(0)->textContent;
         }
         return $this->main_comment;
     }
@@ -572,14 +572,14 @@ class Title extends MdbBase
     {
         if (empty($this->movierecommendations)) {
             $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'TitleCard-sc-')]");
+            $cells = $xp->query("//div[contains(@class, 'ipc-poster-card ipc-poster-card--base')]");
             /** @var \DOMElement $cell */
             foreach ($cells as $key => $cell) {
                 $movie = array();
                 $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
                 if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
                         $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = utf8_decode(trim($get_link_and_name->item(0)->nodeValue));
+                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
                     $movie['imdbid'] = $ref[1];
                     $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
                     if (!empty($get_rating->item(0))) {
@@ -1031,8 +1031,8 @@ class Title extends MdbBase
 
     #--------------------------------------------------------[ Photo specific ]---
 
-    /** Setup cover photo (thumbnail and big variant)
-     * @return boolean success (TRUE if found, FALSE otherwise)
+    /**
+     * Setup cover photo (thumbnail and big variant)
      * @see IMDB page / (TitlePage)
      */
     private function populatePoster()
@@ -1236,18 +1236,34 @@ class Title extends MdbBase
 
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
-     * @return array [country => rating]
+     * @param bool $ratings On false it will return the last rating for each country,
+     *                      otherwise return every rating in an array.
+     * @return array [country => rating] or [country => [rating,]]
      * @see IMDB Parental Guidance page / (parentalguide)
      */
-    public function mpaa()
+    public function mpaa($ratings = false)
     {
         if (empty($this->mpaas)) {
-            $this->getPage("ParentalGuide");
-            if (preg_match_all("|/search/title\?certificates=.*?>\s*(.*?):(.*?)<|", $this->page["ParentalGuide"],
-                $matches)) {
-                $cc = count($matches[0]);
-                for ($i = 0; $i < $cc; ++$i) {
-                    $this->mpaas[$matches[1][$i]] = $matches[2][$i];
+            $xpath = $this->getXpathPage("ParentalGuide");
+            if (empty($xpath)) {
+                return array();
+            }
+            $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
+            foreach ($cells as $cell) {
+                if ($a = $cell->getElementsByTagName('a')->item(0)) {
+                    $mpaa = explode(':', $a->nodeValue, 2);
+                    $country = trim($mpaa[0]);
+                    $rating = isset($mpaa[1]) ? $mpaa[1] : '';
+
+                    if ($ratings) {
+                        if (!isset($this->mpaas[$country])) {
+                            $this->mpaas[$country] = [];
+                        }
+
+                        $this->mpaas[$country][] = $rating;
+                    } else {
+                        $this->mpaas[$country] = $rating;
+                    }
                 }
             }
         }
@@ -1323,20 +1339,23 @@ class Title extends MdbBase
     public function plot()
     {
         if (empty($this->plot_plot)) {
-            $page = $this->getPage("Plot");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Plot");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            $doc = new \DOMDocument();
-            @$doc->loadHTML($page);
-            $xp = new \DOMXPath($doc);
-            $cells = $xp->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
+            $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
             foreach ($cells as $cell) {
                 $link = '';
-                if ($a = $cell->getElementsByTagName('a')->item(0)) {
-                    $href = preg_replace('!/search/title!i', 'https://' . $this->imdbsite . '/search/title',
-                        $a->getAttribute('href'));
-                    $link = "\n-\n" . '<a href="' . $href . '">' . trim($cell->getElementsByTagName('a')->item(0)->nodeValue) . '</a>';
+                $anchors = $cell->getElementsByTagName('a');
+                if ($a = $anchors->item($anchors->length - 1)) {
+                    if (preg_match('!/search/title!i', $a->getAttribute('href'))) {
+                        $href = preg_replace(
+                            '!/search/title!i',
+                            'https://' . $this->imdbsite . '/search/title',
+                            $a->getAttribute('href')
+                        );
+                        $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
+                    }
                 }
                 $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
@@ -1720,7 +1739,7 @@ class Title extends MdbBase
             if (empty($dir['name'])) {
                 continue;
             }
-            $dir["name"] = utf8_decode($dir['name']);
+
             $get_role = $xpath->query(".//a[@data-testid='cast-item-characters-link']/span[1]", $node);
             if ($get_role != null) {
                 $dir["role"] = $get_role->item(0)->nodeValue;
@@ -1742,7 +1761,7 @@ class Title extends MdbBase
                     $get_role_episodes->item(0)->nodeValue)));
             }
             if ($get_role_start_year->item(0) != null) {
-                $year = explode('–', utf8_decode(trim($get_role_start_year->item(0)->nodeValue)));
+                $year = explode('–', trim($get_role_start_year->item(0)->nodeValue));
                 $dir["role_start_year"] = intval($year[0]);
                 $dir["role_end_year"] = (isset($year[1]) ? intval($year[1]) : null);
             }
@@ -1931,7 +1950,7 @@ class Title extends MdbBase
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
      * @see IMDB page /episodes
      * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
      */
@@ -1945,7 +1964,7 @@ class Title extends MdbBase
             if ($this->isEpisode()) {
                 $ser = $this->get_episode_details();
                 if (isset($ser['imdbid'])) {
-                    $show = new Title($ser['imdbid'], $this->config);
+                    $show = new Title($ser['imdbid'], $this->config, $this->logger, $this->cache);
                     return $this->season_episodes = $show->episodes();
                 } else {
                     return array();
@@ -1954,21 +1973,49 @@ class Title extends MdbBase
             $page = $this->getPage("Episodes");
             if (empty($page)) {
                 return $this->season_episodes;
-            } // no such page
-            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $match)) {
+            }
+
+            /*
+             * There are (sometimes) two select boxes: one per season and one per year.
+             * IMDb picks one select to use by default and the other starts with an empty option.
+             * The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
+             * (e.g. a show without seasons might have 100s of episodes in season 1 and its page won't load)
+             *
+             * default to year based
+             */
+            $selectId = 'id="byYear"';
+            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
+                preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
+                if (is_numeric(trim($matchOptionSeason[1][0]))) {
+                    //season based
+                    $selectId = 'id="bySeason"';
+                }
+            }
+
+            if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
                 preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
-                for ($i = 0; $i < count($matches[0]); ++$i) {
+                $count = count($matches[0]);
+                for ($i = 0; $i < $count; ++$i) {
                     $s = $matches[2][$i];
                     $page = $this->getPage("Episodes-$s");
                     if (empty($page)) {
-                        continue;
-                    } // no such page
+                        continue; // no such page
+                    }
+                    // fetch episodes images
+                    preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
+                    $urlIndex = 0;
                     $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
                         . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                         . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                         . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
+                        //Fetch episodes image url
+                        if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
+                            $image_url = $foundUrl[2];
+                        } else {
+                            $image_url = "";
+                        }
                         $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
                         $plot = preg_replace('#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
                             '', $plot);
@@ -1977,10 +2024,12 @@ class Title extends MdbBase
                             'imdbid' => $ep['imdbid'],
                             'title' => trim($ep['title']),
                             'airdate' => $ep['airdate'],
-                            'plot' => $plot,
-                            'season' => $s,
-                            'episode' => $ep['episodeNumber']
+                            'plot' => strip_tags($plot),
+                            'season' => (int)$s,
+                            'episode' => (int)$ep['episodeNumber'],
+                            'image_url' => $image_url
                         );
+                        $urlIndex = $urlIndex + 1;
 
                         if ($ep['episodeNumber'] == -1) {
                             $this->season_episodes[$s][] = $episode;
@@ -2667,10 +2716,10 @@ class Title extends MdbBase
     #==================================================[ /companycredits page ]===
     #---------------------------------------------[ Helper: Parse CompanyInfo ]---
     /** Parse company info
-     * @param ref string text to parse
+     * @param string text to parse
      * @param ref array parse target
      */
-    protected function companyParse(&$text, &$target)
+    protected function companyParse($text, &$target)
     {
         preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms', $text, $matches);
         $mc = count($matches[0]);
@@ -3029,16 +3078,21 @@ class Title extends MdbBase
     public function alternateVersions()
     {
         if (empty($this->moviealternateversions)) {
-            $page = $this->getPage('AlternateVersions');
-
-            if (false !== strpos($page, 'id="no_content"')) {
+            $xpath = $this->getXpathPage("AlternateVersions");
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array();
             }
-
-            if (preg_match_all('!<div class="soda (odd|even)">\s*(.*?)\s*</div>!ims', $page, $matches)) {
-                foreach ($matches[2] as $match) {
-                    $this->moviealternateversions[] = trim(str_replace("\n", " ", $match));
+            $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
+            foreach ($cells as $cell) {
+                $output = '';
+                $nodes = $xpath->query(".//text()", $cell);
+                foreach ($nodes as $node) {
+                    if ($node->parentNode->nodeName === 'li') {
+                        $output .= '- ';
+                    }
+                    $output .= trim($node->nodeValue) . "\n";
                 }
+                $this->moviealternateversions[] = trim($output);
             }
         }
         return $this->moviealternateversions;
@@ -3053,26 +3107,6 @@ class Title extends MdbBase
         $this->page[$page] = parent::getPage($page);
 
         return $this->page[$page];
-    }
-
-    /**
-     * @param string $page
-     * @return \DomXPath
-     */
-    protected function getXpathPage($page)
-    {
-        if (!empty($this->xpathPage[$page])) {
-            return $this->xpathPage[$page];
-        }
-        $source = $this->getPage($page);
-        libxml_use_internal_errors(true);
-        /* Createa a new DomDocument object */
-        $dom = new \DomDocument;
-        /* Load the HTML */
-        $dom->loadHTML($source);
-        /* Create a new XPath object */
-        $this->xpathPage[$page] = new \DomXPath($dom);
-        return $this->xpathPage[$page];
     }
 
     protected function jsonLD()
