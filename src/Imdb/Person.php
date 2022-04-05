@@ -706,7 +706,7 @@ class Person extends MdbBase
                             // Comment and Children
                             $elements = count($matches[0]) - 1; //count remaining elements after dates
                             $comment = '';
-                            $children = '';
+                            $children = 0;
                             if ($elements == 1) {
                                 if (preg_match('!(\d+) child!', $matches[0][1], $match)) {
                                     $children = $match[1];
@@ -729,7 +729,7 @@ class Person extends MdbBase
                               'from' => $from,
                               'to' => $to,
                               'comment' => $comment,
-                              'children' => $children
+                              'children' => (int)$children
                             );
                         }
                     }
