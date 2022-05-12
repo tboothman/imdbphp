@@ -1566,35 +1566,28 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $conn["followedBy"][0]);
     }
 
-    public function testSoundtrack_nosoundtracks()
-    {
-        $imdb = $this->getImdb('7618100');
+    public function testSoundtrack_nosoundtracks() {
+        $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
 
-    // This function doesn't really work very well
-    public function testSoundtrack_matrix()
-    {
+    public function testSoundtrack_matrix() {
         $imdb = $this->getImdb();
         $result = $imdb->soundtrack();
         $this->assertnotEmpty($result);
         $this->assertEquals(12, count($result));
 
-        // fully check out the first result
-        // this might be a little tight, loosen this test if it fails incorrectly in the future
-        /* Dissolved Girl
-          Written by Robert del Naja, Grant Marshall (as Grantley Marshall), Mushroom Vowles (as Andrew Vowles),
-          Sara J., and Matt Schwartz
-          Performed by Massive Attack
-          Courtesy of Virgin Records LTD.
-          By Arrangement with Virgin Records America, Inc. */
-        $dg = $result[0];
-        //$this->assertEquals('Dissolved Girl', $dg['soundtrack']);
-        // should be 5 writer credits, 1 performer, 1 courtesy and 1 arrangement
-//        $this->assertEquals(8, count($dg['credits']), "Incorrect number of credits");
-//        $this->assertEquals('writer', $dg['credits'][0]['desc']);
-//        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
+        $rid = $result[11];
+        $this->assertEquals('Rock is Dead', $rid['soundtrack']);
+        $this->assertEquals("Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
+Performed by Marilyn Manson
+Courtesy of Nothing/Interscope Records
+Under License from Universal Music Special Markets", $rid['credits']);
+        $this->assertEquals("Written by <a href=\"/name/nm0001504/\">Marilyn Manson</a>, <a href=\"/name/nm0708390/\">Jeordie White</a>, and <a href=\"/name/nm0300476/\">Madonna Wayne Gacy</a> <br />
+Performed by <a href=\"/name/nm0001504/\">Marilyn Manson</a> <br />
+Courtesy of Nothing/Interscope Records <br />
+Under License from Universal Music Special Markets <br />", $rid['credits_raw']);
     }
 
     public function testExtReviews()
