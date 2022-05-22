@@ -245,10 +245,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(2008, $imdb->endyear());
     }
 
-    public function testYearspan_for_a_tv_show_that_havent_ended()
+    public function testYearspan_for_a_tv_show_that_hasnt_ended()
     {
-        $imdb = $this->getImdb("2442560");
-        $this->assertEquals(array('start' => 2014, 'end' => 0), $imdb->yearspan());
+        $imdb = $this->getImdb("0088512");
+        $this->assertEquals(array('start' => 1985, 'end' => 0), $imdb->yearspan());
     }
 
     public function testYearspan()
@@ -374,10 +374,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(null, $imdb->metacriticNumReviews());
     }
 
-//    public function testComment()
-//    {
-//        //@TODO
-//    }
+    public function testComment()
+    {
+        $imdb = $this->getImdb();
+        $this->assertNotEmpty($imdb->comment());
+    }
 
     // Taking different comments every time. Need to validate what it should look like.
 //    public function testComment_split()
@@ -387,16 +388,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function testMovie_recommendations()
     {
-        $imdb = $this->getImdb(450385); // Currently recommends  Sinister I (2012)  (The I is in a seperate span before the year)
+        $imdb = $this->getImdb();
         $recommendations = $imdb->movie_recommendations();
         $this->assertIsArray($recommendations);
         $this->assertCount(12, $recommendations);
 
         $matches = 0;
         foreach ($recommendations as $recommendation) {
-            if ($recommendation['title'] == 'Silent Hill') {
-                $this->assertTrue($recommendation['title'] == 'Silent Hill');
-                $this->assertTrue(floatval($recommendation['rating']) > 6.0);
+            if ($recommendation['title'] == 'The Matrix Reloaded') {
+                $this->assertTrue($recommendation['title'] == 'The Matrix Reloaded');
+                $this->assertTrue(floatval($recommendation['rating']) > 7.0);
                 $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
             } else {
@@ -509,7 +510,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $genres = $imdb->genres();
         $this->assertTrue(in_array('Animation', $genres));
         $this->assertTrue(in_array('Sci-Fi', $genres));
-        $this->assertTrue(count($genres) == 4);
+        $this->assertTrue(count($genres) == 3);
     }
 
 //    public function testGenres_none()
@@ -684,7 +685,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testStoryline()
     {
         $imdb = $this->getImdb("0306414");
-        $this->assertSame(0, strpos($imdb->storyline(), "Set in Baltimore, this show centers around the city's inner-city drug scene. It starts as mid-level drug dealer"));
+        $this->assertSame(0, strpos($imdb->storyline(), "The streets of Baltimore as a microcosm of the US's war on drugs"));
     }
 
     public function testPhoto_returns_false_if_no_poster()
@@ -1565,35 +1566,28 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $conn["followedBy"][0]);
     }
 
-    public function testSoundtrack_nosoundtracks()
-    {
-        $imdb = $this->getImdb('7618100');
+    public function testSoundtrack_nosoundtracks() {
+        $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
 
-    // This function doesn't really work very well
-    public function testSoundtrack_matrix()
-    {
+    public function testSoundtrack_matrix() {
         $imdb = $this->getImdb();
         $result = $imdb->soundtrack();
         $this->assertnotEmpty($result);
         $this->assertEquals(12, count($result));
 
-        // fully check out the first result
-        // this might be a little tight, loosen this test if it fails incorrectly in the future
-        /* Dissolved Girl
-          Written by Robert del Naja, Grant Marshall (as Grantley Marshall), Mushroom Vowles (as Andrew Vowles),
-          Sara J., and Matt Schwartz
-          Performed by Massive Attack
-          Courtesy of Virgin Records LTD.
-          By Arrangement with Virgin Records America, Inc. */
-        $dg = $result[0];
-        //$this->assertEquals('Dissolved Girl', $dg['soundtrack']);
-        // should be 5 writer credits, 1 performer, 1 courtesy and 1 arrangement
-//        $this->assertEquals(8, count($dg['credits']), "Incorrect number of credits");
-//        $this->assertEquals('writer', $dg['credits'][0]['desc']);
-//        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
+        $rid = $result[11];
+        $this->assertEquals('Rock is Dead', $rid['soundtrack']);
+        $this->assertEquals("Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
+Performed by Marilyn Manson
+Courtesy of Nothing/Interscope Records
+Under License from Universal Music Special Markets", $rid['credits']);
+        $this->assertEquals("Written by <a href=\"/name/nm0001504/\">Marilyn Manson</a>, <a href=\"/name/nm0708390/\">Jeordie White</a>, and <a href=\"/name/nm0300476/\">Madonna Wayne Gacy</a> <br />
+Performed by <a href=\"/name/nm0001504/\">Marilyn Manson</a> <br />
+Courtesy of Nothing/Interscope Records <br />
+Under License from Universal Music Special Markets <br />", $rid['credits_raw']);
     }
 
     public function testExtReviews()
@@ -1610,8 +1604,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb(107290);
         $releaseInfo = $imdb->releaseInfo();
 
-        $this->assertGreaterThanOrEqual(150, count($releaseInfo));
-        $this->assertLessThanOrEqual(170, count($releaseInfo));
+        $this->assertGreaterThanOrEqual(165, count($releaseInfo));
+        $this->assertLessThanOrEqual(175, count($releaseInfo));
 
         $this->assertEquals(array(
             'country' => 'USA',
@@ -1678,18 +1672,20 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb();
         $specialCompany = $imdb->specialCompany();
-        $this->assertEquals('Amalgamated Pixels', $specialCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0012497?ref_=ttco_co_1', $specialCompany[0]['url']);
-        $this->assertEquals('(additional visual effects)', $specialCompany[0]['notes']);
+        $amalgamated = array_find_item($specialCompany, 'name', 'Amalgamated Pixels');
+        $this->assertEquals('Amalgamated Pixels', $amalgamated['name']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0012497')->evaluate($amalgamated['url']);
+        $this->assertEquals('(additional visual effects)', $amalgamated['notes']);
     }
 
     public function testOtherCompany()
     {
         $imdb = $this->getImdb();
         $otherCompany = $imdb->otherCompany();
-        $this->assertEquals('Absolute Rentals', $otherCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0235245?ref_=ttco_co_1', $otherCompany[0]['url']);
-        $this->assertEquals('(post-production rentals)', $otherCompany[0]['notes']);
+        $absoluteRentals = array_find_item($otherCompany, 'name', 'Absolute Rentals');
+        $this->assertEquals('Absolute Rentals', $absoluteRentals['name']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0235245')->evaluate($absoluteRentals['url']);
+        $this->assertEquals('(post-production rentals)', $absoluteRentals['notes']);
     }
 
     public function testParentalGuide()
@@ -1698,9 +1694,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $parentalGuide = $imdb->parentalGuide();
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
-        $this->assertGreaterThanOrEqual(3, $profanity);
+        $this->assertGreaterThanOrEqual(2, count($profanity));
         $this->assertGreaterThan(5, $drugs);
-        $this->assertContains('Around 8 uses of Godd***n.', $profanity);
+        $this->assertContains('20 or so uses of "shit"', $profanity);
         $this->assertContains('The Oracle smokes a cigarette.', $drugs);
     }
 
