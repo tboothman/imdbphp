@@ -609,7 +609,7 @@ class Title extends MdbBase
     {
         if (empty($this->main_keywords)) {
             $this->getPage("Title");
-            if (preg_match_all('!href="/search/keyword[^>]+?>\s*<span[^>]*?>(.*?)</span></a>!', $this->page["Title"],
+            if (preg_match_all('!href="/search/keyword[^>]+?>\s*<ul[^>]*?><li[^>]*?>(.*?)</li></ul></a>!', $this->page["Title"],
                 $matches)) {
                 $this->main_keywords = $matches[1];
             }
