@@ -1704,7 +1704,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
     {
         $imdb = $this->getImdb(120737);
         $parentalGuide = $imdb->parentalGuide(TRUE);
-        $violence = $parentalGuide['Frightening'][0];
+        $violence = $parentalGuide['Frightening'][1];
         $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene'));
     }
 
