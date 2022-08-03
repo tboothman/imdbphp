@@ -608,10 +608,9 @@ class Title extends MdbBase
     public function keywords()
     {
         if (empty($this->main_keywords)) {
-            $this->getPage("Title");
-            if (preg_match_all('!href="/search/keyword[^>]+?>\s*<ul[^>]*?><li[^>]*?>(.*?)</li></ul></a>!', $this->page["Title"],
-                $matches)) {
-                $this->main_keywords = $matches[1];
+            $json = $this->jsonLD();
+            if (!empty($json->keywords)) {
+                $this->main_keywords = array_map('trim', explode(',', $json->keywords));
             }
         }
         return $this->main_keywords;
