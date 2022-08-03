@@ -247,8 +247,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function testYearspan_for_a_tv_show_that_hasnt_ended()
     {
-        $imdb = $this->getImdb("0088512");
-        $this->assertEquals(array('start' => 1985, 'end' => 0), $imdb->yearspan());
+        $imdb = $this->getImdb("4903514");
+        $this->assertEquals(array('start' => 2015, 'end' => 0), $imdb->yearspan());
     }
 
     public function testYearspan()
@@ -807,7 +807,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $sound = $imdb->sound();
         $this->assertIsArray($sound);
         $this->assertCount(1, $sound);
-        $this->assertEquals('Dolby Stereo', $sound[0]);
+        $this->assertEquals('Mono', $sound[0]);
     }
 
     public function testSound_none()
