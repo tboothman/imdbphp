@@ -862,10 +862,12 @@ class Title extends MdbBase
     {
         if (!isset($this->episodeEpisode) || !isset($this->episodeSeason)) {
             $xpath = $this->getXpathPage("Title");
-            $extract = $xpath->query("//ul[@data-testid='hero-subnav-bar-season-episode-numbers-section']//span");
-            if ($extract && $extract->item(0) != null && $extract->item(1) != null) {
-                $this->episodeSeason = intval(str_ireplace('S', '', $extract->item(0)->nodeValue));
-                $this->episodeEpisode = intval(str_ireplace('E', '', $extract->item(1)->nodeValue));
+            $extract = $xpath->query("//div[@data-testid='hero-subnav-bar-season-episode-numbers-section-xs']");
+            if ($extract && $extract->item(0) != null) {
+                if (false !== preg_match("/S(\d+).+E(\d+)/", $extract->item(0)->textContent, $matches)) {
+                    $this->episodeSeason = $matches[1];
+                    $this->episodeEpisode = $matches[2];
+                }
             } else {
                 $this->episodeSeason = 0;
                 $this->episodeEpisode = 0;
