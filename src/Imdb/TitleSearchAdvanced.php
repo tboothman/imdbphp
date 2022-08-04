@@ -48,6 +48,7 @@ class TitleSearchAdvanced extends MdbBase
     protected $countries = array();
     protected $languages = array();
     protected $sort = 'moviemeter,asc';
+    protected $start = 1;
 
     /**
      * Set which types of titles should be returned
@@ -100,6 +101,15 @@ class TitleSearchAdvanced extends MdbBase
     }
 
     /**
+     * set start of results(kinda like offset)
+     * @param string $start
+     */
+    public function setStart($start)
+    {
+        $this->start = $start;
+    }
+
+    /**
      * Perform the search
      * @return array
      * array('imdbid' => $id,
@@ -142,7 +152,9 @@ class TitleSearchAdvanced extends MdbBase
             $queries['sort'] = $this->sort;
         }
 
-        return "https://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
+        $queries['start'] = $this->start;
+
+        return "https://" . $this->imdbsite . '/search/title?count=250&' . http_build_query($queries);
     }
 
     protected function parseTitleType($xp, $resultSection)
@@ -228,6 +240,7 @@ class TitleSearchAdvanced extends MdbBase
             $findTitleType = false;
         }
 
+        $counter = 0;
         foreach ($resultSections as $resultSection) {
             $titleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(0);
             $title = trim($titleElement->nodeValue);
@@ -272,6 +285,7 @@ class TitleSearchAdvanced extends MdbBase
             }
 
             $ret[] = array(
+              'rank' => $this->start + $counter++,
               'imdbid' => $id,
               'title' => $title,
               'year' => $year,
