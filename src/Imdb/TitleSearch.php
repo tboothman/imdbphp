@@ -22,17 +22,23 @@ class TitleSearch extends MdbBase
      * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
      *                            The class constants MOVIE,GAME etc should be used e.g. [TitleSearch::MOVIE, TitleSearch::TV_SERIES]
      * @param integer $maxResults *optional* specifies the maximum number of results for the search. The default is unlimited.
-     * @return Title[] array of Title objects
+     * @param bool $short *optional* pass false if you need full detail about movie , otherwise you only get result from search
+     * @return Title[]|array return array of title if short was false
      */
-    public function search($searchTerms, $wantedTypes = null, $maxResults = -1)
+    public function search($searchTerms, $wantedTypes = null, $maxResults = -1, $short = false)
     {
         $results = array();
         $resultsCounter = 0;
         $page = $this->getPage($searchTerms);
 
-        // Parse & filter results
-        if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
-          $page, $matches, PREG_SET_ORDER)) {
+        if ($short) {
+            $regex = '/<img src="(?<photo>https:\/\/m.media-amazon.com\/images\/.*?)" \/><\/a> <\/td> <td class="result_text"\s*>\s*<a href="\/title\/tt(?<imdbid>\d{7,8})\/[^>]*>(?<title>.*?)<\/a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)/ims';
+        }
+        else {
+            $regex = '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims';
+        }
+
+        if (preg_match_all($regex, $page, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $type = $this->parseTitleType($match['type']);
 
@@ -40,9 +46,14 @@ class TitleSearch extends MdbBase
                     continue;
                 }
 
-                $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type,
-                  $this->config, $this->logger, $this->cache);
-
+                if ($short) {
+                    $match['type'] = $type;
+                    $results[] = $match;
+                }
+                else {
+                    $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type,
+                        $this->config, $this->logger, $this->cache);
+                }
                 if (++$resultsCounter === $maxResults) {
                     break;
                 }
