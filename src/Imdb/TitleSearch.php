@@ -31,8 +31,12 @@ class TitleSearch extends MdbBase
         $page = $this->getPage($searchTerms);
 
         // Parse & filter results
-        if (preg_match_all('!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
-          $page, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all(
+            '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
+            $page,
+            $matches,
+            PREG_SET_ORDER
+        )) {
             foreach ($matches as $match) {
                 $type = $this->parseTitleType($match['type']);
 
@@ -40,8 +44,74 @@ class TitleSearch extends MdbBase
                     continue;
                 }
 
-                $results[] = Title::fromSearchResult($match['imdbid'], $match['title'], $match['year'], $type,
-                  $this->config, $this->logger, $this->cache);
+                $results[] = Title::fromSearchResult(
+                    $match['imdbid'],
+                    $match['title'],
+                    $match['year'],
+                    $type,
+                    $this->config,
+                    $this->logger,
+                    $this->cache
+                );
+
+                if (++$resultsCounter === $maxResults) {
+                    break;
+                }
+            }
+        } else {
+            $xp = $this->getXpathPage($searchTerms);
+
+            $cells = $xp->query("//div[contains(@class, 'ipc-metadata-list-summary-item__tc')]");
+
+            foreach ($cells as $key => $cell) {
+                $year = 0;
+                $type = '';
+
+                $yearType = $xp->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]/li", $cell);
+
+                if (!empty($yearType) && !empty($yearType->item(0))) {
+                    $yearOrType = $yearType->item(0)->nodeValue;
+
+                    if (preg_match('!^\d+!', $yearOrType)) {
+                        $year = (int) $yearOrType;
+                    } else {
+                        $type = $yearOrType;
+                    }
+                }
+
+                if ($year !== 0 && !empty($yearType->item(1))) {
+                    $type = $yearType->item(1)->nodeValue;
+
+                    if (preg_match('!^s\d+\.!i', $type)) {
+                        $type = '';
+
+                        if (!empty($yearType->item(2))) {
+                            $type = $yearType->item(2)->nodeValue;
+                        }
+                    }
+                }
+
+                $type = $this->parseTitleType($type);
+
+                if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
+                    continue;
+                }
+
+                $linkAndTitle = $xp->query(".//a[contains(@class, 'ipc-metadata-list-summary-item__t')]", $cell);
+
+                if (empty($linkAndTitle) || !preg_match('!tt(\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $id)) {
+                    continue;
+                }
+
+                $results[] = Title::fromSearchResult(
+                    $id[0],
+                    trim($linkAndTitle->item(0)->nodeValue),
+                    $year,
+                    $type,
+                    $this->config,
+                    $this->logger,
+                    $this->cache
+                );
 
                 if (++$resultsCounter === $maxResults) {
                     break;
