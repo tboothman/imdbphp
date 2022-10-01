@@ -783,12 +783,19 @@ class Title extends MdbBase
     public function tagline()
     {
         if ($this->main_tagline == "") {
-            $xpath = $this->getXpathPage("Title");
-            $extract = $xpath->query("//li[@data-testid='storyline-taglines']//span[@class='ipc-metadata-list-item__list-content-item']");
-            if ($extract && $extract->item(0) != null) {
-                $this->main_tagline = trim($extract->item(0)->nodeValue);
+            $taglines = $this->taglines();
+
+            if (emtpy($taglines)) {
+                return '';
+            }
+
+            if (count($taglines) >= 2) {
+                $this->main_tagline = $taglines[1];
+            } else {
+                $this->main_tagline = $taglines[0];
             }
         }
+
         return $this->main_tagline;
     }
 
