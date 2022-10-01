@@ -2687,7 +2687,7 @@ class Title extends MdbBase
             if (empty($page)) {
                 return array();
             } // no such page
-            if (preg_match_all('@<section id="advisory-([^"]*)(?<!spoilers)">.+?<h4[^>]+>(.*?)</h4>@sui', $page,
+            if (preg_match_all('@<section id="advisory-([^"]*)(?<!spoilers)">.+?<h\d[^>]+>(.*?)</h\d>@sui', $page,
                 $matches)) {
                 $section_id = $matches[1];
                 $section_name = array_map('htmlspecialchars_decode', $matches[2]);
