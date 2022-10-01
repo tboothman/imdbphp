@@ -59,35 +59,20 @@ class TitleSearch extends MdbBase
                 }
             }
         } else {
-            $xp = $this->getXpathPage($searchTerms);
+            $xpath = $this->getXpathPage($searchTerms);
 
-            $cells = $xp->query("//div[contains(@class, 'ipc-metadata-list-summary-item__tc')]");
+            $cells = $xpath->query("//div[contains(@class, 'ipc-metadata-list-summary-item__tc')]");
 
             foreach ($cells as $key => $cell) {
                 $year = 0;
                 $type = '';
 
-                $yearType = $xp->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]/li", $cell);
+                $yearType = $xpath->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]", $cell);
 
                 if (!empty($yearType) && !empty($yearType->item(0))) {
-                    $yearOrType = $yearType->item(0)->nodeValue;
-
-                    if (preg_match('!^\d+!', $yearOrType)) {
-                        $year = (int) $yearOrType;
-                    } else {
-                        $type = $yearOrType;
-                    }
-                }
-
-                if ($year !== 0 && !empty($yearType->item(1))) {
-                    $type = $yearType->item(1)->nodeValue;
-
-                    if (preg_match('!^s\d+\.!i', $type)) {
-                        $type = '';
-
-                        if (!empty($yearType->item(2))) {
-                            $type = $yearType->item(2)->nodeValue;
-                        }
+                    if (preg_match('!^(?<year>\d{4})?(-(\d{4})?)?(?:s\d+\.e\d+)?(?<type>.*)!', $yearType->item(0)->nodeValue, $match)) {
+                        $year = (int) $match['year'];
+                        $type = $match['type'];
                     }
                 }
 
@@ -97,14 +82,14 @@ class TitleSearch extends MdbBase
                     continue;
                 }
 
-                $linkAndTitle = $xp->query(".//a[contains(@class, 'ipc-metadata-list-summary-item__t')]", $cell);
+                $linkAndTitle = $xpath->query(".//a[contains(@class, 'ipc-metadata-list-summary-item__t')]", $cell);
 
-                if (empty($linkAndTitle) || !preg_match('!tt(\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $id)) {
+                if (empty($linkAndTitle) || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
                     continue;
                 }
 
                 $results[] = Title::fromSearchResult(
-                    $id[0],
+                    $href['imdbid'],
                     trim($linkAndTitle->item(0)->nodeValue),
                     $year,
                     $type,
@@ -132,17 +117,17 @@ class TitleSearch extends MdbBase
             return self::TV_EPISODE;
         } elseif (strpos($string, 'VIDEO GAME') !== false) {
             return self::GAME;
-        } elseif (strpos($string, '(VIDEO)') !== false) {
+        } elseif (strpos($string, 'VIDEO') !== false) {
             return self::VIDEO;
-        } elseif (strpos($string, '(SHORT)') !== false) {
+        } elseif (strpos($string, 'SHORT') !== false) {
             return self::SHORT;
-        } elseif (strpos($string, 'TV MINI SERIES)') !== false) {
+        } elseif (strpos($string, 'TV MINI SERIES') !== false) {
             return self::TV_MINI_SERIES;
-        } elseif (strpos($string, 'TV MOVIE)') !== false) {
+        } elseif (strpos($string, 'TV MOVIE') !== false) {
             return self::TV_MOVIE;
-        } elseif (strpos($string, 'TV SPECIAL)') !== false) {
+        } elseif (strpos($string, 'TV SPECIAL') !== false) {
             return self::TV_SPECIAL;
-        } elseif (strpos($string, 'TV SHORT)') !== false) {
+        } elseif (strpos($string, 'TV SHORT') !== false) {
             return self::TV_SHORT;
         } else {
             return self::MOVIE;
