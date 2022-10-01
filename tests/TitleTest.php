@@ -433,8 +433,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb("0306414");
         $keywords = $imdb->keywords();
         $this->assertTrue(in_array('corruption', $keywords));
-        $this->assertTrue(in_array('drug war', $keywords));
-        $this->assertTrue(in_array('wiretapping', $keywords));
+        $this->assertTrue(in_array('drug trafficking', $keywords));
         $this->assertTrue(in_array('urban decay', $keywords));
     }
 
@@ -1123,7 +1122,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals('0922035', $firstCast['imdb']);
         $this->assertEquals('Dominic West', $firstCast['name']);
-        $this->assertEquals("Det. James 'Jimmy' McNulty", $firstCast['role']);
+        $this->assertEquals("Detective James 'Jimmy' McNulty", $firstCast['role']);
         $this->assertEquals(60, $firstCast['role_episodes']);
         $this->assertEquals(2002, $firstCast['role_start_year']);
         $this->assertEquals(2008, $firstCast['role_end_year']);
@@ -1696,7 +1695,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $drugs = $parentalGuide['Drugs'];
         $this->assertGreaterThanOrEqual(2, count($profanity));
         $this->assertGreaterThan(5, $drugs);
-        $this->assertContains('20 or so uses of "shit"', $profanity);
+        $this->assertContains('The songs in the end credits have some uses of the f bomb.', $profanity);
         $this->assertContains('The Oracle smokes a cigarette.', $drugs);
     }
 
@@ -1705,7 +1704,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $imdb = $this->getImdb(120737);
         $parentalGuide = $imdb->parentalGuide(TRUE);
         $violence = $parentalGuide['Frightening'][1];
-        $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene'));
+        $this->assertSame(0, strpos($violence, 'Gandalf\'s "death" scene'));
     }
 
     public function testOfficialsites()
