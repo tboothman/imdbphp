@@ -993,16 +993,21 @@ class Title extends MdbBase
     public function storyline()
     {
         if ($this->main_storyline == "") {
-            $page = $this->getPage("Title");
-            if (@preg_match('~Storyline</h2>.*?<div.*?<p>.*?<span>(.*?)</span>.*?</p>~ims', $page, $match)) {
-                $this->main_storyline = trim($match[1]);
-            } elseif (@preg_match('#data-testid="storyline-plot-summary">(.*?)<div class="ipc-overflowText-overlay">#ims',
-                $page, $match)) {
-                $this->main_storyline = htmlspecialchars_decode(trim(strip_tags(preg_replace('#<span style="display:inline-block"(.*?)</span>#ims',
-                    '', $match[1]))), ENT_QUOTES | ENT_HTML5);
+            $plot = $this->plot();
+
+            if (empty($plot)) {
+                return '';
             }
 
+            if (count($plot) >= 2) {
+                $storyline = $plot[1];
+            } else {
+                $storyline = $plot[0];
+            }
+
+            $this->main_storyline = strip_tags(preg_replace('#\n\-\n<a[^>]+>.*?</a>#ims', '', $storyline));
         }
+
         return $this->main_storyline;
     }
 
