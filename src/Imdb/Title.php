@@ -785,15 +785,7 @@ class Title extends MdbBase
         if ($this->main_tagline == "") {
             $taglines = $this->taglines();
 
-            if (emtpy($taglines)) {
-                return '';
-            }
-
-            if (count($taglines) >= 2) {
-                $this->main_tagline = $taglines[1];
-            } else {
-                $this->main_tagline = $taglines[0];
-            }
+            $this->main_tagline = $taglines[0] ?? '';
         }
 
         return $this->main_tagline;
