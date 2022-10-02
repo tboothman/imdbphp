@@ -778,7 +778,7 @@ class Title extends MdbBase
 
     /** Get the main tagline for the movie
      * @return string tagline
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page /taglines
      */
     public function tagline()
     {
@@ -988,7 +988,7 @@ class Title extends MdbBase
 
     /** Get the Storyline for the movie
      * @return string storyline
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page /plotsummary
      */
     public function storyline()
     {
