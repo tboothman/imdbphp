@@ -61,7 +61,7 @@ class TitleSearch extends MdbBase
         } else {
             $xpath = $this->getXpathPage($searchTerms);
 
-            $cells = $xpath->query("//div[contains(@class, 'ipc-metadata-list-summary-item__tc')]");
+            $cells = $xpath->query("//section[@data-testid='find-results-section-title']//div[@class='ipc-metadata-list-summary-item__tc']");
 
             foreach ($cells as $key => $cell) {
                 $year = 0;
@@ -82,7 +82,7 @@ class TitleSearch extends MdbBase
                     continue;
                 }
 
-                $linkAndTitle = $xpath->query(".//a[contains(@class, 'ipc-metadata-list-summary-item__t')]", $cell);
+                $linkAndTitle = $xpath->query(".//a[@class='ipc-metadata-list-summary-item__t']", $cell);
 
                 if (empty($linkAndTitle) || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
                     continue;
