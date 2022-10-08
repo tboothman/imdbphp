@@ -16,10 +16,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup PHP 7.3 with PECL extension
+    - name: Setup PHP 7.4 with PECL extension
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '7.4'
         extensions: curl, dom, json
         tools: composer
 
