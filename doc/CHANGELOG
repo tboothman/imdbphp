@@ -2,6 +2,21 @@
 History for IMDBPHP
 ====================
 
+v7.3.1 (08.10.2022)
+-------------------
+* Remove PHP 7.3 from tests
+! Fix `Calendar::upcomingReleases()`
+! Fix `PersonSearch::results()`
+! Fix `Title::storyline()`
+! Fix `Title::tagline()`
+! Fix `Title::parentalGuide()`
+! Fix `TitleSearch::search()`
+! Fix `Title::populateEpisodeSeasonEpisode()`
+! Fix `Title::keywords()` #278 @duck7000 and @tboothman
+* Simplify `Title::soundtrack()` to just return raw data rather than badly trying to parse it
+! Fix `Person::spouse()` #275 @duck7000
+! Fix `Title::died()`
+
 v7.3.0 (03.03.2022)
 -------------------
 + `Person::real_id()` gives the imdb ID of a person after following any redirects from the ID requested. Thanks @duck7000
