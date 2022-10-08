@@ -69,7 +69,7 @@ class TitleSearch extends MdbBase
 
                 $yearType = $xpath->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]", $cell);
 
-                if (!empty($yearType) && !empty($yearType->item(0))) {
+                if ($yearType->length > 0) {
                     if (preg_match('!^(?<year>\d{4})?(-(\d{4})?)?(?:s\d+\.e\d+)?(?<type>.*)!', $yearType->item(0)->nodeValue, $match)) {
                         $year = (int) $match['year'];
                         $type = $match['type'];
@@ -84,7 +84,7 @@ class TitleSearch extends MdbBase
 
                 $linkAndTitle = $xpath->query(".//a[@class='ipc-metadata-list-summary-item__t']", $cell);
 
-                if (empty($linkAndTitle) || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
+                if ($linkAndTitle->length < 1 || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
                     continue;
                 }
 

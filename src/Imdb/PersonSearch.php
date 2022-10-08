@@ -101,7 +101,7 @@ class PersonSearch extends MdbBase
             foreach($cells as $cell) {
                 $linkAndName = $xpath->query('.//a[@class="ipc-metadata-list-summary-item__t"]', $cell);
 
-                if (empty($linkAndName) || !preg_match('!nm(?<pid>\d+)!', $linkAndName->item(0)->getAttribute('href'), $href)) {
+                if ($linkAndName->length < 1 || !preg_match('!nm(?<pid>\d+)!', $linkAndName->item(0)->getAttribute('href'), $href)) {
                     continue;
                 }
 
