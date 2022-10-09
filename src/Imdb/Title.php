@@ -785,7 +785,7 @@ class Title extends MdbBase
         if ($this->main_tagline == "") {
             $taglines = $this->taglines();
 
-            $this->main_tagline = $taglines[0] ? $taglines[0] : '';
+            $this->main_tagline = isset($taglines[0]) ? $taglines[0] : '';
         }
 
         return $this->main_tagline;
