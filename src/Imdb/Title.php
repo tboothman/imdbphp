@@ -2671,7 +2671,11 @@ class Title extends MdbBase
         $block = substr($html, $tag_s, $tag_e - $tag_s);
 
         if (preg_match_all('!<li class="ipl[^"]+">\s*(.*?)\s*<div!sui', $block, $matches)) {
-            return array_map('htmlspecialchars_decode', array_map('trim', $matches[1]));
+            return array_map(
+                function($string) {
+                    return htmlspecialchars_decode(trim($string), ENT_QUOTES);
+                },
+                $matches[1]);
         }
         return array();
     }
