@@ -250,7 +250,7 @@ class Person extends MdbBase
      */
     protected function filmograf(&$res, $type)
     {
-        $page = $this->getPage("Name");
+        $page = $this->getPage("Fullcredits");
         preg_match("!<a name=\"$type\"(.*?(<div id=\"filmo|<script))!msi", $page, $match);
         if (empty($type)) {
             $match[1] = $page;
@@ -1136,18 +1136,26 @@ class Person extends MdbBase
     protected function getUrlSuffix($pageName)
     {
         switch ($pageName) {
-            case "Name"        :
+            case "Name":
                 $urlname = "/";
                 break;
-            case "Bio"         :
+
+            case "Bio":
                 $urlname = "/bio";
                 break;
-            case "Publicity"   :
+
+            case "Publicity":
                 $urlname = "/publicity";
                 break;
-            default            :
+
+            case "Fullcredits":
+                $urlname = "/fullcredits";
+                break;
+
+            default:
                 throw new \Exception("Could not find URL for page $pageName");
         }
+
         return $urlname;
     }
 
@@ -1167,4 +1175,3 @@ class Person extends MdbBase
         return $this->page[$page];
     }
 }
-
