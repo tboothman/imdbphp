@@ -1385,14 +1385,19 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertIsArray($seasons);
         $this->assertCount(4, $seasons);
 
-        $episode = $seasons[-1][0];
-
-        $this->assertEquals('1981928', $episode['imdbid']);
-        $this->assertEquals("Rules Are Rules", $episode['title']);
-        $this->assertEquals('9 Sep. 2010', $episode['airdate']);
-        $this->assertEquals("", $episode['plot']);
-        $this->assertEquals(-1, $episode['season']);
-        $this->assertEquals(-1, $episode['episode']);
+        $matches = 0;
+        foreach ($seasons[-1] as $episode) {
+            if ($episode['title'] == 'Rules Are Rules') {
+                $this->assertEquals('1981928', $episode['imdbid']);
+                $this->assertEquals("Rules Are Rules", $episode['title']);
+                $this->assertEquals('9 Sep. 2010', $episode['airdate']);
+                $this->assertEquals("", $episode['plot']);
+                $this->assertEquals(-1, $episode['season']);
+                $this->assertEquals(-1, $episode['episode']);
+                ++$matches;
+            }
+        }
+        $this->assertEquals(1, $matches);
     }
 
     // Some shows don't work on seasons and so have many episodes assigned to season 1. Imdb used to just timeout rendering the page but they now cut the request off and don't render the page
