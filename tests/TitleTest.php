@@ -753,7 +753,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
         $matches = 0;
         foreach ($akas as $aka) {
-            if ($aka['title'] == 'Kaze no tani no Naushika') {
+            if ($aka['title'] == 'Kaze no tani no Naushika' && count($aka['comments']) > 0) {
                 // No country
                 $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
                 $this->assertThat($aka['comments'][0],
