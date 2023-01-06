@@ -150,8 +150,8 @@ class Person extends MdbBase
     #--------------------------------------------------------[ Photo specific ]---
 
     /** Get cover photo
-     * @param optional boolean thumb get the thumbnail (100x140, default) or the
-     *        bigger variant (400x600 - FALSE)
+     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     *                or the bigger variant with a maximum size of (1363x2048)
      * @return mixed photo (string url if found, FALSE otherwise)
      * @see IMDB person page / (Main page)
      */
@@ -159,11 +159,11 @@ class Person extends MdbBase
     {
         if (empty($this->main_photo)) {
             $this->getPage("Name");
-            if (preg_match('!<td.*?id="img_primary".*?>*.*?<img.*?src="(.*?)"!ims', $this->page["Name"], $match)) {
+            if (preg_match('!<div.*?class=".*?ipc-(?:poster--baseAlt|media--poster-m).*?".*?>*.*?<img.*?src="(.*?)"!ims', $this->page["Name"], $match)) {
                 if ($thumb) {
                     $this->main_photo = $match[1];
                 } else {
-                    $this->main_photo = str_replace('_SY140_SX100', '_SY600_SX400', $match[1]);
+                    $this->main_photo = preg_replace('!(_V1_).*(\.[a-z]+$)!', '$1$2', $match[1]);
                 }
             } else {
                 return false;
@@ -176,8 +176,8 @@ class Person extends MdbBase
     /**
      * Save the photo to disk
      * @param string path where to store the file
-     * @param optional boolean thumb get the thumbnail (100x140, default) or the
-     *        bigger variant (400x600 - FALSE)
+     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     *                or the bigger variant with a maximum size of (1363x2048)
      * @return boolean success
      * @see IMDB person page / (Main page)
      */
@@ -212,8 +212,8 @@ class Person extends MdbBase
     }
 
     /** Get the URL for the movies cover photo
-     * @param optional boolean thumb get the thumbnail (100x140, default) or the
-     *        bigger variant (400x600 - FALSE)
+     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     *                or the bigger variant with a maximum size of (1363x2048)
      * @return mixed url (string URL or FALSE if none)
      * @see IMDB person page / (Main page)
      */
