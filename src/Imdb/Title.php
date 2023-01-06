@@ -456,7 +456,7 @@ class Title extends MdbBase
         if (empty($this->aspectratio)) {
 
             $xpath = $this->getXpathPage("Title");
-            $extract = $xpath->query("//li[@data-testid='title-techspec_aspectratio']//span[@class='ipc-metadata-list-item__list-content-item']");
+            $extract = $xpath->query("//li[@data-testid='title-techspec_aspectratio']//label[@class='ipc-metadata-list-item__list-content-item']");
             if ($extract && $extract->item(0) != null) {
                 $this->aspectratio = trim($extract->item(0)->nodeValue);
             }
