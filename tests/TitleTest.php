@@ -312,13 +312,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('USA', $runtimes[1]['annotations'][2]);
     }
 
-    // Apocalypse now "147 min | 196 min (Redux)"
+    // Apocalypse now "147 min | 202 min (Redux)"
     public function testRuntimes_two_runtimes_one_annotation()
     {
         $imdb = $this->getImdb('0078788');
         $runtimes = $imdb->runtimes();
         $this->assertEquals(147, $runtimes[0]['time']);
-        $this->assertEquals(196, $runtimes[1]['time']);
+        $this->assertEquals(202, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
     }
 
