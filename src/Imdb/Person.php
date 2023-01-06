@@ -1124,7 +1124,7 @@ class Person extends MdbBase
     public function real_id()
     {
         $page = $this->getPage('Name');
-        if (preg_match('#<meta property="pageId" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
+        if (preg_match('#<meta property="imdb:pageConst" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
         }
     }
