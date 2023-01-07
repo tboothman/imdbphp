@@ -27,7 +27,6 @@ namespace Imdb;
  */
 class Calendar extends MdbBase
 {
-
     /**
      * Get upcoming movie releases as seen on IMDb
      * @parameter $country This defines which country's releases are returned

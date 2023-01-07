@@ -1,6 +1,6 @@
 <?php
 
-use \Imdb\Title;
+use Imdb\Title;
 
 require_once __DIR__ . "/helpers.php";
 

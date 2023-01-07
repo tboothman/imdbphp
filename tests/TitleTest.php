@@ -7,7 +7,6 @@ require_once __DIR__ . "/helpers.php";
 
 class TitleTest extends PHPUnit\Framework\TestCase
 {
-
     /**
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
@@ -92,10 +91,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function test_constructor_with_custom_logger()
     {
-        $logger = Mockery::mock('\Psr\Log\LoggerInterface', function($mock) {
-                $mock->shouldReceive('debug');
-                $mock->shouldReceive('error');
-            });
+        $logger = Mockery::mock('\Psr\Log\LoggerInterface', function ($mock) {
+            $mock->shouldReceive('debug');
+            $mock->shouldReceive('error');
+        });
         new Title('some rubbish', null, $logger);
         Mockery::close(); // Assert that the mocked object was called as expected
         $this->assertTrue(true);
@@ -103,10 +102,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function test_constructor_with_custom_cache()
     {
-        $cache = Mockery::mock('\Psr\SimpleCache\CacheInterface', function($mock) {
-                $mock->shouldReceive('get')->andReturn('test');
-                $mock->shouldReceive('purge');
-            });
+        $cache = Mockery::mock('\Psr\SimpleCache\CacheInterface', function ($mock) {
+            $mock->shouldReceive('get')->andReturn('test');
+            $mock->shouldReceive('purge');
+        });
         $imdb = new Title('', null, null, $cache);
         $imdb->title();
         Mockery::close();
@@ -756,11 +755,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
             if ($aka['title'] == 'Kaze no tani no Naushika' && count($aka['comments']) > 0) {
                 // No country
                 $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
-                $this->assertThat($aka['comments'][0],
+                $this->assertThat(
+                    $aka['comments'][0],
                     $this->logicalOr(
                         $this->equalTo('original title'),
                         $this->equalTo('French title')
-                    ));
+                    )
+                );
                 ++$matches;
             } elseif ($aka['title'] == 'Naushika iz Doline vjetrova') {
                 // Country, no comment
@@ -895,36 +896,38 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $plot = $imdb->plot_split();
         $this->assertEquals(
             array(
-            array(
-                'plot' => 0,
-                'author' => array(
-                    'name' => '',
-                    'url' => ''
+                array(
+                    'plot' => 0,
+                    'author' => array(
+                        'name' => '',
+                        'url' => ''
+                    )
+                ),
+                array(
+                    'plot' => 0,
+                    'author' => array(
+                        'name' => 'Paramount Pictures',
+                        'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_1'
+                    )
                 )
             ),
             array(
-                'plot' => 0,
-                'author' => array(
-                    'name' => 'Paramount Pictures',
-                    'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_1'
+                array(
+                    'plot' => strpos($plot[0]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
+                    'author' => array(
+                        'name' => $plot[0]['author']['name'],
+                        'url' => $plot[0]['author']['url']
+                    )
+                ),
+                array(
+                    'plot' => strpos($plot[1]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
+                    'author' => array(
+                        'name' => $plot[1]['author']['name'],
+                        'url' => $plot[1]['author']['url']
+                    )
                 )
             )
-            ), array(
-            array(
-                'plot' => strpos($plot[0]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
-                'author' => array(
-                    'name' => $plot[0]['author']['name'],
-                    'url' => $plot[0]['author']['url']
-                )
-            ),
-            array(
-                'plot' => strpos($plot[1]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
-                'author' => array(
-                    'name' => $plot[1]['author']['name'],
-                    'url' => $plot[1]['author']['url']
-                )
-            )
-        ));
+        );
     }
 
     public function testSynopsis()
@@ -1556,13 +1559,15 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $conn["followedBy"][0]);
     }
 
-    public function testSoundtrack_nosoundtracks() {
+    public function testSoundtrack_nosoundtracks()
+    {
         $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
 
-    public function testSoundtrack_matrix() {
+    public function testSoundtrack_matrix()
+    {
         $imdb = $this->getImdb();
         $result = $imdb->soundtrack();
         $this->assertnotEmpty($result);
@@ -1693,7 +1698,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
     public function testParentalGuide_spoilers()
     {
         $imdb = $this->getImdb(120737);
-        $parentalGuide = $imdb->parentalGuide(TRUE);
+        $parentalGuide = $imdb->parentalGuide(true);
         $violence = $parentalGuide['Frightening'][1];
         $this->assertSame(0, strpos($violence, 'Gandalf\'s "death" scene'));
     }
@@ -1707,7 +1712,8 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
                 'url' => 'https://www.facebook.com/TheMatrixMovie/',
                 'name' => 'Official Facebook'
             ],
-            $officialSites);
+            $officialSites
+        );
     }
 
     public function testKeywords_all()
