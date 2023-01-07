@@ -2,6 +2,10 @@
 History for IMDBPHP
 ====================
 
+v7.4.2 (07.01.2023)
+-------------------
+! Remove visibility from const to support < PHP 7.1
+
 v7.4.1 (07.01.2023)
 -------------------
 ! Fix demo as `Title::soundtrack` where simplified in v7.3.1
