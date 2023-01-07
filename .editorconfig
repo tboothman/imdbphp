@@ -16,7 +16,7 @@ indent_size = 2
 [{Makefile,*.neon}]
 indent_style = tab
 
-[*.{json,yml,xml}]
+[*.{yml,xml}]
 indent_size = 2
 
 [*.md]
