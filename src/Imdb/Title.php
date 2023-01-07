@@ -1147,16 +1147,16 @@ class Title extends MdbBase
             $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
             return false;
         }
-        $path = $this->photodir . $this->imdbid() . "${ext}.jpg";
+        $path = $this->photodir . $this->imdbid() . "{$ext}.jpg";
         if (file_exists($path)) {
-            return $this->photoroot . $this->imdbid() . "${ext}.jpg";
+            return $this->photoroot . $this->imdbid() . "{$ext}.jpg";
         }
         if (!is_writable($this->photodir)) {
             $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
             return false;
         }
         if ($this->savephoto($path, $thumb)) {
-            return $this->photoroot . $this->imdbid() . "${ext}.jpg";
+            return $this->photoroot . $this->imdbid() . "{$ext}.jpg";
         }
         return false;
     }
