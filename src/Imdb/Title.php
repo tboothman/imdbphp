@@ -1478,6 +1478,7 @@ class Title extends MdbBase
         }
         $endtable = strpos($html, "</table>", $row_s);
         $block = substr($html, $row_s, $endtable - $row_s);
+        $rows = array();
         if (preg_match_all('!<tr>(.+?)</tr>!ims', $block, $matches)) {
             $rows = $matches[1];
         }
@@ -2928,6 +2929,11 @@ class Title extends MdbBase
                 )) {
                     continue;
                 }
+
+                $won = false;
+                $award = "";
+                $outcome = "";
+
                 $ccount = count($col[0]);
                 for ($k = 0; $k < $ccount; ++$k) {
                     switch ($col['class'][$k]) {
