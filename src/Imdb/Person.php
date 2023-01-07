@@ -41,7 +41,7 @@ class Person extends MdbBase
     );
 
     // "Name" page:
-    protected $main_photo = "";
+    protected $main_photo = null;
     protected $fullname = "";
     protected $birthday = array();
     protected $deathday = array();
@@ -56,6 +56,7 @@ class Person extends MdbBase
     protected $writerfilms = array();
     protected $selffilms = array();
     protected $archivefilms = array();
+    protected $jsonLD = null;
 
     // "Bio" page:
     protected $birth_name = "";
@@ -157,18 +158,23 @@ class Person extends MdbBase
      */
     public function photo($thumb = true)
     {
-        if (empty($this->main_photo)) {
+        if ($this->main_photo === null) {
             $this->getPage("Name");
-            if (preg_match('!<div.*?class=".*?ipc-(?:poster--baseAlt|media--poster-m).*?".*?>*.*?<img.*?src="(.*?)"!ims', $this->page["Name"], $match)) {
+            $this->main_photo = false;
+            if (preg_match('!ipc-(?:poster--baseAlt|media--poster-m).*?<img.*?src="(.*?)"!ims', $this->page["Name"], $match)) {
                 if ($thumb) {
                     $this->main_photo = $match[1];
                 } else {
                     $this->main_photo = preg_replace('!(_V1_).*(\.[a-z]+$)!', '$1$2', $match[1]);
                 }
-            } else {
-                return false;
+            } elseif (($jsonLD = $this->jsonLD()) !== false) {
+                // Fallback to bigger photo
+                if (isset($jsonLD->image)) {
+                    $this->main_photo = $jsonLD->image;
+                }
             }
         }
+
         return $this->main_photo;
     }
 
@@ -1173,5 +1179,23 @@ class Person extends MdbBase
         $this->page[$page] = parent::getPage($page);
 
         return $this->page[$page];
+    }
+
+    protected function jsonLD()
+    {
+        if ($this->jsonLD !== null) {
+            return $this->jsonLD;
+        }
+
+        $page = $this->getPage("Name");
+        $jsonLD = false;
+
+        preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
+
+        if (isset($matches[1])) {
+            $jsonLD = json_decode($matches[1]);
+        }
+
+        return $this->jsonLD = $jsonLD;
     }
 }
