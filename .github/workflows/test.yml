@@ -9,13 +9,43 @@ on:
     - cron: '11 20 * * *'
 
 jobs:
+  old-compat:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: [5.6, 7.0, 7.1, 7.2, 7.3]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup PHP ${{ matrix.php-version }} with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: curl, dom, json
+          tools: composer, phpunit
+
+      - name: Runs on php ${{ matrix.php-version }}?
+        run: php bootstrap.php
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-dev
+
+      - name: Test
+        run: composer test
+
   build:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-version: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2]
+        php-version: [7.4, 8.0, 8.1, 8.2]
 
     steps:
     - uses: actions/checkout@v1
