@@ -1642,7 +1642,7 @@ class Title extends MdbBase
                 }
 
                 // Trim off the funny / ... role added on tv shows where an actor has multiple characters
-                $dir['role'] = str_replace(' / ...', '', $dir['role']);
+                $dir['role'] = str_replace(' / ...', '', (string) $dir['role']);
 
                 $cleaned_role_cell = implode("\n", $role_lines);
 
