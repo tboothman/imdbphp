@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v7.4.1 (07.01.2023)
+-------------------
+! Fix demo as `Title::soundtrack` where simplified in v7.3.1
+! Fix `Person::photo_localurl` in PHP 8.2
+! Fix `Title::photo_localurl` in PHP 8.2
+
 v7.4.0 (07.01.2023)
 -------------------
 + Added PER Coding Style using PHP-CS-Fixer to maintain consistent coding styles
