@@ -2,7 +2,7 @@ name: Testing
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, php-versions ]
   pull_request:
     branches: [ master ]
   schedule:
@@ -13,13 +13,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-version: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2]
+
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup PHP 7.4 with PECL extension
+    - name: Setup PHP ${{ matrix.php-version }} with PECL extension
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: ${{ matrix.php-version }}
         extensions: curl, dom, json
         tools: composer
 
