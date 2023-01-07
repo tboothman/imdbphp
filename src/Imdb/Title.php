@@ -23,7 +23,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class Title extends MdbBase
 {
-    const MOVIE = 'Movie';
+    public const MOVIE = 'Movie';
     const TV_SERIES = 'TV Series';
     const TV_EPISODE = 'TV Episode';
     const TV_MINI_SERIES = 'TV Mini Series';
