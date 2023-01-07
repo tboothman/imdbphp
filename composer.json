@@ -29,7 +29,7 @@
         "test:clean": "php tests/clearCache.php && composer test",
         "phpstan": "phpstan analyse -c phpstan.neon -l 0 src/Imdb/",
         "cs": "php-cs-fixer fix --ansi --verbose --dry-run --diff",
-        "cs:clean": "php-cs-fixer fix --ansi --verbose --dry-run --diff --using-cache=no",
+        "cs:no-cache": "php-cs-fixer fix --ansi --verbose --dry-run --diff --using-cache=no",
         "cs-fix": "php-cs-fixer fix --ansi --verbose --diff",
         "style": "@cs-fix"
     }
