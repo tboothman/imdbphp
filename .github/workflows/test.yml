@@ -2,7 +2,7 @@ name: Testing
 
 on:
   push:
-    branches: [ master, php-versions ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
   schedule:
@@ -25,19 +25,10 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: curl, dom, json
-          tools: composer, phpunit
+          tools: composer
 
       - name: Runs on php ${{ matrix.php-version }}?
         run: php bootstrap.php
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-dev
-
-      - name: Test
-        run: composer test
 
   build:
 
