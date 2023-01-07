@@ -4,16 +4,16 @@ namespace Imdb;
 
 class TitleSearch extends MdbBase
 {
-    public const MOVIE = Title::MOVIE;
-    public const TV_SERIES = Title::TV_SERIES;
-    public const TV_EPISODE = Title::TV_EPISODE;
-    public const TV_MINI_SERIES = Title::TV_MINI_SERIES;
-    public const TV_MOVIE = Title::TV_MOVIE;
-    public const TV_SPECIAL = Title::TV_SPECIAL;
-    public const TV_SHORT = Title::TV_SHORT;
-    public const GAME = Title::GAME;
-    public const VIDEO = Title::VIDEO;
-    public const SHORT = Title::SHORT;
+    const MOVIE = Title::MOVIE;
+    const TV_SERIES = Title::TV_SERIES;
+    const TV_EPISODE = Title::TV_EPISODE;
+    const TV_MINI_SERIES = Title::TV_MINI_SERIES;
+    const TV_MOVIE = Title::TV_MOVIE;
+    const TV_SPECIAL = Title::TV_SPECIAL;
+    const TV_SHORT = Title::TV_SHORT;
+    const GAME = Title::GAME;
+    const VIDEO = Title::VIDEO;
+    const SHORT = Title::SHORT;
 
     /**
      * Search IMDb for titles matching $searchTerms

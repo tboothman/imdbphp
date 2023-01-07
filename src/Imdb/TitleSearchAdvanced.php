@@ -24,24 +24,24 @@ namespace Imdb;
 class TitleSearchAdvanced extends MdbBase
 {
     // Title types
-    public const MOVIE = 'feature';
-    public const TV_SERIES = 'tv_series';
-    public const TV_EPISODE = 'tv_episode';
-    public const TV_MINI_SERIES = 'mini_series';
-    public const TV_MOVIE = 'tv_movie';
-    public const TV_SPECIAL = 'tv_special';
-    public const TV_SHORT = 'tv_short';
-    public const DOCUMENTARY = 'documentary';
-    public const GAME = 'game';
-    public const VIDEO = 'video';
-    public const SHORT = 'short';
+    const MOVIE = 'feature';
+    const TV_SERIES = 'tv_series';
+    const TV_EPISODE = 'tv_episode';
+    const TV_MINI_SERIES = 'mini_series';
+    const TV_MOVIE = 'tv_movie';
+    const TV_SPECIAL = 'tv_special';
+    const TV_SHORT = 'tv_short';
+    const DOCUMENTARY = 'documentary';
+    const GAME = 'game';
+    const VIDEO = 'video';
+    const SHORT = 'short';
 
     // Sorts
-    public const SORT_MOVIEMETER = 'moviemeter,asc';
-    public const SORT_ALPHA = 'alpha,asc';
-    public const SORT_USER_RATING = 'user_rating,desc';
-    public const SORT_NUM_VOTES = 'num_votes,desc';
-    public const SORT_US_BOX_OFFICE_GROSS = 'boxoffice_gross_us,desc';
+    const SORT_MOVIEMETER = 'moviemeter,asc';
+    const SORT_ALPHA = 'alpha,asc';
+    const SORT_USER_RATING = 'user_rating,desc';
+    const SORT_NUM_VOTES = 'num_votes,desc';
+    const SORT_US_BOX_OFFICE_GROSS = 'boxoffice_gross_us,desc';
 
     protected $titleTypes = array();
     protected $year = null;
