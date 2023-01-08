@@ -30,13 +30,37 @@ jobs:
       - name: Runs on php ${{ matrix.php-version }}?
         run: php bootstrap.php
 
+  test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: [8.0, 8.1, 8.2]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup PHP ${{ matrix.php-version }} with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: curl, dom, json
+        tools: composer
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Test
+      run: composer test
+
   build:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-version: [7.4, 8.0, 8.1]
+        php-version: [7.4]
 
     steps:
     - uses: actions/checkout@v1
