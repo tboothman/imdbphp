@@ -1,4 +1,5 @@
 parameters:
+	phpVersion: 70100 # PHP 7.1 (oldest supported version)
 	level: 1
 	paths:
 		- src/Imdb/
