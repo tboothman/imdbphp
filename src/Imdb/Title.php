@@ -1263,9 +1263,6 @@ class Title extends MdbBase
     {
         if (empty($this->mpaas)) {
             $xpath = $this->getXpathPage("ParentalGuide");
-            if (empty($xpath)) {
-                return array();
-            }
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
             foreach ($cells as $cell) {
                 if ($a = $cell->getElementsByTagName('a')->item(0)) {
@@ -1364,9 +1361,6 @@ class Title extends MdbBase
     {
         if (empty($this->plot_plot)) {
             $xpath = $this->getXpathPage("Plot");
-            if (empty($xpath)) {
-                return array();
-            } // no such page
             $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
             foreach ($cells as $cell) {
                 $link = '';
@@ -2640,9 +2634,6 @@ class Title extends MdbBase
     {
         if (empty($this->locations)) {
             $xpath = $this->getXpathPage("Locations");
-            if (empty($xpath)) {
-                return array();
-            } // no such page
             $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
             foreach ($cells as $cell) {
                 $this->locations[] = trim($cell->nodeValue);
