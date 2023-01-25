@@ -1194,39 +1194,62 @@ class Title extends MdbBase
     public function alsoknow()
     {
         if (empty($this->akas)) {
-            $page = $this->getPage("ReleaseInfo");
-            if (empty($page)) {
-                return array();
-            } // no such page
-
-            $table = Parsing::table($page, "//*[@id=\"akas\"]/following-sibling::table");
-
-            if (empty($table)) {
-                return array();
-            }
-
-            foreach ($table as $row) {
-                $description = $row[0];
-                $title = $row[1];
-
-                $firstbracket = strpos($description, '(');
-                if ($firstbracket === false) {
-                    $country = $description;
-                    $comments = array();
-                } else {
-                    $country = trim(substr($description, 0, $firstbracket));
-                    preg_match_all("@\((.+?)\)@", $description, $matches);
-                    $comments = $matches[1];
+            $xpath = $this->getXpathPage("ReleaseInfo");
+            $cells = $xpath->query("//div[@data-testid=\"sub-section-akas\"]/ul//li");
+            if($cells->length > 0){
+                foreach ($cells as $cell) {
+                    $country_element = $cell->getElementsByTagName('button')->item(0);
+                    $title_element = $cell->getElementsByTagName('label')->item(0);
+                    if(empty($country_element->nodeValue) || empty($title_element->nodeValue)){
+                        continue;
+                    }
+                    $comments = [];
+                    $comment_element = $cell->getElementsByTagName('span')->item(0);
+                    if(!empty($comment_element)){
+                        $comments[0] = trim(str_replace(['(', ')'], '', $comment_element->nodeValue));
+                    }
+                    $country = $country_element->nodeValue;
+                    $country = trim(str_replace(['(', ')'], '', $country));
+                    $this->akas[] = array(
+                        "title" => trim($title_element->nodeValue),
+                        "country" => $country,
+                        "comments" => $comments,
+                        "comment" => !empty($comments[0])?$comments[0]:'',
+                        "year" => '',
+                        "lang" => ''
+                    );
                 }
+            } else {
+                $page = $this->getPage("ReleaseInfo");
+                if (empty($page)) {
+                    return array();
+                } // no such page
+                $table = Parsing::table($page, "//*[@id=\"akas\"]/following-sibling::table");
+                if (!empty($table)) {
+                    foreach ($table as $row) {
+                        $description = $row[0];
+                        $title = $row[1];
 
-                $this->akas[] = array(
-                    "title" => $title,
-                    "country" => $country,
-                    "comments" => $comments,
-                    "comment" => implode(', ', $comments),
-                    "year" => '',
-                    "lang" => ''
-                );
+                        $firstbracket = strpos($description, '(');
+                        if ($firstbracket === false) {
+                            $country = $description;
+                            $comments = array();
+                        } else {
+                            $country = trim(substr($description, 0, $firstbracket));
+                            preg_match_all("@\((.+?)\)@", $description, $matches);
+                            $comments = $matches[1];
+                        }
+
+                        $this->akas[] = array(
+                            "title" => $title,
+                            "country" => $country,
+                            "comments" => $comments,
+                            "comment" => implode(', ', $comments),
+                            "year" => '',
+                            "lang" => ''
+                        );
+                    }
+                }
             }
         }
         return $this->akas;
