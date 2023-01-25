@@ -116,7 +116,7 @@ class Pages
     {
         $urlParts = parse_url($url);
         $cacheKey = trim($urlParts['path'], '/') . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '');
-        return str_replace(array('{', '}', '(', ')', '/', '\\', '@', ':'), '.', $cacheKey);
+        return preg_replace('/[^A-Za-z0-9\.\_\- ]/', '_', $cacheKey);
     }
 
     protected function buildRequest($url)
