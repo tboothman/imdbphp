@@ -1,0 +1,12 @@
+{
+    "name": "tom/graphql",
+    "require": {
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "authors": [
+        {
+            "name": "Tom Boothman",
+            "email": "tboothman@users.noreply.github.com"
+        }
+    ]
+}
