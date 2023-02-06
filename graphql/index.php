@@ -6,6 +6,8 @@ header("Content-Type: application/json");
 
 $body = file_get_contents("php://input");
 
+writelog($body);
+
 // Override request for schema with a custom response
 if (strpos($body, "__schema")) {
     $responseBody = [
@@ -14,9 +16,7 @@ if (strpos($body, "__schema")) {
                 "mutationType" => [
                     "name" => "Mutation"
                 ],
-                "queryType" => [
-                    "name" => "Query"
-                ],
+                "queryType" => typeQuery("Query"),
                 "types" => iterativelyFetchTypes(["Query", "Mutation"])
             ]
         ]
@@ -163,6 +163,7 @@ fragment FullType on __Type {
     fragment InputValue on __InputValue {
       name
       description
+      defaultValue
       type { ...TypeRef }
       defaultValue
       
