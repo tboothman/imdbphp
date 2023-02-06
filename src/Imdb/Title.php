@@ -3055,21 +3055,24 @@ EOF;
     public function alternateVersions()
     {
         if (empty($this->moviealternateversions)) {
-            $xpath = $this->getXpathPage("AlternateVersions");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array();
-            }
-            $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
-            foreach ($cells as $cell) {
-                $output = '';
-                $nodes = $xpath->query(".//text()", $cell);
-                foreach ($nodes as $node) {
-                    if ($node->parentNode->nodeName === 'li') {
-                        $output .= '- ';
-                    }
-                    $output .= trim($node->nodeValue) . "\n";
-                }
-                $this->moviealternateversions[] = trim($output);
+            $query = <<<EOF
+query AlternateVersions(\$id: ID!) {
+  title(id: \$id) {
+    alternateVersions(first: 9999) {
+      edges {
+        node {
+          text {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "AlternateVersions", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->alternateVersions->edges as $edge) {
+                $this->moviealternateversions[] = $edge->node->text->plainText;
             }
         }
         return $this->moviealternateversions;

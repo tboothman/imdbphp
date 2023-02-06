@@ -1979,7 +1979,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $this->assertGreaterThan(7, count($alternateVersions));
         $this->assertLessThan(12, count($alternateVersions));
 
-        $this->assertSame(0, strpos($alternateVersions[1], "The Extended Edition DVD includes the following changes to the film.\n- During the prologue"));
+        $this->assertSame(0, strpos($alternateVersions[1], "The Extended Edition DVD includes the following changes to the film. \n* During the prologue"));
 
         foreach ($alternateVersions as $alternateVersion) {
             $this->assertNotEmpty($alternateVersion);
