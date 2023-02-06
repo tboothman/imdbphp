@@ -127,11 +127,9 @@ class Title extends MdbBase
         "MovieConnections" => "/movieconnections",
         "OfficialSites" => "/officialsites",
         "ParentalGuide" => "/parentalguide",
-        "Plot" => "/plotsummary",
         "Quotes" => "/quotes",
         "ReleaseInfo" => "/releaseinfo",
         "Soundtrack" => "/soundtrack",
-        "Synopsis" => "/plotsummary",
         "Taglines" => "/taglines",
         "Technical" => "/technical",
         "Title" => "/",
@@ -1352,6 +1350,31 @@ class Title extends MdbBase
 
 
     #=====================================================[ /plotsummary page ]===
+
+    /**
+     * Fetch all the plots from the graphQL endpoint
+     * @return \stdClass
+     */
+    private function plot_data() {
+        $query = <<<EOF
+query Plots(\$id: ID!) {
+  title(id: \$id) {
+    plots(first: 9999) {
+      edges {
+        node {
+          author
+          plotType
+          plotText {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        return $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
+    }
     #--------------------------------------------------[ Full Plot (combined) ]---
     /** Get the movies plot(s)
      * @return array plot (array[0..n] of strings)
@@ -1360,22 +1383,11 @@ class Title extends MdbBase
     public function plot()
     {
         if (empty($this->plot_plot)) {
-            $xpath = $this->getXpathPage("Plot");
-            $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
-            foreach ($cells as $cell) {
-                $link = '';
-                $anchors = $cell->getElementsByTagName('a');
-                if ($a = $anchors->item($anchors->length - 1)) {
-                    if (preg_match('!/search/title!i', $a->getAttribute('href'))) {
-                        $href = preg_replace(
-                            '!/search/title!i',
-                            'https://' . $this->imdbsite . '/search/title',
-                            $a->getAttribute('href')
-                        );
-                        $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
-                    }
+            foreach ($this->plot_data()->title->plots->edges as $edge) {
+                if ($edge->node->plotType == 'SYNOPSIS') {
+                    continue;
                 }
-                $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
+                $this->plot_plot[] = $edge->node->plotText->plainText;
             }
         }
         return $this->plot_plot;
@@ -1383,49 +1395,42 @@ class Title extends MdbBase
 
     #-----------------------------------------------------[ Full Plot (split) ]---
 
-    /** Get the movie plot(s) - split-up variant
+    /**
+     * Get the movie plot(s) with author information
      * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
      * @see IMDB page /plotsummary
      */
     public function plot_split()
     {
         if (empty($this->split_plot)) {
-            if (empty($this->plot_plot)) {
-                $this->plot_plot = $this->plot();
-            }
-            foreach ($this->plot_plot as $plot) {
-                if (preg_match(
-                    '!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims',
-                    $plot,
-                    $match
-                )) {
-                    $this->split_plot[] = array(
-                        "plot" => $match['plot'],
-                        "author" => array("name" => $match['author_name'], "url" => $match['author_url'])
-                    );
-                } else {
-                    $this->split_plot[] = array("plot" => $plot, "author" => array("name" => '', "url" => ''));
+            foreach ($this->plot_data()->title->plots->edges as $edge) {
+                if ($edge->node->plotType == 'SYNOPSIS') {
+                    continue;
                 }
+                $this->split_plot[] = array(
+                    'plot' => $edge->node->plotText->plainText,
+                    'author' => array(
+                        'name' => $edge->node->author ?? '',
+                        'url' => $edge->node->author ? "https://www.imdb.com/search/title?plot_author={$edge->node->author}&view=simple&sort=alpha&ref_=ttpl_pl_1" : '',
+                    )
+                );
             }
+
         }
         return $this->split_plot;
     }
 
-    #========================================================[ /synopsis page ]===
-    #---------------------------------------------------------[ Full Synopsis ]---
-    /** Get the movies synopsis
+    /**
+     * Get the movies synopsis
      * @return string synopsis
-     * @see IMDB page /synopsis
      */
     public function synopsis()
     {
         if (empty($this->synopsis_wiki)) {
-            $page = $this->getPage("Synopsis");
-            if (empty($page)) {
-                return $this->synopsis_wiki;
-            } // no such page
-            if (preg_match('|<h4[^>]*>Synopsis</h4>\s*<ul[^>]*>\s*<li[^>]*>(.*?)</li>\s*</ul>|ims', $page, $match)) {
-                $this->synopsis_wiki = trim($match[1]);
+            foreach ($this->plot_data()->title->plots->edges as $edge) {
+                if ($edge->node->plotType == 'SYNOPSIS') {
+                    $this->synopsis_wiki = $edge->node->plotText->plainText;
+                }
             }
         }
         return $this->synopsis_wiki;

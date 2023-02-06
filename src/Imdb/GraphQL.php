@@ -29,9 +29,9 @@ class GraphQL
         $this->logger = $logger;
     }
 
-    public function query($query, $qn, $variables)
+    public function query($query, $qn = null, $variables = array())
     {
-        $key = "gql.$qn." . md5($query) . ".json";
+        $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . ".json";
         $fromCache = $this->cache->get($key);
 
         if ($fromCache != null) {
@@ -47,11 +47,11 @@ class GraphQL
 
     /**
      * @param string $query
-     * @param string $qn
+     * @param string|null $qn
      * @param array $variables
-     * @return stdClass
+     * @return \stdClass
      */
-    private function doRequest($query, $qn, $variables)
+    private function doRequest($query, $qn = null, $variables = array())
     {
         $opts = array(
             'http' => array(
@@ -63,6 +63,7 @@ class GraphQL
                     'variables' => $variables])
             )
         );
+        // @TODO error handling
         // @TODO use request class? Try use config settings for language etc?
         // graphql docs say 'Affected by headers x-imdb-detected-country, x-imdb-user-country, x-imdb-user-language'
         $context = stream_context_create($opts);
