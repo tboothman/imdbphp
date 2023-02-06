@@ -2581,42 +2581,51 @@ class Title extends MdbBase
     #=====================================================[ /releaseinfo page ]===
     #-----------------------------------------------------[ ReleaseInfo Array ]---
     /** Obtain Release Info (if any)
-     * @return array release_info array[0..n] of strings (country,day,month,mon,
-     * year,comment) - "month" is the month name, "mon" the number
+     * @return array release_info array[0..n] of strings (country,day,mon,
+     * year,comment)
      * @see IMDB page /releaseinfo
      */
     public function releaseInfo()
     {
         if (empty($this->release_info)) {
-            $page = $this->getPage("ReleaseInfo");
-            if (empty($page)) {
-                return array();
-            } // no such page
+            $query = <<<EOF
+query ReleaseDates(\$id: ID!) {
+  title(id: \$id) {
+    releaseDates(first: 9999) {
+      edges {
+        node {
+          country {
+            id
+            text
+          }
+          day
+          month
+          year
+          attributes {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "ReleaseDates", ["id" => "tt$this->imdbID"]);
 
-            $table = Parsing::table($page, "//*[@id=\"releases\"]/following-sibling::table");
-
-            if (empty($table)) {
-                return array();
-            }
-
-            foreach ($table as $row) {
-                $country = trim(strip_tags($row[0]));
-                $date = $row[1];
-                $comment = preg_replace('/\s+/', ' ', $row[2]);
-
-                if (!preg_match("/(\d{1,2})?\s*(\w+)?\s*(\d{4})/", $date, $matches)) {
-                    continue;
-                }
-
-                list(, $day, $month, $year) = $matches;
-
+            foreach ($data->title->releaseDates->edges as $edge) {
                 $this->release_info[] = array(
-                    'country' => $country,
-                    'day' => $day,
-                    'month' => $month,
-                    'mon' => $month ? $this->monthNo($month) : '',
-                    'year' => $year,
-                    'comment' => $comment
+                    'country' => $edge->node->country->text,
+                    'day' => $edge->node->day,
+                    'mon' => $edge->node->month,
+                    'year' => $edge->node->year,
+                    'comment' => implode(' ', array_map(function ($attr) {
+                        return "($attr->text)";
+                    }, $edge->node->attributes)),
+                    'attributes' => array_map(
+                        function ($attr) {
+                            return $attr->text;
+                        },
+                        $edge->node->attributes),
                 );
             }
         }

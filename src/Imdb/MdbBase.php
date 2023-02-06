@@ -70,6 +70,11 @@ class MdbBase extends Config
      */
     protected $pages;
 
+    /**
+     * @var GraphQL
+     */
+    protected $graphql;
+
     protected $page = array();
 
     protected $xpathPage = array();
@@ -120,6 +125,7 @@ class MdbBase extends Config
         $this->logger = empty($logger) ? new Logger($this->debug) : $logger;
         $this->cache = empty($cache) ? new Cache($this->config, $this->logger) : $cache;
         $this->pages = new Pages($this->config, $this->cache, $this->logger);
+        $this->graphql = new GraphQL($this->cache, $this->logger);
     }
 
     /**

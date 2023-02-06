@@ -1603,21 +1603,24 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $this->assertLessThanOrEqual(175, count($releaseInfo));
 
         $this->assertEquals(array(
-            'country' => 'USA',
-            'day' => '9',
-            'month' => 'June',
-            'mon' => '06',
-            'year' => '1993',
-            'comment' => '(Washington, D.C.) (premiere)'
-            ), $releaseInfo[0]);
+            'country' => 'United States',
+            'day' => 9,
+            'mon' => 6,
+            'year' => 1993,
+            'comment' => '(Washington, D.C.) (premiere)',
+            'attributes' => [
+                'Washington, D.C.',
+                'premiere',
+            ]
+        ), $releaseInfo[0]);
 
         $this->assertEquals(array(
-            'country' => 'USA',
-            'day' => '11',
-            'month' => 'June',
-            'mon' => '06',
-            'year' => '1993',
-            'comment' => ''
+            'country' => 'United States',
+            'day' => 11,
+            'mon' => 6,
+            'year' => 1993,
+            'comment' => '',
+            'attributes' => [],
             ), $releaseInfo[2]);
     }
 
