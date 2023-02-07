@@ -1184,46 +1184,68 @@ class Title extends MdbBase
 
     /**
      * Get movie's alternative names
-     * Note: This may return an empty country or comments. The original title will have a country of '' and a comment of 'original title'
-     * comment, year and lang are there for backwards compatibility and should not be used
-     * @return array array[0..n] of array[title,country,comments[]]
+     * Note: The language may be an empty string
+     * The original title will have a country and countryCode of '', but others will have a country
+     * countryCode is likely an ISO 3166 code, but could be an internal one like XWW (worldwide)
+     * languageCode - either an ISO 639 code or an internally defined code if no ISO code exists for the language.
+     * @return array<array{title: string, country: string, countryCode: string, language: string, languageCode: string, comments: string[]}>
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
     {
         if (empty($this->akas)) {
-            $page = $this->getPage("ReleaseInfo");
-            if (empty($page)) {
-                return array();
-            } // no such page
-
-            $table = Parsing::table($page, "//*[@id=\"akas\"]/following-sibling::table");
-
-            if (empty($table)) {
-                return array();
+            $query = <<<EOF
+query AlsoKnow(\$id: ID!) {
+  title(id: \$id) {
+    akas(first: 9999) {
+      edges {
+        node {
+          country {
+            id
+            text
+          }
+          language {
+            text
+          }
+          displayableProperty {
+            qualifiersInMarkdownList {
+              plainText
             }
+            value {
+              plainText
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
 
-            foreach ($table as $row) {
-                $description = $row[0];
-                $title = $row[1];
+            $originalTitle = $this->orig_title();
+            $this->akas[] = array(
+                "title" => $originalTitle,
+                "country" => "",
+                "countryCode" => "",
+                "comments" => [],
+                "comment" => "original title",
+                "language" => "",
+                "languageCode" => "",
+            );
 
-                $firstbracket = strpos($description, '(');
-                if ($firstbracket === false) {
-                    $country = $description;
-                    $comments = array();
-                } else {
-                    $country = trim(substr($description, 0, $firstbracket));
-                    preg_match_all("@\((.+?)\)@", $description, $matches);
-                    $comments = $matches[1];
-                }
-
+            foreach ($data->title->akas->edges as $edge) {
+                $comments = is_array($edge->node->displayableProperty->qualifiersInMarkdownList)
+                    ? array_map(function($qualifier) { return $qualifier->plainText; }, $edge->node->displayableProperty->qualifiersInMarkdownList)
+                    : [];
                 $this->akas[] = array(
-                    "title" => $title,
-                    "country" => $country,
+                    "title" => $edge->node->displayableProperty->value->plainText,
+                    "country" => $edge->node->country->text,
+                    "countryCode" => $edge->node->country->id,
                     "comments" => $comments,
                     "comment" => implode(', ', $comments),
-                    "year" => '',
-                    "lang" => ''
+                    "language" => isset($edge->node->language->text) ? $edge->node->language->text : '',
+                    "languageCode" => isset($edge->node->language->id) ? $edge->node->language->id : '',
                 );
             }
         }

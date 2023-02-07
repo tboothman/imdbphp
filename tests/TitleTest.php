@@ -750,41 +750,38 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb("0087544");
         $akas = $imdb->alsoknow();
 
-        $matches = 0;
+        $matchNames = [];
         foreach ($akas as $aka) {
-            if ($aka['title'] == 'Kaze no tani no Naushika' && count($aka['comments']) > 0) {
-                // No country
+            if ($aka['title'] == 'Kaze no tani no Naushika' && $aka['comment'] == 'original title') {
+                // Original title
                 $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
-                $this->assertThat(
-                    $aka['comments'][0],
-                    $this->logicalOr(
-                        $this->equalTo('original title'),
-                        $this->equalTo('French title')
-                    )
+                $this->assertEquals(
+                    $aka['comment'],
+                    'original title'
                 );
-                ++$matches;
+                $matchNames[] = 'Original';
             } elseif ($aka['title'] == 'Naushika iz Doline vjetrova') {
-                // Country, no comment
+                // Country, no language
                 $this->assertEquals('Naushika iz Doline vjetrova', $aka['title']);
                 $this->assertEquals('Croatia', $aka['country']);
                 $this->assertEmpty($aka['comments']);
-                ++$matches;
+                $matchNames[] = 'Croatia';
             } elseif ($aka['title'] == 'Наусика от Долината на вятъра') {
-                // Country with comment
+                // Country with language
                 $this->assertEquals('Наусика от Долината на вятъра', $aka['title']);
                 $this->assertEquals('Bulgaria', $aka['country']);
-                $this->assertEquals('Bulgarian title', $aka['comments'][0]);
-                ++$matches;
-            } elseif ($aka['title'] == 'Nausicaä - Aus dem Tal der Winde' && count($aka['comments']) >= 2) {
-                // Country with two comments
+                $this->assertEquals('Bulgarian', $aka['language']);
+                $matchNames[] = 'Bulgaria';
+            } elseif ($aka['title'] == 'Nausicaä - Aus dem Tal der Winde' && count($aka['comments']) >= 1 && $aka['country'] == 'Switzerland') {
+                // Country with comment
                 $this->assertEquals('Nausicaä - Aus dem Tal der Winde', $aka['title']);
                 $this->assertEquals('Switzerland', $aka['country']);
-                $this->assertEquals('German title', $aka['comments'][0]);
-                $this->assertEquals('DVD title', $aka['comments'][1]);
-                ++$matches;
+                $this->assertEquals('DVD Title', $aka['comments'][0]);
+                $this->assertEquals('German', $aka['language']);
+                $matchNames[] = 'Switzerland';
             }
         }
-        $this->assertEquals(5, $matches);
+        $this->assertEquals(4, count($matchNames), "Only matched " . print_r($matchNames, true));
     }
 
 //    public function testAlsoknow_returns_no_results_when_film_has_no_akas()
