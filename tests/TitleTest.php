@@ -1642,7 +1642,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $imdb = $this->getImdb("0306414");
         $prodCompany = $imdb->prodCompany();
         $this->assertEquals('Blown Deadline Productions', $prodCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0019588?ref_=ttco_co_1', $prodCompany[0]['url']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0019588')->evaluate($prodCompany[0]['url']);
         $this->assertEquals('', $prodCompany[0]['notes']);
     }
 
@@ -1651,7 +1651,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $imdb = $this->getImdb();
         $prodCompany = $imdb->prodCompany();
         $this->assertEquals('Warner Bros.', $prodCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0002663?ref_=ttco_co_1', $prodCompany[0]['url']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0002663')->evaluate($prodCompany[0]['url']);
         $this->assertEquals('(presents)', $prodCompany[0]['notes']);
     }
 
@@ -1659,9 +1659,10 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
     {
         $imdb = $this->getImdb();
         $distCompany = $imdb->distCompany();
-        $this->assertEquals('Mauris Film', $distCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0613366?ref_=ttco_co_1', $distCompany[0]['url']);
-        $this->assertEquals('(2019) (Russia) (theatrical)', $distCompany[0]['notes']);
+        $mauris = array_find_item($distCompany, 'name', 'Mauris Film');
+        $this->assertEquals('Mauris Film', $mauris['name']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0613366')->evaluate($mauris['url']);
+        $this->assertEquals('(2019) (Russia) (theatrical)', $mauris['notes']);
     }
 
     public function testSpecialCompany()

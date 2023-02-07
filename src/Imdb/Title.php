@@ -2666,43 +2666,93 @@ EOF;
 
     #==================================================[ /companycredits page ]===
     #---------------------------------------------[ Helper: Parse CompanyInfo ]---
-    /** Parse company info
-     * @param string text to parse
-     * @param ref array parse target
+    /**
+     * Fetch all company credits
+     * @param string $category e.g. distribution, production
+     * @return array<array{name: string, url: string, notes: string}>
      */
-    protected function companyParse($text, &$target)
+    protected function companyCredits($category)
     {
-        preg_match_all('|<li>\s*<a href="(.*)"\s*>(.*)</a>(.*)</li>|iUms', $text, $matches);
-        $mc = count($matches[0]);
-        for ($i = 0; $i < $mc; ++$i) {
-            $target[] = array(
-                "name" => $matches[2][$i],
-                "url" => 'https://' . $this->imdbsite . $matches[1][$i],
-                "notes" => trim($matches[3][$i])
+        $query = <<<EOF
+query CompanyCredits(\$id: ID!) {
+  title(id: \$id) {
+    companyCredits(first: 9999) {
+      edges {
+        node {
+          attributes {
+            text
+          }
+          displayableProperty {
+            value {
+              plainText
+            }
+          }
+          countries {
+            text
+            id
+          }
+          yearsInvolved {
+            year
+            endYear
+          }
+          category {
+            id
+          }
+          company {
+            id
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "CompanyCredits", ["id" => "tt$this->imdbID"]);
+
+        $results = array();
+        foreach ($data->title->companyCredits->edges as $edge) {
+            $credit = $edge->node;
+            if ($credit->category->id != $category) {
+                continue;
+            }
+
+            $notes = [];
+            if (isset($credit->yearsInvolved->year)) {
+                $notes[] = $credit->yearsInvolved->year;
+            }
+
+            if (isset($credit->countries[0]->text)) {
+                $notes[] = $credit->countries[0]->text;
+            }
+
+            if (isset($credit->countries->text)) {
+                $notes[] = $credit->countries->text;
+            }
+
+            foreach ($credit->attributes as $attribute) {
+                $notes[] = $attribute->text;
+            }
+
+            $results[] = array(
+                "name" => $credit->displayableProperty->value->plainText,
+                "url" => 'https://' . $this->imdbsite . "/company/" . $credit->company->id,
+                "notes" => implode(' ', array_map(function ($note) { return "($note)"; }, $notes)),
             );
         }
+
+        return $results;
     }
 
     #---------------------------------------------------[ Producing Companies ]---
 
     /** Info about Production Companies
-     * @return array [0..n] of array (name,url,notes)
+     * @return array<array{name: string, url: string, notes: string}>
      * @see IMDB page /companycredits
      */
     public function prodCompany()
     {
         if (empty($this->compcred_prod)) {
-            $page = $this->getPage("CompanyCredits");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if (preg_match(
-                '|<h4[^>]*>Production Companies</h4>\s*<ul[^>]*>(.*?)</ul>|ims',
-                $this->page["CompanyCredits"],
-                $match
-            )) {
-                $this->companyParse($match[1], $this->compcred_prod);
-            }
+            $this->compcred_prod = $this->companyCredits("production");
         }
         return $this->compcred_prod;
     }
@@ -2710,23 +2760,13 @@ EOF;
     #------------------------------------------------[ Distributing Companies ]---
 
     /** Info about distributors
-     * @return array [0..n] of array (name,url,notes)
+     * @return array<array{name: string, url: string, notes: string}>
      * @see IMDB page /companycredits
      */
     public function distCompany()
     {
         if (empty($this->compcred_dist)) {
-            $page = $this->getPage("CompanyCredits");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if (preg_match(
-                '|<h4[^>]*>Distributors</h4>\s*<ul[^>]*>(.*?)</ul>|ims',
-                $this->page["CompanyCredits"],
-                $match
-            )) {
-                $this->companyParse($match[1], $this->compcred_dist);
-            }
+            $this->compcred_dist = $this->companyCredits("distribution");
         }
         return $this->compcred_dist;
     }
@@ -2734,23 +2774,13 @@ EOF;
     #---------------------------------------------[ Special Effects Companies ]---
 
     /** Info about Special Effects companies
-     * @return array [0..n] of array (name,url,notes)
+     * @return array<array{name: string, url: string, notes: string}>
      * @see IMDB page /companycredits
      */
     public function specialCompany()
     {
         if (empty($this->compcred_special)) {
-            $page = $this->getPage("CompanyCredits");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if (preg_match(
-                '|<h4[^>]*>Special Effects</h4>\s*<ul[^>]*>(.*?)</ul>|ims',
-                $this->page["CompanyCredits"],
-                $match
-            )) {
-                $this->companyParse($match[1], $this->compcred_special);
-            }
+            $this->compcred_special = $this->companyCredits("specialEffects");
         }
         return $this->compcred_special;
     }
@@ -2758,23 +2788,13 @@ EOF;
     #-------------------------------------------------------[ Other Companies ]---
 
     /** Info about other companies
-     * @return array [0..n] of array (name,url,notes)
+     * @return array<array{name: string, url: string, notes: string}>
      * @see IMDB page /companycredits
      */
     public function otherCompany()
     {
         if (empty($this->compcred_other)) {
-            $page = $this->getPage("CompanyCredits");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            if (preg_match(
-                '|<h4[^>]*>Other Companies</h4>\s*<ul[^>]*>(.*?)</ul>|ims',
-                $this->page["CompanyCredits"],
-                $match
-            )) {
-                $this->companyParse($match[1], $this->compcred_other);
-            }
+            $this->compcred_other = $this->companyCredits("miscellaneous");
         }
         return $this->compcred_other;
     }
