@@ -382,27 +382,6 @@ class Title extends MdbBase
     #---------------------------------------------------------------[ Runtime ]---
 
     /**
-     * Get general runtime
-     * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
-     */
-    protected function runtime_all()
-    {
-        if ($this->main_runtime == "") {
-            $this->getPage("Title");
-            if (@preg_match('!Runtime:</h4>\s*(.+?)\s*</div!ms', $this->page["Title"], $match)) {
-                $this->main_runtime = $match[1];
-            }
-        }
-        if ($this->main_runtime == "") {
-            $this->getPage("Technical");
-            if (@preg_match('!Runtime.*?<td>(.+?)</td!ms', $this->page["Technical"], $match)) {
-                $this->main_runtime = $match[1];
-            }
-        }
-        return $this->main_runtime;
-    }
-
-    /**
      * Get overall runtime (first one mentioned on title page)
      * @return int|null runtime in minutes (if set), NULL otherwise
      * @see IMDB page / (TitlePage)
@@ -426,34 +405,41 @@ class Title extends MdbBase
 
     /**
      * Retrieve all runtimes and their descriptions
-     * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
-     * @see IMDB page / (TitlePage)
+     * @return array<array{time: integer, country: string|null, countryCode: string|null, annotations: string[]}>
+     * time is the length in minutes, country and countryCode optionally exists for alternate cuts, annotations is an array of comments meant to describe this cut
      */
     public function runtimes()
     {
         if (empty($this->movieruntimes)) {
-            $this->movieruntimes = array();
-            $rt = $this->runtime_all();
-            foreach (preg_split('!(\||<br>)!', strip_tags($rt, '<br>')) as $runtimestring) {
-                if (preg_match_all(
-                    '/(\d+\s+hr\s+\d+\s+min)? ?\((\d+)\s+min\)|(\d+)\s+min/',
-                    trim($runtimestring),
-                    $matches,
-                    PREG_SET_ORDER,
-                    0
-                )) {
-                    $runtime = (!empty($matches[1][2]) ? $matches[1][2] : (!empty($matches[0][2]) ? $matches[0][2] : (!empty($matches[0][3]) ? $matches[0][3] : 0)));
-                    $annotations = array();
-                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", trim($runtimestring), $matches)) {
-                        $annotations = $matches[1];
-                    }
-                    $this->movieruntimes[] = array(
-                        "time" => $runtime,
-                        "country" => '',
-                        "comment" => '',
-                        "annotations" => $annotations
-                    );
-                }
+            $query = <<<EOF
+query Runtimes(\$id: ID!) {
+  title(id: \$id) {
+    runtimes(first: 9999) {
+      edges {
+        node {
+          attributes {
+            text
+          }
+          country {
+            id
+            text
+          }
+          seconds
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->runtimes->edges as $edge) {
+                $this->movieruntimes[] = array(
+                    "time" => $edge->node->seconds / 60,
+                    "annotations" => array_map(function($attribute) { return $attribute->text; }, $edge->node->attributes),
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : null,
+                    "countryCode" => isset($edge->node->country->id) ? $edge->node->country->id : null,
+                );
             }
         }
         return $this->movieruntimes;

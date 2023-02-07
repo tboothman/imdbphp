@@ -306,9 +306,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $runtimes = $imdb->runtimes();
         $this->assertEquals(117, $runtimes[0]['time']);
         $this->assertEquals(95, $runtimes[1]['time']);
-        $this->assertEquals('edited', $runtimes[1]['annotations'][0]);
-        $this->assertEquals(1985, $runtimes[1]['annotations'][1]);
-        $this->assertEquals('USA', $runtimes[1]['annotations'][2]);
+        $this->assertEquals(1985, $runtimes[1]['annotations'][0]);
+        $this->assertEquals('edited', $runtimes[1]['annotations'][1]);
+        $this->assertEquals('United States', $runtimes[1]['country']);
+        $this->assertEquals('US', $runtimes[1]['countryCode']);
     }
 
     // Apocalypse now "147 min | 202 min (Redux)"
