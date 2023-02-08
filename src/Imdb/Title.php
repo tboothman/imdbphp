@@ -37,7 +37,6 @@ class Title extends MdbBase
     protected $akas = array();
     protected $awards = array();
     protected $countries = array();
-    protected $castlist = array(); // pilot only
     protected $crazy_credits = array();
     protected $credits_cast = array();
     protected $credits_cast_short = array();
@@ -58,9 +57,7 @@ class Title extends MdbBase
     protected $main_language = "";
     protected $main_poster = "";
     protected $main_poster_thumb = "";
-    protected $main_pictures = array();
     protected $main_plotoutline = "";
-    protected $main_runtime = "";
     protected $main_movietype = "";
     protected $main_title = "";
     protected $main_year = -1;
@@ -68,7 +65,6 @@ class Title extends MdbBase
     protected $main_yearspan = array();
     protected $main_tagline = "";
     protected $main_storyline = "";
-    protected $main_prodnotes = array();
     protected $main_movietypes = array();
     protected $main_top250 = -1;
     protected $moviecolors = array();
@@ -116,7 +112,6 @@ class Title extends MdbBase
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
         "Awards" => "/awards",
-        "CompanyCredits" => "/companycredits",
         "CrazyCredits" => "/crazycredits",
         "Credits" => "/fullcredits",
         "Episodes" => "/episodes",
@@ -130,7 +125,6 @@ class Title extends MdbBase
         "Quotes" => "/quotes",
         "ReleaseInfo" => "/releaseinfo",
         "Soundtrack" => "/soundtrack",
-        "Taglines" => "/taglines",
         "Technical" => "/technical",
         "Title" => "/",
         "Trailers" => "/videogallery/content_type-trailer",
@@ -570,39 +564,43 @@ EOF;
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,rating,img])
+     * @return array<array{title: string, imdbid: number, rating: string, img: string>
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
     {
         if (empty($this->movierecommendations)) {
-            $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'ipc-poster-card ipc-poster-card--base')]");
-            /** @var \DOMElement $cell */
-            foreach ($cells as $key => $cell) {
-                $movie = array();
-                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
-                if (!empty($get_link_and_name) && preg_match(
-                    '!tt(\d+)!',
-                    $get_link_and_name->item(0)->getAttribute('href'),
-                    $ref
-                )) {
-                    $movie['title'] = trim($get_link_and_name->item(0)->nodeValue);
-                    $movie['imdbid'] = $ref[1];
-                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
-                    if (!empty($get_rating->item(0))) {
-                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
-                    } else {
-                        $movie['rating'] = -1;
-                    }
-                    $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
-                    if (!empty($getImage->item(0)) && !empty($getImage->item(0)->getAttribute('src'))) {
-                        $movie['img'] = $getImage->item(0)->getAttribute('src');
-                    } else {
-                        $movie['img'] = "";
-                    }
-                    $this->movierecommendations[] = $movie;
-                }
+            $query = <<<EOF
+query Recommendations(\$id: ID!) {
+  title(id: \$id) {
+    moreLikeThisTitles(first: 12) {
+      edges {
+        node {
+          id
+          titleText {
+            text
+          }
+          ratingsSummary {
+            aggregateRating
+          }
+          primaryImage {
+            url
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->moreLikeThisTitles->edges as $edge) {
+                $this->movierecommendations[] = array(
+                    "title" => $edge->node->titleText->text,
+                    "imdbid" => str_replace('tt', '', $edge->node->id),
+                    "rating" => $edge->node->ratingsSummary->aggregateRating,
+                    "img" => $edge->node->primaryImage->url,
+                );
             }
         }
         return $this->movierecommendations;
@@ -1445,20 +1443,31 @@ EOF;
     }
 
     #========================================================[ /taglines page ]===
-    #--------------------------------------------------------[ Taglines Array ]---
-    /** Get all available taglines for the movie
-     * @return array taglines (array[0..n] of strings)
+    /**
+     * Get all available taglines for the movie
+     * @return string[] taglines
      * @see IMDB page /taglines
      */
     public function taglines()
     {
         if (empty($this->taglines)) {
-            $this->getPage("Taglines");
-            if ($this->page["Taglines"] == "cannot open page") {
-                return array();
-            } // no such page
-            if (preg_match_all('!<div class="soda[^>]+>\s*(.*)\s*</div!U', $this->page["Taglines"], $matches)) {
-                $this->taglines = array_map('trim', $matches[1]);
+            $query = <<<EOF
+query Taglines(\$id: ID!) {
+  title(id: \$id) {
+    taglines(first: 9999) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Taglines", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->taglines->edges as $edge) {
+                $this->taglines[] = $edge->node->text;
             }
         }
         return $this->taglines;
@@ -2665,7 +2674,6 @@ EOF;
     }
 
     #==================================================[ /companycredits page ]===
-    #---------------------------------------------[ Helper: Parse CompanyInfo ]---
     /**
      * Fetch all company credits
      * @param string $category e.g. distribution, production
@@ -2689,11 +2697,9 @@ query CompanyCredits(\$id: ID!) {
           }
           countries {
             text
-            id
           }
           yearsInvolved {
             year
-            endYear
           }
           category {
             id
@@ -2723,10 +2729,6 @@ EOF;
 
             if (isset($credit->countries[0]->text)) {
                 $notes[] = $credit->countries[0]->text;
-            }
-
-            if (isset($credit->countries->text)) {
-                $notes[] = $credit->countries->text;
             }
 
             foreach ($credit->attributes as $attribute) {

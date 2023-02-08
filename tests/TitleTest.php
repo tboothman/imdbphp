@@ -65,6 +65,12 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
+    public function test_constructor_with_xxxxxxx_remains_a_7_digit_string()
+    {
+        $imdb = new Title('0133093');
+        $this->assertEquals('0133093', $imdb->imdbid());
+    }
+
     public function test_constructor_with_url_is_coerced_to_7_digit_string()
     {
         $imdb = new Title('https://www.imdb.com/title/tt0133093/');
@@ -398,8 +404,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
         $matches = 0;
         foreach ($recommendations as $recommendation) {
-            if ($recommendation['title'] == 'The Matrix Reloaded') {
-                $this->assertTrue($recommendation['title'] == 'The Matrix Reloaded');
+            if ($recommendation['title'] == 'Pulp Fiction') {
                 $this->assertTrue(floatval($recommendation['rating']) > 7.0);
                 $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
@@ -2008,7 +2013,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $config->language = 'en-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 86400;
         $config->debug = false;
         $imdb = new Title($imdbId, $config);
         return $imdb;
