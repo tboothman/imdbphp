@@ -115,7 +115,6 @@ class Title extends MdbBase
         "CrazyCredits" => "/crazycredits",
         "Credits" => "/fullcredits",
         "Episodes" => "/episodes",
-        "ExtReviews" => "/externalreviews",
         "Goofs" => "/trivia?tab=gf",
         "Keywords" => "/keywords",
         "Locations" => "/locations",
@@ -2529,11 +2528,6 @@ EOF;
             }
 
             $query = <<<EOF
-query Connections(\$id: ID!, \$after: ID) {
-  title(id: \$id) {
-    connections(first: 9999, after: \$after) {
-      edges {
-        node {
           associatedTitle {
             id,
             releaseYear {
@@ -2547,26 +2541,8 @@ query Connections(\$id: ID!, \$after: ID) {
             id
           }
           text
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-}
 EOF;
-            // Results are paginated, so loop until we've got all the data
-            $endCursor = null;
-            $hasNextPage = true;
-            $edges = array();
-            while ($hasNextPage) {
-                $data = $this->graphql->query($query, "Connections", ["id" => "tt$this->imdbID", "after" => $endCursor]);
-                $edges = array_merge($edges, $data->title->connections->edges);
-                $hasNextPage = $data->title->connections->pageInfo->hasNextPage;
-                $endCursor = $data->title->connections->pageInfo->endCursor;
-            }
+            $edges = $this->graphQlGetAll("Connections", "connections", $query);
 
             foreach ($edges as $edge) {
                 $this->movieconnections[$map[$edge->node->category->id]][] = array(
@@ -2589,25 +2565,17 @@ EOF;
     public function extReviews()
     {
         if (empty($this->extreviews)) {
-            $page = $this->getPage("ExtReviews");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            $tag_s = strpos($page, "<ul class=\"simpleList\"");
-            if ($tag_s == 0) {
-                return array();
-            }
-            $tag_e = strpos($page, '</ul', $tag_s);
-            $block = substr($page, $tag_s, $tag_e - $tag_s);
+            $query = <<<EOF
+          label
+          url
+EOF;
+            $edges = $this->graphQlGetAll("ExternalReviews", "externalLinks", $query);
 
-            if (preg_match_all('@href="(.*?)"[^>]*>([^<]*)</a>@', $block, $matches)) {
-                $mc = count($matches[0]);
-                for ($i = 0; $i < $mc; ++$i) {
-                    $this->extreviews[$i] = array(
-                        "url" => $matches[1][$i],
-                        "desc" => trim($matches[2][$i])
-                    );
-                }
+            foreach ($edges as $edge) {
+                $this->extreviews[] = array(
+                    "url" => $edge->node->url,
+                    "desc" => $edge->node->label,
+                );
             }
         }
         return $this->extreviews;
@@ -3189,5 +3157,45 @@ EOF;
         if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
         }
+    }
+
+    /**
+     * Get all edges of a field in the title type
+     * @param string $queryName The cached query name
+     * @param string $fieldName The field on title you want to get
+     * @param string $nodeQuery Graphql query that fits inside node { }
+     * @return \stdClass[]
+     */
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery) {
+        $query = <<<EOF
+query $queryName(\$id: ID!, \$after: ID) {
+  title(id: \$id) {
+    $fieldName(first: 9999, after: \$after) {
+      edges {
+        node {
+          $nodeQuery
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+EOF;
+
+        // Results are paginated, so loop until we've got all the data
+        $endCursor = null;
+        $hasNextPage = true;
+        $edges = array();
+        while ($hasNextPage) {
+            $data = $this->graphql->query($query, $queryName, ["id" => "tt$this->imdbID", "after" => $endCursor]);
+            $edges = array_merge($edges, $data->title->{$fieldName}->edges);
+            $hasNextPage = $data->title->{$fieldName}->pageInfo->hasNextPage;
+            $endCursor = $data->title->{$fieldName}->pageInfo->endCursor;
+        }
+
+        return $edges;
     }
 }
