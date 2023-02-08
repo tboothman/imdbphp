@@ -119,7 +119,6 @@ class Title extends MdbBase
         "Goofs" => "/trivia?tab=gf",
         "Keywords" => "/keywords",
         "Locations" => "/locations",
-        "MovieConnections" => "/movieconnections",
         "OfficialSites" => "/officialsites",
         "ParentalGuide" => "/parentalguide",
         "Quotes" => "/quotes",
@@ -2495,74 +2494,88 @@ EOF;
     }
 
     #=================================================[ /movieconnection page ]===
-    #----------------------------------------[ Helper: ConnectionBlock Parser ]---
-    /** Parse connection block (used by method movieconnection only)
-     * @param string conn connection type
-     * @return array [0..n] of array mid,name,year,comment - or empty array if not found
-     */
-    protected function parseConnection($conn)
-    {
-        $arr = array();
-        $tag_s = strpos($this->page["MovieConnections"], "<h4 class=\"li_group\">$conn");
-        if (empty($tag_s)) {
-            return array();
-        } // no such feature
-        $tag_e = strpos($this->page["MovieConnections"], "<h4 class=\"li", $tag_s + 4);
-        if (empty($tag_e)) {
-            $tag_e = strpos($this->page["MovieConnections"], "<h2", $tag_s);
-        }
-        $block = substr($this->page["MovieConnections"], $tag_s, $tag_e - $tag_s);
-        if (preg_match_all(
-            '!<a href="(.*?)">(.*?)</a>(?:&nbsp;\((\d{4})\))?(.*?<br\s*/>(.*?)\s*</div>)?!ims',
-            $block,
-            $matches
-        )) {
-            $this->debug_object($matches);
-            $mc = count($matches[0]);
-            for ($i = 0; $i < $mc; ++$i) {
-                $mid = substr($matches[1][$i], 9, strlen($matches[1][$i]) - 8); // isolate imdb id from url
-                $arr[] = array(
-                    "mid" => $mid,
-                    "name" => $matches[2][$i],
-                    "year" => $matches[3][$i],
-                    "comment" => trim($matches[5][$i])
-                );
-            }
-        }
-        return $arr;
-    }
 
-    #-------------------------------------------------[ MovieConnection Array ]---
-
-    /** Get connected movie information
-     * @return array connections (versionOf, editedInto, followedBy, spinOff,
-     *         spinOffFrom, references, referenced, features, featured, spoofs,
-     *         spoofed - each an array of mid, name, year, comment or an empty
-     *         array if no connections of that type)
+    /**
+     * Get connected movie information
+     * @return array<string,array{mid: string, name: string, year: integer|null, comment: string} connections (versionOf, editedInto, followedBy, spinOff,
+     *         spinOffFrom, references, referenced, features, featured, spoofs,spoofed
+     *         )
      * @see IMDB page /movieconnection
      */
     public function movieconnection()
     {
+        // map from imdb connection category ids to the ones we've used
+        $map = array(
+            "alternate_language_version_of" => 'alternate_language_version_of',
+            "edited_from" => 'editedFrom',
+            "edited_into" => 'editedInto',
+            "featured_in" => 'featured',
+            "features" => 'features',
+            "followed_by" => 'followedBy',
+            "follows" => 'follows',
+            "referenced_in" => 'referenced',
+            "references" => 'references',
+            "remade_as" => 'remadeAs',
+            "remake_of" => 'remakeOf',
+            "spin_off" => 'spinOff',
+            "spin_off_from" => 'spinOffFrom',
+            "spoofed_in" => 'spoofed',
+            "spoofs" => 'spoofs',
+            "version_of" => 'versionOf'
+        );
         if (empty($this->movieconnections)) {
-            $page = $this->getPage("MovieConnections");
-            if (empty($page)) {
-                return array();
-            } // no such page
-            $this->movieconnections["editedFrom"] = $this->parseConnection("Edited from");
-            $this->movieconnections["editedInto"] = $this->parseConnection("Edited into");
-            $this->movieconnections["featured"] = $this->parseConnection("Featured in");
-            $this->movieconnections["features"] = $this->parseConnection("Features");
-            $this->movieconnections["followedBy"] = $this->parseConnection("Followed by");
-            $this->movieconnections["follows"] = $this->parseConnection("Follows");
-            $this->movieconnections["references"] = $this->parseConnection("References");
-            $this->movieconnections["referenced"] = $this->parseConnection("Referenced in");
-            $this->movieconnections["remadeAs"] = $this->parseConnection("Remade as");
-            $this->movieconnections["remakeOf"] = $this->parseConnection("Remake of");
-            $this->movieconnections["spinOff"] = $this->parseConnection("Spin off");
-            $this->movieconnections["spinOffFrom"] = $this->parseConnection("Spin off from");
-            $this->movieconnections["spoofed"] = $this->parseConnection("Spoofed in");
-            $this->movieconnections["spoofs"] = $this->parseConnection("Spoofs");
-            $this->movieconnections["versionOf"] = $this->parseConnection("Version of");
+            foreach ($map as $k => $v) {
+                $this->movieconnections[$v] = array();
+            }
+
+            $query = <<<EOF
+query Connections(\$id: ID!, \$after: ID) {
+  title(id: \$id) {
+    connections(first: 9999, after: \$after) {
+      edges {
+        node {
+          associatedTitle {
+            id,
+            releaseYear {
+              year
+            }
+            titleText {
+              text
+            }
+          }
+          category {
+            id
+          }
+          text
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+EOF;
+            // Results are paginated, so loop until we've got all the data
+            $endCursor = null;
+            $hasNextPage = true;
+            $edges = array();
+            while ($hasNextPage) {
+                $data = $this->graphql->query($query, "Connections", ["id" => "tt$this->imdbID", "after" => $endCursor]);
+                $edges = array_merge($edges, $data->title->connections->edges);
+                $hasNextPage = $data->title->connections->pageInfo->hasNextPage;
+                $endCursor = $data->title->connections->pageInfo->endCursor;
+            }
+
+            foreach ($edges as $edge) {
+                $this->movieconnections[$map[$edge->node->category->id]][] = array(
+                    "mid" => str_replace('tt', '', $edge->node->associatedTitle->id),
+                    "name" => $edge->node->associatedTitle->titleText->text,
+                    "year" => isset($edge->node->associatedTitle->releaseYear->year) ? $edge->node->associatedTitle->releaseYear->year : null,
+                    "comment" => $edge->node->text,
+                );
+            }
         }
         return $this->movieconnections;
     }

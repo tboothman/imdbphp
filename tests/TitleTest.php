@@ -1557,7 +1557,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(array(
             'mid' => '0366179',
             'name' => 'The Second Renaissance Part I',
-            'year' => '2003',
+            'year' => 2003,
             'comment' => ''
             ), $conn["followedBy"][0]);
     }
