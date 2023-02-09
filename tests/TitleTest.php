@@ -1949,7 +1949,7 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
         $videoSites = $imdb->videosites();
 
         $this->assertIsArray($videoSites);
-        $this->assertGreaterThan(2, $videoSites);
+        $this->assertGreaterThan(2, count($videoSites));
     }
 
     public function test_alternateversions()
