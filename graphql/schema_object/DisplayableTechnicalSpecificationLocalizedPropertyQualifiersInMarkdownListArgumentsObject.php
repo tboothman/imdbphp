@@ -1,6 +1,0 @@
-<?php
-
-namespace GraphQL\SchemaObject;
-
-class DisplayableTechnicalSpecificationLocalizedPropertyQualifiersInMarkdownListArgumentsObject extends ArgumentsObject
-{}
