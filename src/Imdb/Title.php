@@ -2557,21 +2557,35 @@ EOF;
     }
 
     #=================================================[ /externalreviews page ]===
-    #-------------------------------------------------[ ExternalReviews Array ]---
-    /** Get list of external reviews (if any)
-     * @return array [0..n] of array [url, desc] (or empty array if no data)
+
+    /**
+     * Get all external links
+     * @return \stdClass[]
+     */
+    protected function getExternalLinks() {
+        $query = <<<EOF
+          label
+          url
+          externalLinkCategory {
+            id
+          }
+EOF;
+        return $this->graphQlGetAll("ExternalLinks", "externalLinks", $query);
+    }
+    /**
+     * Get list of external reviews
+     * @return array<array{url: string, desc: string}>
      * @see IMDB page /externalreviews
      */
     public function extReviews()
     {
         if (empty($this->extreviews)) {
-            $query = <<<EOF
-          label
-          url
-EOF;
-            $edges = $this->graphQlGetAll("ExternalReviews", "externalLinks", $query);
+            $edges = $this->getExternalLinks();
 
             foreach ($edges as $edge) {
+                if ($edge->node->externalLinkCategory->id != "review") {
+                    continue;
+                }
                 $this->extreviews[] = array(
                     "url" => $edge->node->url,
                     "desc" => $edge->node->label,
@@ -2861,18 +2875,24 @@ EOF;
 
     #===================================================[ /officialsites page ]===
     #---------------------------------------------------[ Official Sites URLs ]---
-    /** URLs of Official Sites
-     * @return array [0..n] of url, name
-     * @see IMDB page /officialsites
-     * @brief now combined with /videosites to /externalsites
+    /**
+     * URLs of Official Sites
+     * @return array<array{url: string, name: string}>
+     * @see IMDB page /externalsites
      */
     public function officialSites()
     {
         if (empty($this->official_sites)) {
-            $sites = array();
-            $this->parse_extcontent('Official Sites', $sites);
-            foreach ($sites as $site) {
-                $this->official_sites[] = array('url' => $site['url'], 'name' => $site['desc']);
+            $edges = $this->getExternalLinks();
+
+            foreach ($edges as $edge) {
+                if ($edge->node->externalLinkCategory->id != "official") {
+                    continue;
+                }
+                $this->official_sites[] = array(
+                    "url" => $edge->node->url,
+                    "name" => $edge->node->label,
+                );
             }
         }
         return $this->official_sites;
