@@ -17,14 +17,21 @@ class GraphQL
     private $logger;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * GraphQL constructor.
      * @param CacheInterface $cache
      * @param LoggerInterface $logger
+     * @param Config $config
      */
-    public function __construct($cache, $logger)
+    public function __construct($cache, $logger, $config)
     {
         $this->cache = $cache;
         $this->logger = $logger;
+        $this->config = $config;
     }
 
     public function query($query, $qn = null, $variables = array())
@@ -45,28 +52,42 @@ class GraphQL
 
     /**
      * @param string $query
-     * @param string|null $qn
+     * @param string|null $queryName
      * @param array $variables
      * @return \stdClass
      */
-    private function doRequest($query, $qn = null, $variables = array())
+    private function doRequest($query, $queryName = null, $variables = array())
     {
-        $opts = array(
-            'http' => array(
-                'method' => "POST",
-                'header' => "Content-Type: application/json\r\n",
-                'content' => json_encode([
-                    'operationName' => $qn,
-                    'query' => $query,
-                    'variables' => $variables])
-            )
-        );
-        // @TODO error handling
-        // @TODO use request class? Try use config settings for language etc?
-        // graphql docs say 'Affected by headers x-imdb-detected-country, x-imdb-user-country, x-imdb-user-language'
-        $context = stream_context_create($opts);
-        $res = file_get_contents('https://api.graphql.imdb.com/', false, $context);
+        $request = new Request('https://api.graphql.imdb.com/', $this->config);
+        $request->addHeaderLine("Content-Type", "application/json");
 
-        return json_decode($res)->data;
+        $payload = json_encode(
+            array(
+            'operationName' => $queryName,
+            'query' => $query,
+            'variables' => $variables)
+        );
+
+        $this->logger->info("[GraphQL] Requesting $queryName");
+        // @TODO Try use config settings for language etc?
+        // graphql docs say 'Affected by headers x-imdb-detected-country, x-imdb-user-country, x-imdb-user-language'
+        // x-imdb-user-country: DE changes title {titleText{text}}, but x-imdb-user-language: de does not
+        $request->post($payload);
+
+        if (200 == $request->getStatus()) {
+            return json_decode($request->getResponseBody())->data;
+        } else {
+            $this->logger->error(
+                "[GraphQL] Failed to retrieve query [{queryName}]. Response headers:{headers}. Response body:{body}",
+                array('queryName' => $queryName, 'headers' => $request->getLastResponseHeaders(), 'body' => $request->getResponseBody())
+            );
+            if ($this->config->throwHttpExceptions) {
+                $exception = new Exception\Http("Failed to retrieve query [$queryName]. Status code [{$request->getStatus()}]");
+                $exception->HTTPStatusCode = $request->getStatus();
+                throw $exception;
+            } else {
+                return new \StdClass();
+            }
+        }
     }
 }
