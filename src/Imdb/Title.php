@@ -428,7 +428,9 @@ EOF;
             foreach ($data->title->runtimes->edges as $edge) {
                 $this->movieruntimes[] = array(
                     "time" => $edge->node->seconds / 60,
-                    "annotations" => array_map(function($attribute) { return $attribute->text; }, $edge->node->attributes),
+                    "annotations" => array_map(function ($attribute) {
+                        return $attribute->text;
+                    }, $edge->node->attributes),
                     "country" => isset($edge->node->country->text) ? $edge->node->country->text : null,
                     "countryCode" => isset($edge->node->country->id) ? $edge->node->country->id : null,
                 );
@@ -1218,7 +1220,9 @@ EOF;
 
             foreach ($data->title->akas->edges as $edge) {
                 $comments = is_array($edge->node->displayableProperty->qualifiersInMarkdownList)
-                    ? array_map(function($qualifier) { return $qualifier->plainText; }, $edge->node->displayableProperty->qualifiersInMarkdownList)
+                    ? array_map(function ($qualifier) {
+                        return $qualifier->plainText;
+                    }, $edge->node->displayableProperty->qualifiersInMarkdownList)
                     : [];
                 $this->akas[] = array(
                     "title" => $edge->node->displayableProperty->value->plainText,
@@ -1359,7 +1363,8 @@ EOF;
      * Fetch all the plots from the graphQL endpoint
      * @return \stdClass
      */
-    private function plot_data() {
+    private function plot_data()
+    {
         $query = <<<EOF
 query Plots(\$id: ID!) {
   title(id: \$id) {
@@ -1419,7 +1424,6 @@ EOF;
                     )
                 );
             }
-
         }
         return $this->split_plot;
     }
@@ -2583,7 +2587,8 @@ EOF;
      * Get all external links
      * @return \stdClass[]
      */
-    protected function getExternalLinks() {
+    protected function getExternalLinks()
+    {
         $query = <<<EOF
           label
           url
@@ -2667,7 +2672,8 @@ EOF;
                         function ($attr) {
                             return $attr->text;
                         },
-                        $edge->node->attributes),
+                        $edge->node->attributes
+                    ),
                 );
             }
         }
@@ -2758,7 +2764,9 @@ EOF;
             $results[] = array(
                 "name" => $credit->displayableProperty->value->plainText,
                 "url" => 'https://' . $this->imdbsite . "/company/" . $credit->company->id,
-                "notes" => implode(' ', array_map(function ($note) { return "($note)"; }, $notes)),
+                "notes" => implode(' ', array_map(function ($note) {
+                    return "($note)";
+                }, $notes)),
             );
         }
 
@@ -3211,7 +3219,8 @@ EOF;
      * @param string $nodeQuery Graphql query that fits inside node { }
      * @return \stdClass[]
      */
-    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery) {
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery)
+    {
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
   title(id: \$id) {

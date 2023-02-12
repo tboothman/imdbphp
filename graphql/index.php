@@ -35,7 +35,8 @@ foreach ($res->getHeaders() as $name => $values) {
 
 echo $res->getBody();
 
-function graphqlRequest($body) {
+function graphqlRequest($body)
+{
     $client = new \GuzzleHttp\Client();
 
     return $client->request('POST', 'https://api.graphql.imdb.com', [
@@ -46,12 +47,13 @@ function graphqlRequest($body) {
     ]);
 }
 
-function iterativelyFetchTypes(array $seedTypes) {
+function iterativelyFetchTypes(array $seedTypes)
+{
     $todo = $seedTypes;
     $done = [];
     $result = [];
 
-    $addToQueue = function($newType) use (&$todo, &$done) {
+    $addToQueue = function ($newType) use (&$todo, &$done) {
         if (!in_array($newType, $done) && !in_array($newType, $todo)) {
             $todo[] = $newType;
         }
@@ -62,7 +64,7 @@ function iterativelyFetchTypes(array $seedTypes) {
         $done[] = $typeName;
         $type = typeQuery($typeName);
 
-        $recurseTypeNames = function($src) use ($addToQueue) {
+        $recurseTypeNames = function ($src) use ($addToQueue) {
             if ($src->name != null) {
                 $addToQueue($src->name);
             }
@@ -118,7 +120,12 @@ function iterativelyFetchTypes(array $seedTypes) {
     return $result;
 }
 
-function typeQuery($typeName): stdClass {
+/**
+ * @param string $typeName
+ * @return \stdClass
+ */
+function typeQuery($typeName)
+{
     $query = <<<EOF
 query Type(\$type: String!) {
   __type(name: \$type) {
@@ -130,7 +137,7 @@ fragment FullType on __Type {
       kind
       name
       description
-      
+
       fields(includeDeprecated: true) {
         name
         description
@@ -166,8 +173,8 @@ fragment FullType on __Type {
       defaultValue
       type { ...TypeRef }
       defaultValue
-      
-      
+
+
     }
 
     fragment TypeRef on __Type {
@@ -227,6 +234,7 @@ EOF;
     return $json->data->__type;
 }
 
-function writelog($logLine) {
+function writelog($logLine)
+{
     file_put_contents("log.txt", $logLine . "\n", FILE_APPEND);
 }

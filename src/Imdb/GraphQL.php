@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Imdb;
-
 
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -71,5 +69,4 @@ class GraphQL
 
         return json_decode($res)->data;
     }
-
 }
