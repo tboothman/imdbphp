@@ -2400,14 +2400,35 @@ EOF;
 
     #------------------------------------------[ Off-site trailers and videos ]---
 
-    /** Get the off-site videos and trailer URLs
-     * @return array videosites array[0..n] of array(site,url,type,desc)
-     * @see IMDB page /videosites
+    /**
+     * Get the off-site videos and trailer URLs
+     * @return array<array{url: string, site: string|null, desc: string, language: string|null, languageCode: string|null}>
+     * @see IMDB page /externalsites
      */
     public function videosites()
     {
         if (empty($this->video_sites)) {
-            $this->parse_extcontent('Video Clips and Trailers', $this->video_sites);
+            $edges = $this->getExternalLinks();
+
+            foreach ($edges as $edge) {
+                if ($edge->node->externalLinkCategory->id != "video") {
+                    continue;
+                }
+
+                preg_match(
+                    '/^(?<site>.*?)( - (?<desc>.+))?$/',
+                    $edge->node->label,
+                    $labelParts
+                );
+
+                $this->video_sites[] = array(
+                    "url" => $edge->node->url,
+                    "site" => isset($labelParts["desc"]) ? $labelParts["site"] : null,
+                    "desc" => isset($labelParts["desc"]) ? $labelParts["desc"] : $edge->node->label,
+                    "language" => isset($edge->node->externalLinkLanguages[0]->text) ? $edge->node->externalLinkLanguages[0]->text : null,
+                    "languageCode" => isset($edge->node->externalLinkLanguages[0]->id) ? $edge->node->externalLinkLanguages[0]->id : null,
+                );
+            }
         }
         return $this->video_sites;
     }
@@ -2568,6 +2589,10 @@ EOF;
           url
           externalLinkCategory {
             id
+          }
+          externalLinkLanguages {
+            id
+            text
           }
 EOF;
         return $this->graphQlGetAll("ExternalLinks", "externalLinks", $query);
