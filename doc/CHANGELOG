@@ -2,6 +2,21 @@
 History for IMDBPHP
 ====================
 
+v8.0.0
+------
+
+! Title::plot() returns plain text utf-8 strings rather than html. It no longer contains the author at the end (You can get the author from Title::plot_split())
+! Title::plot_split() also has plain text utf-8 strings rather than html in its plot field
+! Title::releaseInfo() return has changed. The country strings have changed slightly, the dates are numbers rather than stringy numbers and month has been removed.
+    Was ['country' => 'USA', 'day' => '9', 'month' => 'June', 'mon' => '06', 'year' => '1993' ] now [ 'country' => 'United States', 'day' => 9, 'mon' => 6, 'year' => 1993, 'attributes' => [ 'Washington, D.C.', 'premiere' ] ]
+! Title::alsoknow() no longer returns a year or lang field (they were previously always an empty string). It no longer returns a comment of '$language title' for each aka.
+! Fixed these methods broken by site change: Title::releaseInfo(), Title::synopsis(), Title::alternateVersions(), Title::runtimes(), Title::distCompany(), Title::specialCompany(), Title::prodCompany(), Title::specialCompany(), Title::otherCompany(), Title::movie_recommendations(), Title::taglines(), Title::movieconnection(), Title::extReviews(), Title::officialSites(), Title::videosites()
++ Title::alsoknow() now returns a countryCode, language and languageCode for each AKA.
++ Title::runtimes() now returns a country and countryCode
++ Title::videosites() now returns a language, languageCode but not a type. Now ['url' => 'x', 'site' => FILM.TV, 'desc' => trailer, 'language' => German, 'languageCode' => de] was
+    ['url'=>'x', 'site' => 'FILM.TV', 'desc' => 'trailer', 'type' => '']
+
+
 v7.4.2 (07.01.2023)
 -------------------
 ! Remove visibility from const to support < PHP 7.1
