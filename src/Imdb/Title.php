@@ -1414,7 +1414,7 @@ EOF;
                 $this->split_plot[] = array(
                     'plot' => $edge->node->plotText->plainText,
                     'author' => array(
-                        'name' => $edge->node->author ?? '',
+                        'name' => $edge->node->author ? $edge->node->author : '',
                         'url' => $edge->node->author ? "https://www.imdb.com/search/title?plot_author={$edge->node->author}&view=simple&sort=alpha&ref_=ttpl_pl_1" : '',
                     )
                 );
