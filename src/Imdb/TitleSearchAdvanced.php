@@ -49,6 +49,10 @@ class TitleSearchAdvanced extends MdbBase
     protected $languages = array();
     protected $sort = 'moviemeter,asc';
     protected $start = 1;
+    /**
+     * @var integer
+     */
+    protected $count = 50;
 
     /**
      * Set which types of titles should be returned
@@ -98,6 +102,16 @@ class TitleSearchAdvanced extends MdbBase
     public function setSort($sort)
     {
         $this->sort = $sort;
+    }
+
+    /**
+     * Set the number of results to return per search
+     * Defaults to 50
+     * @param integer $count
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
     }
 
     /**
@@ -153,8 +167,9 @@ class TitleSearchAdvanced extends MdbBase
         }
 
         $queries['start'] = $this->start;
+        $queries['count'] = $this->count;
 
-        return "https://" . $this->imdbsite . '/search/title?count=250&' . http_build_query($queries);
+        return "https://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
     }
 
     protected function parseTitleType($xp, $resultSection)
