@@ -790,7 +790,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(4, count($matchNames), "Only matched " . print_r($matchNames, true));
     }
 
-    public function testAlsoKnow_no_language_no_country ()
+    public function testAlsoKnow_no_language_no_country()
     {
         $imdb = $this->getImdb("tt12324366");
         $akas = $imdb->alsoknow();
