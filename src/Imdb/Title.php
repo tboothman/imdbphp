@@ -1168,11 +1168,11 @@ EOF;
 
     /**
      * Get movie's alternative names
-     * Note: The language may be an empty string
-     * The original title will have a country and countryCode of '', but others will have a country
+     * Note: The language and country may be an empty string
+     * The first item in the list will be the original title, it has a comment of 'original title'
      * countryCode is likely an ISO 3166 code, but could be an internal one like XWW (worldwide)
      * languageCode - either an ISO 639 code or an internally defined code if no ISO code exists for the language.
-     * @return array<array{title: string, country: string, countryCode: string, language: string, languageCode: string, comments: string[]}>
+     * @return array<array{title: string, country: string, countryCode: string|null, language: string, languageCode: string|null, comments: string[]}>
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
@@ -1211,11 +1211,11 @@ EOF;
             $this->akas[] = array(
                 "title" => $originalTitle,
                 "country" => "",
-                "countryCode" => "",
+                "countryCode" => null,
                 "comments" => [],
                 "comment" => "original title",
                 "language" => "",
-                "languageCode" => "",
+                "languageCode" => null,
             );
 
             foreach ($data->title->akas->edges as $edge) {
@@ -1226,12 +1226,12 @@ EOF;
                     : [];
                 $this->akas[] = array(
                     "title" => $edge->node->displayableProperty->value->plainText,
-                    "country" => $edge->node->country->text,
-                    "countryCode" => $edge->node->country->id,
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : '',
+                    "countryCode" => isset($edge->node->country->id) ? $edge->node->country->id : null,
                     "comments" => $comments,
                     "comment" => implode(', ', $comments),
                     "language" => isset($edge->node->language->text) ? $edge->node->language->text : '',
-                    "languageCode" => isset($edge->node->language->id) ? $edge->node->language->id : '',
+                    "languageCode" => isset($edge->node->language->id) ? $edge->node->language->id : null,
                 );
             }
         }

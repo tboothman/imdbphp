@@ -790,6 +790,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(4, count($matchNames), "Only matched " . print_r($matchNames, true));
     }
 
+    public function testAlsoKnow_no_language_no_country ()
+    {
+        $imdb = $this->getImdb("tt12324366");
+        $akas = $imdb->alsoknow();
+        $this->assertGreaterThan(11, count($akas));
+    }
+
 //    public function testAlsoknow_returns_no_results_when_film_has_no_akas()
 //    {
 //        //@TODO
