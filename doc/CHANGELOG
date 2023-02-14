@@ -2,8 +2,14 @@
 History for IMDBPHP
 ====================
 
-v8.0.0
-------
+v8.0.1 (14.02.2023)
+-------------------
++ Add setCount and setStart to TitleSearchAdvanced. setCount lets you change how many results you get,
+    and setStart lets you offset the start of the search results so you can get multiple pages
+! Fix Title::alsoknow() when country is not set. countryCode and languageCode will now be null if no language or country is set
+
+v8.0.0 (13.02.2023)
+-------------------
 
 ! Title::plot() returns plain text utf-8 strings rather than html. It no longer contains the author at the end (You can get the author from Title::plot_split())
 ! Title::plot_split() also has plain text utf-8 strings rather than html in its plot field
