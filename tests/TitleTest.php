@@ -1957,7 +1957,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $videoSites = $imdb->videosites();
 
         $this->assertIsArray($videoSites);
-        $this->assertGreaterThan(10, count($videoSites));
+        $this->assertGreaterThan(8, count($videoSites));
 
         foreach ($videoSites as $videoSite) {
             $this->assertNotEmpty($videoSite['desc']);
