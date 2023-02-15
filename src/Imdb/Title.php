@@ -1214,7 +1214,7 @@ EOF;
                 "title" => $originalTitle,
                 "country" => "",
                 "countryCode" => null,
-                "comments" => [],
+                "comments" => ["original title"],
                 "comment" => "original title",
                 "language" => "",
                 "languageCode" => null,
