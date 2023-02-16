@@ -1210,15 +1210,17 @@ EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
 
             $originalTitle = $this->orig_title();
-            $this->akas[] = array(
-                "title" => $originalTitle,
-                "country" => "",
-                "countryCode" => null,
-                "comments" => ["original title"],
-                "comment" => "original title",
-                "language" => "",
-                "languageCode" => null,
-            );
+            if(!empty($originalTitle)){
+                $this->akas[] = array(
+                    "title" => $originalTitle,
+                    "country" => "",
+                    "countryCode" => null,
+                    "comments" => ["original title"],
+                    "comment" => "original title",
+                    "language" => "",
+                    "languageCode" => null,
+                );
+            }
 
             foreach ($data->title->akas->edges as $edge) {
                 $comments = is_array($edge->node->displayableProperty->qualifiersInMarkdownList)
