@@ -311,6 +311,7 @@ class Title extends MdbBase
         if ($originalName && $displayName && $originalName != $displayName) {
             return $originalName;
         }
+        return null;
     }
 
     /** Get year
@@ -564,7 +565,7 @@ EOF;
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array<array{title: string, imdbid: number, rating: string, img: string>
+     * @return array<array{title: string, imdbid: number, rating: string, img: string}>
      * @see IMDB page / (TitlePage)
      */
     public function movie_recommendations()
@@ -1210,7 +1211,7 @@ EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
 
             $originalTitle = $this->orig_title();
-            if(!empty($originalTitle)){
+            if (!empty($originalTitle)) {
                 $this->akas[] = array(
                     "title" => $originalTitle,
                     "country" => "",
@@ -1483,10 +1484,10 @@ EOF;
     #-----------------------------------------------------[ Helper: TableRows ]---
     /**
      * Get rows for a given table on the page
-     * @param string html
-     * @param string table_start
+     * @param string $html
+     * @param string $table_start
      * @return string[] Contents of each row of the table
-     * @see used by the methods director, cast, writing, producer, composer
+     * @see used by the method's director, cast, writing, producer, composer
      */
     protected function get_table_rows($html, $table_start)
     {
@@ -1510,8 +1511,8 @@ EOF;
     #------------------------------------------------[ Helper: Cast TableRows ]---
 
     /** Get rows for the cast table on the page
-     * @param string html
-     * @param string table_start
+     * @param string $html
+     * @param string $table_start
      * @return array array[0..n] of strings
      * @see used by the method cast
      */
@@ -1532,7 +1533,7 @@ EOF;
     #------------------------------------------------------[ Helper: RowCells ]---
 
     /** Get content of table row cells
-     * @param string row (as returned by imdb::get_table_rows)
+     * @param string $row (as returned by imdb::get_table_rows)
      * @return array cells (array[0..n] of strings)
      * @see used by the methods director, cast, writing, producer, composer
      */
@@ -1547,9 +1548,9 @@ EOF;
     #-------------------------------------------[ Helper: Get IMDBID from URL ]---
 
     /** Get the IMDB ID from a names URL
-     * @param string href url to the staff members IMDB page
+     * @param string $href url to the staff members IMDB page
      * @return string IMDBID of the staff member
-     * @see used by the methods director, cast, writing, producer, composer
+     * @see used by the method's director, cast, writing, producer, composer
      */
     protected function get_imdbname($href)
     {
@@ -2285,7 +2286,7 @@ EOF;
     #===========================================================[ /videosites ]===
     #--------------------------------------------------------[ content helper ]---
     /** Convert IMDB redirect-URLs of external sites to real URLs
-     * @param string url redirect-url
+     * @param string $url redirect-url
      * @return string url real-url
      */
     protected function convertIMDBtoRealURL($url)
@@ -2309,8 +2310,8 @@ EOF;
     }
 
     /** Parse segments of external information on "VideoSites"
-     * @param string title segment title
-     * @param array res resultset (passed by reference)
+     * @param string $title segment title
+     * @param array $res resultset (passed by reference)
      */
     protected function parse_extcontent($title, &$res)
     {
@@ -2525,7 +2526,7 @@ EOF;
 
     /**
      * Get connected movie information
-     * @return array<string,array{mid: string, name: string, year: integer|null, comment: string} connections (versionOf, editedInto, followedBy, spinOff,
+     * @return array<string,array<array{mid: string, name: string, year: integer|null, comment: string}>> connections (versionOf, editedInto, followedBy, spinOff,
      *         spinOffFrom, references, referenced, features, featured, spoofs,spoofed
      *         )
      * @see IMDB page /movieconnection
@@ -2836,8 +2837,8 @@ EOF;
     #===================================================[ /parentalguide page ]===
     #------------------------------------------------[ Helper: ParentalGuide Section ]---
     /** Get lists for the Parental Guide section's
-     * @param string html
-     * @param string section_id
+     * @param string $html
+     * @param string $section_id
      * @return array array[0..n] of strings
      * @see used by the method parentalGuide
      */
@@ -3214,6 +3215,7 @@ EOF;
         if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
         }
+        return null;
     }
 
     /**

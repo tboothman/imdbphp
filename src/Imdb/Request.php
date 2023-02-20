@@ -184,6 +184,7 @@ class Request
                 return $target;
             }
         }
+        return null;
     }
 
     public function getLastResponseHeaders()

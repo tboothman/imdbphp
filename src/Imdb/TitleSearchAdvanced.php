@@ -238,7 +238,7 @@ class TitleSearchAdvanced extends MdbBase
     }
 
     /**
-     * @param string html of page
+     * @param string $page html of page
      */
     protected function parse_results($page)
     {

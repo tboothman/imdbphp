@@ -26,7 +26,7 @@ class PersonSearch extends MdbBase
 
     /**
      * Set the name (title) to search for
-     * @param string searchstring what to search for - (part of) the movie name
+     * @param string $name what to search for - (part of) the movie name
      */
     public function setsearchname($name)
     {
@@ -45,7 +45,6 @@ class PersonSearch extends MdbBase
 
     /**
      * Setup search results
-     * @param optional string URL Replace search URL by your own
      * @return Person[]
      */
     public function results()

@@ -139,7 +139,7 @@ class MdbBase extends Config
 
     /**
      * Set and validate the IMDb ID
-     * @param string id IMDb ID
+     * @param string $id IMDb ID
      */
     protected function setid($id)
     {
@@ -170,7 +170,7 @@ class MdbBase extends Config
 
     /**
      * Get numerical value for month name
-     * @param string name name of month
+     * @param string $mon name of month
      * @return integer month number
      */
     protected function monthNo($mon)

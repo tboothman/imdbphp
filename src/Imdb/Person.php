@@ -151,7 +151,7 @@ class Person extends MdbBase
     #--------------------------------------------------------[ Photo specific ]---
 
     /** Get cover photo
-     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     * @param boolean $thumb (optional) thumb get the thumbnail (140x207, default)
      *                or the bigger variant with a maximum size of (1363x2048)
      * @return mixed photo (string url if found, FALSE otherwise)
      * @see IMDB person page / (Main page)
@@ -181,8 +181,8 @@ class Person extends MdbBase
 
     /**
      * Save the photo to disk
-     * @param string path where to store the file
-     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     * @param string $path where to store the file
+     * @param boolean $thumb (optional) get the thumbnail (140x207, default)
      *                or the bigger variant with a maximum size of (1363x2048)
      * @return boolean success
      * @see IMDB person page / (Main page)
@@ -218,7 +218,7 @@ class Person extends MdbBase
     }
 
     /** Get the URL for the movies cover photo
-     * @param boolean (optional) thumb get the thumbnail (140x207, default)
+     * @param boolean $thumb (optional) get the thumbnail (140x207, default)
      *                or the bigger variant with a maximum size of (1363x2048)
      * @return mixed url (string URL or FALSE if none)
      * @see IMDB person page / (Main page)
@@ -251,8 +251,8 @@ class Person extends MdbBase
     #----------------------------------------------------------[ Filmographie ]---
 
     /** Get filmography
-     * @param ref array where to store the filmography
-     * @param string type Which filmografie to retrieve ("actor","producer")
+     * @param array &$res where to store the filmography
+     * @param string $type name of the section to fetch filmography for e.g. 'actor', 'producer'
      */
     protected function filmograf(&$res, $type)
     {
@@ -810,8 +810,8 @@ class Person extends MdbBase
     #-----------------------------------------[ Helper to Trivia, Quotes, ... ]---
 
     /** Parse Trivia, Quotes, etc (same structs)
-     * @param string name
-     * @param ref array res
+     * @param string $name
+     * @param array &$res
      */
     protected function parparse($name, &$res)
     {
@@ -965,9 +965,8 @@ class Person extends MdbBase
     #----------------------------------------------[ Helper for movie parsing ]---
 
     /** Parse movie helper
-     * @param ref array res where to store the results
-     * @param string page name of the page
-     * @param string header header of the block on the IMDB site
+     * @param array &$res where to store the results
+     * @param string $header header of the block on the IMDB site
      * @brief helper to pubmovies() and portrayedmovies()
      */
     protected function parsepubmovies(&$res, $header)
@@ -1018,7 +1017,7 @@ class Person extends MdbBase
 
     /**
      * Helper for article parsing
-     * @param string title title of the block
+     * @param string $title title of the block
      * @return array
      * @brief used by interviews(), articles(), pictorials(), magcovers()
      * @see IMDB person page /publicity
@@ -1136,10 +1135,10 @@ class Person extends MdbBase
     #---------------------------------------------------------[ Search Details ]---
 
     /** Set some search details
-     * @param string role
-     * @param integer mid IMDB ID
-     * @param string name movie-name
-     * @param integer year
+     * @param string $role
+     * @param integer $mid IMDB ID
+     * @param string $name movie-name
+     * @param integer $year
      */
     public function setSearchDetails($role, $mid, $name, $year)
     {
@@ -1166,6 +1165,7 @@ class Person extends MdbBase
         if (preg_match('#<meta property="imdb:pageConst" content="nm(\d+)"#', $page, $matches) && !empty($matches[1])) {
             return $matches[1];
         }
+        return null;
     }
 
     /**
