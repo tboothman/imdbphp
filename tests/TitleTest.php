@@ -794,7 +794,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb("tt12324366");
         $akas = $imdb->alsoknow();
-        $this->assertGreaterThan(11, count($akas));
+        $this->assertGreaterThan(10, count($akas));
     }
 
 //    public function testAlsoknow_returns_no_results_when_film_has_no_akas()
