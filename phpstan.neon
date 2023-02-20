@@ -1,5 +1,7 @@
 parameters:
 	phpVersion: 70100 # PHP 7.1 (oldest supported version)
-	level: 1
+	level: 2
 	paths:
 		- src/Imdb/
+	ignoreErrors:
+		- '#Call to an undefined method DOMNode::getAttribute\(\)#'
