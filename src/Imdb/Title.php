@@ -2287,7 +2287,7 @@ EOF;
     #--------------------------------------------------------[ content helper ]---
     /** Convert IMDB redirect-URLs of external sites to real URLs
      * @param string $url redirect-url
-     * @return string url real-url
+     * @return string|false url real-url
      */
     protected function convertIMDBtoRealURL($url)
     {

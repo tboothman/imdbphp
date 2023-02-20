@@ -1203,6 +1203,11 @@ class Person extends MdbBase
         return "https://" . $this->imdbsite . "/name/nm" . $this->imdbID . $this->getUrlSuffix($page);
     }
 
+    /**
+     * @param string $page Name of the actor page to fetch
+     * @return string
+     * @see Person::getUrlSuffix()
+     */
     protected function getPage($page = null)
     {
         if (!empty($this->page[$page])) {

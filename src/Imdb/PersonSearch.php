@@ -10,7 +10,6 @@ namespace Imdb;
 class PersonSearch extends MdbBase
 {
     private $name = null;
-    private $resu = array();
 
     /**
      * Search for people on imdb who match $searchTerms
@@ -20,7 +19,6 @@ class PersonSearch extends MdbBase
     public function search($searchTerms)
     {
         $this->setsearchname($searchTerms);
-        $this->reset();
         return $this->results();
     }
 
@@ -34,13 +32,11 @@ class PersonSearch extends MdbBase
     }
 
     /**
-     * Reset search results
-     * This empties the collected search results. Without calling this, every
-     * new search appends its results to the ones collected by the previous search.
+     * This does nothing
+     * @deprecated
      */
     public function reset()
     {
-        $this->resu = array();
     }
 
     /**
@@ -117,7 +113,7 @@ class PersonSearch extends MdbBase
             }
         }
 
-        return $this->resu = $results;
+        return $results;
     }
 
     /**
