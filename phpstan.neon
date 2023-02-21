@@ -1,6 +1,6 @@
 parameters:
 	phpVersion: 70100 # PHP 7.1 (oldest supported version)
-	level: 3
+	level: 4
 	paths:
 		- src/Imdb/
 	ignoreErrors:

@@ -204,34 +204,24 @@ class TitleSearchAdvanced extends MdbBase
         switch ($type) {
             case 'tv_series':
                 return Title::TV_SERIES;
-                break;
             case 'tv_episode':
                 return Title::TV_EPISODE;
-                break;
             case 'mini_series':
                 return Title::TV_MINI_SERIES;
-                break;
             case 'tv_movie':
                 return Title::TV_MOVIE;
-                break;
             case 'tv_special':
                 return Title::TV_SPECIAL;
-                break;
             case 'tv_short':
                 return Title::TV_SHORT;
-                break;
             case 'documentary':
                 return Title::MOVIE;
-                break;
             case 'game':
                 return Title::GAME;
-                break;
             case 'video':
                 return Title::VIDEO;
-                break;
             case 'short':
                 return Title::SHORT;
-                break;
             default:
                 return 'Feature Film';
         }

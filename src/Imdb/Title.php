@@ -1038,7 +1038,8 @@ EOF;
         if (isset($this->jsonLD()->image)) {
             $this->main_poster = $this->jsonLD()->image;
         }
-        if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
+        $hasPosterElement = preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match);
+        if ($hasPosterElement
             && !empty($match[1])) {
             $this->main_poster_thumb = $match[1];
         } else {
@@ -3212,8 +3213,10 @@ EOF;
     public function real_id()
     {
         $page = $this->getPage("Title");
-        if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches) && !empty($matches[1])) {
-            return $matches[1];
+        if (preg_match('#<meta property="imdb:pageConst" content="tt(\d+)"#', $page, $matches)) {
+            if (!empty($matches[1])) {
+                return $matches[1];
+            }
         }
         return null;
     }
