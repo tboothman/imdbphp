@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v8.0.2 (21.02.2023)
+-------------------
+! Improved the documentation of Title::alsoknow()
+! Fixes Title::alsoknow() returning an 'original title' with a null name when your imdb display title is the original title
+- Deprecate PersonSearch::reset()
+
 v8.0.1 (14.02.2023)
 -------------------
 + Add setCount and setStart to TitleSearchAdvanced. setCount lets you change how many results you get,
