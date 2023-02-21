@@ -1171,7 +1171,7 @@ EOF;
     /**
      * Get movie's alternative names
      * Note: The language and country may be an empty string
-     * The first item in the list will be the original title, it has a comment of 'original title'
+     * The first item in the list will be the original title if it is different from your language's title, it has a comment of 'original title'
      * countryCode is likely an ISO 3166 code, but could be an internal one like XWW (worldwide)
      * languageCode - either an ISO 639 code or an internally defined code if no ISO code exists for the language.
      * comment is usually empty but can be things like 'DVD title' or 'working title' if there is more than one title for a country+language
