@@ -2,6 +2,12 @@
 History for IMDBPHP
 ====================
 
+v8.1.0 (14.03.2023)
+-------------------
+
++ Add Psr/Log v2 to allowed versions in composer.json
+! Fix Title::aspect_ratio no longer returning anything
+
 v8.0.2 (21.02.2023)
 -------------------
 ! Improved the documentation of Title::alsoknow()
