@@ -138,10 +138,10 @@ class Person extends MdbBase
     public function name()
     {
         if (empty($this->fullname)) {
-            $this->getPage("Name");
-            if (preg_match("/<title>(.*?) - IMDb<\/title>/i", $this->page["Name"], $match)) {
+            $page = $this->getPage("Name");
+            if (preg_match("/<title>(.*?) - IMDb<\/title>/i", $page, $match)) {
                 $this->fullname = trim($match[1]);
-            } elseif (preg_match("/<title>IMDb - (.*?)<\/title>/i", $this->page["Name"], $match)) {
+            } elseif (preg_match("/<title>IMDb - (.*?)<\/title>/i", $page, $match)) {
                 $this->fullname = trim($match[1]);
             }
         }
@@ -159,9 +159,9 @@ class Person extends MdbBase
     public function photo($thumb = true)
     {
         if ($this->main_photo === null) {
-            $this->getPage("Name");
+            $page = $this->getPage("Name");
             $this->main_photo = false;
-            if (preg_match('!ipc-(?:poster--baseAlt|media--poster-m).*?<img.*?src="(.*?)"!ims', $this->page["Name"], $match)) {
+            if (preg_match('!ipc-(?:poster--baseAlt|media--poster-m).*?<img.*?src="(.*?)"!ims', $page, $match)) {
                 if ($thumb) {
                     $this->main_photo = $match[1];
                 } else {
@@ -488,8 +488,8 @@ class Person extends MdbBase
     public function birthname()
     {
         if (empty($this->birth_name)) {
-            $this->getPage("Bio");
-            if (preg_match("!Birth Name</td>\s*<td>(.*?)</td>\n!m", $this->page["Bio"], $match)) {
+            $page = $this->getPage("Bio");
+            if (preg_match("!Birth Name</td>\s*<td>(.*?)</td>\n!m", $page, $match)) {
                 $this->birth_name = trim($match[1]);
             }
         }
@@ -505,8 +505,8 @@ class Person extends MdbBase
     public function nickname()
     {
         if (empty($this->nick_name)) {
-            $this->getPage("Bio");
-            if (preg_match("!Nicknames</td>\s*<td>\s*(.*?)</td>\s*</tr>!ms", $this->page["Bio"], $match)) {
+            $page = $this->getPage("Bio");
+            if (preg_match("!Nicknames</td>\s*<td>\s*(.*?)</td>\s*</tr>!ms", $page, $match)) {
                 $nicks = explode("<br/>", $match[1]);
                 foreach ($nicks as $nick) {
                     $nick = trim($nick);
@@ -514,7 +514,7 @@ class Person extends MdbBase
                         $this->nick_name[] = $nick;
                     }
                 }
-            } elseif (preg_match('!Nickname</td><td>\s*([^<]+)\s*</td>!', $this->page["Bio"], $match)) {
+            } elseif (preg_match('!Nickname</td><td>\s*([^<]+)\s*</td>!', $page, $match)) {
                 $this->nick_name[] = trim($match[1]);
             }
         }
@@ -585,10 +585,10 @@ class Person extends MdbBase
     public function height()
     {
         if (empty($this->bodyheight)) {
-            $this->getPage("Bio");
+            $page = $this->getPage("Bio");
             if (preg_match(
                 "!Height</td>\s*<td>\s*(?<imperial>.*?)\s*(&nbsp;)?\((?<metric>.*?)\)!m",
-                $this->page["Bio"],
+                $page,
                 $match
             )) {
                 $this->bodyheight["imperial"] = str_replace('&nbsp;', ' ', trim($match['imperial']));
@@ -760,13 +760,13 @@ class Person extends MdbBase
     public function bio()
     {
         if (empty($this->bio_bio)) {
-            $this->getPage("Bio");
-            if ($this->page["Bio"] == "cannot open page") {
+            $page = $this->getPage("Bio");
+            if (!$page) {
                 return array();
             } // no such page
             if (preg_match(
                 '!<h4 class="li_group">Mini Bio[^>]+?>(.+?)<(h4 class="li_group"|div class="article")!ims',
-                $this->page["Bio"],
+                $page,
                 $block
             )) {
                 preg_match_all(
@@ -815,16 +815,16 @@ class Person extends MdbBase
      */
     protected function parparse($name, &$res)
     {
-        $this->getPage("Bio");
-        $pos_s = strpos($this->page["Bio"], '<h4 class="li_group">' . $name);
+        $page = $this->getPage("Bio");
+        $pos_s = strpos($page, '<h4 class="li_group">' . $name);
         if (!$pos_s) {
             return $res;
         }
-        $pos_e = strpos($this->page["Bio"], "<h4", $pos_s + 1);
+        $pos_e = strpos($page, "<h4", $pos_s + 1);
         if (!$pos_e) {
-            $pos_e = strpos($this->page["Bio"], "</tbody", $pos_s + 1);
+            $pos_e = strpos($page, "</tbody", $pos_s + 1);
         }
-        $block = substr($this->page["Bio"], $pos_s, $pos_e - $pos_s);
+        $block = substr($page, $pos_s, $pos_e - $pos_s);
         if (preg_match_all('!<div class="soda[^>]*>(.*?)</div>!ms', $block, $matches)) {
             foreach ($matches[1] as $match) {
                 $res[] = str_replace(
@@ -887,13 +887,13 @@ class Person extends MdbBase
     public function salary()
     {
         if (empty($this->bio_salary)) {
-            $this->getPage("Bio");
-            $pos_s = strpos($this->page["Bio"], '<table id="salariesTable"');
+            $page = $this->getPage("Bio");
+            $pos_s = strpos($page, '<table id="salariesTable"');
             if (!$pos_s) {
                 return $this->bio_salary;
             }
-            $pos_e = strpos($this->page["Bio"], "</table", $pos_s);
-            $block = substr($this->page["Bio"], $pos_s, $pos_e - $pos_s);
+            $pos_e = strpos($page, "</table", $pos_s);
+            $block = substr($page, $pos_s, $pos_e - $pos_s);
             if (preg_match_all(
                 "/<tr.*?<td.*?>(.*?)<\/td>.*?<td.*?>(.*?)<\/td>/ms",
                 $block,
