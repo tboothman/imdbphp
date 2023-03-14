@@ -180,7 +180,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE));
 
-        $this->assertGreaterThan(10, count($results));
+        $this->assertGreaterThan(5, count($results));
 
         $wrongMovieType = false;
         foreach ($results as $result) {

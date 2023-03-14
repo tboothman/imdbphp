@@ -414,7 +414,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
     //@TODO Write proper tests for this method
     public function test_trademark()
     {
-        $person = $this->getimdb_person();
+        $person = $this->getimdb_person("nm0005132");
         $this->assertNotEmpty($person->trademark());
     }
 
