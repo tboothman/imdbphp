@@ -2076,6 +2076,9 @@ EOF;
                         . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                         . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                         . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
+                    #//Fix Episodes Comma Thousands Separators
+                    $page = preg_replace('/(?<=\d),(?=\d)/', '', $page);
+                    
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
                         //Fetch episodes image url
