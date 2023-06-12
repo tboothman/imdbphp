@@ -2065,7 +2065,10 @@ EOF;
                 $count = count($matches[0]);
                 for ($i = 0; $i < $count; ++$i) {
                     $s = $matches[2][$i];
-                    $page = $this->getPage("Episodes-$s");
+                    
+                    if($s!=-1)                       
+                      $page = $this->getPage("Episodes-$s");
+                    
                     if (empty($page)) {
                         continue; // no such page
                     }
