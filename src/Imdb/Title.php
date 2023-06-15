@@ -2946,11 +2946,20 @@ EOF;
     public function keywords_all()
     {
         if (empty($this->all_keywords)) {
-            $page = $this->getPage("Keywords");
-            if (preg_match_all('|<a href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
-                $this->all_keywords = $matches[1];
+            $query = <<<EOF
+keyword {
+    text {
+        text
+    }
+}
+EOF;
+            $edges = $this->graphQlGetAll("TitleKeywordsPagination", "keywords", $query);
+
+            foreach ($edges as $edge) {
+                $this->all_keywords[] = $edge->node->keyword->text->text;
             }
         }
+
         return $this->all_keywords;
     }
 
