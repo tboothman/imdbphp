@@ -439,9 +439,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb("0306414");
         $keywords = $imdb->keywords();
-        $this->assertTrue(in_array('corruption', $keywords));
         $this->assertTrue(in_array('drug trafficking', $keywords));
-        $this->assertTrue(in_array('urban decay', $keywords));
+        $this->assertTrue(in_array('baltimore maryland', $keywords));
+        $this->assertTrue(in_array('police', $keywords));
     }
 
     public function testLanguage()
