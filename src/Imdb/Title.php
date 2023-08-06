@@ -2038,7 +2038,11 @@ EOF;
                     return array();
                 }
             }
-            $page = $this->getPage("Episodes");
+
+            $seasons = $this->seasons();
+            $seasons = $seasons > 0 ? $seasons : 1;
+
+            $page = $this->getPage("Episodes-{$seasons}");
             if (empty($page)) {
                 return $this->season_episodes;
             }
@@ -2051,12 +2055,9 @@ EOF;
              *
              * default to year based
              */
-            $seasons = $this->seasons();
-            $seasons = $seasons > 0 ? $seasons : 1;
 
             $xpath = $this->getXpathPage("Episodes-{$seasons}");
-            $is_new_version = $xpath->query('//li[@data-testid="tab-year-entry" or @data-testid="tab-season-entry"]')->length > 0;
-            $is_new_version = $is_new_version || stripos($page, 'data-testid="tab-year-entry"') !== false || stripos($page, 'data-testid="tab-season-entry"') !== false;
+            $is_new_version = $xpath->query('//li[@data-testid="tab-season-entry"]')->length > 0 || $xpath->query('//li[@data-testid="tab-year-entry"]')->length > 0;
 
             if($is_new_version){
                 $selectId = 'bySeason';
@@ -2065,6 +2066,7 @@ EOF;
                     $selectId = 'byYear';
                     $liElements = $xpath->query('//li[@data-testid="tab-year-entry"]');
                 }
+
                 foreach ($liElements as $li) {
                     $textContent = $li->textContent;
                     if(!is_numeric($textContent)){
@@ -2078,6 +2080,7 @@ EOF;
                     $action = $selectId == 'byYear' ? 'year' : 'season';
                     $url = "/_next/data/5s-5cAOpj5F5KR73DcheJ/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
                     $req = new Request("https://" . $this->imdbsite . $url, $this->config);
+
                     if ($req->sendRequest() !== false) {
                         $response = $req->getResponseBody();
                         $json = json_decode($response, true);
@@ -2086,17 +2089,17 @@ EOF;
                             foreach ($data as $ep) {
                                 $episode = array(
                                     'imdbid' => str_ireplace('tt', '', $ep['id']),
-                                    'type' => $ep['type'],
-                                    'title' => trim($ep['titleText']),
-                                    'airdate' => $ep['releaseDate'],
-                                    'releaseYear' => $ep['releaseYear'],
-                                    'plot' => strip_tags($ep['plot']),
-                                    'season' => (int)$ep['season'],
-                                    'episode' => (int)$ep['episode'],
-                                    'image_url' => $ep['image']['url'],
-                                    'aggregateRating' => isset($ep['aggregateRating']) ? $ep['aggregateRating'] : '',
-                                    'voteCount' => $ep['voteCount'],
-                                    'isReleased' => $ep['isReleased'],
+                                    'type' => @$ep['type'],
+                                    'title' => trim(@$ep['titleText']),
+                                    'airdate' => @$ep['releaseDate'],
+                                    'releaseYear' => @$ep['releaseYear'],
+                                    'plot' => strip_tags(@$ep['plot']),
+                                    'season' => (int)@$ep['season'],
+                                    'episode' => (int)@$ep['episode'],
+                                    'image_url' => @$ep['image']['url'],
+                                    'aggregateRating' => @$ep['aggregateRating'],
+                                    'voteCount' => @$ep['voteCount'],
+                                    'isReleased' => @$ep['isReleased'],
                                 );
 
                                 if ($ep['episode'] == -1) {
