@@ -108,6 +108,7 @@ class Title extends MdbBase
     protected $episodeEpisode = null;
     protected $jsonLD = null;
     protected $XmlNextJson = null;
+    protected $buildId = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -2058,7 +2059,6 @@ EOF;
 
             $xpath = $this->getXpathPage("Episodes-{$seasons}");
             $is_new_version = $xpath->query('//li[@data-testid="tab-season-entry"]')->length > 0 || $xpath->query('//li[@data-testid="tab-year-entry"]')->length > 0;
-
             if($is_new_version){
                 $selectId = 'bySeason';
                 $liElements = $xpath->query('//li[@data-testid="tab-season-entry"]');
@@ -2067,21 +2067,20 @@ EOF;
                     $liElements = $xpath->query('//li[@data-testid="tab-year-entry"]');
                 }
 
+                $buildId = $this->getBuildId();
+
                 foreach ($liElements as $li) {
                     $textContent = $li->textContent;
                     if(!is_numeric($textContent)){
                         continue;
                     }
-                    $page = $this->getPage("Episodes-{$textContent}");
-                    if (empty($page)) {
-                        continue; // no such page
-                    }
                     $id = 'tt'.$this->imdbid();
                     $action = $selectId == 'byYear' ? 'year' : 'season';
-                    $url = "/_next/data/5s-5cAOpj5F5KR73DcheJ/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
-                    $req = new Request("https://" . $this->imdbsite . $url, $this->config);
 
-                    if ($req->sendRequest() !== false) {
+                    $url = "/_next/data/{$buildId}/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
+                    $req = new Request("https://" . $this->imdbsite . $url, $this->config);
+                    $success = $req->sendRequest();
+                    if ($success) {
                         $response = $req->getResponseBody();
                         $json = json_decode($response, true);
                         $data = @$json['pageProps']['contentData']['section']['episodes']['items'];
@@ -3321,5 +3320,14 @@ EOF;
         }
 
         return $edges;
+    }
+    protected function getBuildId(){
+        if (empty($this->buildId)) {
+            $query = $this->XmlNextJson()->xpath("//buildId");
+            if (!empty($query[0])) {
+                $this->buildId = trim($query[0]);
+            }
+        }
+        return $this->buildId;
     }
 }
