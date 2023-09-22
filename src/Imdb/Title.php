@@ -2089,10 +2089,10 @@ EOF;
                                 $episode = array(
                                     'imdbid' => str_ireplace('tt', '', $ep['id']),
                                     'type' => @$ep['type'],
-                                    'title' => trim(@$ep['titleText']),
+                                    'title' => !empty($ep['titleText']) ? trim($ep['titleText']) : '',
                                     'airdate' => @$ep['releaseDate'],
                                     'releaseYear' => @$ep['releaseYear'],
-                                    'plot' => strip_tags(@$ep['plot']),
+                                    'plot' => !empty($ep['plot']) ? strip_tags($ep['plot']) : '',
                                     'season' => (int)@$ep['season'],
                                     'episode' => (int)@$ep['episode'],
                                     'image_url' => @$ep['image']['url'],
