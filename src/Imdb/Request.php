@@ -154,7 +154,14 @@ class Request
         if (empty($headers[0])) {
             return null;
         }
-
+        //TODO: check if this is the correct way to get the status code
+        /*
+         * The last time I saw this header was during the redirect:
+         * Array
+         *       [0] => HTTP/1.1 200 Connection established
+         *       [2] => HTTP/1.1 308 Permanent Redirect
+         *       [3] => Transfer-Encoding: chunked
+         */
         if (!preg_match("#^HTTP/[\d\.]+ (\d+)#i", $headers[0], $matches)) {
             return null;
         }
