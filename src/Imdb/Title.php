@@ -2058,13 +2058,13 @@ EOF;
              */
 
             $xpath = $this->getXpathPage("Episodes-{$seasons}");
-            $is_new_version = $xpath->query('//li[@data-testid="tab-season-entry"]')->length > 0 || $xpath->query('//li[@data-testid="tab-year-entry"]')->length > 0;
+            $is_new_version = $xpath->query('//a[@data-testid="tab-season-entry"]')->length > 0 || $xpath->query('//a[@data-testid="tab-year-entry"]')->length > 0;
             if($is_new_version){
                 $selectId = 'bySeason';
-                $liElements = $xpath->query('//li[@data-testid="tab-season-entry"]');
+                $liElements = $xpath->query('//a[@data-testid="tab-season-entry"]');
                 if($liElements->length == 0){
                     $selectId = 'byYear';
-                    $liElements = $xpath->query('//li[@data-testid="tab-year-entry"]');
+                    $liElements = $xpath->query('//a[@data-testid="tab-year-entry"]');
                 }
 
                 $buildId = $this->getBuildId();
