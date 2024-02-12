@@ -192,9 +192,9 @@ class Title extends MdbBase
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
             if (strlen($match[1]) == 4) {
-                return '/episodes?year=' . $match[1];
+                return '/episodes/?year=' . $match[1];
             } else {
-                return '/episodes?season=' . $match[1];
+                return '/episodes/?season=' . $match[1];
             }
         }
 
