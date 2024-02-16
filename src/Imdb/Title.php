@@ -33,6 +33,7 @@ class Title extends MdbBase
     const GAME = 'Video Game';
     const VIDEO = 'Video';
     const SHORT = 'Short';
+    const PODCAST_EPISODE = 'Podcast Episode';
 
     protected $akas = array();
     protected $awards = array();

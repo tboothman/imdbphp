@@ -14,6 +14,7 @@ class TitleSearch extends MdbBase
     const GAME = Title::GAME;
     const VIDEO = Title::VIDEO;
     const SHORT = Title::SHORT;
+    const PODCAST_EPISODE = Title::PODCAST_EPISODE;
 
     /**
      * Search IMDb for titles matching $searchTerms
@@ -128,6 +129,8 @@ class TitleSearch extends MdbBase
             return self::TV_SPECIAL;
         } elseif (strpos($string, 'TV SHORT') !== false) {
             return self::TV_SHORT;
+        } elseif (strpos($string, 'PODCAST EPISODE') !== false) {
+            return self::PODCAST_EPISODE;
         } else {
             return self::MOVIE;
         }
