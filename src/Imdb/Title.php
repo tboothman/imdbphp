@@ -693,7 +693,7 @@ EOF;
      * @return string genre first of the genres listed on the movies main page
      * @brief There is not really a main genre on the IMDB sites (yet), so this
      *  simply returns the first one
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page /reference
      */
     public function genre()
     {
@@ -710,34 +710,29 @@ EOF;
 
     /** Get all genres the movie is registered for
      * @return array genres (array[0..n] of strings)
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page /reference
      */
     public function genres()
     {
         if (empty($this->moviegenres)) {
-            $xpath = $this->getXpathPage("Title");
-            $extract_genres = $xpath->query("//li[@data-testid='storyline-genres']//li[@class='ipc-inline-list__item']/a");
-            $genres = array();
-            foreach ($extract_genres as $genre) {
-                if (!empty($genre->nodeValue)) {
-                    $genres[] = trim($genre->nodeValue);
-                }
-            }
-            if (count($genres) > 0) {
-                $this->moviegenres = $genres;
-            }
+            $query = <<<EOF
+query Genres(\$id: ID!) {
+  title(id: \$id) {
+    titleGenres {
+      genres {
+        genre {
+          text
         }
-        if (empty($this->moviegenres)) {
-            $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
-            if (!is_array($genres)) {
-                $genres = (array)$genres;
-            }
-            $this->moviegenres = $genres;
-        }
-        if (empty($this->moviegenres)) {
-            if (@preg_match('!Genres:</h4>(.*?)</div!ims', $this->page["Title"], $match)) {
-                if (@preg_match_all('!href="[^>]+?>\s*(.*?)\s*<!', $match[1], $matches)) {
-                    $this->moviegenres = $matches[1];
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
+            if (isset($data->title->titleGenres->genres)) {
+                foreach ($data->title->titleGenres->genres as $genres) {
+                    $this->moviegenres[] = $genres->genre->text;
                 }
             }
         }
