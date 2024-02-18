@@ -2696,14 +2696,14 @@ EOF;
      * Filming locations
      * @return string[]
      * @see IMDB page /locations
+     * @version Limited to 5 locations
      */
     public function locations()
     {
         if (empty($this->locations)) {
-            $xpath = $this->getXpathPage("Locations");
-            $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
-            foreach ($cells as $cell) {
-                $this->locations[] = trim($cell->nodeValue);
+            $locations = $this->XmlNextJson("Locations")->xpath("//cardText");
+            foreach ($locations as $location) {
+                $this->locations[] = trim(strval($location));
             }
         }
         return $this->locations;
@@ -3194,14 +3194,12 @@ EOF;
     }
 
     /**
+     * @param string $page
      * @return \SimpleXMLElement
      */
-    protected function XmlNextJson()
+    protected function XmlNextJson($page = "Title")
     {
-        if ($this->XmlNextJson) {
-            return $this->XmlNextJson;
-        }
-        $xpath = $this->getXpathPage("Title");
+        $xpath = $this->getXpathPage($page);
         $script = $xpath->query("//script[@id='__NEXT_DATA__']")->item(0)->nodeValue;
         $decode = json_decode($script, true);
         $xml = new \SimpleXMLElement('<root/>');
