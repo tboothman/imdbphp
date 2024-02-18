@@ -116,7 +116,7 @@ class Title extends MdbBase
         "CrazyCredits" => "/crazycredits",
         "Credits" => "/fullcredits",
         "Episodes" => "/episodes",
-        "Goofs" => "/trivia?tab=gf",
+        "Goofs" => "/goofs",
         "Keywords" => "/keywords",
         "Locations" => "/locations",
         "OfficialSites" => "/officialsites",
@@ -2123,40 +2123,41 @@ EOF;
      * @return array goofs (array[0..n] of array[type,content]
      * @see IMDB page /goofs
      * @version Spoilers are currently skipped (differently formatted)
+     * @version Each goof category is limited to 5 entries
      */
     public function goofs()
     {
         if (empty($this->goofs)) {
-            $page = $this->getPage("Goofs");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Goofs");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            if (@preg_match_all(
-                '@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(?=<h4 class="li_group">|<div id="top_rhs_wrapper")@ims',
-                $this->page["Goofs"],
-                $matches
-            )) {
-                $gc = count($matches[1]);
-                for ($i = 0; $i < $gc; ++$i) {
-                    if ($matches[1][$i] == 'Spoilers') {
-                        continue;
-                    } // no spoilers, moreover they are differently formatted
-                    preg_match_all(
-                        '!<div id="gf.+?>(\s*<div class="sodatext">)?(.+?)\s*</div>\s*<div!ims',
-                        $matches[3][$i],
-                        $goofy
-                    );
-                    $ic = count($goofy[0]);
-                    for ($k = 0; $k < $ic; ++$k) {
-                        $this->goofs[] = array(
-                            "type" => $matches[1][$i],
-                            "content" => str_replace(
-                                'href="/',
-                                'href="https://' . $this->imdbsite . '/',
-                                trim($goofy[2][$k])
-                            )
-                        );
+            $ids = array();
+
+            $cells = $xpath->query("//h3[@class='ipc-title__text']//span");
+            foreach ($cells as $cell) {
+                if ($cell->attributes->length) {
+                    foreach ($cell->attributes as $attribute) {
+                        if ($attribute->nodeName === 'id') {
+                            $ids[$attribute->nodeValue] = trim($cell->nodeValue);
+                        }
                     }
+                }
+            }
+
+            ksort($ids);
+
+            foreach ($ids as $id => $title) {
+                $cells = $xpath->query("//div[@data-testid='sub-section-$id']//div[@class='ipc-html-content-inner-div']");
+                foreach ($cells as $cell) {
+                    $this->goofs[] = array(
+                        "type" => $title,
+                        "content" => str_replace(
+                            'href="/',
+                            'href="https://' . $this->imdbsite . '/',
+                            trim($cell->nodeValue)
+                        )
+                    );
                 }
             }
         }
