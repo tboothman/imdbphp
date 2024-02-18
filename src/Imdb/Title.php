@@ -2946,12 +2946,13 @@ EOF;
     /** Get the complete keywords for the movie
      * @return array keywords
      * @see IMDB page /keywords
+     * @version Limited to 50 keywords
      */
     public function keywords_all()
     {
         if (empty($this->all_keywords)) {
             $page = $this->getPage("Keywords");
-            if (preg_match_all('|<a href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
+            if (preg_match_all('|<a.*?href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
                 $this->all_keywords = $matches[1];
             }
         }
