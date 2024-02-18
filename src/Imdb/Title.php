@@ -2455,6 +2455,7 @@ EOF;
      * @param boolean $spoil *Deprecated*. There are no longer spoiler trivia on imdb
      * @return array trivia (array[0..n] string
      * @see IMDB page /trivia
+     * @version Limited to 5 trivias
      */
     public function trivia($spoil = false)
     {
@@ -2465,16 +2466,19 @@ EOF;
             } // no such page
             if ($spoil) {
                 return [];
-            } else {
-                preg_match('!<div id="trivia_content"(.+?)<a id="spoilers"!ims', $this->page["Trivia"], $block);
-                if (empty($block)) {
-                    preg_match('!<div id="trivia_content"(.+?)<div id="sidebar">!ims', $this->page["Trivia"], $block);
-                }
             }
-            if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>\s*<div!ims', $block[1], $matches)) {
-                $gc = count($matches[1]);
-                for ($i = 0; $i < $gc; ++$i) {
-                    $this->trivia[] = str_replace('href="/', 'href="https://' . $this->imdbsite . "/", $matches[1][$i]);
+
+            if (preg_match_all(
+                '!<div class="ipc-html-content-inner-div">\s*(.*?)\s*</div>!ims',
+                str_replace("\n", " ", $page),
+                $matches
+            )) {
+                foreach ($matches[1] as $match) {
+                    $this->trivia[] = str_replace(
+                        'href="/name/',
+                        'href="https://' . $this->imdbsite . '/name/',
+                        $match
+                    );
                 }
             }
         }
