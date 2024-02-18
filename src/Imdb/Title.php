@@ -2003,12 +2003,14 @@ EOF;
     {
         if (empty($this->crazy_credits)) {
             if (preg_match_all(
-                '!<div class="sodatext">\s*(.*?)\s*</div>!ims',
+                '!<p class="crazy-credit-text">\s*(.*?)\s*</p>!ims',
                 $this->getPage("CrazyCredits"),
                 $matches
             )) {
                 foreach ($matches[1] as $credit) {
-                    $this->crazy_credits[] = trim(strip_tags($credit));
+                    $this->crazy_credits[] = str_replace(array("\r", "\n"), ' ', trim(
+                        strip_tags(htmlspecialchars_decode($credit, ENT_QUOTES))
+                    ));
                 }
             }
         }
