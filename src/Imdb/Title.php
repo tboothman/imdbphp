@@ -778,7 +778,7 @@ EOF;
                 if ($creator->{'@type'} === 'Person') {
                     $result[] = array(
                         'name' => $creator->name,
-                        'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
+                        'imdb' => preg_replace('@.*name\/nm(\d+).*@i', '$1', $creator->url)
                     );
                 }
             }
