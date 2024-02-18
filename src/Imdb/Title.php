@@ -3110,7 +3110,7 @@ EOF;
     {
         if (empty($this->filmingDates)) {
             $page = $this->getPage("Locations");
-            if (@preg_match("!<h4[^>]+>Filming Dates</h4>\s*\n*(.*?)(<br/>\n*)*</section!ims", $page, $filDates)) {
+            if (@preg_match('!sub-section-flmg_dates".*?<\/section!ims', $page, $filDates)) {
                 if (preg_match("/(\d+ \w+ \d{4}) - (\d+ \w+ \d{4})/", strip_tags($filDates[1]), $dates)) {
                     $this->filmingDates = array(
                         'beginning' => date('Y-m-d', strtotime($dates[1])),
