@@ -45,7 +45,7 @@ class ChartsTest extends PHPUnit\Framework\TestCase
         $config->imdbsite = 'www.imdb.com';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 86400;
 
         return new Charts($config);
     }
