@@ -489,7 +489,7 @@ EOF;
     public function metacriticRating()
     {
         $xpath = $this->getXpathPage("Title");
-        $extract = $xpath->query("//span[@class='score-meta']");
+        $extract = $xpath->query("//span[contains(@class, 'metacritic-score-box')]");
         if ($extract && $extract->item(0) != null) {
             return intval(trim($extract->item(0)->nodeValue));
         }
