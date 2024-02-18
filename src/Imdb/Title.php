@@ -2180,7 +2180,7 @@ EOF;
             }
 
             if (preg_match_all(
-                '!<div class="sodatext">\s*(.*?)\s*</div>!ims',
+                '!<div class="ipc-html-content-inner-div">\s*(.*?)\s*</div>!ims',
                 str_replace("\n", " ", $page),
                 $matches
             )) {
@@ -2209,11 +2209,11 @@ EOF;
             $i = 0;
             if (!empty($this->moviequotes)) {
                 foreach ($this->moviequotes as $moviequotes) {
-                    if (@preg_match_all('!<p>\s*(.*?)\s*</p>!', $moviequotes, $matches)) {
+                    if (@preg_match_all('!<li>\s*(.*?)\s*</li>!', $moviequotes, $matches)) {
                         if (!empty($matches[1])) {
                             foreach ($matches[1] as $quote) {
                                 if (@preg_match(
-                                    '!href="([^"]*)"\s*>.+?character">(.*?)</span.+?:(.*)!',
+                                    '!href="([^"]*)"\s*>(.*?)<\/a>:(.*)!',
                                     $quote,
                                     $match
                                 )) {
