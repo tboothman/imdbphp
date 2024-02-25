@@ -1665,7 +1665,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $prodCompany = $imdb->prodCompany();
         $this->assertEquals('Warner Bros.', $prodCompany[0]['name']);
         $this->stringStartsWith('https://www.imdb.com/company/co0002663')->evaluate($prodCompany[0]['url']);
-        $this->assertEquals('(presentation)', $prodCompany[0]['notes']);
+        $this->assertEquals('(A Warner Bros. Presentation)', $prodCompany[0]['notes']);
     }
 
     public function testDistCompany()
