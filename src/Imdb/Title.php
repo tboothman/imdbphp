@@ -33,6 +33,7 @@ class Title extends MdbBase
     const GAME = 'Video Game';
     const VIDEO = 'Video';
     const SHORT = 'Short';
+    const PODCAST_EPISODE = 'Podcast Episode';
 
     protected $akas = array();
     protected $awards = array();
@@ -116,7 +117,7 @@ class Title extends MdbBase
         "CrazyCredits" => "/crazycredits",
         "Credits" => "/fullcredits",
         "Episodes" => "/episodes",
-        "Goofs" => "/trivia?tab=gf",
+        "Goofs" => "/goofs",
         "Keywords" => "/keywords",
         "Locations" => "/locations",
         "OfficialSites" => "/officialsites",
@@ -489,7 +490,7 @@ EOF;
     public function metacriticRating()
     {
         $xpath = $this->getXpathPage("Title");
-        $extract = $xpath->query("//span[@class='score-meta']");
+        $extract = $xpath->query("//span[contains(@class, 'metacritic-score-box')]");
         if ($extract && $extract->item(0) != null) {
             return intval(trim($extract->item(0)->nodeValue));
         }
@@ -778,7 +779,7 @@ EOF;
                 if ($creator->{'@type'} === 'Person') {
                     $result[] = array(
                         'name' => $creator->name,
-                        'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
+                        'imdb' => preg_replace('@.*name\/nm(\d+).*@i', '$1', $creator->url)
                     );
                 }
             }
@@ -2003,12 +2004,14 @@ EOF;
     {
         if (empty($this->crazy_credits)) {
             if (preg_match_all(
-                '!<div class="sodatext">\s*(.*?)\s*</div>!ims',
+                '!<p class="crazy-credit-text">\s*(.*?)\s*</p>!ims',
                 $this->getPage("CrazyCredits"),
                 $matches
             )) {
                 foreach ($matches[1] as $credit) {
-                    $this->crazy_credits[] = trim(strip_tags($credit));
+                    $this->crazy_credits[] = str_replace(array("\r", "\n"), ' ', trim(
+                        strip_tags(htmlspecialchars_decode($credit, ENT_QUOTES))
+                    ));
                 }
             }
         }
@@ -2180,40 +2183,41 @@ EOF;
      * @return array goofs (array[0..n] of array[type,content]
      * @see IMDB page /goofs
      * @version Spoilers are currently skipped (differently formatted)
+     * @version Each goof category is limited to 5 entries
      */
     public function goofs()
     {
         if (empty($this->goofs)) {
-            $page = $this->getPage("Goofs");
-            if (empty($page)) {
+            $xpath = $this->getXpathPage("Goofs");
+            if (empty($xpath)) {
                 return array();
             } // no such page
-            if (@preg_match_all(
-                '@<h4 class="li_group">(.+?)(!?&nbsp;)</h4>\s*(.+?)\s*(?=<h4 class="li_group">|<div id="top_rhs_wrapper")@ims',
-                $this->page["Goofs"],
-                $matches
-            )) {
-                $gc = count($matches[1]);
-                for ($i = 0; $i < $gc; ++$i) {
-                    if ($matches[1][$i] == 'Spoilers') {
-                        continue;
-                    } // no spoilers, moreover they are differently formatted
-                    preg_match_all(
-                        '!<div id="gf.+?>(\s*<div class="sodatext">)?(.+?)\s*</div>\s*<div!ims',
-                        $matches[3][$i],
-                        $goofy
-                    );
-                    $ic = count($goofy[0]);
-                    for ($k = 0; $k < $ic; ++$k) {
-                        $this->goofs[] = array(
-                            "type" => $matches[1][$i],
-                            "content" => str_replace(
-                                'href="/',
-                                'href="https://' . $this->imdbsite . '/',
-                                trim($goofy[2][$k])
-                            )
-                        );
+            $ids = array();
+
+            $cells = $xpath->query("//h3[@class='ipc-title__text']//span");
+            foreach ($cells as $cell) {
+                if ($cell->attributes->length) {
+                    foreach ($cell->attributes as $attribute) {
+                        if ($attribute->nodeName === 'id') {
+                            $ids[$attribute->nodeValue] = trim($cell->nodeValue);
+                        }
                     }
+                }
+            }
+
+            ksort($ids);
+
+            foreach ($ids as $id => $title) {
+                $cells = $xpath->query("//div[@data-testid='sub-section-$id']//div[@class='ipc-html-content-inner-div']");
+                foreach ($cells as $cell) {
+                    $this->goofs[] = array(
+                        "type" => $title,
+                        "content" => str_replace(
+                            'href="/',
+                            'href="https://' . $this->imdbsite . '/',
+                            trim($cell->nodeValue)
+                        )
+                    );
                 }
             }
         }
@@ -2236,7 +2240,7 @@ EOF;
             }
 
             if (preg_match_all(
-                '!<div class="sodatext">\s*(.*?)\s*</div>!ims',
+                '!<div class="ipc-html-content-inner-div">\s*(.*?)\s*</div>!ims',
                 str_replace("\n", " ", $page),
                 $matches
             )) {
@@ -2265,11 +2269,11 @@ EOF;
             $i = 0;
             if (!empty($this->moviequotes)) {
                 foreach ($this->moviequotes as $moviequotes) {
-                    if (@preg_match_all('!<p>\s*(.*?)\s*</p>!', $moviequotes, $matches)) {
+                    if (@preg_match_all('!<li>\s*(.*?)\s*</li>!', $moviequotes, $matches)) {
                         if (!empty($matches[1])) {
                             foreach ($matches[1] as $quote) {
                                 if (@preg_match(
-                                    '!href="([^"]*)"\s*>.+?character">(.*?)</span.+?:(.*)!',
+                                    '!href="([^"]*)"\s*>(.*?)<\/a>:(.*)!',
                                     $quote,
                                     $match
                                 )) {
@@ -2511,6 +2515,7 @@ EOF;
      * @param boolean $spoil *Deprecated*. There are no longer spoiler trivia on imdb
      * @return array trivia (array[0..n] string
      * @see IMDB page /trivia
+     * @version Limited to 5 trivias
      */
     public function trivia($spoil = false)
     {
@@ -2521,16 +2526,19 @@ EOF;
             } // no such page
             if ($spoil) {
                 return [];
-            } else {
-                preg_match('!<div id="trivia_content"(.+?)<a id="spoilers"!ims', $this->page["Trivia"], $block);
-                if (empty($block)) {
-                    preg_match('!<div id="trivia_content"(.+?)<div id="sidebar">!ims', $this->page["Trivia"], $block);
-                }
             }
-            if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>\s*<div!ims', $block[1], $matches)) {
-                $gc = count($matches[1]);
-                for ($i = 0; $i < $gc; ++$i) {
-                    $this->trivia[] = str_replace('href="/', 'href="https://' . $this->imdbsite . "/", $matches[1][$i]);
+
+            if (preg_match_all(
+                '!<div class="ipc-html-content-inner-div">\s*(.*?)\s*</div>!ims',
+                str_replace("\n", " ", $page),
+                $matches
+            )) {
+                foreach ($matches[1] as $match) {
+                    $this->trivia[] = str_replace(
+                        'href="/name/',
+                        'href="https://' . $this->imdbsite . '/name/',
+                        $match
+                    );
                 }
             }
         }
@@ -2752,14 +2760,14 @@ EOF;
      * Filming locations
      * @return string[]
      * @see IMDB page /locations
+     * @version Limited to 5 locations
      */
     public function locations()
     {
         if (empty($this->locations)) {
-            $xpath = $this->getXpathPage("Locations");
-            $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
-            foreach ($cells as $cell) {
-                $this->locations[] = trim($cell->nodeValue);
+            $locations = $this->XmlNextJson("Locations")->xpath("//cardText");
+            foreach ($locations as $location) {
+                $this->locations[] = trim(strval($location));
             }
         }
         return $this->locations;
@@ -3002,12 +3010,13 @@ EOF;
     /** Get the complete keywords for the movie
      * @return array keywords
      * @see IMDB page /keywords
+     * @version Limited to 50 keywords
      */
     public function keywords_all()
     {
         if (empty($this->all_keywords)) {
             $page = $this->getPage("Keywords");
-            if (preg_match_all('|<a href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
+            if (preg_match_all('|<a.*?href="/search/keyword[^>]+?>(.*?)</a>|', $page, $matches)) {
                 $this->all_keywords = $matches[1];
             }
         }
@@ -3165,8 +3174,8 @@ EOF;
     {
         if (empty($this->filmingDates)) {
             $page = $this->getPage("Locations");
-            if (@preg_match("!<h4[^>]+>Filming Dates</h4>\s*\n*(.*?)(<br/>\n*)*</section!ims", $page, $filDates)) {
-                if (preg_match("/(\d+ \w+ \d{4}) - (\d+ \w+ \d{4})/", strip_tags($filDates[1]), $dates)) {
+            if (@preg_match('!sub-section-flmg_dates"[^>]*?>(.*?)<\/section>!ims', $page, $filDates)) {
+                if (preg_match("/(\w+ \d+, \d{4}) - (\w+ \d+, \d{4})/", strip_tags($filDates[1]), $dates)) {
                     $this->filmingDates = array(
                         'beginning' => date('Y-m-d', strtotime($dates[1])),
                         'end' => date('Y-m-d', strtotime($dates[2])),
@@ -3250,14 +3259,12 @@ EOF;
     }
 
     /**
+     * @param string $page
      * @return \SimpleXMLElement
      */
-    protected function XmlNextJson()
+    protected function XmlNextJson($page = "Title")
     {
-        if ($this->XmlNextJson) {
-            return $this->XmlNextJson;
-        }
-        $xpath = $this->getXpathPage("Title");
+        $xpath = $this->getXpathPage($page);
         $script = $xpath->query("//script[@id='__NEXT_DATA__']")->item(0)->nodeValue;
         $decode = json_decode($script, true);
         $xml = new \SimpleXMLElement('<root/>');

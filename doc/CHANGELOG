@@ -2,9 +2,21 @@
 History for IMDBPHP
 ====================
 
+v8.2.0 (25.02.2024)
+-------------------
++ Add Podcast Episode support #326 by @Fossil01
+! Fix Title::trivia() - limited to 5 entries
+! Fix Title::filmingDates()
+! Fix Title::keywords_all() - limited to 50 entries
+! Fix Title::locations() - limited to 5 entries
+! Fix Title::quotes() and Title::quotes_split()
+! Fix Title::goofs() - limited to 5 entries
+! Fix Title::crazy_credits()
+! Fix Title::metacriticRating()
+! Fix Title::creator()
+
 v8.1.0 (14.03.2023)
 -------------------
-
 + Add Psr/Log v2 to allowed versions in composer.json
 ! Fix Title::aspect_ratio no longer returning anything
 
@@ -22,7 +34,6 @@ v8.0.1 (14.02.2023)
 
 v8.0.0 (13.02.2023)
 -------------------
-
 ! Title::plot() returns plain text utf-8 strings rather than html. It no longer contains the author at the end (You can get the author from Title::plot_split())
 ! Title::plot_split() also has plain text utf-8 strings rather than html in its plot field
 ! Title::releaseInfo() return has changed. The country strings have changed slightly, the dates are numbers rather than stringy numbers and month has been removed.
