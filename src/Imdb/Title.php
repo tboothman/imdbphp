@@ -2072,6 +2072,8 @@ EOF;
 
                 $buildId = $this->getBuildId();
 
+                $lang = !empty($this->config->language) ? $this->config->language : 'en-US';
+
                 foreach ($liElements as $li) {
                     $textContent = $li->textContent;
                     if(!is_numeric($textContent)){
@@ -2080,7 +2082,7 @@ EOF;
                     $id = 'tt'.$this->imdbid();
                     $action = $selectId == 'byYear' ? 'year' : 'season';
 
-                    $url = "/_next/data/{$buildId}/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
+                    $url = "/_next/data/{$buildId}/{$lang}/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
                     $req = new Request("https://" . $this->imdbsite . $url, $this->config);
                     $success = $req->sendRequest();
                     if ($success) {
