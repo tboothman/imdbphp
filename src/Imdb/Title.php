@@ -2072,7 +2072,7 @@ EOF;
 
                 $buildId = $this->getBuildId();
 
-                $lang = !empty($this->config->language) ? $this->config->language : 'en-US';
+                $lang = !empty($this->config->language) && preg_match('/^[a-z]{2}-[A-Z]{2}$/', $this->config->language) ? $this->config->language : 'en-US';
 
                 foreach ($liElements as $li) {
                     $textContent = $li->textContent;
