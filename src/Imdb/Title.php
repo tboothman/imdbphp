@@ -2047,6 +2047,96 @@ EOF;
             }
 
             /*
+             * First alternative: Try to extract episode data from JSON
+             * This is the preferred method as it is more reliable
+             */
+            $pattern = '/<script\b[^>]*\bid="__NEXT_DATA__"[^>]*\btype="application\/json"[^>]*>(.+?)<\/script>/s';
+            if (preg_match($pattern, $page, $matches)) {
+                $jsonData = $matches[1] ?? '';
+                $data = json_decode($jsonData, true);
+
+                if (isset($data['props']['pageProps']['contentData']['section']['seasons'])) {
+                    // Navigate the JSON data to find episodes
+                    $seasons = $data['props']['pageProps']['contentData']['section']['seasons'];
+
+                    // Collect season numbers
+                    $seasonNumbers = array_map(function($season) {
+                        return $season['value'] ?? null;
+                    }, $seasons);
+                    $seasonNumbers = array_filter($seasonNumbers);
+
+                    // Loop through each season to get episodes
+                    foreach ($seasonNumbers as $seasonNumber) {
+                        $page = $this->getPage("Episodes-$seasonNumber");
+                        if (empty($page)) {
+                            continue; // no such page
+                        }
+
+                        // Extract JSON data from the page
+                        if (preg_match($pattern, $page, $matchesSeason)) {
+                            $jsonDataSeason = $matchesSeason[1] ?? '';
+                            $dataSeason = json_decode($jsonDataSeason, true);
+                            if (isset($dataSeason['props']['pageProps']['contentData']['section']['episodes']['items'])) {
+                                $episodes = $dataSeason['props']['pageProps']['contentData']['section']['episodes']['items'];
+                                foreach ($episodes as $episode) {
+                                    $imdbid = isset($episode['id']) ? ltrim($episode['id'], 'tt') : null;
+                                    $title = $episode['titleText'] ?? '';
+                                    $releaseDate = $episode['releaseDate'] ?? null;
+                                    $airdate = null;
+                                    if ($releaseDate && isset($releaseDate['year'], $releaseDate['month'], $releaseDate['day'])) {
+                                        try {
+                                            $airdate = new \DateTime();
+                                            $airdate->setDate(
+                                                (int)$releaseDate['year'],
+                                                (int)$releaseDate['month'],
+                                                (int)$releaseDate['day']
+                                            );
+                                            $airdate = $airdate->format('Y-m-d');
+                                        } catch (\Exception $e) {
+                                            // Invalid date, leave $airdate as null
+                                        }
+                                    }
+                                    $plot = $episode['plot'] ?? null;
+                                    $episodeNumber = $episode['episode'] ?? null;
+                                    $image_url = $episode['image']['url'] ?? null;
+
+                                    $episodeNumber = is_numeric($episodeNumber) ? intval($episodeNumber) : null;
+
+                                    $episodeData = [
+                                        'imdbid'    => $imdbid,
+                                        'title'     => $title,
+                                        'airdate'   => $airdate,
+                                        'plot'      => $plot ? strip_tags($plot) : null,
+                                        'season'    => intval($seasonNumber),
+                                        'episode'   => $episodeNumber,
+                                        'image_url' => $image_url,
+                                    ];
+
+                                    $episodeData = array_filter($episodeData, function($value) {
+                                        return $value !== null && $value !== '';
+                                    });
+
+                                    $episodeData['special'] = match (true) {
+                                        $episodeNumber === 0 => 'Pilot',
+                                        $episodeNumber === null => 'Special',
+                                        default => null,
+                                    };
+
+                                    if ($episodeNumber === -1) {
+                                        $this->season_episodes[$seasonNumber][] = $episodeData;
+                                    } else {
+                                        $this->season_episodes[$seasonNumber][$episodeNumber] = $episodeData;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return $this->season_episodes;
+                }
+            }
+
+            /*
              * There are (sometimes) two select boxes: one per season and one per year.
              * IMDb picks one select to use by default and the other starts with an empty option.
              * The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
