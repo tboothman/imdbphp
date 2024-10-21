@@ -13,8 +13,10 @@ class TitleSearch extends MdbBase
     const TV_SHORT = Title::TV_SHORT;
     const GAME = Title::GAME;
     const VIDEO = Title::VIDEO;
+    const MUSIC_VIDEO = Title::MUSIC_VIDEO;
     const SHORT = Title::SHORT;
     const PODCAST_EPISODE = Title::PODCAST_EPISODE;
+    const PODCAST_SERIES = Title::PODCAST_SERIES;
 
     /**
      * Search IMDb for titles matching $searchTerms
@@ -35,7 +37,7 @@ class TitleSearch extends MdbBase
             '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
             $page,
             $matches,
-            PREG_SET_ORDER
+            PREG_SET_ORDER,
         )) {
             foreach ($matches as $match) {
                 $type = $this->parseTitleType($match['type']);
@@ -51,7 +53,7 @@ class TitleSearch extends MdbBase
                     $type,
                     $this->config,
                     $this->logger,
-                    $this->cache
+                    $this->cache,
                 );
 
                 if (++$resultsCounter === $maxResults) {
@@ -95,7 +97,7 @@ class TitleSearch extends MdbBase
                     $type,
                     $this->config,
                     $this->logger,
-                    $this->cache
+                    $this->cache,
                 );
 
                 if (++$resultsCounter === $maxResults) {
@@ -119,6 +121,8 @@ class TitleSearch extends MdbBase
             return self::GAME;
         } elseif (strpos($string, 'VIDEO') !== false) {
             return self::VIDEO;
+        } elseif (strpos($string, 'MUSIC VIDEO') !== false) {
+            return self::MUSIC_VIDEO;
         } elseif (strpos($string, 'SHORT') !== false) {
             return self::SHORT;
         } elseif (strpos($string, 'TV MINI SERIES') !== false) {
@@ -131,6 +135,8 @@ class TitleSearch extends MdbBase
             return self::TV_SHORT;
         } elseif (strpos($string, 'PODCAST EPISODE') !== false) {
             return self::PODCAST_EPISODE;
+        } elseif (strpos($string, 'PODCAST SERIES') !== false) {
+            return self::PODCAST_SERIES;
         } else {
             return self::MOVIE;
         }

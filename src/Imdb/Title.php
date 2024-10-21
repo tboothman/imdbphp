@@ -32,8 +32,10 @@ class Title extends MdbBase
     const TV_SHORT = 'TV Short';
     const GAME = 'Video Game';
     const VIDEO = 'Video';
+    const MUSIC_VIDEO = 'Music Video';
     const SHORT = 'Short';
     const PODCAST_EPISODE = 'Podcast Episode';
+    const PODCAST_SERIES = 'Podcast Series';
 
     protected $akas = array();
     protected $awards = array();
