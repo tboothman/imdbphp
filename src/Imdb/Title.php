@@ -824,7 +824,7 @@ EOF;
 
             if ($this->seasoncount === 0) {
                 // Single season shows have a link rather than a select box
-                if (preg_match('|href="/title/tt\d{7,8}/episodes\?season=\d+|i', $this->getPage("Title"))) {
+                if (preg_match('|href="/title/tt\d{7,8}/episodes/\?season=\d+|i', $this->getPage("Title"))) {
                     $this->seasoncount = 1;
                 }
             }
