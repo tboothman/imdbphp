@@ -97,12 +97,13 @@ class Request
         $this->responseHeaders = array();
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
         $this->page = curl_exec($this->ch);
+        $curlError = curl_error($this->ch);
         curl_close($this->ch);
         if ($this->page !== false) {
             return true;
         }
         if ($this->config->throwHttpExceptions) {
-            throw new Exception\Http("Failed fetch url [$this->urltoopen] " . curl_error($this->ch));
+            throw new Exception\Http("Failed fetch url [$this->urltoopen] " . $curlError);
         }
         return false;
     }
