@@ -844,7 +844,9 @@ EOF;
             return $this->isSerial;
         }
 
-        return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes\?|i', $this->getPage("Title"));
+        $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes/\?|i', $this->getPage("Title"));
+        $this->isSerial = $this->isSerial || in_array($this->movietype(), [self::TV_SERIES, self::TV_MINI_SERIES]);
+        return $this->isSerial;
     }
 
     /**
