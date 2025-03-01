@@ -37,7 +37,7 @@ class TitleSearch extends MdbBase
             '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
             $page,
             $matches,
-            PREG_SET_ORDER,
+            PREG_SET_ORDER
         )) {
             foreach ($matches as $match) {
                 $type = $this->parseTitleType($match['type']);
@@ -53,7 +53,7 @@ class TitleSearch extends MdbBase
                     $type,
                     $this->config,
                     $this->logger,
-                    $this->cache,
+                    $this->cache
                 );
 
                 if (++$resultsCounter === $maxResults) {
@@ -97,7 +97,7 @@ class TitleSearch extends MdbBase
                     $type,
                     $this->config,
                     $this->logger,
-                    $this->cache,
+                    $this->cache
                 );
 
                 if (++$resultsCounter === $maxResults) {
