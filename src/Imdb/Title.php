@@ -145,17 +145,17 @@ class Title extends MdbBase
      * @return Title
      */
     public static function fromSearchResult(
-        $id,
-        $title,
-        $year,
-        $type,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
-    ) {
+        string $id,
+        string $title,
+        int $year,
+        string $type,
+        ?Config $config = null,
+        ?LoggerInterface $logger = null,
+        ?CacheInterface $cache = null
+    ) : Title {
         $imdb = new Title($id, $config, $logger, $cache);
         $imdb->main_title = $title;
-        $imdb->main_year = (int)$year;
+        $imdb->main_year = $year;
         $imdb->main_movietype = $type;
         return $imdb;
     }
@@ -167,14 +167,15 @@ class Title extends MdbBase
      * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
      */
     public function __construct(
-        $id,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
+        string $id,
+        ?Config $config = null,
+        ?LoggerInterface $logger = null,
+        ?CacheInterface $cache = null
     ) {
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
     }
+
 
     #-------------------------------------------------------------[ Open Page ]---
 
