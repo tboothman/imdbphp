@@ -2,6 +2,13 @@
 History for IMDBPHP
 ====================
 
+v8.3.0 (02.03.2025)
+-------------------
++ Add Podcast Series & Music Video Support #333 by @CicerBro
+* Update dev dependencies
+* Format project according to coding style
+! Fix bugs found with PHPStan
+
 v8.2.0 (25.02.2024)
 -------------------
 + Add Podcast Episode support #326 by @Fossil01
