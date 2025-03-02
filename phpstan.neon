@@ -5,3 +5,4 @@ parameters:
 		- src/Imdb/
 	ignoreErrors:
 		- '#Call to an undefined method DOMNode::getAttribute\(\)#'
+		- '#Call to an undefined method DOMNode::getElementsByTagName\(\)#'
