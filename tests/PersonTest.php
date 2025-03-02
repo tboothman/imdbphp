@@ -18,13 +18,13 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Hayao Miyazaki', $person->name());
     }
 
-//    public function test_savephoto()
-//    {
-//        //@todo
-//        return;
-//        $person = $this->getimdb_person();
-//        $this->assertEquals('', $person->savephoto());
-//    }
+    // public function test_savephoto()
+    // {
+    //     //@todo
+    //     return;
+    //     $person = $this->getimdb_person();
+    //     $this->assertEquals('', $person->savephoto());
+    // }
 
     public function test_movies_all()
     {
@@ -69,9 +69,9 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('2010', $arrietty['year']);
         $this->assertEquals(Title::MOVIE, $arrietty['title_type']);
         //@TODO 'chname' as 'Producer' is surely wrong, it should be executive producer or nothing
-//    $this->assertEquals('', $result[0]['chid']);
-//    $this->assertEquals('', $result[0]['chname']);
-//    $this->assertEquals('', $result[0]['addons']);
+        // $this->assertEquals('', $result[0]['chid']);
+        // $this->assertEquals('', $result[0]['chname']);
+        // $this->assertEquals('', $result[0]['addons']);
 
         $houseHunting = $result[3];
         $this->assertEquals('0756260', $houseHunting['mid']);

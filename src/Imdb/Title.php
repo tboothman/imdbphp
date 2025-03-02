@@ -2131,9 +2131,6 @@ EOF;
     {
         if (empty($this->goofs)) {
             $xpath = $this->getXpathPage("Goofs");
-            if (empty($xpath)) {
-                return array();
-            } // no such page
             $ids = array();
 
             $cells = $xpath->query("//h3[@class='ipc-title__text']//span");
@@ -3108,7 +3105,7 @@ EOF;
 
     /**
      * Get filming dates
-     * @return null|array[beginning, end]
+     * @return null|array [beginning, end]
      * Time format : YYYY-MM-DD
      * @see IMDB page / (Locations)
      */

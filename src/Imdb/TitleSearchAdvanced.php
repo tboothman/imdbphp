@@ -179,6 +179,7 @@ class TitleSearchAdvanced extends MdbBase
             if (isset($match['type'])) {
                 return $match['type'];
             }
+            // @phpstan-ignore isset.offset
             if (isset($match['serial'])) {
                 return Title::TV_SERIES;
             }

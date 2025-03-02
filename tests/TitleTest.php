@@ -360,10 +360,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertLessThan(3000000, $votes);
     }
 
-//    public function testVotes_no_votes()
-//    {
-//        //@TODO
-//    }
+    // public function testVotes_no_votes()
+    // {
+    //     //@TODO
+    // }
 
     public function testMetacriticRating()
     {
@@ -390,10 +390,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
     }
 
     // Taking different comments every time. Need to validate what it should look like.
-//    public function testComment_split()
-//    {
-//        //@TODO
-//    }
+    // public function testComment_split()
+    // {
+    //     //@TODO
+    // }
 
     public function testMovie_recommendations()
     {
@@ -465,10 +465,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertTrue(in_array('Vietnamese', $languages));
     }
 
-//    public function testLanguages_nolanguage()
-//    {
-//        //@TODO
-//    }
+    // public function testLanguages_nolanguage()
+    // {
+    //     //@TODO
+    // }
 
     public function testLanguages_detailed()
     {
@@ -497,16 +497,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $imdb->languages_detailed());
     }
 
-//    public function testLanguages_detailed_comment()
-//    {
-//        //@TODO
-//    }
+    // public function testLanguages_detailed_comment()
+    // {
+    //     //@TODO
+    // }
 
-//    public function testGenre()
-//    {
-//        //@TODO .. this is a pretty terrible function that doesn't return anything useful
-//        // Writing a test would be meaningless
-//    }
+    // public function testGenre()
+    // {
+    //     //@TODO .. this is a pretty terrible function that doesn't return anything useful
+    //     // Writing a test would be meaningless
+    // }
 
     // @TODO this function seems to have a fallback, although I'm not sure what to
     // Primary match is to the genre listing just under the title, which this tests
@@ -519,10 +519,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertTrue(count($genres) == 3);
     }
 
-//    public function testGenres_none()
-//    {
-//        //@TODO
-//    }
+    // public function testGenres_none()
+    // {
+    //     //@TODO
+    // }
 
     public function testColors_one_color()
     {
@@ -730,15 +730,15 @@ class TitleTest extends PHPUnit\Framework\TestCase
         @unlink(dirname(__FILE__) . '/cache/poster.jpg');
     }
 
-//    public function testPhoto_localurl()
-//    {
-//        //@TODO
-//    }
-//
-//    public function testMainPictures()
-//    {
-//        //@TODO
-//    }
+    // public function testPhoto_localurl()
+    // {
+    //     //@TODO
+    // }
+
+    // public function testMainPictures()
+    // {
+    //     //@TODO
+    // }
 
     public function testCountry()
     {
@@ -746,10 +746,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(array('United States', 'Australia'), $imdb->country());
     }
 
-//    public function testCountry_nocountries()
-//    {
-//        //@TODO
-//    }
+    // public function testCountry_nocountries()
+    // {
+    //     //@TODO
+    // }
 
     public function testAlsoknow()
     {
@@ -797,10 +797,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertGreaterThan(10, count($akas));
     }
 
-//    public function testAlsoknow_returns_no_results_when_film_has_no_akas()
-//    {
-//        //@TODO
-//    }
+    // public function testAlsoknow_returns_no_results_when_film_has_no_akas()
+    // {
+    //     //@TODO
+    // }
 
     public function testSound_multiple_types()
     {
@@ -860,10 +860,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Rated PG-13 for epic battle sequences and some scary images', $imdb->mpaa_reason());
     }
 
-//    public function testProdNotes()
-//    {
-//        //@TODO
-//    }
+    // public function testProdNotes()
+    // {
+    //     //@TODO
+    // }
 
     public function testTop250()
     {
@@ -987,10 +987,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $imdb->director());
     }
 
-//    public function testDirector()
-//    {
-//        //@TODO this needs more tests for different scenarios
-//    }
+    // public function testDirector()
+    // {
+    //     //@TODO this needs more tests for different scenarios
+    // }
 
     public function testCast_film_with_role_link()
     {
@@ -1231,10 +1231,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(array('imdb' => '0800108', 'name' => 'David Simon', 'role' => '(created by) (60 episodes, 2002-2008)'), $credits[0]);
     }
 
-//    public function testWriting()
-//    {
-//        //@TODO more
-//    }
+    // public function testWriting()
+    // {
+    //     //@TODO more
+    // }
 
     public function testProducer_no_producers()
     {
@@ -1576,25 +1576,25 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEmpty($result);
     }
 
-// @TODO this method doesnt' work anymore
-//    public function testSoundtrack_matrix()
-//    {
-//        $imdb = $this->getImdb();
-//        $result = $imdb->soundtrack();
-//        $this->assertnotEmpty($result);
-//        $this->assertEquals(12, count($result));
-//
-//        $rid = $result[11];
-//        $this->assertEquals('Rock is Dead', $rid['soundtrack']);
-//        $this->assertEquals("Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
-//Performed by Marilyn Manson
-//Courtesy of Nothing/Interscope Records
-//Under License from Universal Music Special Markets", $rid['credits']);
-//        $this->assertEquals("Written by <a href=\"/name/nm0001504/\">Marilyn Manson</a>, <a href=\"/name/nm0708390/\">Jeordie White</a>, and <a href=\"/name/nm0300476/\">Madonna Wayne Gacy</a> <br />
-//Performed by <a href=\"/name/nm0001504/\">Marilyn Manson</a> <br />
-//Courtesy of Nothing/Interscope Records <br />
-//Under License from Universal Music Special Markets <br />", $rid['credits_raw']);
-//    }
+    // @TODO this method doesnt' work anymore
+    // public function testSoundtrack_matrix()
+    // {
+    //     $imdb = $this->getImdb();
+    //     $result = $imdb->soundtrack();
+    //     $this->assertnotEmpty($result);
+    //     $this->assertEquals(12, count($result));
+
+    //     $rid = $result[11];
+    //     $this->assertEquals('Rock is Dead', $rid['soundtrack']);
+    //     $this->assertEquals("Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
+    // Performed by Marilyn Manson
+    // Courtesy of Nothing/Interscope Records
+    // Under License from Universal Music Special Markets", $rid['credits']);
+    //     $this->assertEquals("Written by <a href=\"/name/nm0001504/\">Marilyn Manson</a>, <a href=\"/name/nm0708390/\">Jeordie White</a>, and <a href=\"/name/nm0300476/\">Madonna Wayne Gacy</a> <br />
+    // Performed by <a href=\"/name/nm0001504/\">Marilyn Manson</a> <br />
+    // Courtesy of Nothing/Interscope Records <br />
+    // Under License from Universal Music Special Markets <br />", $rid['credits_raw']);
+    // }
 
     public function testExtReviews()
     {

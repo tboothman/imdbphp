@@ -650,7 +650,7 @@ class Person extends MdbBase
                             $fromMonth = '';
                             $fromYear = '';
                             $fromDateRaw = explode('-', $datesRaw);
-                            if (array_key_exists(0, $fromDateRaw) && preg_match('~[0-9]+~', $fromDateRaw[0])) {
+                            if (preg_match('~[0-9]+~', $fromDateRaw[0])) {
                                 $fromDate = array_values(array_filter(explode(' ', trim($fromDateRaw[0]))));
                                 $count = count($fromDate);
                                 if ($count == 1) {
