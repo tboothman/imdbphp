@@ -89,7 +89,7 @@ class MdbBase extends Config
      * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
      * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
      */
-    public function __construct(Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null)
+    public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
         parent::__construct();
 
