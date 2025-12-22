@@ -195,9 +195,9 @@ class Title extends MdbBase
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
             if (strlen($match[1]) == 4) {
-                return '/episodes?year=' . $match[1];
+                return '/episodes/?year=' . $match[1];
             } else {
-                return '/episodes?season=' . $match[1];
+                return '/episodes/?season=' . $match[1];
             }
         }
 
@@ -2070,7 +2070,10 @@ EOF;
                 $count = count($matches[0]);
                 for ($i = 0; $i < $count; ++$i) {
                     $s = $matches[2][$i];
-                    $page = $this->getPage("Episodes-$s");
+                    
+                    if($s!=-1)                       
+                      $page = $this->getPage("Episodes-$s");
+                    
                     if (empty($page)) {
                         continue; // no such page
                     }
@@ -2081,6 +2084,9 @@ EOF;
                         . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
                         . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
                         . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
+                    #//Fix Episodes Comma Thousands Separators
+                    $page = preg_replace('/(?<=\d),(?=\d)/', '', $page);
+                    
                     preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
                     foreach ($eps as $ep) {
                         //Fetch episodes image url
