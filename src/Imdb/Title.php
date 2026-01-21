@@ -111,6 +111,7 @@ class Title extends MdbBase
     protected $episodeEpisode = null;
     protected $jsonLD = null;
     protected $XmlNextJson = null;
+    protected $buildId = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -195,9 +196,9 @@ class Title extends MdbBase
 
         if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
             if (strlen($match[1]) == 4) {
-                return '/episodes?year=' . $match[1];
+                return '/episodes/?year=' . $match[1];
             } else {
-                return '/episodes?season=' . $match[1];
+                return '/episodes/?season=' . $match[1];
             }
         }
 
@@ -825,7 +826,7 @@ EOF;
 
             if ($this->seasoncount === 0) {
                 // Single season shows have a link rather than a select box
-                if (preg_match('|href="/title/tt\d{7,8}/episodes\?season=\d+|i', $this->getPage("Title"))) {
+                if (preg_match('|href="/title/tt\d{7,8}/episodes/\?season=\d+|i', $this->getPage("Title"))) {
                     $this->seasoncount = 1;
                 }
             }
@@ -845,7 +846,9 @@ EOF;
             return $this->isSerial;
         }
 
-        return $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes\?|i', $this->getPage("Title"));
+        $this->isSerial = (bool)preg_match('|href="/title/tt\d{7,8}/episodes/\?|i', $this->getPage("Title"));
+        $this->isSerial = $this->isSerial || in_array($this->movietype(), [self::TV_SERIES, self::TV_MINI_SERIES]);
+        return $this->isSerial;
     }
 
     /**
@@ -2043,7 +2046,11 @@ EOF;
                     return array();
                 }
             }
-            $page = $this->getPage("Episodes");
+
+            $seasons = $this->seasons();
+            $seasons = $seasons > 0 ? $seasons : 1;
+
+            $page = $this->getPage("Episodes-{$seasons}");
             if (empty($page)) {
                 return $this->season_episodes;
             }
@@ -2056,61 +2063,118 @@ EOF;
              *
              * default to year based
              */
-            $selectId = 'id="byYear"';
-            if (preg_match('!<select id="bySeason"(.*?)</select!ims', $page, $matchSeason)) {
-                preg_match_all('#<\s*?option\b[^>]*>(.*?)</option\b[^>]*>#s', $matchSeason[1], $matchOptionSeason);
-                if (is_numeric(trim($matchOptionSeason[1][0]))) {
-                    //season based
-                    $selectId = 'id="bySeason"';
+
+            $xpath = $this->getXpathPage("Episodes-{$seasons}");
+            $is_new_version = $xpath->query('//a[@data-testid="tab-season-entry"]')->length > 0 || $xpath->query('//a[@data-testid="tab-year-entry"]')->length > 0;
+            if($is_new_version){
+                $selectId = 'bySeason';
+                $liElements = $xpath->query('//a[@data-testid="tab-season-entry"]');
+                if($liElements->length == 0){
+                    $selectId = 'byYear';
+                    $liElements = $xpath->query('//a[@data-testid="tab-year-entry"]');
                 }
-            }
 
-            if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
-                preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
-                $count = count($matches[0]);
-                for ($i = 0; $i < $count; ++$i) {
-                    $s = $matches[2][$i];
-                    $page = $this->getPage("Episodes-$s");
-                    if (empty($page)) {
-                        continue; // no such page
+                $buildId = $this->getBuildId();
+
+                $lang = !empty($this->config->language) && preg_match('/^[a-z]{2}-[A-Z]{2}$/', $this->config->language) ? $this->config->language : 'en-US';
+
+                foreach ($liElements as $li) {
+                    $textContent = $li->textContent;
+                    if(!is_numeric($textContent)){
+                        continue;
                     }
-                    // fetch episodes images
-                    preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
-                    $urlIndex = 0;
-                    $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
-                        . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
-                        . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
-                        . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
-                    preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
-                    foreach ($eps as $ep) {
-                        //Fetch episodes image url
-                        if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
-                            $image_url = $foundUrl[2];
-                        } else {
-                            $image_url = "";
+                    $id = 'tt'.$this->imdbid();
+                    $action = $selectId == 'byYear' ? 'year' : 'season';
+
+                    $url = "/_next/data/{$buildId}/{$lang}/title/{$id}/episodes.json?{$action}={$textContent}&tconst={$id}";
+                    $req = new Request("https://" . $this->imdbsite . $url, $this->config);
+                    $success = $req->sendRequest();
+                    if ($success) {
+                        $response = $req->getResponseBody();
+                        $json = json_decode($response, true);
+                        $data = @$json['pageProps']['contentData']['section']['episodes']['items'];
+                        if(!empty($data) && is_array($data)){
+                            foreach ($data as $ep) {
+                                $episode = array(
+                                    'imdbid' => str_ireplace('tt', '', $ep['id']),
+                                    'type' => @$ep['type'],
+                                    'title' => !empty($ep['titleText']) ? trim($ep['titleText']) : '',
+                                    'airdate' => @$ep['releaseDate'],
+                                    'releaseYear' => @$ep['releaseYear'],
+                                    'plot' => !empty($ep['plot']) ? strip_tags($ep['plot']) : '',
+                                    'season' => (int)@$ep['season'],
+                                    'episode' => (int)@$ep['episode'],
+                                    'image_url' => @$ep['image']['url'],
+                                    'aggregateRating' => @$ep['aggregateRating'],
+                                    'voteCount' => @$ep['voteCount'],
+                                    'isReleased' => @$ep['isReleased'],
+                                );
+
+                                if ($ep['episode'] == -1) {
+                                    $this->season_episodes[$textContent][] = $episode;
+                                } else {
+                                    $this->season_episodes[$textContent][$ep['episode']] = $episode;
+                                }
+                            }
                         }
-                        $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
-                        $plot = preg_replace(
-                            '#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
-                            '',
-                            $plot
-                        );
+                    }
+                }
+            } else {
+                $selectId = 'id="byYear"';
+                $selectElement = $xpath->query('//select[@id="bySeason"]')->item(0);
+                if ($selectElement) {
+                    $options = $xpath->query('.//option', $selectElement);
+                    if ($options->length > 0 && is_numeric(trim($options->item(0)->nodeValue))) {
+                        $selectId = 'id="bySeason"';
+                    }
+                }
+                if (preg_match('!<select ' . $selectId . '(.*?)</select!ims', $page, $match)) {
+                    preg_match_all('!<option\s+(selected="selected" |)value="([^"]+)">!i', $match[1], $matches);
+                    $count = count($matches[0]);
+                    for ($i = 0; $i < $count; ++$i) {
+                        $s = $matches[2][$i];
+                        $page = $this->getPage("Episodes-$s");
+                        if (empty($page)) {
+                            continue; // no such page
+                        }
+                        // fetch episodes images
+                        preg_match_all('!<div class="image">\s*(?<img>.*?)\s*</div>\s*!ims', $page, $img);
+                        $urlIndex = 0;
+                        $preg = '!<div class="info" itemprop="episodes".+?>\s*<meta itemprop="episodeNumber" content="(?<episodeNumber>-?\d+)"/>\s*'
+                            . '<div class="airdate">\s*(?<airdate>.*?)\s*</div>\s*'
+                            . '.+?\shref="/title/tt(?<imdbid>\d{7,8})/[^"]+?"\s+title="(?<title>[^"]+?)"\s+itemprop="name"'
+                            . '.+?<div class="item_description" itemprop="description">(?<plot>.*?)</div>!ims';
+                        preg_match_all($preg, $page, $eps, PREG_SET_ORDER);
+                        foreach ($eps as $ep) {
+                            //Fetch episodes image url
+                            if (preg_match('/(?<!_)src=([\'"])?(.*?)\\1/', $img['img'][$urlIndex], $foundUrl)) {
+                                $image_url = $foundUrl[2];
+                            } else {
+                                $image_url = "";
+                            }
+                            $plot = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>#', '', trim($ep['plot']));
+                            $plot = preg_replace(
+                                '#Know what this is about\?<br>\s*<a href="[^"]+"\s*> Be the first one to add a plot.\s*</a>#ims',
+                                '',
+                                $plot
+                            );
 
-                        $episode = array(
-                            'imdbid' => $ep['imdbid'],
-                            'title' => trim($ep['title']),
-                            'airdate' => $ep['airdate'],
-                            'plot' => strip_tags($plot),
-                            'season' => (int)$s,
-                            'episode' => (int)$ep['episodeNumber'],
-                            'image_url' => $image_url
-                        );
-                        $urlIndex = $urlIndex + 1;
+                            $episode = array(
+                                'imdbid' => $ep['imdbid'],
+                                'title' => trim($ep['title']),
+                                'airdate' => $ep['airdate'],
+                                'plot' => strip_tags($plot),
+                                'season' => (int)$s,
+                                'episode' => (int)$ep['episodeNumber'],
+                                'image_url' => $image_url
+                            );
+                            $urlIndex = $urlIndex + 1;
 
-                        if ($ep['episodeNumber'] == -1) {
-                            $this->season_episodes[$s][] = $episode;
-                        } else {
-                            $this->season_episodes[$s][$ep['episodeNumber']] = $episode;
+                            if ($ep['episodeNumber'] == -1) {
+                                $this->season_episodes[$s][] = $episode;
+                            } else {
+                                $this->season_episodes[$s][$ep['episodeNumber']] = $episode;
+                            }
                         }
                     }
                 }
@@ -3266,5 +3330,14 @@ EOF;
         }
 
         return $edges;
+    }
+    protected function getBuildId(){
+        if (empty($this->buildId)) {
+            $query = $this->XmlNextJson()->xpath("//buildId");
+            if (!empty($query[0])) {
+                $this->buildId = trim($query[0]);
+            }
+        }
+        return $this->buildId;
     }
 }
